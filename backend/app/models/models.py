@@ -55,6 +55,7 @@ class User(Base):
     reviews_received = relationship("Review", foreign_keys="Review.reviewee_id", back_populates="reviewee")
     payments_sent = relationship("Payment", foreign_keys="Payment.payer_id", back_populates="payer")
     payments_received = relationship("Payment", foreign_keys="Payment.payee_id", back_populates="payee")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
 
 
 class Profile(Base):
@@ -199,7 +200,7 @@ class Payment(Base):
 
 class Notification(Base):
     __tablename__ = "notifications"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
@@ -207,5 +208,8 @@ class Notification(Base):
     type = Column(String, nullable=False)  # "application", "payment", "review", etc.
     is_read = Column(Boolean, default=False)
     metadata = Column(JSON, default={})
-    
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    user = relationship("User", back_populates="notifications")

@@ -40,6 +40,10 @@ class TokenPayload(BaseModel):
     sub: Optional[int] = None
 
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+
+
 # Profile Schemas
 class ProfileBase(BaseModel):
     first_name: Optional[str] = None

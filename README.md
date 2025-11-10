@@ -2,6 +2,12 @@
 
 A full-stack remote work marketplace connecting freelancers, agents, and businesses. Built with FastAPI, Next.js, PostgreSQL, and modern web technologies.
 
+## 🚀 Quick Links
+
+- **[Deploy to Production (Render + Supabase)](./DEPLOY_TO_RENDER_SUPABASE.md)** - Complete deployment guide
+- **[Supabase Database Setup](./SUPABASE_SETUP.md)** - Database configuration
+- **[API Documentation](http://localhost:8000/docs)** - Interactive API docs (when running locally)
+
 ## 🚀 Features
 
 ### For Freelancers
@@ -253,19 +259,60 @@ npm test
 
 ## 📦 Deployment
 
-### Backend (Railway/Render)
-1. Connect your GitHub repository
-2. Set environment variables
-3. Deploy from main branch
+### Quick Deployment Guides
 
-### Frontend (Vercel)
-1. Connect your GitHub repository
-2. Set `NEXT_PUBLIC_API_URL` environment variable
-3. Deploy from main branch
+We provide comprehensive guides for deploying to production:
 
-### Database
-- Use managed PostgreSQL (Railway, Supabase, or AWS RDS)
-- Run migrations on production
+1. **[Deploy to Render & Supabase](./DEPLOY_TO_RENDER_SUPABASE.md)** ⭐ Recommended
+   - Step-by-step guide for Render (hosting) + Supabase (database)
+   - Includes environment setup, CORS configuration, and monitoring
+   - Free tier available for testing
+   - Production-ready setup
+
+2. **[Supabase Database Setup](./SUPABASE_SETUP.md)**
+   - Detailed Supabase configuration guide
+   - Database optimization tips
+   - Monitoring and troubleshooting
+   - Migration strategies
+
+### Architecture
+
+**Production Setup:**
+- **Backend**: Render Web Service (Python)
+- **Frontend**: Render Static Site or Vercel (Next.js)
+- **Database**: Supabase PostgreSQL
+- **File Storage**: AWS S3 (optional)
+- **Cache/Queue**: Redis on Render or Upstash (optional)
+
+### Quick Deploy
+
+**Using render.yaml (Automated):**
+```bash
+# 1. Push code to GitHub
+git push origin main
+
+# 2. In Render dashboard:
+#    - New > Blueprint
+#    - Connect repository
+#    - render.yaml will auto-configure services
+
+# 3. Set environment variables in Render dashboard
+# 4. Deploy!
+```
+
+**Manual Deployment:**
+
+See the comprehensive guides linked above for detailed instructions.
+
+### Environment Variables
+
+See `.env.example` files in `backend/` and `frontend/` directories for complete documentation.
+
+**Required for Production:**
+- `DATABASE_URL` - Supabase PostgreSQL connection string
+- `SECRET_KEY` - Generate with: `openssl rand -hex 32`
+- `BACKEND_CORS_ORIGINS` - Your frontend URL
+- `NEXT_PUBLIC_API_URL` - Your backend API URL
 
 ## 🔒 Security Features
 
