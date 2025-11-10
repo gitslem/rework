@@ -47,17 +47,18 @@ def init_db():
 
         # For PostgreSQL, create enum types if they don't exist
         if not settings.DATABASE_URL.startswith("sqlite"):
-            with engine.connect() as conn:
-                # Create enum types if they don't exist
-                enums = [
-                    ("userrole", ["freelancer", "agent", "business", "admin"]),
-                    ("projectstatus", ["open", "in_progress", "completed", "cancelled"]),
-                    ("applicationstatus", ["pending", "accepted", "rejected", "withdrawn"]),
-                    ("paymentstatus", ["pending", "processing", "completed", "failed"])
-                ]
+            # Create enum types if they don't exist
+            enums = [
+                ("userrole", ["freelancer", "agent", "business", "admin"]),
+                ("projectstatus", ["open", "in_progress", "completed", "cancelled"]),
+                ("applicationstatus", ["pending", "accepted", "rejected", "withdrawn"]),
+                ("paymentstatus", ["pending", "processing", "completed", "failed"])
+            ]
 
-                for enum_name, values in enums:
-                    try:
+            for enum_name, values in enums:
+                try:
+                    # Each enum creation in its own transaction
+                    with engine.begin() as conn:
                         # Check if enum exists
                         result = conn.execute(text(
                             f"SELECT 1 FROM pg_type WHERE typname = '{enum_name}'"
@@ -67,11 +68,13 @@ def init_db():
                             conn.execute(text(
                                 f"CREATE TYPE {enum_name} AS ENUM ('{values_str}')"
                             ))
-                            conn.commit()
                             logger.info(f"Created enum type: {enum_name}")
-                    except Exception as e:
-                        logger.warning(f"Enum {enum_name} might already exist: {e}")
-                        conn.rollback()
+                        else:
+                            logger.info(f"Enum type {enum_name} already exists")
+                except Exception as e:
+                    # If enum already exists, that's okay - log and continue
+                    logger.info(f"Enum {enum_name} already exists or creation skipped: {e}")
+                    continue
 
         # Create all tables
         Base.metadata.create_all(bind=engine)

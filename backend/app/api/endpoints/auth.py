@@ -17,9 +17,12 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     logger = logging.getLogger(__name__)
 
     try:
+        logger.info(f"Registration attempt: email={user_data.email}, role={user_data.role}")
+
         # Check if user already exists
         existing_user = db.query(User).filter(User.email == user_data.email).first()
         if existing_user:
+            logger.warning(f"Registration failed: Email {user_data.email} already registered")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered"
@@ -27,19 +30,26 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
         # Create new user and profile in a transaction
         hashed_password = get_password_hash(user_data.password)
+
+        logger.debug(f"Creating user with role type: {type(user_data.role)}, value: {user_data.role}")
+
         new_user = User(
             email=user_data.email,
             hashed_password=hashed_password,
             role=user_data.role
         )
         db.add(new_user)
+        logger.debug("User added to session, flushing...")
         db.flush()  # Flush to get the user ID without committing
+        logger.debug(f"User flushed, ID: {new_user.id}")
 
         # Create empty profile
         profile = Profile(user_id=new_user.id)
         db.add(profile)
+        logger.debug("Profile added to session")
 
         # Commit both together
+        logger.debug("Committing transaction...")
         db.commit()
         db.refresh(new_user)
 
@@ -48,10 +58,12 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 
     except HTTPException:
         # Re-raise HTTP exceptions
+        db.rollback()
         raise
     except Exception as e:
         db.rollback()
         logger.error(f"Registration failed for {user_data.email}: {str(e)}", exc_info=True)
+        logger.error(f"Error type: {type(e).__name__}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Registration failed: {str(e)}"
