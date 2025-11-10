@@ -35,11 +35,11 @@ class PaymentStatus(str, enum.Enum):
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(Enum(UserRole), default=UserRole.FREELANCER)
+    role = Column(Enum(UserRole, name="userrole", create_type=False), default=UserRole.FREELANCER)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -101,7 +101,7 @@ class Project(Base):
     category = Column(String, nullable=False)  # e.g., "evaluation", "transcription", "translation"
     budget = Column(Float, nullable=False)
     deadline = Column(DateTime(timezone=True), nullable=True)
-    status = Column(Enum(ProjectStatus), default=ProjectStatus.OPEN)
+    status = Column(Enum(ProjectStatus, name="projectstatus", create_type=False), default=ProjectStatus.OPEN)
     requirements = Column(JSON, default={})  # Skills, experience, etc.
     attachments = Column(JSON, default=[])  # File URLs
     
@@ -128,7 +128,7 @@ class Application(Base):
     applicant_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     cover_letter = Column(Text, nullable=True)
     proposed_rate = Column(Float, nullable=True)
-    status = Column(Enum(ApplicationStatus), default=ApplicationStatus.PENDING)
+    status = Column(Enum(ApplicationStatus, name="applicationstatus", create_type=False), default=ApplicationStatus.PENDING)
     ai_match_score = Column(Float, nullable=True)  # 0-100 AI matching score
     
     applied_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -146,7 +146,7 @@ class AgentAssignment(Base):
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     agent_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # The agent doing the work
     freelancer_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # The freelancer who outsourced
-    status = Column(Enum(ProjectStatus), default=ProjectStatus.IN_PROGRESS)
+    status = Column(Enum(ProjectStatus, name="projectstatus", create_type=False), default=ProjectStatus.IN_PROGRESS)
     agent_earnings = Column(Float, default=0.0)
     freelancer_passive_earnings = Column(Float, default=0.0)
     
@@ -187,8 +187,8 @@ class Payment(Base):
     amount = Column(Float, nullable=False)
     platform_fee = Column(Float, default=0.0)  # 0.1% platform fee
     stripe_payment_intent_id = Column(String, nullable=True)
-    status = Column(Enum(PaymentStatus), default=PaymentStatus.PENDING)
-    
+    status = Column(Enum(PaymentStatus, name="paymentstatus", create_type=False), default=PaymentStatus.PENDING)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     processed_at = Column(DateTime(timezone=True), nullable=True)
     
