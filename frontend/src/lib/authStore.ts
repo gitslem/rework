@@ -26,20 +26,31 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     try {
+      console.log('[AuthStore] Starting login for:', email);
       const response = await authAPI.login({ email, password });
       const { access_token, refresh_token } = response.data;
+      console.log('[AuthStore] Login successful, got tokens');
 
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
 
       // Fetch user data
+      console.log('[AuthStore] Fetching user data from /users/me');
       const userResponse = await usersAPI.getMe();
+      console.log('[AuthStore] User data fetched:', userResponse.data);
+
       set({
         user: userResponse.data,
         isAuthenticated: true,
         isLoading: false,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('[AuthStore] Login failed:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        fullError: error
+      });
       set({ isLoading: false });
       throw error;
     }
@@ -47,10 +58,21 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   register: async (email: string, password: string, role: string) => {
     try {
-      await authAPI.register({ email, password, role });
+      console.log('[AuthStore] Starting registration for:', email, 'with role:', role);
+      const registerResponse = await authAPI.register({ email, password, role });
+      console.log('[AuthStore] Registration successful:', registerResponse.data);
+
       // After registration, log the user in
+      console.log('[AuthStore] Attempting auto-login after registration');
       await useAuthStore.getState().login(email, password);
-    } catch (error) {
+      console.log('[AuthStore] Auto-login successful');
+    } catch (error: any) {
+      console.error('[AuthStore] Registration failed:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        fullError: error
+      });
       throw error;
     }
   },
