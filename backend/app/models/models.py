@@ -207,7 +207,7 @@ class Notification(Base):
     message = Column(Text, nullable=False)
     type = Column(String, nullable=False)  # "application", "payment", "review", etc.
     is_read = Column(Boolean, default=False)
-    metadata = Column(JSON, default={})
+    notification_data = Column(JSON, default={})  # Renamed from 'metadata' which is reserved
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
