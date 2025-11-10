@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.api.endpoints import auth, projects, applications, users
-from app.db.database import Base, engine
+from app.db.database import Base, engine, get_db
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -16,7 +17,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,9 +41,22 @@ def root():
 
 
 @app.get("/health")
-def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy"}
+def health_check(db: Session = Depends(get_db)):
+    """Health check endpoint with database connectivity test"""
+    try:
+        # Test database connection
+        db.execute("SELECT 1")
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "version": settings.VERSION
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e)
+        }
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from app.db.database import get_db
 from app.models.models import User, Profile
-from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse
+from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest
 from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token
 from app.core.config import settings
 
@@ -71,30 +71,30 @@ def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
 
 
 @router.post("/refresh", response_model=Token)
-def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
+def refresh_token(token_data: RefreshTokenRequest, db: Session = Depends(get_db)):
     """Refresh access token using refresh token"""
     from app.core.security import decode_token
-    
-    payload = decode_token(refresh_token)
+
+    payload = decode_token(token_data.refresh_token)
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token"
         )
-    
+
     user_id = payload.get("sub")
     user = db.query(User).filter(User.id == int(user_id)).first()
-    
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+
     # Create new tokens
     new_access_token = create_access_token(data={"sub": str(user.id)})
     new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
-    
+
     return {
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
