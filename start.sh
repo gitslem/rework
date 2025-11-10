@@ -77,7 +77,26 @@ source venv/bin/activate
 
 # Install dependencies
 echo "Installing Python dependencies..."
-pip install -q -r requirements.txt
+if ! pip install --upgrade pip setuptools wheel; then
+    echo "❌ Failed to upgrade pip, setuptools, and wheel"
+    exit 1
+fi
+
+if ! pip install -r requirements.txt; then
+    echo ""
+    echo "❌ Failed to install Python dependencies"
+    echo "💡 This might be due to:"
+    echo "   - Python version compatibility (Python 3.9-3.13 recommended)"
+    echo "   - Missing system dependencies for packages like pillow or psycopg2"
+    echo "   - Network issues"
+    echo ""
+    echo "Try running manually:"
+    echo "  cd backend"
+    echo "  source venv/bin/activate"
+    echo "  pip install --upgrade pip setuptools wheel"
+    echo "  pip install -r requirements.txt"
+    exit 1
+fi
 echo "✅ Backend dependencies installed"
 
 cd ..
@@ -100,7 +119,14 @@ fi
 # Install dependencies if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
     echo "Installing Node.js dependencies (this may take a few minutes)..."
-    npm install
+    if ! npm install; then
+        echo ""
+        echo "❌ Failed to install Node.js dependencies"
+        echo "💡 Try running manually:"
+        echo "  cd frontend"
+        echo "  npm install"
+        exit 1
+    fi
     echo "✅ Frontend dependencies installed"
 fi
 
