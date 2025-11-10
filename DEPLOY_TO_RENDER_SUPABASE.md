@@ -37,7 +37,28 @@ This guide will walk you through deploying the Remote Works platform using Rende
 
 4. Click **"Create new project"** and wait for it to initialize (2-3 minutes)
 
-### Step 2: Get Your Database Connection String
+### Step 2: Create Database Schema
+
+**REQUIRED:** Create the database tables before deploying.
+
+1. In Supabase dashboard, go to **SQL Editor** (in the sidebar)
+2. Click **"New Query"**
+3. In your project, open `database/schema.sql`
+4. Copy the entire contents (~300 lines)
+5. Paste into the Supabase SQL Editor
+6. Click **"Run"** (or press `Ctrl+Enter`)
+7. You should see: **"Success. No rows returned"**
+
+**Verify tables were created:**
+```sql
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+You should see 8 tables: `agent_assignments`, `applications`, `notifications`, `payments`, `profiles`, `projects`, `reviews`, `users`
+
+### Step 3: Get Your Database Connection String
 
 1. In your Supabase project dashboard, go to **Settings** → **Database**
 2. Scroll down to **Connection String** section
@@ -48,14 +69,6 @@ This guide will walk you through deploying the Remote Works platform using Rende
    ```
 5. Replace `[YOUR-PASSWORD]` with the password you set earlier
 6. **Save this connection string** - you'll need it for Render
-
-### Step 3: Configure Supabase Database (Optional)
-
-The database tables will be created automatically when the backend starts, but you can also:
-
-1. Go to **SQL Editor** in Supabase
-2. You can run custom SQL if needed
-3. Use **Table Editor** to view your data once the app is running
 
 ---
 

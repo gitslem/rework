@@ -11,10 +11,12 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
     # Database
-    DATABASE_URL: str
+    # Default to SQLite for easy local development
+    DATABASE_URL: str = "sqlite:///./remoteworks.db"
 
     # Security
-    SECRET_KEY: str
+    # Default secret key for development (change in production!)
+    SECRET_KEY: str = "dev-secret-key-change-in-production-use-openssl-rand-hex-32"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
