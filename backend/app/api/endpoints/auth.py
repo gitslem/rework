@@ -13,31 +13,49 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     """Register a new user"""
-    # Check if user already exists
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+    import logging
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Check if user already exists
+        existing_user = db.query(User).filter(User.email == user_data.email).first()
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
+            )
+
+        # Create new user and profile in a transaction
+        hashed_password = get_password_hash(user_data.password)
+        new_user = User(
+            email=user_data.email,
+            hashed_password=hashed_password,
+            role=user_data.role
         )
-    
-    # Create new user
-    hashed_password = get_password_hash(user_data.password)
-    new_user = User(
-        email=user_data.email,
-        hashed_password=hashed_password,
-        role=user_data.role
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    # Create empty profile
-    profile = Profile(user_id=new_user.id)
-    db.add(profile)
-    db.commit()
-    
-    return new_user
+        db.add(new_user)
+        db.flush()  # Flush to get the user ID without committing
+
+        # Create empty profile
+        profile = Profile(user_id=new_user.id)
+        db.add(profile)
+
+        # Commit both together
+        db.commit()
+        db.refresh(new_user)
+
+        logger.info(f"Successfully registered user: {user_data.email} with role: {user_data.role}")
+        return new_user
+
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Registration failed for {user_data.email}: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Registration failed: {str(e)}"
+        )
 
 
 @router.post("/login", response_model=Token)

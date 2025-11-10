@@ -218,9 +218,9 @@ class NotificationResponse(BaseModel):
     message: str
     type: str
     is_read: bool
-    metadata: dict
+    notification_data: dict  # Renamed from 'metadata' which is SQLAlchemy reserved
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 
