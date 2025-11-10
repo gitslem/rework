@@ -4,6 +4,8 @@ A full-stack remote work marketplace connecting freelancers, agents, and busines
 
 ## 🚀 Quick Links
 
+- **[Quick Start Guide](./QUICKSTART.md)** - Get running in 5 minutes
+- **[Troubleshooting Guide](./TROUBLESHOOTING.md)** - Fix registration/login issues
 - **[Deploy to Production (Render + Supabase)](./DEPLOY_TO_RENDER_SUPABASE.md)** - Complete deployment guide
 - **[Supabase Database Setup](./SUPABASE_SETUP.md)** - Database configuration
 - **[API Documentation](http://localhost:8000/docs)** - Interactive API docs (when running locally)
