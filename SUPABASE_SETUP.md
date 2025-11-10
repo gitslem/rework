@@ -36,7 +36,28 @@ This guide covers setting up and configuring Supabase as your PostgreSQL databas
 4. Click **"Create new project"**
 5. Wait 2-3 minutes for initialization
 
-### Step 3: Get Connection String
+### Step 3: Create Database Schema
+
+**IMPORTANT:** You need to create the database tables before the app can work.
+
+1. In Supabase dashboard, go to **SQL Editor** (in the sidebar)
+2. Click **"New Query"**
+3. Open the file `database/schema.sql` from the project
+4. Copy the entire contents (all ~300 lines)
+5. Paste into the SQL Editor
+6. Click **"Run"** (or press `Ctrl+Enter`)
+7. You should see: **"Success. No rows returned"**
+
+**Verify tables were created:**
+```sql
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
+
+You should see 8 tables: agent_assignments, applications, notifications, payments, profiles, projects, reviews, users
+
+### Step 4: Get Connection String
 
 1. In project dashboard, click **Settings** (gear icon)
 2. Go to **Database** section
@@ -47,7 +68,7 @@ This guide covers setting up and configuring Supabase as your PostgreSQL databas
    ```
 5. Replace `[YOUR-PASSWORD]` with your actual password
 
-### Step 4: Update Backend Environment
+### Step 5: Update Backend Environment
 
 1. Create/update `backend/.env`:
    ```bash
@@ -66,18 +87,15 @@ This guide covers setting up and configuring Supabase as your PostgreSQL databas
 3. Visit http://localhost:8000/health
    - Should show: `{"status": "healthy", "database": "connected"}`
 
-### Step 5: Verify Tables Were Created
+### Step 6: Verify Everything Works
 
 1. In Supabase dashboard, go to **Table Editor**
-2. You should see these tables:
-   - `users`
-   - `profiles`
-   - `projects`
-   - `applications`
-   - `agent_assignments`
-   - `reviews`
-   - `payments`
-   - `notifications`
+2. You should see 8 tables with proper columns
+3. Visit http://localhost:8000/health
+   - Should show: `{"status": "healthy", "database": "connected"}`
+4. Try registering a user via the API or frontend
+5. Check Supabase **Table Editor** → **users** table
+   - Your new user should appear!
 
 **Done!** Your database is ready. 🎉
 
