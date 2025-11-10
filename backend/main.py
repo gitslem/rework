@@ -108,6 +108,72 @@ def initialize_database():
         )
 
 
+@app.get("/debug/config")
+def debug_config():
+    """Debug endpoint to check configuration (REMOVE IN PRODUCTION)"""
+    import os
+    from sqlalchemy import text
+
+    try:
+        # Get database info
+        db_url = settings.DATABASE_URL
+        db_type = "PostgreSQL" if "postgresql" in db_url else "SQLite"
+        db_host = db_url.split('@')[1].split('/')[0] if '@' in db_url else "local"
+
+        # Test database connection
+        try:
+            from app.db.database import engine
+            with engine.connect() as conn:
+                version = conn.execute(text("SELECT version()")).fetchone()[0]
+                db_connected = True
+                db_version = version[:50]
+
+                # Check enum types for PostgreSQL
+                enum_status = {}
+                if "PostgreSQL" in version:
+                    enums = ['userrole', 'projectstatus', 'applicationstatus', 'paymentstatus']
+                    for enum_name in enums:
+                        exists = conn.execute(text(
+                            f"SELECT EXISTS (SELECT 1 FROM pg_type WHERE typname = '{enum_name}')"
+                        )).fetchone()[0]
+                        enum_status[enum_name] = exists
+
+                # Check tables
+                table_status = {}
+                tables = ['users', 'profiles', 'projects', 'applications']
+                for table in tables:
+                    try:
+                        count = conn.execute(text(f"SELECT COUNT(*) FROM {table}")).fetchone()[0]
+                        table_status[table] = f"exists ({count} rows)"
+                    except Exception as e:
+                        table_status[table] = f"error: {str(e)[:30]}"
+
+        except Exception as e:
+            db_connected = False
+            db_version = str(e)[:50]
+            enum_status = {}
+            table_status = {}
+
+        return {
+            "environment": settings.ENVIRONMENT,
+            "database_type": db_type,
+            "database_host": db_host,
+            "database_connected": db_connected,
+            "database_version": db_version,
+            "enum_types": enum_status,
+            "tables": table_status,
+            "cors_origins": settings.cors_origins,
+            "frontend_url": settings.FRONTEND_URL,
+            "api_version": settings.VERSION
+        }
+    except Exception as e:
+        logger.error(f"Debug config failed: {str(e)}", exc_info=True)
+        return {
+            "error": str(e),
+            "error_type": type(e).__name__
+        }
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
