@@ -20,7 +20,8 @@ elif "supabase" in settings.DATABASE_URL or "pooler" in settings.DATABASE_URL:
     # Special configuration for Supabase pooler with extended timeouts for cloud environments
     connect_args = {
         "connect_timeout": 30,  # Increased from 10 to handle cloud environment latency
-        "options": "-c client_encoding=utf8 -c statement_timeout=30000",  # 30 second statement timeout
+        "options": "-c statement_timeout=30000",  # 30 second statement timeout
+        "client_encoding": "utf8",  # Set encoding directly as parameter
     }
     pool_size = 5
     max_overflow = 10  # Allow some overflow for burst traffic
