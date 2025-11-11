@@ -119,6 +119,12 @@ def run_diagnostics(db: Session = Depends(get_db)):
         "status": "running",
         "timestamp": str(datetime.now()),
         "environment": settings.ENVIRONMENT,
+        "version": settings.VERSION,
+        "configuration": {
+            "cors_origins": settings.cors_origins,
+            "frontend_url": settings.FRONTEND_URL,
+            "api_prefix": settings.API_V1_STR
+        },
         "database": {},
         "tables": {},
         "enums": {},
@@ -126,11 +132,26 @@ def run_diagnostics(db: Session = Depends(get_db)):
     }
 
     try:
-        # Check database connection
+        # Database type and host info
+        db_url = settings.DATABASE_URL
+        diagnostics["database"]["type"] = "PostgreSQL" if "postgresql" in db_url else "SQLite"
+        if '@' in db_url:
+            diagnostics["database"]["host"] = db_url.split('@')[1].split('/')[0]
+        else:
+            diagnostics["database"]["host"] = "local"
+
+        # Check database connection and version
         try:
             db.execute(text("SELECT 1"))
             diagnostics["database"]["connection"] = "✓ Connected"
-            diagnostics["database"]["url_type"] = "PostgreSQL" if "postgresql" in settings.DATABASE_URL else "SQLite"
+
+            # Get database version
+            try:
+                version = db.execute(text("SELECT version()")).fetchone()[0]
+                diagnostics["database"]["version"] = version[:80]
+            except:
+                diagnostics["database"]["version"] = "unknown"
+
         except Exception as e:
             diagnostics["database"]["connection"] = f"✗ Failed: {str(e)}"
             diagnostics["errors"].append(f"Database connection: {str(e)}")
@@ -147,6 +168,16 @@ def run_diagnostics(db: Session = Depends(get_db)):
             if missing_tables:
                 diagnostics["tables"]["missing"] = list(missing_tables)
                 diagnostics["errors"].append(f"Missing tables: {missing_tables}")
+
+            # Get row counts for each table
+            diagnostics["tables"]["details"] = {}
+            for table in tables:
+                try:
+                    count = db.execute(text(f"SELECT COUNT(*) FROM {table}")).fetchone()[0]
+                    diagnostics["tables"]["details"][table] = f"✓ {count} rows"
+                except Exception as e:
+                    diagnostics["tables"]["details"][table] = f"✗ Error: {str(e)[:30]}"
+
         except Exception as e:
             diagnostics["tables"]["error"] = str(e)
             diagnostics["errors"].append(f"Table inspection: {str(e)}")
