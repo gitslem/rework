@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthStore } from '@/lib/authStore';
 import Link from 'next/link';
@@ -10,6 +10,16 @@ export default function Login() {
   const googleAuth = useAuthStore((state) => state.googleAuth);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isConfigured, setIsConfigured] = useState(true);
+
+  useEffect(() => {
+    // Check if Google OAuth is configured
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId || clientId === '') {
+      setIsConfigured(false);
+      setError('Google OAuth is not configured. Please set NEXT_PUBLIC_GOOGLE_CLIENT_ID in your environment variables.');
+    }
+  }, []);
 
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     setError('');
@@ -64,15 +74,27 @@ export default function Login() {
             )}
 
             <div className="flex justify-center mb-6">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                useOneTap
-                theme="outline"
-                size="large"
-                text="signin_with"
-                shape="rectangular"
-              />
+              {isConfigured ? (
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  useOneTap
+                  theme="outline"
+                  size="large"
+                  text="signin_with"
+                  shape="rectangular"
+                />
+              ) : (
+                <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-yellow-800 font-semibold mb-2">Google OAuth Not Configured</p>
+                  <p className="text-yellow-700 text-sm">
+                    Please configure your Google OAuth credentials to enable sign in.
+                  </p>
+                  <p className="text-yellow-600 text-xs mt-2">
+                    See GOOGLE_OAUTH_SETUP.md for instructions
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="mt-8 pt-6 border-t border-gray-200">
