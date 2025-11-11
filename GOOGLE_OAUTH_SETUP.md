@@ -53,18 +53,77 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
 ```
 
+For **Render** deployment, add these as environment variables in your Render dashboard.
+
 #### Backend (.env)
 
 Create `/backend/.env`:
 
 ```env
+# Google OAuth (REQUIRED)
 GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret-here
+
+# Security (REQUIRED)
 SECRET_KEY=your-secret-key-here
-DATABASE_URL=sqlite:///./remoteworks.db
+
+# Database - Choose one:
+
+# Option 1: Supabase (Recommended for production)
+DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres
+
+# Option 2: Local SQLite (Development only)
+# DATABASE_URL=sqlite:///./remoteworks.db
 ```
 
-### 5. Run the Application
+For **Render** deployment, add these as environment variables in your Render dashboard.
+
+### 5. Run Database Migration (CRITICAL STEP!)
+
+**This step is required for Google OAuth to work!** The database needs new columns for OAuth support.
+
+#### For Supabase Users (Recommended):
+
+1. Go to your Supabase dashboard
+2. Click **SQL Editor** in the left sidebar
+3. Click **New Query**
+4. Copy and paste this SQL:
+
+```sql
+-- Add google_id column if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'users' AND column_name = 'google_id'
+    ) THEN
+        ALTER TABLE users ADD COLUMN google_id VARCHAR UNIQUE;
+        CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
+    END IF;
+END $$;
+
+-- Make hashed_password nullable for OAuth users
+DO $$
+BEGIN
+    ALTER TABLE users ALTER COLUMN hashed_password DROP NOT NULL;
+EXCEPTION
+    WHEN others THEN NULL;
+END $$;
+```
+
+5. Click **Run** or press `Ctrl+Enter`
+6. You should see "Success. No rows returned"
+
+#### Alternative: Using Python Script
+
+```bash
+cd backend
+python migrations/run_migration.py
+```
+
+See `backend/migrations/README.md` for more migration options.
+
+### 6. Run the Application
 
 #### Backend
 
@@ -86,7 +145,7 @@ npm run dev
 
 The frontend will run on `http://localhost:3000`
 
-### 6. Test the Authentication
+### 7. Test the Authentication
 
 1. Navigate to `http://localhost:3000/login`
 2. Click "Sign in with Google"
@@ -152,38 +211,58 @@ Response:
 
 ## Troubleshooting
 
-### "Google login failed"
+### "Google sign up failed. Please try again"
+
+This usually means the database migration wasn't run. **Solution:**
+
+1. Run the database migration (Step 5 above)
+2. Check backend logs for specific error
+3. Verify `google_id` column exists in users table
+
+### "Database schema not updated" Error
+
+The backend will show this error if the migration hasn't been run. **Solution:**
+
+1. Go to Supabase SQL Editor
+2. Run the migration SQL from Step 5
+3. Restart your backend server
+
+### "Google login failed" or Token Errors
 
 1. Check that `NEXT_PUBLIC_GOOGLE_CLIENT_ID` is set in frontend
-2. Verify the Client ID is correct
-3. Ensure JavaScript origins are configured in Google Cloud Console
+2. Verify the Client ID is correct in both frontend AND backend
+3. Ensure JavaScript origins include your frontend URL in Google Cloud Console
 4. Check browser console for detailed errors
+5. Check backend logs for detailed errors
 
 ### "Invalid Google token"
 
-1. Verify `GOOGLE_CLIENT_ID` is set in backend .env
-2. Ensure the Client ID matches between frontend and backend
-3. Check that the Google+ API is enabled
+1. Verify `GOOGLE_CLIENT_ID` in backend matches `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in frontend
+2. Check that the Google+ API is enabled in Google Cloud Console
+3. Ensure your redirect URIs are correctly configured
 
-### "Token verification failed"
+### Database Connection Issues
 
-1. Make sure both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set
-2. Verify the credentials are from the same OAuth client
-3. Check backend logs for detailed error messages
+**For Supabase:**
+1. Check your DATABASE_URL is correct
+2. Verify your Supabase project is running
+3. Check that your IP is allowed (Supabase > Settings > Database > Connection Pooling)
 
-### Database Errors
-
-If you encounter database errors after updating:
-
+**For local SQLite:**
 ```bash
 cd backend
-# For SQLite (development)
-rm remoteworks.db
+rm remoteworks.db  # Delete old database
 python -c "from app.db.database import engine, Base; from app.models.models import *; Base.metadata.create_all(bind=engine)"
-
-# For PostgreSQL (production)
-# Run migrations or recreate tables as needed
+python migrations/run_migration.py  # Run migration
 ```
+
+### Checking Backend Logs
+
+The backend now has detailed logging. Check logs for:
+- "Google OAuth attempt with role: ..."
+- "Token decoded - email: ..., google_id: ..."
+- "Database query completed - user found: ..."
+- Any error messages with detailed context
 
 ## Production Deployment
 
