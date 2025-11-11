@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthStore } from '@/lib/authStore';
 import Link from 'next/link';
@@ -13,6 +13,16 @@ export default function Register() {
   const [role, setRole] = useState('freelancer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isConfigured, setIsConfigured] = useState(true);
+
+  useEffect(() => {
+    // Check if Google OAuth is configured
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId || clientId === '') {
+      setIsConfigured(false);
+      setError('Google OAuth is not configured. Please set NEXT_PUBLIC_GOOGLE_CLIENT_ID in your environment variables.');
+    }
+  }, []);
 
   const roles = [
     {
@@ -141,15 +151,39 @@ export default function Register() {
                 )}
 
                 <div className="flex justify-center mb-6">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleError}
-                    useOneTap
-                    theme="outline"
-                    size="large"
-                    text="signup_with"
-                    shape="rectangular"
-                  />
+                  {isConfigured ? (
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                      useOneTap
+                      theme="outline"
+                      size="large"
+                      text="signup_with"
+                      shape="rectangular"
+                    />
+                  ) : (
+                    <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-yellow-800 font-semibold mb-2">Google OAuth Not Configured</p>
+                      <p className="text-yellow-700 text-sm mb-2">
+                        Please configure your Google OAuth credentials to enable sign up.
+                      </p>
+                      <details className="text-left mt-3">
+                        <summary className="cursor-pointer text-yellow-800 font-medium text-sm mb-2">
+                          Setup Instructions
+                        </summary>
+                        <div className="text-yellow-700 text-xs space-y-2 mt-2 pl-4">
+                          <p>1. Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></p>
+                          <p>2. Create OAuth 2.0 credentials</p>
+                          <p>3. Add http://localhost:3000 to authorized origins</p>
+                          <p>4. Create frontend/.env.local file:</p>
+                          <pre className="bg-yellow-100 p-2 rounded mt-1 text-xs">
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+                          </pre>
+                          <p className="mt-2">See GOOGLE_OAUTH_SETUP.md for detailed instructions</p>
+                        </div>
+                      </details>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-center">
