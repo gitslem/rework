@@ -38,7 +38,8 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Nullable for OAuth users
+    google_id = Column(String, unique=True, nullable=True, index=True)  # Google OAuth ID
     role = Column(Enum(UserRole, name="userrole", create_type=False), default=UserRole.FREELANCER)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)

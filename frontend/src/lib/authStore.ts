@@ -15,6 +15,7 @@ interface AuthState {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, role: string) => Promise<void>;
+  googleAuth: (token: string, role?: string) => Promise<void>;
   logout: () => void;
   fetchUser: () => Promise<void>;
 }
@@ -73,6 +74,38 @@ export const useAuthStore = create<AuthState>((set) => ({
         status: error.response?.status,
         fullError: error
       });
+      throw error;
+    }
+  },
+
+  googleAuth: async (token: string, role?: string) => {
+    try {
+      console.log('[AuthStore] Starting Google authentication');
+      const response = await authAPI.googleAuth({ token, role });
+      const { access_token, refresh_token } = response.data;
+      console.log('[AuthStore] Google auth successful, got tokens');
+
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('refresh_token', refresh_token);
+
+      // Fetch user data
+      console.log('[AuthStore] Fetching user data from /users/me');
+      const userResponse = await usersAPI.getMe();
+      console.log('[AuthStore] User data fetched:', userResponse.data);
+
+      set({
+        user: userResponse.data,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    } catch (error: any) {
+      console.error('[AuthStore] Google auth failed:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        fullError: error
+      });
+      set({ isLoading: false });
       throw error;
     }
   },

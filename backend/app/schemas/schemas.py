@@ -44,6 +44,11 @@ class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
 
+class GoogleAuthRequest(BaseModel):
+    token: str
+    role: Optional[UserRole] = UserRole.FREELANCER
+
+
 # Profile Schemas
 class ProfileBase(BaseModel):
     first_name: Optional[str] = None
