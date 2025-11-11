@@ -132,7 +132,10 @@ def google_auth(auth_data: dict, db: Session = Depends(get_db)):
         token = auth_data.get("token")
         role = auth_data.get("role", "freelancer")
 
+        logger.info(f"Google OAuth attempt with role: {role}")
+
         if not token:
+            logger.error("No token provided in request")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Token is required"
@@ -142,13 +145,16 @@ def google_auth(auth_data: dict, db: Session = Depends(get_db)):
         try:
             # If GOOGLE_CLIENT_ID is not set, skip verification for development
             if settings.GOOGLE_CLIENT_ID:
+                logger.info("Verifying Google token with GOOGLE_CLIENT_ID")
                 idinfo = id_token.verify_oauth2_token(
                     token,
                     google_requests.Request(),
                     settings.GOOGLE_CLIENT_ID
                 )
+                logger.info("Google token verified successfully")
             else:
                 # For development without Google Client ID, decode the token payload
+                logger.warning("GOOGLE_CLIENT_ID not set - using unverified token decoding (DEVELOPMENT ONLY)")
                 import json
                 import base64
                 # JWT tokens have 3 parts separated by dots
@@ -164,7 +170,7 @@ def google_auth(auth_data: dict, db: Session = Depends(get_db)):
                 idinfo = json.loads(base64.urlsafe_b64decode(payload))
                 logger.warning("Google token verification skipped - GOOGLE_CLIENT_ID not configured")
         except Exception as e:
-            logger.error(f"Google token verification failed: {str(e)}")
+            logger.error(f"Google token verification failed: {str(e)}", exc_info=True)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Invalid Google token: {str(e)}"
@@ -173,54 +179,90 @@ def google_auth(auth_data: dict, db: Session = Depends(get_db)):
         email = idinfo.get("email")
         google_id = idinfo.get("sub")
 
+        logger.info(f"Token decoded - email: {email}, google_id: {google_id}")
+
         if not email or not google_id:
+            logger.error(f"Missing email or google_id in token payload: {idinfo}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid token payload"
+                detail="Invalid token payload - missing email or sub"
             )
 
         # Check if user exists by Google ID or email
-        user = db.query(User).filter(
-            (User.google_id == google_id) | (User.email == email)
-        ).first()
+        try:
+            user = db.query(User).filter(
+                (User.google_id == google_id) | (User.email == email)
+            ).first()
+            logger.info(f"Database query completed - user found: {user is not None}")
+        except Exception as e:
+            logger.error(f"Database query failed: {str(e)}", exc_info=True)
+            # Check if it's a column error
+            if "google_id" in str(e).lower() or "column" in str(e).lower():
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Database schema not updated. Please run migrations: ALTER TABLE users ADD COLUMN google_id VARCHAR UNIQUE; ALTER TABLE users ALTER COLUMN hashed_password DROP NOT NULL;"
+                )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
 
         if user:
+            logger.info(f"Existing user found: {user.email}")
             # Update Google ID if user exists but doesn't have one
             if not user.google_id:
+                logger.info("Updating user with google_id")
                 user.google_id = google_id
-                db.commit()
-                db.refresh(user)
+                try:
+                    db.commit()
+                    db.refresh(user)
+                    logger.info("User updated successfully")
+                except Exception as e:
+                    logger.error(f"Failed to update user: {str(e)}", exc_info=True)
+                    db.rollback()
+                    raise
 
             # Verify user is active
             if not user.is_active:
+                logger.warning(f"User {user.email} is inactive")
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Inactive user"
                 )
         else:
             # Create new user with Google OAuth
-            user = User(
-                email=email,
-                google_id=google_id,
-                role=role,
-                is_verified=True,  # Google accounts are pre-verified
-                is_active=True
-            )
-            db.add(user)
-            db.flush()
+            logger.info(f"Creating new user: {email}")
+            try:
+                user = User(
+                    email=email,
+                    google_id=google_id,
+                    role=role,
+                    is_verified=True,  # Google accounts are pre-verified
+                    is_active=True
+                )
+                db.add(user)
+                db.flush()
+                logger.info(f"User created with id: {user.id}")
 
-            # Create profile
-            profile = Profile(user_id=user.id)
-            db.add(profile)
+                # Create profile
+                profile = Profile(user_id=user.id)
+                db.add(profile)
+                logger.info("Profile created")
 
-            db.commit()
-            db.refresh(user)
-            logger.info(f"Created new user via Google OAuth: {email}")
+                db.commit()
+                db.refresh(user)
+                logger.info(f"Successfully created new user via Google OAuth: {email}")
+            except Exception as e:
+                logger.error(f"Failed to create user: {str(e)}", exc_info=True)
+                db.rollback()
+                raise
 
         # Create tokens
+        logger.info(f"Creating tokens for user id: {user.id}")
         access_token = create_access_token(data={"sub": str(user.id)})
         refresh_token = create_refresh_token(data={"sub": str(user.id)})
 
+        logger.info("Google OAuth successful")
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
@@ -230,7 +272,7 @@ def google_auth(auth_data: dict, db: Session = Depends(get_db)):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Google auth failed: {str(e)}", exc_info=True)
+        logger.error(f"Google auth failed with unexpected error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Authentication failed: {str(e)}"
