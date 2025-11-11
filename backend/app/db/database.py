@@ -15,13 +15,24 @@ if settings.DATABASE_URL.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
     pool_size = 1  # SQLite doesn't support connection pooling
     max_overflow = 0
+elif "supabase" in settings.DATABASE_URL or "pooler" in settings.DATABASE_URL:
+    # Special configuration for Supabase pooler
+    connect_args = {
+        "connect_timeout": 10,
+        "options": "-c client_encoding=utf8",
+    }
+    pool_size = 5
+    max_overflow = 0
+    logger.info("Using Supabase pooler configuration")
 
+# Add pool_recycle to prevent stale connections
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,
     connect_args=connect_args,
     pool_size=pool_size,
     max_overflow=max_overflow,
+    pool_recycle=300,  # Recycle connections after 5 minutes
     echo=settings.ENVIRONMENT == "development"  # Log SQL queries in development
 )
 
@@ -44,6 +55,12 @@ def init_db():
     try:
         # Import all models to ensure they're registered with Base
         from app.models import models
+
+        # Test connection first
+        logger.info("Testing database connection...")
+        with engine.connect() as test_conn:
+            test_conn.execute(text("SELECT 1"))
+            logger.info("Database connection successful!")
 
         # For PostgreSQL, create enum types if they don't exist
         if not settings.DATABASE_URL.startswith("sqlite"):
