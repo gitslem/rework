@@ -75,9 +75,6 @@ export default function SandboxPage() {
     // Dynamically import xterm on client side only
     import('xterm').then(({ Terminal }) => {
       import('xterm-addon-fit').then(({ FitAddon }) => {
-        // Also import CSS
-        import('xterm/css/xterm.css');
-
         const terminal = new Terminal({
           cursorBlink: true,
           fontSize: 14,
