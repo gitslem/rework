@@ -61,8 +61,9 @@ export default function ProofsPage() {
 
   const checkGithubConnection = () => {
     // Check if user has GitHub connected
-    // This would come from user profile
-    setGithubConnected(!!user?.github_id);
+    // TODO: Implement GitHub OAuth integration
+    // For now, GitHub is not connected until OAuth is implemented
+    setGithubConnected(false);
   };
 
   const fetchProofs = async () => {
