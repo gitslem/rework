@@ -110,4 +110,18 @@ export const applicationsAPI = {
   withdraw: (id: number) => api.delete(`/applications/${id}`),
 };
 
+// Sandboxes API
+export const sandboxesAPI = {
+  getAll: (params?: any) => api.get('/sandboxes/', { params }),
+  getById: (id: number) => api.get(`/sandboxes/${id}`),
+  create: (data: any) => api.post('/sandboxes/', data),
+  update: (id: number, data: any) => api.patch(`/sandboxes/${id}`, data),
+  delete: (id: number) => api.delete(`/sandboxes/${id}`),
+  execute: (id: number, data: any) => api.post(`/sandboxes/${id}/execute`, data),
+  manageFile: (id: number, data: any) => api.post(`/sandboxes/${id}/files`, data),
+  share: (id: number, userIds: number[]) => api.post(`/sandboxes/${id}/share`, userIds),
+  getCollaborators: (id: number) => api.get(`/sandboxes/${id}/collaborators`),
+  createSnapshot: (id: number, name: string) => api.post(`/sandboxes/${id}/snapshot`, { name }),
+};
+
 export default api;

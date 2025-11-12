@@ -4,7 +4,7 @@ import { useAuthStore } from '@/lib/authStore';
 import { usersAPI } from '@/lib/api';
 import {
   TrendingUp, Briefcase, DollarSign, Star, LogOut, Globe2,
-  Plus, Clock, CheckCircle, Users, Settings, Bell, Search
+  Plus, Clock, CheckCircle, Users, Settings, Bell, Search, Code2
 } from 'lucide-react';
 import Head from 'next/head';
 
@@ -84,6 +84,12 @@ export default function Dashboard() {
                   >
                     {isFreelancer ? 'Browse Projects' : 'My Projects'}
                   </button>
+                  <button
+                    onClick={() => router.push('/sandboxes')}
+                    className="text-accent-gray-600 hover:text-primary-500 transition font-medium"
+                  >
+                    Sandboxes
+                  </button>
                   <button className="text-accent-gray-600 hover:text-primary-500 transition font-medium">
                     Messages
                   </button>
@@ -142,6 +148,13 @@ export default function Dashboard() {
                 Browse Projects
               </button>
             )}
+            <button
+              onClick={() => router.push('/sandboxes')}
+              className="btn-secondary inline-flex items-center"
+            >
+              <Code2 className="w-5 h-5 mr-2" />
+              My Sandboxes
+            </button>
             <button className="btn-secondary">
               Complete Profile
             </button>

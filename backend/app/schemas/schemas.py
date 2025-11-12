@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
-from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus
+from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage
 
 
 # User Schemas
@@ -317,3 +317,87 @@ class AIBriefGeneration(BaseModel):
     required_skills: List[str]
     confidence_score: float
     ai_model_used: Optional[str] = None
+
+
+# Sandbox Schemas
+class SandboxBase(BaseModel):
+    name: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = None
+    language: SandboxLanguage = SandboxLanguage.PYTHON
+    project_id: Optional[int] = None
+
+
+class SandboxCreate(SandboxBase):
+    shared_with: List[int] = []  # List of user IDs
+    files: dict = {}  # Initial file structure
+
+
+class SandboxUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[SandboxStatus] = None
+    shared_with: Optional[List[int]] = None
+    files: Optional[dict] = None
+
+
+class SandboxResponse(SandboxBase):
+    id: int
+    owner_id: int
+    shared_with: List[int]
+    status: SandboxStatus
+    files: dict
+    container_id: Optional[str]
+    runtime_config: dict
+    execution_history: List[dict]
+    last_output: Optional[str]
+    last_error: Optional[str]
+    last_executed_at: Optional[datetime]
+    total_executions: int
+    total_runtime_ms: int
+    version: int
+    parent_snapshot_id: Optional[int]
+    created_at: datetime
+    updated_at: Optional[datetime]
+    last_accessed_at: datetime
+    terminated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class SandboxExecuteRequest(BaseModel):
+    """Request to execute code in sandbox"""
+    file_path: str = Field(..., description="Path to file to execute, e.g., 'main.py'")
+    code: Optional[str] = Field(None, description="Code to execute (if not using file)")
+    timeout: int = Field(30, ge=1, le=300, description="Execution timeout in seconds")
+
+
+class SandboxExecuteResponse(BaseModel):
+    """Response from code execution"""
+    success: bool
+    output: str
+    error: Optional[str] = None
+    duration_ms: int
+    timestamp: datetime
+
+
+class SandboxFileOperation(BaseModel):
+    """Request to create/update/delete files"""
+    operation: str = Field(..., description="Operation: create, update, delete")
+    file_path: str = Field(..., description="Path to file")
+    content: Optional[str] = Field(None, description="File content (for create/update)")
+
+
+class SandboxCollaboratorResponse(BaseModel):
+    """Collaborator information"""
+    id: int
+    sandbox_id: int
+    user_id: int
+    cursor_position: Optional[dict]
+    is_typing: bool
+    last_activity: datetime
+    joined_at: datetime
+    left_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
