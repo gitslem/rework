@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.db.database import get_db
-from app.models.models import Application, User, Project, ApplicationStatus, UserRole
+from app.models.models import Application, User, Project, ApplicationStatus, UserRole, Notification
 from app.schemas.schemas import ApplicationCreate, ApplicationResponse, ApplicationUpdate
 from app.api.dependencies import get_current_user
 
@@ -41,14 +41,34 @@ def create_application(
         applicant_id=current_user.id,
         **application_data.model_dump()
     )
-    
+
     # Calculate AI match score (simplified - you'd use actual AI here)
     new_application.ai_match_score = calculate_match_score(current_user, project)
-    
+
     db.add(new_application)
     db.commit()
     db.refresh(new_application)
-    
+
+    # Create notification for project owner
+    applicant_name = f"{current_user.profile.first_name or 'A freelancer'}"
+    if current_user.profile and current_user.profile.first_name and current_user.profile.last_name:
+        applicant_name = f"{current_user.profile.first_name} {current_user.profile.last_name}"
+
+    notification = Notification(
+        user_id=project.owner_id,
+        title="New Application Received",
+        message=f"{applicant_name} has applied to your project: {project.title}",
+        type="application",
+        notification_data={
+            "application_id": new_application.id,
+            "project_id": project.id,
+            "applicant_id": current_user.id,
+            "match_score": new_application.ai_match_score
+        }
+    )
+    db.add(notification)
+    db.commit()
+
     return new_application
 
 
@@ -116,11 +136,30 @@ def update_application(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this application"
         )
-    
+
+    old_status = application.status
     application.status = update_data.status
     db.commit()
     db.refresh(application)
-    
+
+    # Create notification for applicant if status changed
+    if old_status != update_data.status:
+        status_text = "accepted" if update_data.status == ApplicationStatus.ACCEPTED else "rejected" if update_data.status == ApplicationStatus.REJECTED else "updated"
+        notification = Notification(
+            user_id=application.applicant_id,
+            title=f"Application {status_text.capitalize()}",
+            message=f"Your application to '{project.title}' has been {status_text}.",
+            type="application_status",
+            notification_data={
+                "application_id": application.id,
+                "project_id": project.id,
+                "status": update_data.status.value,
+                "project_title": project.title
+            }
+        )
+        db.add(notification)
+        db.commit()
+
     return application
 
 
