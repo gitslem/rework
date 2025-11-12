@@ -9,6 +9,7 @@ import {
   Users,
   Trash2,
   ExternalLink,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface Sandbox {
@@ -117,13 +118,23 @@ export default function SandboxesPage() {
             </p>
           </div>
 
-          <button
-            onClick={() => setShowCreateDialog(true)}
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            New Sandbox
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="px-4 py-2 bg-white/10 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/20 transition-all flex items-center gap-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Dashboard
+            </button>
+
+            <button
+              onClick={() => setShowCreateDialog(true)}
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              New Sandbox
+            </button>
+          </div>
         </div>
 
         {/* Sandboxes Grid */}
