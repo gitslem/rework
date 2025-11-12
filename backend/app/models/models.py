@@ -4,6 +4,8 @@ from sqlalchemy.sql import func
 from app.db.database import Base
 import enum
 
+# Force rebuild: 2025-11-12 role normalization fix
+
 
 class UserRole(str, enum.Enum):
     FREELANCER = "freelancer"
@@ -49,16 +51,27 @@ class User(Base):
     @validates('role')
     def normalize_role(self, key, value):
         """Normalize role value to ensure it matches database enum - handles case-insensitive input"""
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"[ROLE VALIDATOR] Input value: {value} (type: {type(value)})")
+
         if isinstance(value, str):
             # Convert string to lowercase to match enum values
             value = value.lower()
+            logger.info(f"[ROLE VALIDATOR] After lowercase: {value}")
+
         # Convert string to UserRole enum if needed
         if isinstance(value, str):
             try:
-                return UserRole(value)
+                result = UserRole(value)
+                logger.info(f"[ROLE VALIDATOR] Converted to enum: {result}")
+                return result
             except ValueError:
                 # If invalid role, default to FREELANCER
+                logger.warning(f"[ROLE VALIDATOR] Invalid role '{value}', defaulting to FREELANCER")
                 return UserRole.FREELANCER
+
+        logger.info(f"[ROLE VALIDATOR] Returning as-is: {value}")
         return value
 
     # Relationships
