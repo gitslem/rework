@@ -593,3 +593,94 @@ class BuildCertificate(Base):
     # Relationships
     user = relationship("User", back_populates="certificates")
     project = relationship("Project", back_populates="certificates")
+
+
+class SummaryType(str, enum.Enum):
+    WEEKLY = "weekly"
+    ON_DEMAND = "on_demand"
+    MILESTONE = "milestone"
+
+
+class ProjectMessage(Base):
+    """Chat messages between project stakeholders"""
+    __tablename__ = "project_messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Message content
+    message = Column(Text, nullable=False)
+    message_type = Column(String, default="text")  # "text", "file", "system"
+
+    # Attachments
+    attachments = Column(JSON, default=[])  # File URLs, screenshots, etc.
+
+    # Threading
+    parent_message_id = Column(Integer, ForeignKey("project_messages.id"), nullable=True)
+    thread_id = Column(String, nullable=True)  # Group related messages
+
+    # Metadata
+    is_ai_generated = Column(Boolean, default=False)
+    metadata = Column(JSON, default={})
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    project = relationship("Project", foreign_keys=[project_id])
+    sender = relationship("User", foreign_keys=[sender_id])
+    parent_message = relationship("ProjectMessage", remote_side=[id], foreign_keys=[parent_message_id])
+
+
+class AISummary(Base):
+    """AI-generated project summaries and progress digests"""
+    __tablename__ = "ai_summaries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    generated_by_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # Who requested (null for auto)
+
+    # Summary metadata
+    summary_type = Column(
+        Enum(SummaryType, name="summary_type", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=SummaryType.ON_DEMAND
+    )
+    title = Column(String, nullable=False)
+
+    # Summary content
+    summary = Column(Text, nullable=False)  # Main AI-generated summary
+
+    # Structured insights
+    tasks_completed = Column(JSON, default=[])  # List of completed tasks
+    blockers = Column(JSON, default=[])  # Current blockers/issues
+    next_steps = Column(JSON, default=[])  # Recommended next steps
+    key_metrics = Column(JSON, default={})  # {"commits": 5, "prs_merged": 2, "messages": 15}
+
+    # Data sources analyzed
+    github_commits_analyzed = Column(Integer, default=0)
+    github_prs_analyzed = Column(Integer, default=0)
+    messages_analyzed = Column(Integer, default=0)
+
+    # Time period
+    period_start = Column(DateTime(timezone=True), nullable=True)
+    period_end = Column(DateTime(timezone=True), nullable=True)
+
+    # AI metadata
+    ai_model_used = Column(String, nullable=True)  # "gpt-4", "gpt-3.5-turbo", etc.
+    tokens_used = Column(Integer, nullable=True)
+    generation_time_ms = Column(Integer, nullable=True)
+
+    # Status
+    is_published = Column(Boolean, default=True)
+    is_archived = Column(Boolean, default=False)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    project = relationship("Project", foreign_keys=[project_id])
+    generated_by = relationship("User", foreign_keys=[generated_by_user_id])
