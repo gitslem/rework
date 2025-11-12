@@ -130,9 +130,11 @@ def google_auth(auth_data: GoogleAuthRequest, db: Session = Depends(get_db)):
     """Authenticate with Google OAuth"""
     try:
         token = auth_data.token
-        role = auth_data.role.value  # Get the string value from the enum
+        # Get the string value from the enum and ensure it's lowercase
+        role = auth_data.role.value if hasattr(auth_data.role, 'value') else str(auth_data.role)
+        role = role.lower() if isinstance(role, str) else role
 
-        logger.info(f"Google OAuth attempt with role: {role}")
+        logger.info(f"Google OAuth attempt with role: {role} (type: {type(role)})")
 
         if not token:
             logger.error("No token provided in request")
@@ -233,10 +235,14 @@ def google_auth(auth_data: GoogleAuthRequest, db: Session = Depends(get_db)):
             # Create new user with Google OAuth
             logger.info(f"Creating new user: {email}")
             try:
+                # Ensure role is lowercase to match database enum
+                normalized_role = role.lower() if isinstance(role, str) else role
+                logger.info(f"Normalized role for database: {normalized_role}")
+
                 user = User(
                     email=email,
                     google_id=google_id,
-                    role=role,
+                    role=normalized_role,
                     is_verified=True,  # Google accounts are pre-verified
                     is_active=True
                 )
