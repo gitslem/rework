@@ -127,7 +127,7 @@ class User(Base):
 
 class Profile(Base):
     __tablename__ = "profiles"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     first_name = Column(String, nullable=True)
@@ -140,20 +140,26 @@ class Profile(Base):
     phone = Column(String, nullable=True)
     website = Column(String, nullable=True)
     linkedin = Column(String, nullable=True)
-    
+
+    # Timezone and working hours
+    timezone = Column(String, default="UTC", nullable=False)  # IANA timezone (e.g., "America/New_York")
+    working_hours_start = Column(Integer, default=9, nullable=False)  # Start hour (0-23)
+    working_hours_end = Column(Integer, default=17, nullable=False)  # End hour (0-23)
+    working_days = Column(JSON, default=[1, 2, 3, 4, 5])  # Days of week (0=Sunday, 6=Saturday), default Mon-Fri
+
     # Statistics
     total_earnings = Column(Float, default=0.0)
     completed_projects = Column(Integer, default=0)
     average_rating = Column(Float, default=0.0)
     total_reviews = Column(Integer, default=0)
-    
+
     # Agent specific
     is_agent_approved = Column(Boolean, default=False)
     agent_multiplier = Column(Float, default=3.0)  # Agents earn 3x
-    
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+
     # Relationships
     user = relationship("User", back_populates="profile")
 

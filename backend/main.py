@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.api.endpoints import auth, projects, applications, users, ai_briefs, sandboxes, proof_of_build
+from app.api.endpoints import auth, projects, applications, users, ai_briefs, sandboxes, proof_of_build, collaboration
 from app.db.database import Base, engine, get_db, init_db
 from datetime import datetime
 import logging
@@ -59,6 +59,7 @@ app.include_router(applications.router, prefix=settings.API_V1_STR)
 app.include_router(ai_briefs.router, prefix=f"{settings.API_V1_STR}/ai-briefs", tags=["ai-briefs"])
 app.include_router(sandboxes.router, prefix=settings.API_V1_STR)
 app.include_router(proof_of_build.router, prefix=settings.API_V1_STR)
+app.include_router(collaboration.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
