@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus
+from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus, SummaryType
 
 
 # User Schemas
@@ -766,3 +766,98 @@ class ScheduledNotification(BaseModel):
     scheduled_utc: datetime
     scheduled_local: str  # Human-readable local time
     user_timezone: str
+
+
+# AI Co-Pilot Schemas
+
+# Project Message Schemas
+class ProjectMessageBase(BaseModel):
+    message: str = Field(..., min_length=1)
+    message_type: str = "text"  # text, file, system
+    attachments: List[str] = []
+    parent_message_id: Optional[int] = None
+    thread_id: Optional[str] = None
+
+
+class ProjectMessageCreate(ProjectMessageBase):
+    project_id: int
+
+
+class ProjectMessageResponse(ProjectMessageBase):
+    id: int
+    project_id: int
+    sender_id: int
+    is_ai_generated: bool
+    metadata: Dict[str, Any]
+    created_at: datetime
+    updated_at: Optional[datetime]
+    deleted_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# AI Summary Schemas
+class AISummaryBase(BaseModel):
+    summary_type: SummaryType = SummaryType.ON_DEMAND
+    title: str = Field(..., min_length=5, max_length=255)
+
+
+class AISummaryCreate(AISummaryBase):
+    project_id: int
+    period_days: Optional[int] = 7  # How many days back to analyze
+
+
+class AISummaryResponse(AISummaryBase):
+    id: int
+    project_id: int
+    generated_by_user_id: Optional[int]
+
+    # Summary content
+    summary: str
+    tasks_completed: List[str]
+    blockers: List[str]
+    next_steps: List[str]
+    key_metrics: Dict[str, Any]
+
+    # Data sources
+    github_commits_analyzed: int
+    github_prs_analyzed: int
+    messages_analyzed: int
+
+    # Time period
+    period_start: Optional[datetime]
+    period_end: Optional[datetime]
+
+    # AI metadata
+    ai_model_used: Optional[str]
+    tokens_used: Optional[int]
+    generation_time_ms: Optional[int]
+
+    # Status
+    is_published: bool
+    is_archived: bool
+
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class GenerateSummaryRequest(BaseModel):
+    """Request to generate an AI summary for a project"""
+    project_id: int
+    summary_type: SummaryType = SummaryType.ON_DEMAND
+    period_days: int = Field(7, ge=1, le=90, description="Number of days to analyze (1-90)")
+    include_github: bool = Field(True, description="Include GitHub activity in summary")
+    include_messages: bool = Field(True, description="Include project messages in summary")
+
+
+class SummaryInsights(BaseModel):
+    """Structured insights from AI analysis"""
+    summary: str
+    tasks_completed: List[str]
+    blockers: List[str]
+    next_steps: List[str]
+    key_metrics: Dict[str, Any]
