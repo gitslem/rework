@@ -5,7 +5,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from app.db.database import get_db
 from app.models.models import User, Profile
-from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest, GoogleAuthRequest, GitHubAuthRequest, GitHubConnectRequest
+from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest, GoogleAuthRequest, GitHubAuthRequest, GitHubConnectRequest, HuggingFaceAuthRequest, HuggingFaceConnectRequest
 from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token
 from app.core.config import settings
 from app.api.dependencies import get_current_user
@@ -527,4 +527,246 @@ def connect_github(auth_data: GitHubConnectRequest, db: Session = Depends(get_db
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to connect GitHub account: {str(e)}"
+        )
+
+
+@router.post("/huggingface", response_model=Token)
+def huggingface_auth(auth_data: HuggingFaceAuthRequest, db: Session = Depends(get_db)):
+    """Authenticate with Hugging Face OAuth"""
+    import requests
+
+    try:
+        code = auth_data.code
+        role = auth_data.role.value if hasattr(auth_data.role, 'value') else str(auth_data.role)
+        role = role.lower() if isinstance(role, str) else role
+
+        logger.info(f"Hugging Face OAuth attempt with role: {role}")
+
+        if not code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Code is required"
+            )
+
+        # Exchange code for access token
+        if not settings.HUGGINGFACE_CLIENT_ID or not settings.HUGGINGFACE_CLIENT_SECRET:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Hugging Face OAuth not configured. Please set HUGGINGFACE_CLIENT_ID and HUGGINGFACE_CLIENT_SECRET"
+            )
+
+        # Exchange code for access token
+        token_response = requests.post(
+            "https://huggingface.co/oauth/token",
+            headers={"Accept": "application/json"},
+            data={
+                "client_id": settings.HUGGINGFACE_CLIENT_ID,
+                "client_secret": settings.HUGGINGFACE_CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+            }
+        )
+
+        if token_response.status_code != 200:
+            logger.error(f"Hugging Face token exchange failed: {token_response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to exchange Hugging Face code for token"
+            )
+
+        token_data = token_response.json()
+        access_token = token_data.get("access_token")
+
+        if not access_token:
+            logger.error(f"No access token in Hugging Face response: {token_data}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get access token from Hugging Face"
+            )
+
+        # Get user info from Hugging Face
+        user_response = requests.get(
+            "https://huggingface.co/api/whoami-v2",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json"
+            }
+        )
+
+        if user_response.status_code != 200:
+            logger.error(f"Hugging Face user info request failed: {user_response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get user info from Hugging Face"
+            )
+
+        hf_user = user_response.json()
+        hf_id = str(hf_user.get("id"))
+        email = hf_user.get("email")
+        username = hf_user.get("name")  # HF username
+
+        if not email:
+            # If email is not provided, create a synthetic email using username
+            if username:
+                email = f"{username}@huggingface-users.noreply"
+                logger.warning(f"No email from HF, using synthetic: {email}")
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Unable to get email or username from Hugging Face account."
+                )
+
+        logger.info(f"Hugging Face user info - email: {email}, hf_id: {hf_id}, username: {username}")
+
+        # Check if user exists by HF ID or email
+        user = db.query(User).filter(
+            (User.huggingface_id == hf_id) | (User.email == email)
+        ).first()
+
+        if user:
+            logger.info(f"Existing user found: {user.email}")
+            # Update HF info if not set
+            if not user.huggingface_id:
+                user.huggingface_id = hf_id
+            user.huggingface_access_token = access_token
+            db.commit()
+            db.refresh(user)
+        else:
+            # Create new user with Hugging Face OAuth
+            logger.info(f"Creating new user: {email}")
+            user = User(
+                email=email,
+                huggingface_id=hf_id,
+                huggingface_access_token=access_token,
+                role=role,
+                is_verified=True,  # HF accounts are pre-verified
+                is_active=True
+            )
+            db.add(user)
+            db.flush()
+
+            # Create profile with HF username
+            profile = Profile(user_id=user.id, huggingface_username=username)
+            db.add(profile)
+
+            db.commit()
+            db.refresh(user)
+            logger.info(f"Successfully created new user via Hugging Face OAuth: {email}")
+
+        # Create tokens
+        access_token_jwt = create_access_token(data={"sub": str(user.id)})
+        refresh_token_jwt = create_refresh_token(data={"sub": str(user.id)})
+
+        logger.info("Hugging Face OAuth successful")
+        return {
+            "access_token": access_token_jwt,
+            "refresh_token": refresh_token_jwt,
+            "token_type": "bearer"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Hugging Face auth failed with unexpected error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Authentication failed: {str(e)}"
+        )
+
+
+@router.post("/huggingface/connect")
+def connect_huggingface(auth_data: HuggingFaceConnectRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Connect Hugging Face account to existing user"""
+    import requests
+
+    try:
+        code = auth_data.code
+
+        if not code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Code is required"
+            )
+
+        if not settings.HUGGINGFACE_CLIENT_ID or not settings.HUGGINGFACE_CLIENT_SECRET:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Hugging Face OAuth not configured"
+            )
+
+        # Exchange code for access token
+        token_response = requests.post(
+            "https://huggingface.co/oauth/token",
+            headers={"Accept": "application/json"},
+            data={
+                "client_id": settings.HUGGINGFACE_CLIENT_ID,
+                "client_secret": settings.HUGGINGFACE_CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+            }
+        )
+
+        if token_response.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to exchange Hugging Face code for token"
+            )
+
+        token_data = token_response.json()
+        access_token = token_data.get("access_token")
+
+        if not access_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get access token from Hugging Face"
+            )
+
+        # Get user info from Hugging Face
+        user_response = requests.get(
+            "https://huggingface.co/api/whoami-v2",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json"
+            }
+        )
+
+        if user_response.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get user info from Hugging Face"
+            )
+
+        hf_user = user_response.json()
+        hf_id = str(hf_user.get("id"))
+        username = hf_user.get("name")
+
+        # Check if HF account is already connected to another user
+        existing_user = db.query(User).filter(User.huggingface_id == hf_id).first()
+        if existing_user and existing_user.id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This Hugging Face account is already connected to another user"
+            )
+
+        # Update current user with HF info
+        current_user.huggingface_id = hf_id
+        current_user.huggingface_access_token = access_token
+        
+        # Update profile with HF username if available
+        profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+        if profile and username:
+            profile.huggingface_username = username
+        
+        db.commit()
+
+        logger.info(f"Successfully connected Hugging Face account for user: {current_user.email}")
+        return {"message": "Hugging Face account connected successfully", "huggingface_id": hf_id, "username": username}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Hugging Face connect failed: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to connect Hugging Face account: {str(e)}"
         )

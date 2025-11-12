@@ -54,6 +54,7 @@ class ProofType(str, enum.Enum):
     REPOSITORY = "repository"
     FILE = "file"
     SCREENSHOT = "screenshot"
+    HUGGINGFACE_MODEL = "huggingface_model"
 
 
 class ProofStatus(str, enum.Enum):
@@ -100,6 +101,8 @@ class User(Base):
     google_id = Column(String, unique=True, nullable=True, index=True)  # Google OAuth ID
     github_id = Column(String, unique=True, nullable=True, index=True)  # GitHub OAuth ID
     github_access_token = Column(String, nullable=True)  # GitHub OAuth access token (encrypted in production)
+    huggingface_id = Column(String, unique=True, nullable=True, index=True)  # Hugging Face OAuth ID
+    huggingface_access_token = Column(String, nullable=True)  # Hugging Face OAuth access token (encrypted in production)
     role = Column(Enum(UserRole, name="user_role", create_type=False, values_callable=lambda x: [e.value for e in x]), default=UserRole.FREELANCER)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)

@@ -520,3 +520,194 @@ def update_proof_approval(
 
     logger.info(f"Updated approval {approval.id} for proof {proof_id}")
     return approval
+
+
+# AI Summary Generation
+@router.get("/{milestone_id}/ai-summary")
+def generate_milestone_ai_summary(
+    milestone_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Generate an AI-powered summary of a milestone's work based on proofs.
+    Useful for milestone review and approval.
+    """
+    from app.services.ai_summary_service import ai_summary_service
+
+    # Get milestone
+    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
+
+    if not milestone:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Milestone not found"
+        )
+
+    # Get project to check authorization
+    project = db.query(Project).filter(Project.id == milestone.project_id).first()
+
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    # Check authorization: must be project owner or assigned freelancer
+    is_owner = project.company_id == current_user.id
+    is_freelancer = project.freelancer_id == current_user.id
+
+    if not is_owner and not is_freelancer:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to view this milestone"
+        )
+
+    # Get all proofs for this milestone
+    proofs = db.query(ProofOfBuild).filter(
+        ProofOfBuild.milestone_id == milestone_id
+    ).all()
+
+    if not proofs:
+        return {
+            "milestone_id": milestone_id,
+            "summary": f"No proofs submitted yet for milestone: {milestone.title}",
+            "proof_count": 0
+        }
+
+    # Convert proofs to dictionaries
+    proof_dicts = []
+    for proof in proofs:
+        proof_dict = {
+            "id": proof.id,
+            "proof_type": proof.proof_type.value,
+            "description": proof.description,
+            "status": proof.status.value,
+            "verified_at": proof.verified_at.isoformat() if proof.verified_at else None,
+            "verification_metadata": proof.verification_metadata or {}
+        }
+        proof_dicts.append(proof_dict)
+
+    # Prepare milestone data
+    milestone_data = {
+        "id": milestone.id,
+        "title": milestone.title,
+        "description": milestone.description,
+        "milestone_number": milestone.milestone_number,
+        "status": milestone.status.value
+    }
+
+    # Generate AI summary
+    try:
+        summary = ai_summary_service.generate_milestone_summary(
+            milestone_data=milestone_data,
+            proofs=proof_dicts
+        )
+
+        logger.info(f"Generated AI summary for milestone {milestone_id}")
+
+        return {
+            "milestone_id": milestone_id,
+            "milestone_title": milestone.title,
+            "summary": summary,
+            "proof_count": len(proofs),
+            "verified_count": sum(1 for p in proofs if p.status == ProofStatus.VERIFIED),
+            "generated_at": datetime.utcnow().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to generate milestone AI summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate AI summary: {str(e)}"
+        )
+
+
+@router.post("/proofs/{proof_id}/ai-summary")
+def generate_commit_ai_summary(
+    proof_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Generate an AI-powered summary of a commit proof.
+    Useful for understanding individual commits in context.
+    """
+    from app.services.ai_summary_service import ai_summary_service
+
+    # Get proof
+    proof = db.query(ProofOfBuild).filter(ProofOfBuild.id == proof_id).first()
+
+    if not proof:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Proof not found"
+        )
+
+    # Check authorization
+    if proof.user_id != current_user.id:
+        # Check if user is project owner
+        if proof.project_id:
+            project = db.query(Project).filter(Project.id == proof.project_id).first()
+            if not project or project.company_id != current_user.id:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Not authorized to view this proof"
+                )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to view this proof"
+            )
+
+    # Only generate summaries for commit type proofs
+    if proof.proof_type.value != "commit":
+        return {
+            "proof_id": proof_id,
+            "message": f"AI summaries are only available for commit proofs. This is a {proof.proof_type.value} proof.",
+            "description": proof.description
+        }
+
+    # Prepare commit data
+    metadata = proof.verification_metadata or {}
+
+    commit_data = {
+        "hash": proof.github_commit_hash,
+        "message": metadata.get("commit_message", proof.description),
+        "author": metadata.get("author", ""),
+        "date": metadata.get("commit_date", ""),
+        "changes": {
+            "additions": metadata.get("additions", 0),
+            "deletions": metadata.get("deletions", 0),
+            "files_changed": metadata.get("files_changed", 0)
+        }
+    }
+
+    # Get project context if available
+    context = None
+    if proof.project_id:
+        project = db.query(Project).filter(Project.id == proof.project_id).first()
+        if project:
+            context = f"Project: {project.title} - {project.description}"
+
+    try:
+        summary = ai_summary_service.generate_commit_summary(
+            commits=[commit_data],
+            context=context
+        )
+
+        logger.info(f"Generated AI summary for proof {proof_id}")
+
+        return {
+            "proof_id": proof_id,
+            "commit_hash": proof.github_commit_hash,
+            "summary": summary,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to generate commit AI summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate AI summary: {str(e)}"
+        )

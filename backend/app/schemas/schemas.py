@@ -85,6 +85,24 @@ class GitHubConnectRequest(BaseModel):
     code: str  # GitHub OAuth code to connect account
 
 
+class HuggingFaceAuthRequest(BaseModel):
+    code: str  # Hugging Face OAuth code from callback
+    role: Optional[UserRole] = UserRole.FREELANCER
+
+    @field_validator('role', mode='before')
+    @classmethod
+    def normalize_role(cls, v):
+        """Normalize role to handle case-insensitive input"""
+        if isinstance(v, str):
+            # Convert string to lowercase to match enum values
+            return v.lower()
+        return v
+
+
+class HuggingFaceConnectRequest(BaseModel):
+    code: str  # Hugging Face OAuth code to connect account
+
+
 # Profile Schemas
 class ProfileBase(BaseModel):
     first_name: Optional[str] = None
@@ -960,6 +978,11 @@ class FreelancerSearchResponse(BaseModel):
     portfolio_items_count: int
     github_username: Optional[str]
     huggingface_username: Optional[str]
+
+    # Proof metrics
+    total_proofs: int = 0
+    verified_percentage: float = 0.0
+    badges: List[str] = []
 
     class Config:
         from_attributes = True
