@@ -183,7 +183,7 @@ export default function ProjectApplications() {
   return (
     <>
       <Head>
-        <title>Applications - {project?.title} - Relaywork</title>
+        <title>Applications - {project?.title} - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-white">

@@ -133,7 +133,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Relaywork - Hire AI Talent. Manage Projects. Ship Across Time Zones.</title>
+        <title>Remote-Works - Hire AI Talent. Manage Projects. Ship Across Time Zones.</title>
         <meta name="description" content="Where AI builders and companies work across time zones — without the chaos. Connect with verified AI freelancers and ship projects asynchronously." />
       </Head>
 
@@ -145,7 +145,7 @@ export default function Home() {
               <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
                 <Globe2 className="w-8 h-8 text-primary-500 mr-2" />
                 <div className="text-2xl font-bold text-accent-dark">
-                  Relay<span className="gradient-text">work</span>
+                  Remote-<span className="gradient-text">Works</span>
                 </div>
               </div>
               <div className="hidden md:flex items-center space-x-8">
@@ -177,7 +177,7 @@ export default function Home() {
               </h1>
 
               <p className="text-xl md:text-2xl text-accent-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Relaywork connects startups and enterprises with verified AI freelancers — from prompt engineers
+                Remote-Works connects startups and enterprises with verified AI freelancers — from prompt engineers
                 to automation builders — and gives them a shared workspace to plan, build, and verify AI projects asynchronously.
               </p>
 
@@ -191,38 +191,39 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Globe Visual Concept */}
+              {/* Professional Visual Concept */}
               <div className="relative pt-12">
-                <div className="relative max-w-3xl mx-auto">
-                  <div className="bg-gradient-to-br from-primary-500/10 to-purple-500/10 rounded-3xl p-12 backdrop-blur-sm border border-primary-200">
-                    <div className="grid grid-cols-4 gap-4 text-center">
-                      <div className="space-y-2">
-                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                          🔨
+                <div className="relative max-w-4xl mx-auto">
+                  <div className="bg-gradient-to-br from-primary-500/5 to-purple-500/5 rounded-3xl p-12 backdrop-blur-sm border border-primary-100">
+                    <div className="grid grid-cols-4 gap-6 text-center">
+                      <div className="space-y-3">
+                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                          <GitBranch className="w-10 h-10 text-white" />
                         </div>
                         <div className="text-sm font-semibold text-accent-gray-700">Build</div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                          🧪
+                      <div className="space-y-3">
+                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                          <Terminal className="w-10 h-10 text-white" />
                         </div>
                         <div className="text-sm font-semibold text-accent-gray-700">Test</div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                          🚀
+                      <div className="space-y-3">
+                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                          <Zap className="w-10 h-10 text-white" />
                         </div>
                         <div className="text-sm font-semibold text-accent-gray-700">Deliver</div>
                       </div>
-                      <div className="space-y-2">
-                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                          ⬆️
+                      <div className="space-y-3">
+                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                          <TrendingUp className="w-10 h-10 text-white" />
                         </div>
-                        <div className="text-sm font-semibold text-accent-gray-700">Upgrade</div>
+                        <div className="text-sm font-semibold text-accent-gray-700">Scale</div>
                       </div>
                     </div>
-                    <div className="mt-8 text-center text-accent-gray-600 font-medium">
-                      🌍 Projects moving 24/7 across time zones
+                    <div className="mt-10 flex items-center justify-center gap-3 text-accent-gray-600 font-medium">
+                      <Globe2 className="w-5 h-5 text-primary-500" />
+                      <span>Projects moving 24/7 across time zones</span>
                     </div>
                   </div>
                 </div>
@@ -256,25 +257,35 @@ export default function Home() {
 
             {/* Visual Comparison */}
             <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="bg-white rounded-2xl p-8 border-2 border-red-300">
-                <div className="text-center mb-4 text-red-600 font-bold text-lg">❌ Without Relaywork</div>
-                <div className="flex flex-wrap gap-3 justify-center opacity-60">
-                  <div className="bg-blue-100 px-4 py-2 rounded-lg text-sm">Slack</div>
-                  <div className="bg-purple-100 px-4 py-2 rounded-lg text-sm">Zoom</div>
-                  <div className="bg-green-100 px-4 py-2 rounded-lg text-sm">Drive</div>
-                  <div className="bg-pink-100 px-4 py-2 rounded-lg text-sm">Figma</div>
-                  <div className="bg-yellow-100 px-4 py-2 rounded-lg text-sm">GitHub</div>
-                  <div className="bg-red-100 px-4 py-2 rounded-lg text-sm">Notion</div>
+              <div className="bg-white rounded-2xl p-8 border-2 border-red-200 shadow-sm">
+                <div className="text-center mb-6 flex items-center justify-center gap-2">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <MessageSquare className="w-5 h-5 text-red-600" />
+                  </div>
+                  <span className="text-red-600 font-bold text-lg">Without Remote-Works</span>
                 </div>
-                <div className="text-center mt-4 text-accent-gray-500 text-sm">Tangled mess of tools</div>
+                <div className="flex flex-wrap gap-3 justify-center opacity-70">
+                  <div className="bg-blue-100 px-4 py-2 rounded-lg text-sm font-medium">Slack</div>
+                  <div className="bg-purple-100 px-4 py-2 rounded-lg text-sm font-medium">Zoom</div>
+                  <div className="bg-green-100 px-4 py-2 rounded-lg text-sm font-medium">Drive</div>
+                  <div className="bg-pink-100 px-4 py-2 rounded-lg text-sm font-medium">Figma</div>
+                  <div className="bg-yellow-100 px-4 py-2 rounded-lg text-sm font-medium">GitHub</div>
+                  <div className="bg-red-100 px-4 py-2 rounded-lg text-sm font-medium">Notion</div>
+                </div>
+                <div className="text-center mt-6 text-accent-gray-500 text-sm font-medium">Scattered across multiple tools</div>
               </div>
               <div className="bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl p-8 text-white shadow-xl">
-                <div className="text-center mb-4 font-bold text-lg">✓ With Relaywork</div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                  <Globe2 className="w-16 h-16 mx-auto mb-3" />
-                  <div className="font-semibold">One unified workspace</div>
+                <div className="text-center mb-6 flex items-center justify-center gap-2">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-bold text-lg">With Remote-Works</span>
                 </div>
-                <div className="text-center mt-4 text-sm text-white/80">Everything in one place</div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-8 text-center border border-white/20">
+                  <Globe2 className="w-16 h-16 mx-auto mb-4" />
+                  <div className="font-semibold text-lg">One unified workspace</div>
+                </div>
+                <div className="text-center mt-6 text-sm text-white/90 font-medium">Everything in one place</div>
               </div>
             </div>
           </div>
@@ -294,13 +305,17 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {solutions.map((solution, index) => (
-                <div key={index} className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-2xl p-8 card-hover border border-primary-200">
-                  <div className="text-6xl text-center mb-6">{solution.visual}</div>
-                  <div className="bg-gradient-purple text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                <div key={index} className="bg-white rounded-2xl p-8 card-hover border border-accent-gray-200 shadow-lg hover:shadow-xl transition-shadow">
+                  <div className="bg-gradient-to-br from-primary-500 to-purple-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-md">
                     {solution.icon}
                   </div>
                   <h3 className="text-2xl font-bold text-accent-dark mb-4">{solution.title}</h3>
                   <p className="text-accent-gray-600 leading-relaxed">{solution.description}</p>
+                  <div className="mt-6 pt-6 border-t border-accent-gray-200">
+                    <div className="inline-flex items-center text-primary-500 font-semibold text-sm">
+                      Learn more <ArrowRight className="ml-2 w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -448,7 +463,7 @@ export default function Home() {
               AI work never sleeps — but you should.
             </h2>
             <p className="text-2xl text-white/90 mb-10">
-              Relaywork keeps your projects moving while you rest.
+              Remote-Works keeps your projects moving while you rest.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button onClick={() => router.push('/register?type=client')} className="bg-white text-primary-500 px-10 py-4 rounded-lg font-bold hover:shadow-2xl transition transform hover:scale-105 text-lg">
@@ -469,7 +484,7 @@ export default function Home() {
                 <div className="flex items-center mb-4">
                   <Globe2 className="w-8 h-8 text-primary-400 mr-2" />
                   <div className="text-2xl font-bold text-white">
-                    Relay<span className="text-primary-400">work</span>
+                    Remote-<span className="text-primary-400">Works</span>
                   </div>
                 </div>
                 <p className="text-accent-gray-400 leading-relaxed mb-6">
@@ -511,7 +526,7 @@ export default function Home() {
             </div>
 
             <div className="border-t border-accent-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-              <p className="text-accent-gray-500 text-sm">© 2025 Relaywork. All rights reserved.</p>
+              <p className="text-accent-gray-500 text-sm">© 2025 Remote-Works. All rights reserved.</p>
               <div className="flex space-x-6 mt-4 md:mt-0">
                 <a href="#" className="text-accent-gray-500 hover:text-primary-400 transition">Twitter</a>
                 <a href="#" className="text-accent-gray-500 hover:text-primary-400 transition">LinkedIn</a>

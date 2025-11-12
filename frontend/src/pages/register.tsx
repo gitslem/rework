@@ -96,7 +96,7 @@ export default function Register() {
   return (
     <>
       <Head>
-        <title>Sign Up - Relaywork</title>
+        <title>Sign Up - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-50 flex items-center justify-center px-4 py-12">
@@ -107,7 +107,7 @@ export default function Register() {
               <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
                 <Globe2 className="w-10 h-10 text-primary-500 mr-2" />
                 <div className="text-3xl font-bold text-accent-dark">
-                  Relay<span className="gradient-text">work</span>
+                  Remote-<span className="gradient-text">Works</span>
                 </div>
               </div>
             </div>
@@ -141,7 +141,7 @@ export default function Register() {
             {step === 1 && (
               <div>
                 <h2 className="text-2xl font-bold text-accent-dark mb-8 text-center">
-                  How will you use Relaywork?
+                  How will you use Remote-Works?
                 </h2>
                 <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                   {roles.map((r) => (

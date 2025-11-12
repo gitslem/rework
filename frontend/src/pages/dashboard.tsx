@@ -119,7 +119,7 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Dashboard - Relaywork</title>
+        <title>Dashboard - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-accent-gray-100">

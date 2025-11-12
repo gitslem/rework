@@ -93,7 +93,7 @@ export default function SandboxPage() {
         terminal.open(terminalRef.current!);
         fit.fit();
 
-        terminal.writeln('Welcome to Relaywork Sandbox Terminal');
+        terminal.writeln('Welcome to Remote-Works Sandbox Terminal');
         terminal.writeln('Run your code to see output here...');
         terminal.writeln('');
 

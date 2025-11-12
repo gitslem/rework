@@ -298,7 +298,7 @@ export default function ProjectDetail() {
   return (
     <>
       <Head>
-        <title>{project.title} - Relaywork</title>
+        <title>{project.title} - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-white">
