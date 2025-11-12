@@ -57,7 +57,7 @@ export default function Login() {
   return (
     <>
       <Head>
-        <title>Login - Relaywork</title>
+        <title>Login - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-50 flex items-center justify-center px-4">
@@ -68,7 +68,7 @@ export default function Login() {
               <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
                 <Globe2 className="w-10 h-10 text-primary-500 mr-2" />
                 <div className="text-3xl font-bold text-accent-dark">
-                  Relay<span className="gradient-text">work</span>
+                  Remote-<span className="gradient-text">Works</span>
                 </div>
               </div>
             </div>

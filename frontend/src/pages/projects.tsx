@@ -92,7 +92,7 @@ export default function Projects() {
   return (
     <>
       <Head>
-        <title>Browse Projects - Relaywork</title>
+        <title>Browse Projects - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-white">

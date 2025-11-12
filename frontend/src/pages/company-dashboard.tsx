@@ -92,7 +92,7 @@ export default function CompanyDashboard() {
   return (
     <>
       <Head>
-        <title>Company Dashboard - Relaywork</title>
+        <title>Company Dashboard - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-accent-gray-100">

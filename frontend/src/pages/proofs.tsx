@@ -142,7 +142,7 @@ export default function ProofsPage() {
   return (
     <>
       <Head>
-        <title>Proof of Build - Relaywork</title>
+        <title>Proof of Build - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-accent-gray-100">

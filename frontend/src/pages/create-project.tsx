@@ -153,7 +153,7 @@ export default function CreateProject() {
   return (
     <>
       <Head>
-        <title>Create Project with AI - Relaywork</title>
+        <title>Create Project with AI - Remote-Works</title>
       </Head>
 
       <div className="min-h-screen bg-accent-gray-100">
