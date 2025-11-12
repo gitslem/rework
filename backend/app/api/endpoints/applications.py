@@ -50,9 +50,24 @@ def create_application(
     db.refresh(new_application)
 
     # Create notification for project owner
-    applicant_name = f"{current_user.profile.first_name or 'A freelancer'}"
-    if current_user.profile and current_user.profile.first_name and current_user.profile.last_name:
-        applicant_name = f"{current_user.profile.first_name} {current_user.profile.last_name}"
+    # Get or create profile for applicant name
+    from app.models.models import Profile
+    profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
+
+    if not profile:
+        # Create profile if it doesn't exist
+        profile = Profile(user_id=current_user.id)
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+
+    applicant_name = "A freelancer"
+    if profile.first_name and profile.last_name:
+        applicant_name = f"{profile.first_name} {profile.last_name}"
+    elif profile.first_name:
+        applicant_name = profile.first_name
+    elif current_user.email:
+        applicant_name = current_user.email.split('@')[0]
 
     notification = Notification(
         user_id=project.owner_id,
@@ -253,21 +268,38 @@ def calculate_match_score(user: User, project: Project) -> float:
     Calculate AI match score between user skills and project requirements
     This is a simplified version - in production, you'd use actual AI/ML
     """
-    if not user.profile or not user.profile.skills:
-        return 50.0
-    
-    user_skills = set(user.profile.skills)
-    required_skills = set(project.required_skills)
-    
-    if not required_skills:
-        return 70.0
-    
-    # Calculate skill overlap
-    matching_skills = user_skills.intersection(required_skills)
-    match_percentage = (len(matching_skills) / len(required_skills)) * 100
-    
-    # Add some randomness for demo purposes
-    import random
-    match_percentage += random.uniform(-10, 10)
-    
-    return min(max(match_percentage, 0), 100)
+    # Get or create profile
+    from app.models.models import Profile
+    from app.db.database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        profile = db.query(Profile).filter(Profile.user_id == user.id).first()
+
+        if not profile:
+            # Create profile if doesn't exist
+            profile = Profile(user_id=user.id)
+            db.add(profile)
+            db.commit()
+            db.refresh(profile)
+
+        if not profile.skills or not project.required_skills:
+            return 50.0
+
+        user_skills = set(profile.skills)
+        required_skills = set(project.required_skills)
+
+        if not required_skills:
+            return 70.0
+
+        # Calculate skill overlap
+        matching_skills = user_skills.intersection(required_skills)
+        match_percentage = (len(matching_skills) / len(required_skills)) * 100
+
+        # Add some randomness for demo purposes
+        import random
+        match_percentage += random.uniform(-10, 10)
+
+        return min(max(match_percentage, 0), 100)
+    finally:
+        db.close()
