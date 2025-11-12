@@ -4,7 +4,7 @@ from typing import List, Optional
 from app.db.database import get_db
 from app.models.models import Project, User, ProjectStatus
 from app.schemas.schemas import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectFilter
-from app.api.dependencies import get_current_user
+from app.api.dependencies import get_current_user, get_current_user_optional
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -44,30 +44,30 @@ def get_projects(
     min_budget: Optional[float] = None,
     max_budget: Optional[float] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    """Get all projects with filters"""
+    """Get all projects with filters (public endpoint - authentication optional)"""
     query = db.query(Project)
-    
+
     # Apply filters
     if category:
         query = query.filter(Project.category == category)
 
-    # Status filtering: default to OPEN for freelancers/agents if no status specified
+    # Status filtering
     from app.models.models import UserRole
     if status:
         query = query.filter(Project.status == status)
-    elif current_user.role in [UserRole.FREELANCER, UserRole.AGENT]:
-        # Freelancers and agents only see OPEN projects by default
+    elif not current_user or (current_user and current_user.role in [UserRole.FREELANCER, UserRole.AGENT]):
+        # Unauthenticated users, freelancers, and agents only see OPEN projects by default
         query = query.filter(Project.status == ProjectStatus.OPEN)
-    # Business users see all statuses if no status specified
+    # Business users see all their projects if no status specified
 
     if min_budget:
         query = query.filter(Project.budget >= min_budget)
     if max_budget:
         query = query.filter(Project.budget <= max_budget)
-    
-    projects = query.offset(skip).limit(limit).all()
+
+    projects = query.order_by(Project.created_at.desc()).offset(skip).limit(limit).all()
     return projects
 
 
@@ -75,17 +75,17 @@ def get_projects(
 def get_project(
     project_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
-    """Get a specific project by ID"""
+    """Get a specific project by ID (public endpoint - authentication optional)"""
     project = db.query(Project).filter(Project.id == project_id).first()
-    
+
     if not project:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found"
         )
-    
+
     return project
 
 
