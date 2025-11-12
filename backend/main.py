@@ -54,14 +54,21 @@ app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth-v1"])
 app.include_router(auth.router, tags=["auth"])  # Direct /auth/* endpoints
 app.include_router(users.router, prefix=settings.API_V1_STR, tags=["users-v1"])
 app.include_router(users.router, tags=["users"])  # Direct /users/* endpoints
-app.include_router(projects.router, prefix=settings.API_V1_STR)
+
+# Projects, sandboxes, and proofs routers with backward compatibility
+app.include_router(projects.router, prefix=settings.API_V1_STR, tags=["projects-v1"])
+app.include_router(projects.router, tags=["projects"])  # Direct /projects/* endpoints
+app.include_router(sandboxes.router, prefix=settings.API_V1_STR, tags=["sandboxes-v1"])
+app.include_router(sandboxes.router, tags=["sandboxes"])  # Direct /sandboxes/* endpoints
+app.include_router(proof_of_build.router, prefix=settings.API_V1_STR, tags=["proofs-v1"])
+app.include_router(proof_of_build.router, tags=["proofs"])  # Direct /proofs/* endpoints
+
+# Other routers with API version prefix
 app.include_router(applications.router, prefix=settings.API_V1_STR)
 app.include_router(payments.router, prefix=settings.API_V1_STR)
 app.include_router(escrow.router, prefix=settings.API_V1_STR)
 app.include_router(reviews.router, prefix=settings.API_V1_STR)
 app.include_router(ai_briefs.router, prefix=f"{settings.API_V1_STR}/ai-briefs", tags=["ai-briefs"])
-app.include_router(sandboxes.router, prefix=settings.API_V1_STR)
-app.include_router(proof_of_build.router, prefix=settings.API_V1_STR)
 app.include_router(collaboration.router, prefix=settings.API_V1_STR)
 app.include_router(ai_copilot.router, prefix=settings.API_V1_STR)
 app.include_router(freelancers.router, prefix=settings.API_V1_STR)
