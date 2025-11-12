@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 import logging
 
 from app.db.database import get_db
-from app.core.security import get_current_user
+from app.api.dependencies import get_current_user
 from app.models.models import User, Profile, Project, Application
 from app.schemas.schemas import (
     UserTimezoneInfo,

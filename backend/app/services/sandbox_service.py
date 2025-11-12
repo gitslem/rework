@@ -370,7 +370,7 @@ function calculate(x: number, y: number): number {
 }
 
 const result: number = calculate(5, 3);
-console.log(\`5 + 3 = \${result}\`);
+console.log(`5 + 3 = ${result}`);
 ''',
         }
         return templates.get(language, "// No template available")
