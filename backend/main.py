@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.api.endpoints import auth, projects, applications, users, ai_briefs, sandboxes, proof_of_build, collaboration, payments, escrow, reviews, ai_copilot, freelancers
+from app.api.endpoints import auth, projects, applications, users, ai_briefs, sandboxes, proof_of_build, collaboration, payments, escrow, reviews, ai_copilot, freelancers, milestones
 from app.db.database import Base, engine, get_db, init_db
 from datetime import datetime
 import logging
@@ -62,6 +62,8 @@ app.include_router(sandboxes.router, prefix=settings.API_V1_STR, tags=["sandboxe
 app.include_router(sandboxes.router, tags=["sandboxes"])  # Direct /sandboxes/* endpoints
 app.include_router(proof_of_build.router, prefix=settings.API_V1_STR, tags=["proofs-v1"])
 app.include_router(proof_of_build.router, tags=["proofs"])  # Direct /proofs/* endpoints
+app.include_router(milestones.router, prefix=settings.API_V1_STR, tags=["milestones-v1"])
+app.include_router(milestones.router, tags=["milestones"])  # Direct /milestones/* endpoints
 
 # Other routers with API version prefix
 app.include_router(applications.router, prefix=settings.API_V1_STR)

@@ -970,3 +970,97 @@ class VerifySkillRequest(BaseModel):
     user_id: int
     skill: str
     verified: bool = True
+
+
+# Milestone Schemas
+class MilestoneBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    budget_percentage: float = Field(0, ge=0, le=100, description="Percentage of project budget (0-100)")
+    due_date: Optional[datetime] = None
+    required_deliverables: List[str] = []
+    acceptance_criteria: List[str] = []
+
+
+class MilestoneCreate(MilestoneBase):
+    project_id: int
+    milestone_number: int = Field(..., ge=1, description="Order in project (1, 2, 3, etc.)")
+
+
+class MilestoneUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    budget_percentage: Optional[float] = Field(None, ge=0, le=100)
+    due_date: Optional[datetime] = None
+    required_deliverables: Optional[List[str]] = None
+    acceptance_criteria: Optional[List[str]] = None
+    status: Optional[str] = None  # Can update status via this
+
+
+class MilestoneResponse(MilestoneBase):
+    id: int
+    project_id: int
+    milestone_number: int
+    status: str
+    budget_amount: Optional[float]
+    completion_date: Optional[datetime]
+    proof_ids: List[int]
+    escrow_id: Optional[int]
+    payment_released: bool
+    payment_released_at: Optional[datetime]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Proof Approval Schemas
+class ProofApprovalBase(BaseModel):
+    feedback: Optional[str] = None
+    revision_notes: Optional[str] = None
+
+
+class ProofApprovalCreate(BaseModel):
+    proof_id: int
+    milestone_id: Optional[int] = None
+    status: str = Field("pending", description="pending, approved, rejected, revision_requested")
+    feedback: Optional[str] = None
+    revision_notes: Optional[str] = None
+
+
+class ProofApprovalUpdate(BaseModel):
+    status: Optional[str] = Field(None, description="approved, rejected, revision_requested")
+    feedback: Optional[str] = None
+    revision_notes: Optional[str] = None
+
+
+class ProofApprovalResponse(ProofApprovalBase):
+    id: int
+    proof_id: int
+    milestone_id: Optional[int]
+    project_id: int
+    reviewer_id: int
+    status: str
+    approved_at: Optional[datetime]
+    rejected_at: Optional[datetime]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Milestone Review Request
+class MilestoneReviewRequest(BaseModel):
+    """Submit milestone for review"""
+    milestone_id: int
+    proof_ids: List[int]  # Array of proof IDs to include
+    notes: Optional[str] = None
+
+
+class MilestoneApprovalRequest(BaseModel):
+    """Approve or reject milestone"""
+    approved: bool
+    feedback: Optional[str] = None
+    release_payment: bool = False  # Whether to automatically release escrow payment

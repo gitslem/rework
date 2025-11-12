@@ -4,8 +4,10 @@ import { useAuthStore } from '@/lib/authStore';
 import { usersAPI } from '@/lib/api';
 import {
   TrendingUp, Briefcase, DollarSign, Star, LogOut, Globe2,
-  Plus, Clock, CheckCircle, Users, Settings, Bell, Search, Code2
+  Plus, Clock, CheckCircle, Users, Settings, Bell, Search, Code2,
+  Shield, Github, FileCheck, Eye
 } from 'lucide-react';
+import axios from 'axios';
 import Head from 'next/head';
 
 export default function Dashboard() {
@@ -13,6 +15,8 @@ export default function Dashboard() {
   const { user, isAuthenticated, isLoading, logout } = useAuthStore();
   const [stats, setStats] = useState<any>(null);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [recentProofs, setRecentProofs] = useState<any[]>([]);
+  const [loadingProofs, setLoadingProofs] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -28,6 +32,7 @@ export default function Dashboard() {
         return;
       }
       fetchStats();
+      fetchRecentProofs();
     }
   }, [isAuthenticated, user, router]);
 
@@ -42,9 +47,57 @@ export default function Dashboard() {
     }
   };
 
+  const fetchRecentProofs = async () => {
+    try {
+      setLoadingProofs(true);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('access_token');
+
+      if (!token) return;
+
+      const response = await axios.get(`${API_URL}/api/v1/proofs/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Get the 3 most recent proofs
+      setRecentProofs(response.data.slice(0, 3));
+    } catch (error) {
+      console.error('Failed to fetch proofs:', error);
+    } finally {
+      setLoadingProofs(false);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     router.push('/');
+  };
+
+  const getProofTypeIcon = (type: string) => {
+    switch (type) {
+      case 'commit':
+      case 'pull_request':
+      case 'repository':
+        return <Github className="w-4 h-4" />;
+      case 'file':
+      case 'screenshot':
+        return <FileCheck className="w-4 h-4" />;
+      default:
+        return <Shield className="w-4 h-4" />;
+    }
+  };
+
+  const getProofStatusColor = (status: string) => {
+    switch (status) {
+      case 'verified':
+        return 'text-green-600';
+      case 'pending':
+        return 'text-yellow-600';
+      case 'failed':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
+    }
   };
 
   if (isLoading || loadingStats) {
@@ -329,6 +382,66 @@ export default function Dashboard() {
                 >
                   Complete Profile
                 </button>
+              </div>
+
+              {/* Recent Proof Activity */}
+              <div className="bg-white rounded-2xl border border-accent-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-accent-dark flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-primary-500" />
+                    Recent Proofs
+                  </h3>
+                  <button
+                    onClick={() => router.push('/proofs')}
+                    className="text-primary-500 hover:text-primary-600 font-semibold text-sm"
+                  >
+                    View All →
+                  </button>
+                </div>
+
+                {loadingProofs ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+                  </div>
+                ) : recentProofs.length === 0 ? (
+                  <div className="text-center py-6">
+                    <Shield className="w-10 h-10 text-accent-gray-300 mx-auto mb-2" />
+                    <p className="text-sm text-accent-gray-500 mb-3">No proofs yet</p>
+                    <button
+                      onClick={() => router.push('/proofs')}
+                      className="text-primary-500 hover:text-primary-600 font-semibold text-sm"
+                    >
+                      Create Your First Proof →
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {recentProofs.map((proof: any) => (
+                      <div
+                        key={proof.id}
+                        onClick={() => router.push(`/proofs/${proof.id}`)}
+                        className="p-3 border border-accent-gray-200 rounded-lg hover:shadow-md transition cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 bg-accent-gray-100 rounded">
+                            {getProofTypeIcon(proof.proof_type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-accent-dark truncate">
+                              {proof.description}
+                            </p>
+                            <p className="text-xs text-accent-gray-500 mt-1">
+                              {proof.proof_type.replace('_', ' ').toUpperCase()}
+                            </p>
+                            <p className={`text-xs font-medium mt-1 ${getProofStatusColor(proof.status)}`}>
+                              {proof.status.toUpperCase()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Tips */}

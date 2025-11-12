@@ -76,6 +76,21 @@ class EscrowStatus(str, enum.Enum):
     DISPUTED = "disputed"
 
 
+class MilestoneStatus(str, enum.Enum):
+    PENDING = "pending"
+    IN_REVIEW = "in_review"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    COMPLETED = "completed"
+
+
+class ApprovalStatus(str, enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    REVISION_REQUESTED = "revision_requested"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -208,6 +223,7 @@ class Project(Base):
     escrows = relationship("Escrow", back_populates="project", cascade="all, delete-orphan")
     proofs = relationship("ProofOfBuild", back_populates="project", cascade="all, delete-orphan")
     certificates = relationship("BuildCertificate", back_populates="project", cascade="all, delete-orphan")
+    milestones = relationship("Milestone", back_populates="project", cascade="all, delete-orphan")
 
 
 class Application(Base):
@@ -474,6 +490,7 @@ class ProofOfBuild(Base):
     # Ownership & Project linking
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    milestone_id = Column(Integer, ForeignKey("milestones.id"), nullable=True)  # Link to milestone
 
     # Proof metadata
     proof_type = Column(
@@ -522,7 +539,9 @@ class ProofOfBuild(Base):
     # Relationships
     user = relationship("User", back_populates="proofs")
     project = relationship("Project", back_populates="proofs")
+    milestone = relationship("Milestone", back_populates="proofs", foreign_keys=[milestone_id])
     artifacts = relationship("ProofArtifact", back_populates="proof", cascade="all, delete-orphan")
+    approval = relationship("ProofApproval", back_populates="proof", uselist=False, cascade="all, delete-orphan")
 
 
 class ProofArtifact(Base):
@@ -604,6 +623,90 @@ class BuildCertificate(Base):
     # Relationships
     user = relationship("User", back_populates="certificates")
     project = relationship("Project", back_populates="certificates")
+
+
+class Milestone(Base):
+    """Project milestones with budget allocation and proof tracking"""
+    __tablename__ = "milestones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+
+    # Milestone info
+    milestone_number = Column(Integer, nullable=False)  # Order in project (1, 2, 3, etc.)
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+
+    # Budget allocation
+    budget_percentage = Column(Float, default=0)  # Percentage of total project budget (0-100)
+    budget_amount = Column(Float, nullable=True)  # Calculated amount
+
+    # Status and dates
+    status = Column(
+        Enum(MilestoneStatus, name="milestone_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=MilestoneStatus.PENDING
+    )
+    due_date = Column(DateTime(timezone=True), nullable=True)
+    completion_date = Column(DateTime(timezone=True), nullable=True)
+
+    # Requirements
+    required_deliverables = Column(JSON, default=[])  # Array of required deliverable descriptions
+    acceptance_criteria = Column(JSON, default=[])  # Array of acceptance criteria
+
+    # Proof tracking
+    proof_ids = Column(JSON, default=[])  # Array of associated proof IDs
+
+    # Payment tracking
+    escrow_id = Column(Integer, ForeignKey("escrows.id"), nullable=True)
+    payment_released = Column(Boolean, default=False)
+    payment_released_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    project = relationship("Project", back_populates="milestones")
+    escrow = relationship("Escrow", foreign_keys=[escrow_id])
+    proofs = relationship("ProofOfBuild", back_populates="milestone", foreign_keys="ProofOfBuild.milestone_id")
+    approvals = relationship("ProofApproval", back_populates="milestone", cascade="all, delete-orphan")
+
+
+class ProofApproval(Base):
+    """Approval tracking for proofs by project owners"""
+    __tablename__ = "proof_approvals"
+
+    id = Column(Integer, primary_key=True, index=True)
+    proof_id = Column(Integer, ForeignKey("proofs_of_build.id"), nullable=False, unique=True)
+    milestone_id = Column(Integer, ForeignKey("milestones.id"), nullable=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+
+    # Reviewer (project owner/company)
+    reviewer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Approval status
+    status = Column(
+        Enum(ApprovalStatus, name="approval_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=ApprovalStatus.PENDING
+    )
+
+    # Feedback
+    feedback = Column(Text, nullable=True)
+    revision_notes = Column(Text, nullable=True)
+
+    # Approval/rejection details
+    approved_at = Column(DateTime(timezone=True), nullable=True)
+    rejected_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    proof = relationship("ProofOfBuild", back_populates="approval")
+    milestone = relationship("Milestone", back_populates="approvals")
+    project = relationship("Project", foreign_keys=[project_id])
+    reviewer = relationship("User", foreign_keys=[reviewer_id])
 
 
 class SummaryType(str, enum.Enum):

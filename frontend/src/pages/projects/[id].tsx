@@ -15,6 +15,12 @@ import {
   FileText,
   CheckCircle,
   AlertCircle,
+  Shield,
+  Github,
+  FileCheck,
+  Eye,
+  Download,
+  XCircle,
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -48,6 +54,24 @@ interface Application {
   created_at: string;
 }
 
+interface Proof {
+  id: number;
+  user_id: number;
+  project_id: number;
+  proof_type: string;
+  status: string;
+  description: string;
+  github_repo_name?: string;
+  github_commit_hash?: string;
+  github_pr_number?: number;
+  github_pr_url?: string;
+  file_name?: string;
+  file_url?: string;
+  verified_at?: string;
+  created_at: string;
+  verification_metadata?: any;
+}
+
 export default function ProjectDetail() {
   const router = useRouter();
   const { id } = router.query;
@@ -57,6 +81,10 @@ export default function ProjectDetail() {
   const [hasApplied, setHasApplied] = useState(false);
   const [application, setApplication] = useState<Application | null>(null);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'overview' | 'proofs'>('overview');
+  const [proofs, setProofs] = useState<Proof[]>([]);
+  const [loadingProofs, setLoadingProofs] = useState(false);
+  const [canViewProofs, setCanViewProofs] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -66,6 +94,20 @@ export default function ProjectDetail() {
       }
     }
   }, [id, isAuthenticated]);
+
+  useEffect(() => {
+    // Check if user is project owner
+    if (project && user && project.owner_id === user.id) {
+      setCanViewProofs(true);
+    }
+  }, [project, user]);
+
+  useEffect(() => {
+    // Fetch proofs when switching to proofs tab
+    if (activeTab === 'proofs' && canViewProofs && isAuthenticated) {
+      fetchProofs();
+    }
+  }, [activeTab, canViewProofs, isAuthenticated, id]);
 
   const fetchProject = async () => {
     try {
@@ -101,9 +143,38 @@ export default function ProjectDetail() {
       if (userApplication) {
         setHasApplied(true);
         setApplication(userApplication);
+
+        // Can view proofs if accepted
+        if (userApplication.status === 'accepted') {
+          setCanViewProofs(true);
+        }
       }
     } catch (error) {
       console.error('Error checking application:', error);
+    }
+  };
+
+  const fetchProofs = async () => {
+    try {
+      setLoadingProofs(true);
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('access_token');
+
+      if (!token) return;
+
+      const response = await axios.get(`${API_URL}/api/v1/projects/${id}/proofs`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setProofs(response.data);
+    } catch (error: any) {
+      console.error('Error fetching proofs:', error);
+      // If 403, user doesn't have access to proofs
+      if (error.response?.status === 403) {
+        setCanViewProofs(false);
+      }
+    } finally {
+      setLoadingProofs(false);
     }
   };
 
@@ -149,6 +220,33 @@ export default function ProjectDetail() {
     }
 
     router.push(`/projects/${id}/apply`);
+  };
+
+  const getProofStatusIcon = (status: string) => {
+    switch (status) {
+      case 'verified':
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'pending':
+        return <Clock className="w-5 h-5 text-yellow-500" />;
+      case 'failed':
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      default:
+        return <AlertCircle className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const getProofTypeIcon = (type: string) => {
+    switch (type) {
+      case 'commit':
+      case 'pull_request':
+      case 'repository':
+        return <Github className="w-5 h-5" />;
+      case 'file':
+      case 'screenshot':
+        return <FileCheck className="w-5 h-5" />;
+      default:
+        return <Shield className="w-5 h-5" />;
+    }
   };
 
   if (loading) {
@@ -358,8 +456,39 @@ export default function ProjectDetail() {
             )}
           </div>
 
-          {/* Description */}
-          <div className="bg-white rounded-2xl border-2 border-accent-gray-200 p-8 mb-6">
+          {/* Tabs - Only show if user can view proofs */}
+          {canViewProofs && (
+            <div className="flex space-x-4 mb-8 border-b border-accent-gray-200">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`px-6 py-3 font-medium transition border-b-2 ${
+                  activeTab === 'overview'
+                    ? 'border-primary-500 text-primary-500'
+                    : 'border-transparent text-accent-gray-600 hover:text-primary-500'
+                }`}
+              >
+                <FileText className="w-5 h-5 inline mr-2" />
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('proofs')}
+                className={`px-6 py-3 font-medium transition border-b-2 ${
+                  activeTab === 'proofs'
+                    ? 'border-primary-500 text-primary-500'
+                    : 'border-transparent text-accent-gray-600 hover:text-primary-500'
+                }`}
+              >
+                <Shield className="w-5 h-5 inline mr-2" />
+                Proofs ({proofs.length})
+              </button>
+            </div>
+          )}
+
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <>
+              {/* Description */}
+              <div className="bg-white rounded-2xl border-2 border-accent-gray-200 p-8 mb-6">
             <h2 className="text-2xl font-bold text-accent-dark mb-4 flex items-center gap-2">
               <FileText className="w-6 h-6 text-primary-500" />
               Project Description
@@ -455,6 +584,176 @@ export default function ProjectDetail() {
               )}
             </div>
           </div>
+            </>
+          )}
+
+          {/* Proofs Tab */}
+          {activeTab === 'proofs' && (
+            <div>
+              {loadingProofs ? (
+                <div className="bg-white rounded-2xl border-2 border-accent-gray-200 p-12 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
+                  <p className="mt-4 text-accent-gray-600">Loading proofs...</p>
+                </div>
+              ) : proofs.length === 0 ? (
+                <div className="bg-white rounded-2xl border-2 border-accent-gray-200 p-12 text-center">
+                  <Shield className="w-16 h-16 text-accent-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-accent-dark mb-2">No Proofs Yet</h3>
+                  <p className="text-accent-gray-600">
+                    {user?.id === project?.owner_id
+                      ? 'No proofs have been submitted for this project yet.'
+                      : 'Submit proofs to verify your work delivery.'}
+                  </p>
+                  {user?.id !== project?.owner_id && (
+                    <button
+                      onClick={() => router.push('/proofs')}
+                      className="mt-6 btn-primary"
+                    >
+                      Create Proof
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-accent-dark">
+                      Project Proofs ({proofs.length})
+                    </h2>
+                    {user?.id !== project?.owner_id && (
+                      <button
+                        onClick={() => router.push('/proofs')}
+                        className="btn-primary flex items-center gap-2"
+                      >
+                        <Shield className="w-5 h-5" />
+                        Add Proof
+                      </button>
+                    )}
+                  </div>
+
+                  {proofs.map((proof) => (
+                    <div
+                      key={proof.id}
+                      className="bg-white rounded-2xl border-2 border-accent-gray-200 p-6 hover:shadow-lg transition"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-4 flex-1">
+                          <div className="p-3 bg-accent-gray-100 rounded-lg">
+                            {getProofTypeIcon(proof.proof_type)}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <h3 className="font-semibold text-accent-dark text-lg">
+                                {proof.description}
+                              </h3>
+                              {getProofStatusIcon(proof.status)}
+                            </div>
+                            <div className="text-sm text-accent-gray-600 space-y-1">
+                              <p>
+                                Type:{' '}
+                                <span className="font-medium">
+                                  {proof.proof_type.replace('_', ' ').toUpperCase()}
+                                </span>
+                              </p>
+                              {proof.github_repo_name && (
+                                <p>
+                                  Repository:{' '}
+                                  <span className="font-medium">{proof.github_repo_name}</span>
+                                </p>
+                              )}
+                              {proof.github_commit_hash && (
+                                <p className="flex items-center gap-2">
+                                  Commit:{' '}
+                                  <code className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">
+                                    {proof.github_commit_hash.slice(0, 7)}
+                                  </code>
+                                </p>
+                              )}
+                              {proof.github_pr_number && (
+                                <p>
+                                  Pull Request:{' '}
+                                  <a
+                                    href={proof.github_pr_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium text-primary-500 hover:underline"
+                                  >
+                                    #{proof.github_pr_number}
+                                  </a>
+                                </p>
+                              )}
+                              {proof.file_name && (
+                                <p>
+                                  File: <span className="font-medium">{proof.file_name}</span>
+                                </p>
+                              )}
+                              {proof.verified_at && (
+                                <p>
+                                  Verified:{' '}
+                                  <span className="font-medium text-green-600">
+                                    {formatDate(proof.verified_at)}
+                                  </span>
+                                </p>
+                              )}
+                              <p className="text-xs text-accent-gray-500">
+                                Submitted: {formatDate(proof.created_at)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => router.push(`/proofs/${proof.id}`)}
+                          className="text-primary-500 hover:text-primary-600 p-2 ml-4"
+                          title="View details"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Metadata Display */}
+                      {proof.verification_metadata && (
+                        <div className="mt-4 pt-4 border-t border-accent-gray-200">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            {proof.verification_metadata.additions !== undefined && (
+                              <div>
+                                <span className="text-accent-gray-600">Additions:</span>
+                                <span className="ml-2 font-semibold text-green-600">
+                                  +{proof.verification_metadata.additions}
+                                </span>
+                              </div>
+                            )}
+                            {proof.verification_metadata.deletions !== undefined && (
+                              <div>
+                                <span className="text-accent-gray-600">Deletions:</span>
+                                <span className="ml-2 font-semibold text-red-600">
+                                  -{proof.verification_metadata.deletions}
+                                </span>
+                              </div>
+                            )}
+                            {proof.verification_metadata.files_changed !== undefined && (
+                              <div>
+                                <span className="text-accent-gray-600">Files:</span>
+                                <span className="ml-2 font-semibold">
+                                  {proof.verification_metadata.files_changed}
+                                </span>
+                              </div>
+                            )}
+                            {proof.verification_metadata.author && (
+                              <div>
+                                <span className="text-accent-gray-600">Author:</span>
+                                <span className="ml-2 font-semibold">
+                                  {proof.verification_metadata.author}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
