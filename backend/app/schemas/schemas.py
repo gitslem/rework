@@ -95,6 +95,10 @@ class ProfileBase(BaseModel):
     phone: Optional[str] = None
     website: Optional[str] = None
     linkedin: Optional[str] = None
+    timezone: Optional[str] = "UTC"  # IANA timezone
+    working_hours_start: Optional[int] = 9  # Start hour (0-23)
+    working_hours_end: Optional[int] = 17  # End hour (0-23)
+    working_days: Optional[List[int]] = [1, 2, 3, 4, 5]  # Days of week (0=Sunday, 6=Saturday)
 
 
 class ProfileCreate(ProfileBase):
@@ -115,8 +119,12 @@ class ProfileResponse(ProfileBase):
     average_rating: float
     total_reviews: int
     is_agent_approved: bool
+    timezone: str
+    working_hours_start: int
+    working_hours_end: int
+    working_days: List[int]
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 
@@ -635,3 +643,64 @@ class GitHubPRInfo(BaseModel):
     url: str
     commits: int
     changed_files: int
+
+
+# Timezone Collaboration Schemas
+class UserTimezoneInfo(BaseModel):
+    """Compact user timezone information for team views"""
+    user_id: int
+    name: str
+    timezone: str
+    working_hours_start: int
+    working_hours_end: int
+    working_days: List[int]
+    avatar_url: Optional[str] = None
+
+
+class TimeSlot(BaseModel):
+    """Represents a time slot in a specific timezone"""
+    start_hour: int  # 0-23 in user's timezone
+    end_hour: int  # 0-23 in user's timezone
+    day_offset: int = 0  # Days from reference (for cross-day overlaps)
+
+
+class OverlapWindow(BaseModel):
+    """Represents an overlap window between users"""
+    start_utc: datetime
+    end_utc: datetime
+    start_hour_local: int  # Hour in first user's timezone
+    end_hour_local: int
+    duration_hours: float
+    participating_users: List[int]  # User IDs in this overlap
+    day_of_week: int  # 0=Sunday, 6=Saturday
+
+
+class TeamOverlapResponse(BaseModel):
+    """Response for team collaboration overlap calculation"""
+    user_timezones: List[UserTimezoneInfo]
+    overlap_windows: List[OverlapWindow]
+    best_meeting_times: List[OverlapWindow]  # Top 3-5 best windows
+    total_overlap_hours_per_week: float
+    timezone_span_hours: int  # Hours between earliest and latest timezone
+
+
+class ProjectTeamRequest(BaseModel):
+    """Request to calculate overlaps for a project team"""
+    project_id: int
+    include_applicants: bool = False  # Include pending applicants
+
+
+class CustomTeamRequest(BaseModel):
+    """Request to calculate overlaps for custom user list"""
+    user_ids: List[int] = Field(..., min_items=2, description="List of user IDs to check overlap")
+
+
+class ScheduledNotification(BaseModel):
+    """Notification scheduled for user's timezone"""
+    notification_id: int
+    user_id: int
+    title: str
+    message: str
+    scheduled_utc: datetime
+    scheduled_local: str  # Human-readable local time
+    user_timezone: str
