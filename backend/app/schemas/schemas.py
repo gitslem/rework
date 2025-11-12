@@ -266,3 +266,53 @@ class DashboardStats(BaseModel):
     pending_applications: int
     average_rating: float
     total_reviews: int
+
+
+# AI Project Brief Schemas
+class ProjectBriefCreate(BaseModel):
+    raw_description: str = Field(..., min_length=20, max_length=5000)
+    project_type: str = Field(..., description="Type of AI project: chatbot, automation, fine-tune, integration, etc.")
+    reference_files: Optional[List[str]] = []  # URLs to uploaded files
+
+
+class ProjectBriefResponse(BaseModel):
+    id: int
+    user_id: int
+    raw_description: str
+    project_type: str
+    reference_files: List[str]
+
+    # AI-generated fields
+    goal: Optional[str]
+    deliverables: List[str]
+    tech_stack: List[str]
+    steps: List[str]
+    estimated_timeline: Optional[str]
+    estimated_budget_min: Optional[float]
+    estimated_budget_max: Optional[float]
+    required_skills: List[str]
+
+    # Meta
+    ai_model_used: Optional[str]
+    confidence_score: Optional[float]
+    status: str
+    project_id: Optional[int]
+
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class AIBriefGeneration(BaseModel):
+    """Response from AI brief generation"""
+    goal: str
+    deliverables: List[str]
+    tech_stack: List[str]
+    steps: List[str]
+    estimated_timeline: str
+    estimated_budget_min: float
+    estimated_budget_max: float
+    required_skills: List[str]
+    confidence_score: float
