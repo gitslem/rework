@@ -410,14 +410,23 @@ export default function ProjectDetail() {
               ) : isOwnProject ? (
                 <>
                   <p className="text-accent-gray-600 mb-6">
-                    This is your project. View applicants from your dashboard.
+                    This is your project. Review and manage applications from freelancers.
                   </p>
-                  <button
-                    onClick={() => router.push('/dashboard')}
-                    className="btn-primary text-lg px-8 py-4"
-                  >
-                    View Dashboard
-                  </button>
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={() => router.push(`/projects/${id}/applications`)}
+                      className="btn-primary text-lg px-8 py-4 flex items-center gap-2"
+                    >
+                      <Users className="w-5 h-5" />
+                      View Applications
+                    </button>
+                    <button
+                      onClick={() => router.push('/dashboard')}
+                      className="bg-accent-gray-600 hover:bg-accent-gray-700 text-white px-8 py-4 rounded-lg font-bold transition text-lg"
+                    >
+                      Dashboard
+                    </button>
+                  </div>
                 </>
               ) : hasApplied ? (
                 <>

@@ -36,18 +36,56 @@ def create_application(
             detail="You have already applied to this project"
         )
     
-    # Create application
-    new_application = Application(
-        applicant_id=current_user.id,
-        **application_data.model_dump()
-    )
+    # Create application with graceful handling for optional fields
+    try:
+        # Get application data
+        app_data = application_data.model_dump()
 
-    # Calculate AI match score (simplified - you'd use actual AI here)
-    new_application.ai_match_score = calculate_match_score(current_user, project)
+        # Build application object with only fields that exist in the model
+        application_kwargs = {
+            'applicant_id': current_user.id,
+            'project_id': app_data.get('project_id'),
+            'cover_letter': app_data.get('cover_letter'),
+            'proposed_rate': app_data.get('proposed_rate'),
+        }
 
-    db.add(new_application)
-    db.commit()
-    db.refresh(new_application)
+        # Add new fields only if they exist as attributes on the model
+        # This allows backwards compatibility if DB hasn't been migrated yet
+        if hasattr(Application, 'project_duration'):
+            application_kwargs['project_duration'] = app_data.get('project_duration')
+        if hasattr(Application, 'total_cost'):
+            application_kwargs['total_cost'] = app_data.get('total_cost')
+        if hasattr(Application, 'revisions_included'):
+            application_kwargs['revisions_included'] = app_data.get('revisions_included')
+        if hasattr(Application, 'additional_info'):
+            application_kwargs['additional_info'] = app_data.get('additional_info')
+
+        new_application = Application(**application_kwargs)
+
+        # Calculate AI match score (simplified - you'd use actual AI here)
+        new_application.ai_match_score = calculate_match_score(current_user, project)
+
+        db.add(new_application)
+        db.commit()
+        db.refresh(new_application)
+    except Exception as e:
+        db.rollback()
+        # Log the error
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error creating application: {str(e)}")
+
+        # If it's a column error, provide helpful message
+        if "column" in str(e).lower() and "does not exist" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database schema needs to be updated. Please run the migration script: ADD_APPLICATION_FIELDS.sql"
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to create application: {str(e)}"
+            )
 
     # Create notification for project owner
     # Get or create profile for applicant name
