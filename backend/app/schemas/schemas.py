@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus, SummaryType
+from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus, SummaryType, PortfolioItemType
 
 
 # User Schemas
@@ -95,6 +95,9 @@ class ProfileBase(BaseModel):
     phone: Optional[str] = None
     website: Optional[str] = None
     linkedin: Optional[str] = None
+    github_username: Optional[str] = None
+    huggingface_username: Optional[str] = None
+    hourly_rate: Optional[float] = None
     timezone: Optional[str] = "UTC"  # IANA timezone
     working_hours_start: Optional[int] = 9  # Start hour (0-23)
     working_hours_end: Optional[int] = 17  # End hour (0-23)
@@ -109,6 +112,14 @@ class ProfileUpdate(ProfileBase):
     pass
 
 
+class VerifiedSkill(BaseModel):
+    """Schema for verified skills badge"""
+    skill: str
+    verified: bool = False
+    verified_at: Optional[str] = None
+    verified_by: Optional[int] = None
+
+
 class ProfileResponse(ProfileBase):
     id: int
     user_id: int
@@ -119,6 +130,7 @@ class ProfileResponse(ProfileBase):
     average_rating: float
     total_reviews: int
     is_agent_approved: bool
+    verified_skills: List[VerifiedSkill] = []
     timezone: str
     working_hours_start: int
     working_hours_end: int
@@ -861,3 +873,96 @@ class SummaryInsights(BaseModel):
     blockers: List[str]
     next_steps: List[str]
     key_metrics: Dict[str, Any]
+
+
+# Portfolio Item Schemas
+class PortfolioItemBase(BaseModel):
+    item_type: PortfolioItemType
+    title: str = Field(..., min_length=1, max_length=200)
+    description: Optional[str] = None
+    url: Optional[str] = None
+    tags: List[str] = []
+    is_featured: bool = False
+
+
+class PortfolioItemCreate(PortfolioItemBase):
+    thumbnail_url: Optional[str] = None
+    github_repo_name: Optional[str] = None
+    github_stars: Optional[int] = None
+    github_language: Optional[str] = None
+    huggingface_model_id: Optional[str] = None
+    huggingface_downloads: Optional[int] = None
+    huggingface_likes: Optional[int] = None
+    display_order: int = 0
+
+
+class PortfolioItemUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    tags: Optional[List[str]] = None
+    is_featured: Optional[bool] = None
+    display_order: Optional[int] = None
+
+
+class PortfolioItemResponse(PortfolioItemBase):
+    id: int
+    profile_id: int
+    thumbnail_url: Optional[str]
+    github_repo_name: Optional[str]
+    github_stars: Optional[int]
+    github_language: Optional[str]
+    huggingface_model_id: Optional[str]
+    huggingface_downloads: Optional[int]
+    huggingface_likes: Optional[int]
+    display_order: int
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Freelancer Search Schemas
+class FreelancerFilter(BaseModel):
+    """Filter criteria for searching freelancers"""
+    skills: Optional[List[str]] = None
+    location: Optional[str] = None
+    min_hourly_rate: Optional[float] = None
+    max_hourly_rate: Optional[float] = None
+    timezone: Optional[str] = None
+    min_rating: Optional[float] = None
+    verified_skills_only: bool = False
+    search_query: Optional[str] = None  # Search in name, bio, skills
+
+
+class FreelancerSearchResponse(BaseModel):
+    """Freelancer profile in search results"""
+    user_id: int
+    profile_id: int
+    first_name: Optional[str]
+    last_name: Optional[str]
+    bio: Optional[str]
+    avatar_url: Optional[str]
+    skills: List[str]
+    verified_skills: List[VerifiedSkill]
+    location: Optional[str]
+    hourly_rate: Optional[float]
+    timezone: str
+    average_rating: float
+    total_reviews: int
+    completed_projects: int
+    portfolio_items_count: int
+    github_username: Optional[str]
+    huggingface_username: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+
+class VerifySkillRequest(BaseModel):
+    """Admin request to verify a freelancer's skill"""
+    user_id: int
+    skill: str
+    verified: bool = True

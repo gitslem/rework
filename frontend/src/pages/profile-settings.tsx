@@ -6,6 +6,13 @@ import { useAuthStore } from '../lib/authStore';
 import TimezoneSelector from '../components/TimezoneSelector';
 import WorkingHoursSelector from '../components/WorkingHoursSelector';
 
+interface VerifiedSkill {
+  skill: string;
+  verified: boolean;
+  verified_at?: string;
+  verified_by?: number;
+}
+
 interface Profile {
   id: number;
   user_id: number;
@@ -17,6 +24,10 @@ interface Profile {
   phone: string;
   website: string;
   linkedin: string;
+  github_username?: string;
+  huggingface_username?: string;
+  hourly_rate?: number;
+  verified_skills: VerifiedSkill[];
   timezone: string;
   working_hours_start: number;
   working_hours_end: number;
@@ -49,6 +60,9 @@ export default function ProfileSettingsPage() {
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
   const [linkedin, setLinkedin] = useState('');
+  const [githubUsername, setGithubUsername] = useState('');
+  const [huggingfaceUsername, setHuggingfaceUsername] = useState('');
+  const [hourlyRate, setHourlyRate] = useState<number | ''>('');
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState('');
 
@@ -79,6 +93,9 @@ export default function ProfileSettingsPage() {
       setPhone(profileData.phone || '');
       setWebsite(profileData.website || '');
       setLinkedin(profileData.linkedin || '');
+      setGithubUsername(profileData.github_username || '');
+      setHuggingfaceUsername(profileData.huggingface_username || '');
+      setHourlyRate(profileData.hourly_rate || '');
       setSkills(profileData.skills || []);
       setTimezone(profileData.timezone || 'UTC');
       setWorkingHoursStart(profileData.working_hours_start || 9);
@@ -106,6 +123,9 @@ export default function ProfileSettingsPage() {
         phone,
         website,
         linkedin,
+        github_username: githubUsername,
+        huggingface_username: huggingfaceUsername,
+        hourly_rate: hourlyRate === '' ? null : Number(hourlyRate),
         skills,
         timezone,
         working_hours_start: workingHoursStart,
@@ -293,6 +313,49 @@ export default function ProfileSettingsPage() {
                   onChange={(e) => setLinkedin(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://linkedin.com/in/..."
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  GitHub Username
+                </label>
+                <input
+                  type="text"
+                  value={githubUsername}
+                  onChange={(e) => setGithubUsername(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="yourusername"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hugging Face Username
+                </label>
+                <input
+                  type="text"
+                  value={huggingfaceUsername}
+                  onChange={(e) => setHuggingfaceUsername(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="yourusername"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Hourly Rate (USD)
+                </label>
+                <input
+                  type="number"
+                  value={hourlyRate}
+                  onChange={(e) => setHourlyRate(e.target.value === '' ? '' : Number(e.target.value))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="50"
+                  min="0"
+                  step="1"
                 />
               </div>
             </div>

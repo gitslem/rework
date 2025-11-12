@@ -147,6 +147,12 @@ class Profile(Base):
     phone = Column(String, nullable=True)
     website = Column(String, nullable=True)
     linkedin = Column(String, nullable=True)
+    github_username = Column(String, nullable=True)  # GitHub profile
+    huggingface_username = Column(String, nullable=True)  # Hugging Face profile
+
+    # Freelancer specific
+    hourly_rate = Column(Float, nullable=True)  # Hourly rate in USD
+    verified_skills = Column(JSON, default=[])  # List of {"skill": "Python", "verified": true, "verified_at": "2024-01-01", "verified_by": 1}
 
     # Timezone and working hours
     timezone = Column(String, default="UTC", nullable=False)  # IANA timezone (e.g., "America/New_York")
@@ -169,6 +175,7 @@ class Profile(Base):
 
     # Relationships
     user = relationship("User", back_populates="profile")
+    portfolio_items = relationship("PortfolioItem", back_populates="profile", cascade="all, delete-orphan")
 
 
 class Project(Base):
@@ -684,3 +691,53 @@ class AISummary(Base):
     # Relationships
     project = relationship("Project", foreign_keys=[project_id])
     generated_by = relationship("User", foreign_keys=[generated_by_user_id])
+
+
+class PortfolioItemType(str, enum.Enum):
+    SCREENSHOT = "screenshot"
+    GITHUB_REPO = "github_repo"
+    HUGGINGFACE_MODEL = "huggingface_model"
+    LINK = "link"
+    PROJECT = "project"
+
+
+class PortfolioItem(Base):
+    """Portfolio items for freelancer profiles"""
+    __tablename__ = "portfolio_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    profile_id = Column(Integer, ForeignKey("profiles.id"), nullable=False)
+
+    # Item metadata
+    item_type = Column(
+        Enum(PortfolioItemType, name="portfolio_item_type", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        nullable=False
+    )
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+
+    # Content
+    thumbnail_url = Column(String, nullable=True)  # For screenshots/previews
+    url = Column(String, nullable=True)  # GitHub repo URL, Hugging Face model URL, or external link
+
+    # GitHub specific
+    github_repo_name = Column(String, nullable=True)  # e.g., "username/repo"
+    github_stars = Column(Integer, nullable=True)
+    github_language = Column(String, nullable=True)
+
+    # Hugging Face specific
+    huggingface_model_id = Column(String, nullable=True)  # e.g., "username/model-name"
+    huggingface_downloads = Column(Integer, nullable=True)
+    huggingface_likes = Column(Integer, nullable=True)
+
+    # Metadata
+    tags = Column(JSON, default=[])  # Technologies/skills used
+    display_order = Column(Integer, default=0)  # For ordering items
+    is_featured = Column(Boolean, default=False)  # Highlight on profile
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    profile = relationship("Profile", back_populates="portfolio_items")
