@@ -788,7 +788,7 @@ class ProjectMessageResponse(ProjectMessageBase):
     project_id: int
     sender_id: int
     is_ai_generated: bool
-    metadata: Dict[str, Any]
+    message_metadata: Dict[str, Any]  # Renamed from 'metadata' which is reserved
     created_at: datetime
     updated_at: Optional[datetime]
     deleted_at: Optional[datetime]
