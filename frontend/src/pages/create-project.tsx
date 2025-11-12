@@ -85,6 +85,44 @@ export default function CreateProject() {
     setStep(1);
   };
 
+  const handlePostProject = async () => {
+    if (!aiBrief) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('access_token');
+
+      // Call the new post-project endpoint that saves brief and creates project
+      await axios.post(
+        `${API_URL}/api/v1/ai-briefs/post-project`,
+        {
+          brief_data: {
+            raw_description: rawDescription,
+            project_type: projectType,
+            reference_files: []
+          },
+          ai_data: aiBrief
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // Redirect to dashboard on success
+      router.push('/company-dashboard?posted=true');
+    } catch (err: any) {
+      console.error('Error posting project:', err);
+      setError(err.response?.data?.detail || 'Failed to post project. Please try again.');
+      setLoading(false);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -238,6 +276,13 @@ export default function CreateProject() {
 
           {step === 2 && aiBrief && (
             <div className="space-y-6">
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                  {error}
+                </div>
+              )}
+
               {/* AI Confidence Score */}
               <div className="bg-gradient-to-r from-primary-500 to-purple-600 rounded-2xl p-6 text-white">
                 <div className="flex items-center justify-between">
@@ -357,11 +402,21 @@ export default function CreateProject() {
                   Regenerate Brief
                 </button>
                 <button
-                  onClick={() => router.push('/dashboard')}
-                  className="btn-primary flex-1 inline-flex items-center justify-center"
+                  onClick={handlePostProject}
+                  disabled={loading}
+                  className="btn-primary flex-1 inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  Post Project
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Posting...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Post Project
+                    </>
+                  )}
                 </button>
               </div>
             </div>

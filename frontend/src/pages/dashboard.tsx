@@ -160,7 +160,10 @@ export default function Dashboard() {
               <Code2 className="w-5 h-5 mr-2" />
               My Sandboxes
             </button>
-            <button className="btn-secondary">
+            <button
+              onClick={() => router.push('/profile-settings')}
+              className="btn-secondary"
+            >
               Complete Profile
             </button>
           </div>
@@ -320,7 +323,10 @@ export default function Dashboard() {
                 <p className="text-sm text-white/80 mb-4">
                   Complete your profile to get more {isFreelancer ? 'project matches' : 'freelancer recommendations'}
                 </p>
-                <button className="bg-white text-primary-500 px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition w-full">
+                <button
+                  onClick={() => router.push('/profile-settings')}
+                  className="bg-white text-primary-500 px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition w-full"
+                >
                   Complete Profile
                 </button>
               </div>

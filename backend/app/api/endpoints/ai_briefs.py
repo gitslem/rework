@@ -218,3 +218,94 @@ async def delete_brief(
     db.commit()
 
     return {"message": "Project brief deleted successfully"}
+
+
+@router.post("/post-project")
+async def save_brief_and_create_project(
+    brief_data: ProjectBriefCreate,
+    ai_data: AIBriefGeneration,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Save AI brief and immediately convert it to an active project
+
+    This is a convenience endpoint that:
+    1. Saves the AI-generated brief to the database
+    2. Creates an actual Project from the brief
+    3. Links them together
+    4. Returns both the brief and the project
+    """
+    from app.models.models import Project, ProjectStatus
+
+    if current_user.role.value not in ["business", "admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only business users can create project briefs"
+        )
+
+    try:
+        # 1. Save the brief
+        db_brief = ProjectBrief(
+            user_id=current_user.id,
+            raw_description=brief_data.raw_description,
+            project_type=brief_data.project_type,
+            reference_files=brief_data.reference_files or [],
+            goal=ai_data.goal,
+            deliverables=ai_data.deliverables,
+            tech_stack=ai_data.tech_stack,
+            steps=ai_data.steps,
+            estimated_timeline=ai_data.estimated_timeline,
+            estimated_budget_min=ai_data.estimated_budget_min,
+            estimated_budget_max=ai_data.estimated_budget_max,
+            required_skills=ai_data.required_skills,
+            ai_model_used=ai_data.ai_model_used,
+            confidence_score=ai_data.confidence_score,
+            status="approved"
+        )
+
+        db.add(db_brief)
+        db.flush()  # Get the brief ID without committing
+
+        # 2. Create the actual project
+        project = Project(
+            owner_id=current_user.id,
+            title=f"{brief_data.project_type.replace('_', ' ').title()} Project",
+            description=db_brief.goal,
+            category=brief_data.project_type,
+            budget=(ai_data.estimated_budget_min + ai_data.estimated_budget_max) / 2,
+            status=ProjectStatus.OPEN,
+            required_skills=ai_data.required_skills,
+            requirements={
+                "deliverables": ai_data.deliverables,
+                "tech_stack": ai_data.tech_stack,
+                "steps": ai_data.steps,
+                "timeline": ai_data.estimated_timeline
+            },
+            attachments=[]
+        )
+
+        db.add(project)
+        db.flush()  # Get the project ID
+
+        # 3. Link them
+        db_brief.project_id = project.id
+        db_brief.status = "converted_to_project"
+
+        # Commit everything
+        db.commit()
+        db.refresh(db_brief)
+        db.refresh(project)
+
+        return {
+            "brief": db_brief,
+            "project": project,
+            "message": "Project created successfully"
+        }
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create project: {str(e)}"
+        )
