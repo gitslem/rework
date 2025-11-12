@@ -1,82 +1,50 @@
-# Database Migrations for Google OAuth Support
+# Database Migrations
 
-## Overview
-This migration adds Google OAuth support to the users table by:
-1. Adding a `google_id` column to store Google OAuth user IDs
-2. Making `hashed_password` nullable (OAuth users don't need passwords)
-3. Adding an index on `google_id` for performance
+This directory contains SQL migration scripts for manual database updates.
 
-## For Supabase Users
+## Quick Fix for Missing Profile Columns
 
-### Option 1: Using Supabase SQL Editor (Recommended)
-
-1. Go to your Supabase project dashboard
-2. Navigate to **SQL Editor** in the left sidebar
-3. Click **New Query**
-4. Copy and paste the contents of `add_google_oauth_support.sql`
-5. Click **Run** or press `Ctrl+Enter`
-6. Verify the migration succeeded (you should see "Success" message)
-
-### Option 2: Using Python Script
-
-```bash
-# Make sure your DATABASE_URL is set in .env
-python migrations/run_migration.py
+If you see the error:
+```
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column profiles.github_username does not exist
 ```
 
-### Option 3: Using psql Command Line
+Run the following SQL script on your PostgreSQL database:
 
 ```bash
-# Get your database connection string from Supabase
-psql "postgresql://postgres:[YOUR-PASSWORD]@[YOUR-PROJECT-REF].supabase.co:5432/postgres" -f migrations/add_google_oauth_support.sql
+psql -d your_database_name -f add_missing_profile_columns.sql
 ```
 
-## For Other PostgreSQL Databases
-
-Run the SQL file using your preferred method:
-
-```bash
-psql -U your_user -d your_database -f migrations/add_google_oauth_support.sql
-```
-
-## Verification
-
-After running the migration, verify it worked:
-
+Or connect to your database and run:
 ```sql
--- Check if google_id column exists
-SELECT column_name, data_type, is_nullable 
-FROM information_schema.columns 
-WHERE table_name = 'users' AND column_name IN ('google_id', 'hashed_password');
-
--- Should return:
--- google_id | character varying | YES
--- hashed_password | character varying | YES
+-- Add missing columns
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS github_username VARCHAR;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS huggingface_username VARCHAR;
 ```
 
-## Rollback (if needed)
+## Using Alembic (Recommended)
 
-If you need to rollback this migration:
+For managed migrations, use Alembic:
 
-```sql
--- Remove google_id column
-ALTER TABLE users DROP COLUMN IF EXISTS google_id;
+```bash
+cd backend
+alembic upgrade head
+```
 
--- Make hashed_password required again (only if you want to)
--- WARNING: This will fail if you have OAuth users without passwords!
--- ALTER TABLE users ALTER COLUMN hashed_password SET NOT NULL;
+This will apply all pending migrations automatically.
+
+## Creating New Migrations
+
+To create a new migration after changing models:
+
+```bash
+alembic revision --autogenerate -m "Description of changes"
+# Review the generated migration file
+alembic upgrade head
 ```
 
 ## Troubleshooting
 
-### "relation 'users' does not exist"
-- Your database tables haven't been created yet
-- Run the initial database setup first
-
-### "column 'google_id' already exists"
-- Migration has already been run
-- No action needed
-
-### Permission Denied
-- Make sure your database user has ALTER TABLE permissions
-- For Supabase, use the postgres user credentials
+1. **Database connection error**: Ensure your DATABASE_URL environment variable is set correctly
+2. **Columns already exist**: The migration script is idempotent and will skip columns that already exist
+3. **Permission denied**: Ensure your database user has ALTER TABLE permissions
