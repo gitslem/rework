@@ -1,9 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
-import Editor from '@monaco-editor/react';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import 'xterm/css/xterm.css';
+import dynamic from 'next/dynamic';
 import { sandboxesAPI } from '../../lib/api';
 import {
   Play,
@@ -17,6 +14,9 @@ import {
   Camera,
   Settings,
 } from 'lucide-react';
+
+// Dynamically import Monaco Editor with no SSR
+const Editor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
 
 interface SandboxFile {
   content: string;
@@ -65,50 +65,58 @@ export default function SandboxPage() {
   const [loading, setLoading] = useState(true);
 
   const terminalRef = useRef<HTMLDivElement>(null);
-  const terminalInstance = useRef<Terminal | null>(null);
-  const fitAddon = useRef<FitAddon | null>(null);
+  const terminalInstance = useRef<any>(null);
+  const fitAddon = useRef<any>(null);
 
-  // Initialize terminal
+  // Initialize terminal (client-side only)
   useEffect(() => {
-    if (!terminalRef.current || terminalInstance.current) return;
+    if (!terminalRef.current || terminalInstance.current || typeof window === 'undefined') return;
 
-    const terminal = new Terminal({
-      cursorBlink: true,
-      fontSize: 14,
-      fontFamily: 'Menlo, Monaco, "Courier New", monospace',
-      theme: {
-        background: '#1e1e1e',
-        foreground: '#d4d4d4',
-      },
-      convertEol: true,
-      rows: 15,
+    // Dynamically import xterm on client side only
+    import('xterm').then(({ Terminal }) => {
+      import('xterm-addon-fit').then(({ FitAddon }) => {
+        // Also import CSS
+        import('xterm/css/xterm.css');
+
+        const terminal = new Terminal({
+          cursorBlink: true,
+          fontSize: 14,
+          fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+          theme: {
+            background: '#1e1e1e',
+            foreground: '#d4d4d4',
+          },
+          convertEol: true,
+          rows: 15,
+        });
+
+        const fit = new FitAddon();
+        terminal.loadAddon(fit);
+
+        terminal.open(terminalRef.current!);
+        fit.fit();
+
+        terminal.writeln('Welcome to Relaywork Sandbox Terminal');
+        terminal.writeln('Run your code to see output here...');
+        terminal.writeln('');
+
+        terminalInstance.current = terminal;
+        fitAddon.current = fit;
+
+        // Resize on window resize
+        const handleResize = () => {
+          if (fitAddon.current) {
+            fitAddon.current.fit();
+          }
+        };
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+          window.removeEventListener('resize', handleResize);
+          terminal.dispose();
+        };
+      });
     });
-
-    const fit = new FitAddon();
-    terminal.loadAddon(fit);
-
-    terminal.open(terminalRef.current);
-    fit.fit();
-
-    terminal.writeln('Welcome to Relaywork Sandbox Terminal');
-    terminal.writeln('Run your code to see output here...');
-    terminal.writeln('');
-
-    terminalInstance.current = terminal;
-    fitAddon.current = fit;
-
-    // Resize on window resize
-    const handleResize = () => {
-      if (fitAddon.current) {
-        fitAddon.current.fit();
-      }
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      terminal.dispose();
-    };
   }, []);
 
   // Load sandbox
