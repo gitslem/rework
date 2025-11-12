@@ -61,7 +61,7 @@ CREATE TABLE proofs_of_build (
 
     -- Additional metadata
     description TEXT,
-    metadata JSONB DEFAULT '{}'::jsonb,
+    proof_metadata JSONB DEFAULT '{}'::jsonb,
 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -93,7 +93,7 @@ CREATE TABLE proof_artifacts (
 
     -- Metadata
     description TEXT,
-    metadata JSONB DEFAULT '{}'::jsonb,
+    artifact_metadata JSONB DEFAULT '{}'::jsonb,
 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
