@@ -4,6 +4,7 @@ import { useAuthStore } from '@/lib/authStore';
 import Link from 'next/link';
 import Head from 'next/head';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { Globe2, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const router = useRouter();
@@ -47,17 +48,27 @@ export default function Login() {
   return (
     <>
       <Head>
-        <title>Login - Remote Works</title>
+        <title>Login - Relaywork</title>
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full">
-          <div className="bg-white rounded-2xl shadow-2xl p-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 border border-accent-gray-200">
+            {/* Logo */}
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
+                <Globe2 className="w-10 h-10 text-primary-500 mr-2" />
+                <div className="text-3xl font-bold text-accent-dark">
+                  Relay<span className="gradient-text">work</span>
+                </div>
+              </div>
+            </div>
+
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              <h1 className="text-3xl font-bold text-accent-dark mb-2">
                 Welcome Back
               </h1>
-              <p className="text-gray-600">Sign in with your Google account to continue</p>
+              <p className="text-accent-gray-600">Sign in with your Google account to continue</p>
             </div>
 
             {error && (
@@ -68,8 +79,8 @@ export default function Login() {
 
             {loading && (
               <div className="text-center mb-6">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-2 text-gray-600">Signing in...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+                <p className="mt-2 text-accent-gray-600">Signing in...</p>
               </div>
             )}
 
@@ -97,24 +108,24 @@ export default function Login() {
               )}
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-200">
+            <div className="mt-8 pt-6 border-t border-accent-gray-200">
               <div className="text-center">
-                <p className="text-gray-600 mb-4">
+                <p className="text-accent-gray-600 mb-4">
                   Don&apos;t have an account?{' '}
-                  <Link href="/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+                  <Link href="/register" className="text-primary-500 hover:text-primary-600 font-semibold">
                     Sign up
                   </Link>
                 </p>
                 <button
                   onClick={() => router.push('/')}
-                  className="text-gray-600 hover:text-gray-800 text-sm"
+                  className="text-accent-gray-600 hover:text-accent-dark text-sm inline-flex items-center"
                 >
-                  ← Back to Home
+                  <ArrowLeft className="w-4 h-4 mr-1" /> Back to Home
                 </button>
               </div>
             </div>
 
-            <div className="mt-6 text-center text-xs text-gray-500">
+            <div className="mt-6 text-center text-xs text-accent-gray-500">
               <p>By signing in, you agree to our Terms of Service and Privacy Policy</p>
             </div>
           </div>
