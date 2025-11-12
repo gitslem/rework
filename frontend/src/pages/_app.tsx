@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import 'xterm/css/xterm.css';
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
