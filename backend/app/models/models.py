@@ -212,18 +212,22 @@ class Project(Base):
 
 class Application(Base):
     __tablename__ = "applications"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     applicant_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     cover_letter = Column(Text, nullable=True)
     proposed_rate = Column(Float, nullable=True)
+    project_duration = Column(String, nullable=True)  # e.g., "2 weeks", "1 month"
+    total_cost = Column(Float, nullable=True)
+    revisions_included = Column(Integer, nullable=True)
+    additional_info = Column(Text, nullable=True)
     status = Column(Enum(ApplicationStatus, name="application_status", create_type=False, values_callable=lambda x: [e.value for e in x]), default=ApplicationStatus.PENDING)
     ai_match_score = Column(Float, nullable=True)  # 0-100 AI matching score
-    
+
     applied_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+
     # Relationships
     project = relationship("Project", back_populates="applications")
     applicant = relationship("User", back_populates="applications")

@@ -4,7 +4,7 @@ import { useAuthStore } from '@/lib/authStore';
 import axios from 'axios';
 import { ArrowLeft, Send, Loader, CheckCircle } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface Project {
   id: number;
@@ -26,8 +26,13 @@ export default function ApplyToProject() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  // Form fields
   const [coverLetter, setCoverLetter] = useState('');
   const [proposedRate, setProposedRate] = useState('');
+  const [projectDuration, setProjectDuration] = useState('');
+  const [totalCost, setTotalCost] = useState('');
+  const [revisionsIncluded, setRevisionsIncluded] = useState('');
+  const [additionalInfo, setAdditionalInfo] = useState('');
 
   useEffect(() => {
     if (id && isAuthenticated) {
@@ -38,7 +43,7 @@ export default function ApplyToProject() {
   const fetchProject = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await axios.get(`${API_URL}/projects/${id}`, {
+      const response = await axios.get(`${API_URL}/api/v1/projects/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProject(response.data);
@@ -57,13 +62,22 @@ export default function ApplyToProject() {
 
     try {
       const token = localStorage.getItem('access_token');
+
+      const applicationData: any = {
+        project_id: Number(id),
+        cover_letter: coverLetter,
+      };
+
+      // Add optional fields if provided
+      if (proposedRate) applicationData.proposed_rate = Number(proposedRate);
+      if (projectDuration) applicationData.project_duration = projectDuration;
+      if (totalCost) applicationData.total_cost = Number(totalCost);
+      if (revisionsIncluded) applicationData.revisions_included = Number(revisionsIncluded);
+      if (additionalInfo) applicationData.additional_info = additionalInfo;
+
       await axios.post(
-        `${API_URL}/applications/`,
-        {
-          project_id: Number(id),
-          cover_letter: coverLetter,
-          proposed_rate: proposedRate ? Number(proposedRate) : null
-        },
+        `${API_URL}/api/v1/applications/`,
+        applicationData,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -168,6 +182,7 @@ export default function ApplyToProject() {
 
           {/* Application Form */}
           <form onSubmit={handleSubmit}>
+            {/* Cover Letter */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Cover Letter *
@@ -182,9 +197,42 @@ export default function ApplyToProject() {
               />
             </div>
 
+            {/* Project Duration */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Proposed Rate (USD/hr) - Optional
+                Project Duration
+              </label>
+              <input
+                type="text"
+                value={projectDuration}
+                onChange={(e) => setProjectDuration(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., 2 weeks, 1 month, 3-4 weeks"
+              />
+              <p className="mt-1 text-sm text-gray-500">How long will it take to complete this project?</p>
+            </div>
+
+            {/* Total Cost */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Total Cost (USD)
+              </label>
+              <input
+                type="number"
+                value={totalCost}
+                onChange={(e) => setTotalCost(e.target.value)}
+                min="0"
+                step="0.01"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter your total project cost"
+              />
+              <p className="mt-1 text-sm text-gray-500">Your total bid for the entire project</p>
+            </div>
+
+            {/* Hourly Rate (kept from original) */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hourly Rate (USD/hr) - Optional
               </label>
               <input
                 type="number"
@@ -195,8 +243,41 @@ export default function ApplyToProject() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="50"
               />
+              <p className="mt-1 text-sm text-gray-500">Your hourly rate (if applicable)</p>
             </div>
 
+            {/* Revisions Included */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Revisions Included
+              </label>
+              <input
+                type="number"
+                value={revisionsIncluded}
+                onChange={(e) => setRevisionsIncluded(e.target.value)}
+                min="0"
+                step="1"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., 2, 3, unlimited"
+              />
+              <p className="mt-1 text-sm text-gray-500">How many rounds of revisions will you provide?</p>
+            </div>
+
+            {/* Additional Information */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Additional Information
+              </label>
+              <textarea
+                value={additionalInfo}
+                onChange={(e) => setAdditionalInfo(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Any extra details, milestones, deliverables, or terms you'd like to mention..."
+              />
+            </div>
+
+            {/* Submit Buttons */}
             <div className="flex gap-4">
               <button
                 type="button"
