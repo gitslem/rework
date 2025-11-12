@@ -69,6 +69,13 @@ class CertificateStatus(str, enum.Enum):
     EXPIRED = "expired"
 
 
+class EscrowStatus(str, enum.Enum):
+    HELD = "held"
+    RELEASED = "released"
+    REFUNDED = "refunded"
+    DISPUTED = "disputed"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -191,6 +198,7 @@ class Project(Base):
     agent_assignments = relationship("AgentAssignment", back_populates="project", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="project", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="project", cascade="all, delete-orphan")
+    escrows = relationship("Escrow", back_populates="project", cascade="all, delete-orphan")
     proofs = relationship("ProofOfBuild", back_populates="project", cascade="all, delete-orphan")
     certificates = relationship("BuildCertificate", back_populates="project", cascade="all, delete-orphan")
 
@@ -254,7 +262,7 @@ class Review(Base):
 
 class Payment(Base):
     __tablename__ = "payments"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     payer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -266,11 +274,53 @@ class Payment(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     processed_at = Column(DateTime(timezone=True), nullable=True)
-    
+
     # Relationships
     project = relationship("Project", back_populates="payments")
     payer = relationship("User", foreign_keys=[payer_id], back_populates="payments_sent")
     payee = relationship("User", foreign_keys=[payee_id], back_populates="payments_received")
+    escrow = relationship("Escrow", back_populates="payment", uselist=False, cascade="all, delete-orphan")
+
+
+class Escrow(Base):
+    __tablename__ = "escrows"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Relationships
+    payment_id = Column(Integer, ForeignKey("payments.id"), unique=True, nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+
+    # Fund management
+    amount = Column(Float, nullable=False)
+    platform_fee = Column(Float, default=0.0)
+    freelancer_amount = Column(Float, default=0.0)
+    agent_amount = Column(Float, default=0.0)
+
+    # Status
+    status = Column(
+        Enum(EscrowStatus, name="escrow_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=EscrowStatus.HELD
+    )
+
+    # Release conditions
+    release_condition = Column(String, nullable=True)  # "proof_verified", "completion_confirmed", "manual"
+    proof_id = Column(Integer, ForeignKey("proofs_of_build.id"), nullable=True)
+
+    # Dispute tracking
+    is_disputed = Column(Boolean, default=False)
+    dispute_reason = Column(Text, nullable=True)
+
+    # Timestamps
+    held_at = Column(DateTime(timezone=True), server_default=func.now())
+    released_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    payment = relationship("Payment", back_populates="escrow")
+    project = relationship("Project", back_populates="escrows")
+    proof = relationship("ProofOfBuild", foreign_keys=[proof_id])
 
 
 class Notification(Base):
