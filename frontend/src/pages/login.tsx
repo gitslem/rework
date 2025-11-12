@@ -32,7 +32,16 @@ export default function Login() {
       }
 
       await googleAuth(credentialResponse.credential);
-      router.push('/dashboard');
+
+      // Get user data to check role
+      const { user } = useAuthStore.getState();
+
+      // Redirect based on role
+      if (user?.role === 'business') {
+        router.push('/company-dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.response?.data?.detail || 'Google login failed. Please try again.');

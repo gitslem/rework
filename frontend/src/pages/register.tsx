@@ -74,7 +74,13 @@ export default function Register() {
       }
 
       await googleAuth(credentialResponse.credential, role);
-      router.push('/dashboard');
+
+      // Redirect based on selected role
+      if (role === 'business') {
+        router.push('/company-dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       console.error('Registration error:', err);
       setError(err.response?.data?.detail || 'Google sign up failed. Please try again.');

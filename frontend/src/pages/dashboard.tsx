@@ -21,10 +21,15 @@ export default function Dashboard() {
   }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user) {
+      // Redirect business users to company dashboard
+      if (user.role === 'business') {
+        router.push('/company-dashboard');
+        return;
+      }
       fetchStats();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user, router]);
 
   const fetchStats = async () => {
     try {
