@@ -35,6 +35,19 @@ class PaymentStatus(str, enum.Enum):
     FAILED = "failed"
 
 
+class SandboxStatus(str, enum.Enum):
+    ACTIVE = "active"
+    STOPPED = "stopped"
+    TERMINATED = "terminated"
+    ERROR = "error"
+
+
+class SandboxLanguage(str, enum.Enum):
+    PYTHON = "python"
+    JAVASCRIPT = "javascript"
+    TYPESCRIPT = "typescript"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -274,3 +287,85 @@ class ProjectBrief(Base):
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class SandboxSession(Base):
+    """Shared Sandbox for AI Build/Test Environment"""
+    __tablename__ = "sandbox_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Ownership & Access
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    shared_with = Column(JSON, default=[])  # Array of user IDs who can access
+
+    # Session metadata
+    name = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    language = Column(
+        Enum(SandboxLanguage, name="sandbox_language", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=SandboxLanguage.PYTHON
+    )
+    status = Column(
+        Enum(SandboxStatus, name="sandbox_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=SandboxStatus.ACTIVE
+    )
+
+    # File system state
+    files = Column(JSON, default={})  # File tree structure
+
+    # Execution environment
+    container_id = Column(String, nullable=True)
+    runtime_config = Column(JSON, default={})  # CPU, memory limits, timeout
+
+    # Execution history & results
+    execution_history = Column(JSON, default=[])  # Array of execution records
+    last_output = Column(Text, nullable=True)
+    last_error = Column(Text, nullable=True)
+    last_executed_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Resource tracking
+    total_executions = Column(Integer, default=0)
+    total_runtime_ms = Column(Integer, default=0)
+
+    # AI Testing metadata (for future)
+    ai_test_results = Column(JSON, default={})
+
+    # Version control (for future snapshots)
+    version = Column(Integer, default=1)
+    parent_snapshot_id = Column(Integer, ForeignKey("sandbox_sessions.id"), nullable=True)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    last_accessed_at = Column(DateTime(timezone=True), server_default=func.now())
+    terminated_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    owner = relationship("User", foreign_keys=[owner_id])
+    project = relationship("Project", foreign_keys=[project_id])
+    collaborators = relationship("SandboxCollaborator", back_populates="sandbox", cascade="all, delete-orphan")
+    parent_snapshot = relationship("SandboxSession", remote_side=[id], foreign_keys=[parent_snapshot_id])
+
+
+class SandboxCollaborator(Base):
+    """Tracks active users in real-time sandbox collaboration"""
+    __tablename__ = "sandbox_collaborators"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sandbox_id = Column(Integer, ForeignKey("sandbox_sessions.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Collaboration metadata
+    cursor_position = Column(JSON, nullable=True)  # {line, column, file}
+    is_typing = Column(Boolean, default=False)
+    last_activity = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Session tracking
+    joined_at = Column(DateTime(timezone=True), server_default=func.now())
+    left_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    sandbox = relationship("SandboxSession", back_populates="collaborators")
+    user = relationship("User")
