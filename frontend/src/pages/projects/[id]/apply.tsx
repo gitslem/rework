@@ -85,7 +85,7 @@ export default function ApplyToProject() {
 
       setSuccess(true);
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push('/projects');
       }, 2000);
     } catch (err: any) {
       console.error('Error submitting application:', err);
