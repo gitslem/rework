@@ -182,6 +182,10 @@ class ApplicationBase(BaseModel):
     project_id: int
     cover_letter: Optional[str] = None
     proposed_rate: Optional[float] = None
+    project_duration: Optional[str] = None
+    total_cost: Optional[float] = None
+    revisions_included: Optional[int] = None
+    additional_info: Optional[str] = None
 
 
 class ApplicationCreate(ApplicationBase):
@@ -198,7 +202,7 @@ class ApplicationResponse(ApplicationBase):
     status: ApplicationStatus
     ai_match_score: Optional[float] = None
     applied_at: datetime
-    
+
     class Config:
         from_attributes = True
 
