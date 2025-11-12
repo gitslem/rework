@@ -9,7 +9,7 @@ from typing import List
 from app.db.database import get_db
 from app.models.models import User, ProjectBrief
 from app.schemas.schemas import ProjectBriefCreate, ProjectBriefResponse, AIBriefGeneration
-from app.core.security import get_current_user
+from app.api.dependencies import get_current_user
 from app.services.ai_service import ai_service
 
 router = APIRouter()
@@ -88,7 +88,7 @@ async def save_project_brief(
             estimated_budget_min=ai_data.estimated_budget_min,
             estimated_budget_max=ai_data.estimated_budget_max,
             required_skills=ai_data.required_skills,
-            ai_model_used=ai_data.get("ai_model_used"),
+            ai_model_used=ai_data.ai_model_used,
             confidence_score=ai_data.confidence_score,
             status="draft"
         )
