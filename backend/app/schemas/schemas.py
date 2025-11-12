@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
-from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage
+from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus
 
 
 # User Schemas
@@ -65,6 +65,24 @@ class GoogleAuthRequest(BaseModel):
             # Convert string to lowercase to match enum values
             return v.lower()
         return v
+
+
+class GitHubAuthRequest(BaseModel):
+    code: str  # GitHub OAuth code from callback
+    role: Optional[UserRole] = UserRole.FREELANCER
+
+    @field_validator('role', mode='before')
+    @classmethod
+    def normalize_role(cls, v):
+        """Normalize role to handle case-insensitive input"""
+        if isinstance(v, str):
+            # Convert string to lowercase to match enum values
+            return v.lower()
+        return v
+
+
+class GitHubConnectRequest(BaseModel):
+    code: str  # GitHub OAuth code to connect account
 
 
 # Profile Schemas
@@ -401,3 +419,219 @@ class SandboxCollaboratorResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Proof-of-Build Schemas
+class ProofOfBuildBase(BaseModel):
+    proof_type: ProofType
+    project_id: Optional[int] = None
+    description: Optional[str] = None
+    milestone_name: Optional[str] = None
+    milestone_description: Optional[str] = None
+
+
+class ProofOfBuildCreate(ProofOfBuildBase):
+    # GitHub data (for commit/PR/repo proofs)
+    github_repo_url: Optional[str] = None
+    github_repo_name: Optional[str] = None
+    github_commit_hash: Optional[str] = None
+    github_pr_number: Optional[int] = None
+    github_pr_url: Optional[str] = None
+    github_branch: Optional[str] = None
+
+    # File/Screenshot data (for file proofs)
+    file_name: Optional[str] = None
+    file_url: Optional[str] = None
+    file_hash: Optional[str] = None
+    file_size: Optional[int] = None
+
+    metadata: Dict[str, Any] = {}
+
+
+class ProofOfBuildResponse(ProofOfBuildBase):
+    id: int
+    user_id: int
+    status: ProofStatus
+
+    # GitHub data
+    github_repo_url: Optional[str]
+    github_repo_name: Optional[str]
+    github_commit_hash: Optional[str]
+    github_pr_number: Optional[int]
+    github_pr_url: Optional[str]
+    github_branch: Optional[str]
+
+    # File/Screenshot data
+    file_name: Optional[str]
+    file_url: Optional[str]
+    file_hash: Optional[str]
+    file_size: Optional[int]
+
+    # Verification data
+    verified_at: Optional[datetime]
+    verification_signature: Optional[str]
+    verification_metadata: Dict[str, Any]
+
+    timestamp: datetime
+    expires_at: Optional[datetime]
+    metadata: Dict[str, Any]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class ProofArtifactCreate(BaseModel):
+    artifact_type: str = Field(..., description="Type: screenshot, log, test_result, document")
+    file_name: str
+    file_url: str
+    file_hash: str
+    file_size: int
+    mime_type: Optional[str] = None
+    description: Optional[str] = None
+    metadata: Dict[str, Any] = {}
+
+
+class ProofArtifactResponse(BaseModel):
+    id: int
+    proof_id: int
+    artifact_type: str
+    file_name: str
+    file_url: str
+    file_hash: str
+    file_size: int
+    mime_type: Optional[str]
+    description: Optional[str]
+    metadata: Dict[str, Any]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Build Certificate Schemas
+class BuildCertificateCreate(BaseModel):
+    project_id: Optional[int] = None
+    title: str = Field(..., min_length=5, max_length=255)
+    description: Optional[str] = None
+    milestone_name: str
+    milestone_date: datetime
+    proof_ids: List[int] = []  # Proofs to include in certificate
+    certificate_data: Dict[str, Any]  # Complete certificate data
+
+
+class BuildCertificateResponse(BaseModel):
+    id: int
+    user_id: int
+    project_id: Optional[int]
+    certificate_id: str
+    title: str
+    description: Optional[str]
+    milestone_name: str
+    milestone_date: datetime
+    status: CertificateStatus
+    signature: str
+    signature_algorithm: str
+    certificate_data: Dict[str, Any]
+    badge_url: Optional[str]
+    blockchain_tx_hash: Optional[str]
+    blockchain_network: Optional[str]
+    notarized_at: Optional[datetime]
+    verification_url: Optional[str]
+    proof_ids: List[int]
+    issued_at: datetime
+    expires_at: Optional[datetime]
+    revoked_at: Optional[datetime]
+    revocation_reason: Optional[str]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# GitHub Verification Schemas
+class GitHubRepoVerifyRequest(BaseModel):
+    repo_name: str = Field(..., description="GitHub repository name (e.g., 'username/repo')")
+    project_id: Optional[int] = None
+    milestone_name: Optional[str] = None
+
+
+class GitHubCommitVerifyRequest(BaseModel):
+    repo_name: str = Field(..., description="GitHub repository name (e.g., 'username/repo')")
+    commit_hash: str = Field(..., min_length=7, max_length=40)
+    project_id: Optional[int] = None
+    milestone_name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class GitHubPRVerifyRequest(BaseModel):
+    repo_name: str = Field(..., description="GitHub repository name (e.g., 'username/repo')")
+    pr_number: int = Field(..., gt=0)
+    project_id: Optional[int] = None
+    milestone_name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class FileVerifyRequest(BaseModel):
+    file_name: str
+    file_url: str
+    file_content: Optional[str] = None  # For hash calculation if not already provided
+    file_hash: Optional[str] = None  # Pre-calculated hash
+    file_size: int
+    project_id: Optional[int] = None
+    milestone_name: Optional[str] = None
+    description: Optional[str] = None
+    artifact_type: str = "file"  # file, screenshot, document, etc.
+
+
+class VerifyProofRequest(BaseModel):
+    proof_id: int
+
+
+class GenerateCertificateRequest(BaseModel):
+    title: str
+    milestone_name: str
+    proof_ids: List[int]  # List of proof IDs to include
+    project_id: Optional[int] = None
+    description: Optional[str] = None
+    expires_in_days: Optional[int] = None  # Certificate validity period
+
+
+class GitHubRepoInfo(BaseModel):
+    """GitHub repository information"""
+    name: str
+    full_name: str
+    description: Optional[str]
+    url: str
+    owner: str
+    created_at: datetime
+    updated_at: datetime
+    language: Optional[str]
+    stars: int
+    forks: int
+
+
+class GitHubCommitInfo(BaseModel):
+    """GitHub commit information"""
+    sha: str
+    message: str
+    author: str
+    author_email: str
+    date: datetime
+    url: str
+    verified: bool
+
+
+class GitHubPRInfo(BaseModel):
+    """GitHub pull request information"""
+    number: int
+    title: str
+    state: str
+    author: str
+    created_at: datetime
+    merged_at: Optional[datetime]
+    url: str
+    commits: int
+    changed_files: int

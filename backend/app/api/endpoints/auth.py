@@ -5,9 +5,10 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from app.db.database import get_db
 from app.models.models import User, Profile
-from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest, GoogleAuthRequest
+from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest, GoogleAuthRequest, GitHubAuthRequest, GitHubConnectRequest
 from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token
 from app.core.config import settings
+from app.api.dependencies import get_current_user
 import logging
 
 logger = logging.getLogger(__name__)
@@ -282,4 +283,248 @@ def google_auth(auth_data: GoogleAuthRequest, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Authentication failed: {str(e)}"
+        )
+
+
+@router.post("/github", response_model=Token)
+def github_auth(auth_data: GitHubAuthRequest, db: Session = Depends(get_db)):
+    """Authenticate with GitHub OAuth"""
+    import requests
+
+    try:
+        code = auth_data.code
+        role = auth_data.role.value if hasattr(auth_data.role, 'value') else str(auth_data.role)
+        role = role.lower() if isinstance(role, str) else role
+
+        logger.info(f"GitHub OAuth attempt with role: {role}")
+
+        if not code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Code is required"
+            )
+
+        # Exchange code for access token
+        if not settings.GITHUB_CLIENT_ID or not settings.GITHUB_CLIENT_SECRET:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="GitHub OAuth not configured. Please set GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET"
+            )
+
+        # Exchange code for access token
+        token_response = requests.post(
+            "https://github.com/login/oauth/access_token",
+            headers={"Accept": "application/json"},
+            data={
+                "client_id": settings.GITHUB_CLIENT_ID,
+                "client_secret": settings.GITHUB_CLIENT_SECRET,
+                "code": code,
+            }
+        )
+
+        if token_response.status_code != 200:
+            logger.error(f"GitHub token exchange failed: {token_response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to exchange GitHub code for token"
+            )
+
+        token_data = token_response.json()
+        access_token = token_data.get("access_token")
+
+        if not access_token:
+            logger.error(f"No access token in GitHub response: {token_data}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get access token from GitHub"
+            )
+
+        # Get user info from GitHub
+        user_response = requests.get(
+            "https://api.github.com/user",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json"
+            }
+        )
+
+        if user_response.status_code != 200:
+            logger.error(f"GitHub user info request failed: {user_response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get user info from GitHub"
+            )
+
+        github_user = user_response.json()
+        github_id = str(github_user.get("id"))
+        email = github_user.get("email")
+
+        # If email is private, try to get it from emails endpoint
+        if not email:
+            emails_response = requests.get(
+                "https://api.github.com/user/emails",
+                headers={
+                    "Authorization": f"Bearer {access_token}",
+                    "Accept": "application/json"
+                }
+            )
+            if emails_response.status_code == 200:
+                emails = emails_response.json()
+                # Get primary email
+                for email_obj in emails:
+                    if email_obj.get("primary") and email_obj.get("verified"):
+                        email = email_obj.get("email")
+                        break
+
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Unable to get email from GitHub account. Please make sure your email is public or verified."
+            )
+
+        logger.info(f"GitHub user info - email: {email}, github_id: {github_id}")
+
+        # Check if user exists by GitHub ID or email
+        user = db.query(User).filter(
+            (User.github_id == github_id) | (User.email == email)
+        ).first()
+
+        if user:
+            logger.info(f"Existing user found: {user.email}")
+            # Update GitHub info if not set
+            if not user.github_id:
+                user.github_id = github_id
+            user.github_access_token = access_token
+            db.commit()
+            db.refresh(user)
+        else:
+            # Create new user with GitHub OAuth
+            logger.info(f"Creating new user: {email}")
+            user = User(
+                email=email,
+                github_id=github_id,
+                github_access_token=access_token,
+                role=role,
+                is_verified=True,  # GitHub accounts are pre-verified
+                is_active=True
+            )
+            db.add(user)
+            db.flush()
+
+            # Create profile
+            profile = Profile(user_id=user.id)
+            db.add(profile)
+
+            db.commit()
+            db.refresh(user)
+            logger.info(f"Successfully created new user via GitHub OAuth: {email}")
+
+        # Create tokens
+        access_token_jwt = create_access_token(data={"sub": str(user.id)})
+        refresh_token_jwt = create_refresh_token(data={"sub": str(user.id)})
+
+        logger.info("GitHub OAuth successful")
+        return {
+            "access_token": access_token_jwt,
+            "refresh_token": refresh_token_jwt,
+            "token_type": "bearer"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"GitHub auth failed with unexpected error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Authentication failed: {str(e)}"
+        )
+
+
+@router.post("/github/connect")
+def connect_github(auth_data: GitHubConnectRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Connect GitHub account to existing user"""
+    import requests
+
+    try:
+        code = auth_data.code
+
+        if not code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Code is required"
+            )
+
+        if not settings.GITHUB_CLIENT_ID or not settings.GITHUB_CLIENT_SECRET:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="GitHub OAuth not configured"
+            )
+
+        # Exchange code for access token
+        token_response = requests.post(
+            "https://github.com/login/oauth/access_token",
+            headers={"Accept": "application/json"},
+            data={
+                "client_id": settings.GITHUB_CLIENT_ID,
+                "client_secret": settings.GITHUB_CLIENT_SECRET,
+                "code": code,
+            }
+        )
+
+        if token_response.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to exchange GitHub code for token"
+            )
+
+        token_data = token_response.json()
+        access_token = token_data.get("access_token")
+
+        if not access_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get access token from GitHub"
+            )
+
+        # Get user info from GitHub
+        user_response = requests.get(
+            "https://api.github.com/user",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json"
+            }
+        )
+
+        if user_response.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Failed to get user info from GitHub"
+            )
+
+        github_user = user_response.json()
+        github_id = str(github_user.get("id"))
+
+        # Check if GitHub account is already connected to another user
+        existing_user = db.query(User).filter(User.github_id == github_id).first()
+        if existing_user and existing_user.id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This GitHub account is already connected to another user"
+            )
+
+        # Update current user with GitHub info
+        current_user.github_id = github_id
+        current_user.github_access_token = access_token
+        db.commit()
+
+        logger.info(f"Successfully connected GitHub account for user: {current_user.email}")
+        return {"message": "GitHub account connected successfully", "github_id": github_id}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"GitHub connect failed: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to connect GitHub account: {str(e)}"
         )
