@@ -316,3 +316,4 @@ class AIBriefGeneration(BaseModel):
     estimated_budget_max: float
     required_skills: List[str]
     confidence_score: float
+    ai_model_used: Optional[str] = None
