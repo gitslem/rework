@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus
+from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus
 
 
 # User Schemas
@@ -245,6 +245,17 @@ class PaymentCreate(PaymentBase):
     payee_id: int
 
 
+class PaymentIntentCreate(BaseModel):
+    project_id: int
+    amount: float
+    metadata: Optional[dict] = {}
+
+
+class PaymentConfirm(BaseModel):
+    payment_id: int
+    payment_method_id: str
+
+
 class PaymentResponse(PaymentBase):
     id: int
     payer_id: int
@@ -254,9 +265,60 @@ class PaymentResponse(PaymentBase):
     stripe_payment_intent_id: Optional[str]
     created_at: datetime
     processed_at: Optional[datetime]
-    
+
     class Config:
         from_attributes = True
+
+
+# Escrow Schemas
+class EscrowBase(BaseModel):
+    amount: float
+    release_condition: Optional[str] = "proof_verified"
+
+
+class EscrowCreate(EscrowBase):
+    payment_id: int
+    project_id: int
+
+
+class EscrowRelease(BaseModel):
+    proof_id: Optional[int] = None
+
+
+class EscrowDispute(BaseModel):
+    reason: str
+
+
+class EscrowRefund(BaseModel):
+    reason: Optional[str] = None
+
+
+class EscrowResponse(EscrowBase):
+    id: int
+    payment_id: int
+    project_id: int
+    platform_fee: float
+    freelancer_amount: float
+    agent_amount: float
+    status: EscrowStatus
+    proof_id: Optional[int]
+    is_disputed: bool
+    dispute_reason: Optional[str]
+    held_at: datetime
+    released_at: Optional[datetime]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Review Summary Schema
+class ReviewSummary(BaseModel):
+    average_rating: float
+    total_reviews: int
+    min_rating: Optional[int]
+    max_rating: Optional[int]
 
 
 # Notification Schemas
