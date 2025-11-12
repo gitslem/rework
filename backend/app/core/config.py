@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     # GitHub OAuth
     GITHUB_CLIENT_ID: str = ""
     GITHUB_CLIENT_SECRET: str = ""
+    GITHUB_WEBHOOK_SECRET: str = ""  # Secret for verifying GitHub webhook signatures
 
     # Proof-of-Build
     PROOF_SIGNATURE_KEY: str = "proof-signature-key-change-in-production"  # Key for signing certificates
