@@ -79,7 +79,8 @@ def init_db(max_retries=3, retry_delay=2):
                         ("userrole", ["freelancer", "agent", "business", "admin"]),
                         ("projectstatus", ["open", "in_progress", "completed", "cancelled"]),
                         ("applicationstatus", ["pending", "accepted", "rejected", "withdrawn"]),
-                        ("paymentstatus", ["pending", "processing", "completed", "failed"])
+                        ("paymentstatus", ["pending", "processing", "completed", "failed"]),
+                        ("portfolioitemtype", ["screenshot", "github_repo", "huggingface_model", "link", "project"])
                     ]
 
                     for enum_name, values in enums:
