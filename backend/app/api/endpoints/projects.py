@@ -52,17 +52,20 @@ def get_projects(
     # Apply filters
     if category:
         query = query.filter(Project.category == category)
+
+    # Status filtering: default to OPEN for freelancers/agents if no status specified
+    from app.models.models import UserRole
     if status:
         query = query.filter(Project.status == status)
+    elif current_user.role in [UserRole.FREELANCER, UserRole.AGENT]:
+        # Freelancers and agents only see OPEN projects by default
+        query = query.filter(Project.status == ProjectStatus.OPEN)
+    # Business users see all statuses if no status specified
+
     if min_budget:
         query = query.filter(Project.budget >= min_budget)
     if max_budget:
         query = query.filter(Project.budget <= max_budget)
-    
-    # Default to open projects for freelancers/agents
-    from app.models.models import UserRole
-    if current_user.role in [UserRole.FREELANCER, UserRole.AGENT]:
-        query = query.filter(Project.status == ProjectStatus.OPEN)
     
     projects = query.offset(skip).limit(limit).all()
     return projects
