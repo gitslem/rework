@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useAuthStore } from '@/lib/authStore';
 import {
   Shield, Github, FileCheck, Award, Plus, Eye, Download,
-  CheckCircle, Clock, XCircle, AlertCircle, ExternalLink
+  CheckCircle, Clock, XCircle, AlertCircle, ExternalLink, Sparkles
 } from 'lucide-react';
 import Head from 'next/head';
 import axios from 'axios';
@@ -42,8 +42,9 @@ export default function ProofsPage() {
   const [activeTab, setActiveTab] = useState<'proofs' | 'certificates'>('proofs');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // GitHub connection state
+  // GitHub and HuggingFace connection state
   const [githubConnected, setGithubConnected] = useState(false);
+  const [huggingfaceConnected, setHuggingfaceConnected] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -56,6 +57,7 @@ export default function ProofsPage() {
       fetchProofs();
       fetchCertificates();
       checkGithubConnection();
+      checkHuggingFaceConnection();
     }
   }, [isAuthenticated]);
 
@@ -64,6 +66,13 @@ export default function ProofsPage() {
     // TODO: Implement GitHub OAuth integration
     // For now, GitHub is not connected until OAuth is implemented
     setGithubConnected(false);
+  };
+
+  const checkHuggingFaceConnection = () => {
+    // Check if user has HuggingFace connected
+    // TODO: Implement HuggingFace OAuth integration
+    // For now, HuggingFace is not connected until OAuth is implemented
+    setHuggingfaceConnected(false);
   };
 
   const fetchProofs = async () => {
@@ -97,6 +106,13 @@ export default function ProofsPage() {
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
     const redirectUri = `${window.location.origin}/github/callback`;
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo,user:email`;
+  };
+
+  const connectHuggingFace = () => {
+    // Redirect to HuggingFace OAuth
+    const clientId = process.env.NEXT_PUBLIC_HUGGINGFACE_CLIENT_ID;
+    const redirectUri = `${window.location.origin}/huggingface/callback`;
+    window.location.href = `https://huggingface.co/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=profile,repo.read`;
   };
 
   const getStatusIcon = (status: string) => {
@@ -165,29 +181,56 @@ export default function ProofsPage() {
         </header>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* GitHub Connection Banner */}
-          {!githubConnected && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-              <div className="flex items-start">
-                <Github className="w-6 h-6 text-blue-600 mt-1 mr-4" />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                    Connect Your GitHub Account
-                  </h3>
-                  <p className="text-blue-700 mb-4">
-                    Connect your GitHub account to verify commits, pull requests, and repositories as proof of work.
-                  </p>
-                  <button
-                    onClick={connectGithub}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center"
-                  >
-                    <Github className="w-5 h-5 mr-2" />
-                    Connect GitHub
-                  </button>
+          {/* Connection Banners */}
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* GitHub Connection Banner */}
+            {!githubConnected && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <div className="flex items-start">
+                  <Github className="w-6 h-6 text-blue-600 mt-1 mr-4 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                      Connect GitHub
+                    </h3>
+                    <p className="text-blue-700 mb-4 text-sm">
+                      Verify commits, pull requests, and repositories as proof of work.
+                    </p>
+                    <button
+                      onClick={connectGithub}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center text-sm"
+                    >
+                      <Github className="w-4 h-4 mr-2" />
+                      Connect GitHub
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* HuggingFace Connection Banner */}
+            {!huggingfaceConnected && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <div className="flex items-start">
+                  <Sparkles className="w-6 h-6 text-yellow-600 mt-1 mr-4 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-yellow-900 mb-2">
+                      Connect HuggingFace
+                    </h3>
+                    <p className="text-yellow-700 mb-4 text-sm">
+                      Verify your AI models, datasets, and spaces as proof of work.
+                    </p>
+                    <button
+                      onClick={connectHuggingFace}
+                      className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition flex items-center text-sm"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Connect HuggingFace
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Tabs */}
           <div className="flex space-x-4 mb-8">
@@ -222,8 +265,9 @@ export default function ProofsPage() {
                 <h2 className="text-xl font-semibold text-accent-dark">Your Proofs</h2>
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition flex items-center"
-                  disabled={!githubConnected}
+                  className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition flex items-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled={!githubConnected && !huggingfaceConnected}
+                  title={!githubConnected && !huggingfaceConnected ? "Connect GitHub or HuggingFace to create proofs" : ""}
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   Create Proof
@@ -235,9 +279,11 @@ export default function ProofsPage() {
                   <Shield className="w-16 h-16 text-accent-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-accent-dark mb-2">No Proofs Yet</h3>
                   <p className="text-accent-gray-600 mb-6">
-                    Start creating proofs to verify your work delivery
+                    {(!githubConnected && !huggingfaceConnected)
+                      ? "Connect GitHub or HuggingFace to start creating proofs"
+                      : "Start creating proofs to verify your work delivery"}
                   </p>
-                  {githubConnected && (
+                  {(githubConnected || huggingfaceConnected) && (
                     <button
                       onClick={() => setShowCreateModal(true)}
                       className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition"
