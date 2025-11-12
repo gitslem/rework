@@ -132,6 +132,9 @@ def google_auth(auth_data: dict, db: Session = Depends(get_db)):
         token = auth_data.get("token")
         role = auth_data.get("role", "freelancer")
 
+        # Normalize role to lowercase to match database enum values
+        role = role.lower() if role else "freelancer"
+
         logger.info(f"Google OAuth attempt with role: {role}")
 
         if not token:
