@@ -113,6 +113,64 @@ def get_project_applications(
     return applications
 
 
+@router.get("/project/{project_id}/applicants")
+def get_project_applicants_with_profiles(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get all applicants for a specific project with their profile info (for project owner)"""
+    from app.models.models import Profile
+
+    # Verify project ownership
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    if project.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only project owner can view applicants"
+        )
+
+    # Get applications with user profiles
+    applications = db.query(Application).filter(
+        Application.project_id == project_id
+    ).order_by(Application.ai_match_score.desc()).all()
+
+    applicants_data = []
+    for app in applications:
+        user = db.query(User).filter(User.id == app.applicant_id).first()
+        profile = db.query(Profile).filter(Profile.user_id == app.applicant_id).first()
+
+        if user and profile:
+            applicants_data.append({
+                "application_id": app.id,
+                "applicant_id": user.id,
+                "email": user.email,
+                "first_name": profile.first_name or "",
+                "last_name": profile.last_name or "",
+                "bio": profile.bio or "",
+                "avatar_url": profile.avatar_url,
+                "skills": profile.skills or [],
+                "location": profile.location or "",
+                "hourly_rate": profile.hourly_rate,
+                "average_rating": profile.average_rating or 0,
+                "total_reviews": profile.total_reviews or 0,
+                "completed_projects": profile.completed_projects or 0,
+                "status": app.status.value,
+                "cover_letter": app.cover_letter or "",
+                "proposed_rate": app.proposed_rate,
+                "ai_match_score": app.ai_match_score,
+                "applied_at": app.created_at.isoformat()
+            })
+
+    return {"applicants": applicants_data, "total": len(applicants_data)}
+
+
 @router.patch("/{application_id}", response_model=ApplicationResponse)
 def update_application(
     application_id: int,

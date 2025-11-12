@@ -136,7 +136,10 @@ export default function ProfileSettingsPage() {
       await api.patch('/api/v1/users/me/profile', updateData);
 
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      // Redirect to dashboard after successful save
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
     } catch (err: any) {
       console.error('Error updating profile:', err);
       setError(err.response?.data?.detail || 'Failed to update profile');
