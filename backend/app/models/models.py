@@ -622,7 +622,7 @@ class ProjectMessage(Base):
 
     # Metadata
     is_ai_generated = Column(Boolean, default=False)
-    metadata = Column(JSON, default={})
+    message_metadata = Column(JSON, default={})  # Renamed from 'metadata' which is reserved
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

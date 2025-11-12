@@ -419,7 +419,7 @@ Focus on actionable insights and concrete progress indicators."""
             parent_message_id=parent_message_id,
             thread_id=thread_id,
             is_ai_generated=False,
-            metadata={}
+            message_metadata={}
         )
 
         self.db.add(msg)
