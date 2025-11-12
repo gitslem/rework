@@ -1,153 +1,158 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { ArrowRight, CheckCircle, Users, Briefcase, TrendingUp, Zap, Globe, Shield, Star } from 'lucide-react';
+import {
+  ArrowRight, CheckCircle, Users, Briefcase, Globe2, Shield,
+  Zap, Clock, GitBranch, Terminal, FileCheck, MessageSquare,
+  Sparkles, Target, TrendingUp, Lock, BadgeCheck
+} from 'lucide-react';
 import Head from 'next/head';
 
 export default function Home() {
   const router = useRouter();
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
 
-  const testimonials = [
+  const problems = [
+    { icon: <MessageSquare className="w-6 h-6" />, text: "Vague briefs ('make an AI bot' = 10 interpretations)" },
+    { icon: <Clock className="w-6 h-6" />, text: "Time zones destroy meeting schedules" },
+    { icon: <FileCheck className="w-6 h-6" />, text: "Deliverables aren't easily verifiable" },
+    { icon: <Target className="w-6 h-6" />, text: "Juggling Slack, Notion, GitHub, Drive — no single source of truth" }
+  ];
+
+  const solutions = [
     {
-      name: "El Gill",
-      role: "Freelance Evaluator",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
-      quote: "Rework changed my life. I went from inconsistent gigs to steady $3,000+ monthly income. The platform is intuitive and the support is incredible."
+      icon: <Sparkles className="w-12 h-12" />,
+      title: "Smart Project Briefs",
+      description: "AI transforms vague client requests into clear deliverables, milestones, and budgets.",
+      visual: "💬→📋"
     },
     {
-      name: "Maia Chung",
-      role: "Rework Agent",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
-      quote: "As an agent, I earn 3x more than traditional freelancing. The training was thorough and the projects are consistent. Best decision I've made!"
+      icon: <Terminal className="w-12 h-12" />,
+      title: "Shared Sandbox",
+      description: "Test models, prompts, or automations live between client & freelancer.",
+      visual: "⚡️🔄"
     },
     {
-      name: "Hakeem B.",
-      role: "Business Owner",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
-      quote: "Finding quality remote workers was always a challenge. Rework's AI matching saved us weeks of hiring time and delivered exceptional talent."
+      icon: <BadgeCheck className="w-12 h-12" />,
+      title: "Proof-of-Build",
+      description: "Auto-verifies commits, datasets, or API outputs to confirm authentic work.",
+      visual: "✓✓✓"
     }
   ];
 
-  const howItWorks = [
+  const valueProps = [
     {
-      icon: <Users className="w-12 h-12" />,
-      title: "Create Your Profile",
-      description: "Sign up for free, upload your resume, and complete a quick onboarding. Your journey to remote work starts here."
+      icon: <Globe2 className="w-8 h-8" />,
+      title: "Timezone-Aware Collaboration",
+      description: "Automatically plans check-ins and async updates around everyone's local hours."
     },
     {
-      icon: <Briefcase className="w-12 h-12" />,
-      title: "Choose Your Work Style",
-      description: "Decide how you want to earn: Work on projects yourself or let a trained Rework Agent do the tasks for you."
+      icon: <Sparkles className="w-8 h-8" />,
+      title: "AI Co-Pilot for PMs",
+      description: "Summarizes updates, creates progress reports, and flags stalled deliverables."
     },
     {
-      icon: <CheckCircle className="w-12 h-12" />,
-      title: "Get Matched & Approved",
-      description: "Our personalized support and AI matching connects you with the best opportunities. Pass quick tests and get approved to start."
+      icon: <Lock className="w-8 h-8" />,
+      title: "Trust Layer",
+      description: "Code verification, milestone escrow, and optional blockchain timestamping for IP security."
     },
     {
-      icon: <TrendingUp className="w-12 h-12" />,
-      title: "Start Working or Earning",
-      description: "Begin completing tasks — or let your agent handle the work. Track progress, get paid, and scale your income."
+      icon: <BadgeCheck className="w-8 h-8" />,
+      title: "Verified Network",
+      description: "Freelancers get badges for model fine-tuning, prompt design, automation, and compliance."
     }
   ];
 
-  const userTypes = [
-    {
-      icon: "💼",
-      title: "Rater",
-      subtitle: "For Freelancers",
-      features: [
-        "Work remotely in roles like evaluator, transcriptionist, translator, and more",
-        "Keep 99.9% of your earnings (minus a small admin fee)",
-        "Or earn passively with a Rework Agent"
-      ],
-      cta: "Apply as Freelancer",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      icon: "🤝",
-      title: "Reworker",
-      subtitle: "For Agents",
-      features: [
-        "Only a rater can apply",
-        "Get approved and trained",
-        "Get matched to available projects",
-        "Work on behalf of clients and build your portfolio",
-        "Earn 3x more"
-      ],
-      cta: "Become an Agent",
-      color: "from-purple-500 to-purple-600",
-      popular: true
-    },
-    {
-      icon: "🏢",
-      title: "Enterprise",
-      subtitle: "For Businesses",
-      features: [
-        "Hire flexible, verified, and AI-matched remote workers or agents",
-        "Scale your projects without overhead",
-        "Reliable quality through our AI + human quality checks",
-        "Resources for training tailored to your services"
-      ],
-      cta: "Hire Talent",
-      color: "from-green-500 to-green-600"
-    }
+  const forCompanies = [
+    "SaaS startups building AI copilots or automations",
+    "Marketing teams needing AI content systems",
+    "Enterprises experimenting with LLM adoption"
   ];
 
-  const benefits = [
+  const forFreelancers = [
+    "AI agents & automation developers",
+    "LangChain, LlamaIndex, or n8n builders",
+    "AI creatives (prompt, video, or sound designers)",
+    "ML fine-tuning or RAG specialists"
+  ];
+
+  const pricingTiers = [
     {
-      icon: <Zap className="w-8 h-8" />,
-      title: "AI-Powered Job Matching",
-      description: "Get instantly connected to remote jobs that match your skills, experience, and preferences."
+      name: "Free",
+      price: "$0",
+      period: "",
+      description: "Create profile, browse jobs, limited projects.",
+      idealFor: "New freelancers / testers",
+      features: [
+        "Create freelancer profile",
+        "Browse available projects",
+        "Apply to 3 projects/month",
+        "Basic messaging",
+        "Community support"
+      ],
+      cta: "Get Started",
+      highlighted: false
     },
     {
-      icon: <Globe className="w-8 h-8" />,
-      title: "Global, Pre-Screened Talent Pool",
-      description: "Access a curated database of skilled freelancers and agents from around the world."
+      name: "Pro Freelancer",
+      price: "$15",
+      period: "/mo",
+      description: "Verified badge, analytics, AI résumé, portfolio hosting.",
+      idealFor: "Active AI contractors",
+      features: [
+        "Everything in Free",
+        "Verified freelancer badge",
+        "Unlimited project applications",
+        "AI-powered résumé builder",
+        "Portfolio & case study hosting",
+        "Advanced analytics dashboard",
+        "Priority support"
+      ],
+      cta: "Start Free Trial",
+      highlighted: true
     },
     {
-      icon: <Users className="w-8 h-8" />,
-      title: "Personalized Support",
-      description: "From resume evaluation to testing and project ratings, we guide you at every step to succeed."
-    },
-    {
-      icon: <TrendingUp className="w-8 h-8" />,
-      title: "Unlimited Earning Potential",
-      description: "No income caps — earn from $500 to $5,000+ monthly depending on the type of projects."
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Reliable Quality & Accountability",
-      description: "Benefit from built-in testing, rating systems, and human oversight to ensure consistent results."
-    },
-    {
-      icon: <Briefcase className="w-8 h-8" />,
-      title: "Work or Outsource Flexibility",
-      description: "Choose to complete projects yourself or assign them to a trained Rework Agent and earn passively."
+      name: "Team Plan",
+      price: "$25",
+      period: "/user/mo",
+      description: "Client dashboards, co-pilot PM tools, sandbox seats.",
+      idealFor: "Startups & small teams",
+      features: [
+        "Everything in Pro",
+        "Team collaboration dashboard",
+        "AI PM Co-Pilot tools",
+        "Shared sandbox environments",
+        "Project templates library",
+        "Code verification & escrow",
+        "Dedicated account manager",
+        "Custom integrations"
+      ],
+      cta: "Contact Sales",
+      highlighted: false
     }
   ];
 
   return (
     <>
       <Head>
-        <title>Remote Works - A Smarter Path to Remote Income</title>
-        <meta name="description" content="Earn from global projects in evaluation, transcription, translation, and more. Work flexibly or earn passively with Rework." />
+        <title>Relaywork - Hire AI Talent. Manage Projects. Ship Across Time Zones.</title>
+        <meta name="description" content="Where AI builders and companies work across time zones — without the chaos. Connect with verified AI freelancers and ship projects asynchronously." />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="min-h-screen bg-white">
         {/* Navigation */}
-        <nav className="bg-white shadow-sm sticky top-0 z-50">
+        <nav className="bg-white border-b border-accent-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/90">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
+            <div className="flex justify-between items-center h-20">
               <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
-                <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Remote Works
+                <Globe2 className="w-8 h-8 text-primary-500 mr-2" />
+                <div className="text-2xl font-bold text-accent-dark">
+                  Relay<span className="gradient-text">work</span>
                 </div>
               </div>
               <div className="hidden md:flex items-center space-x-8">
-                <a href="#how-it-works" className="text-gray-700 hover:text-blue-600 transition">How It Works</a>
-                <a href="#opportunities" className="text-gray-700 hover:text-blue-600 transition">Opportunities</a>
-                <button onClick={() => router.push('/login')} className="text-gray-700 hover:text-blue-600 transition">Login</button>
+                <a href="#features" className="text-accent-gray-600 hover:text-primary-500 transition font-medium">Features</a>
+                <a href="#pricing" className="text-accent-gray-600 hover:text-primary-500 transition font-medium">Pricing</a>
+                <a href="#for-who" className="text-accent-gray-600 hover:text-primary-500 transition font-medium">Who It's For</a>
+                <button onClick={() => router.push('/login')} className="text-accent-gray-600 hover:text-primary-500 transition font-medium">Login</button>
                 <button onClick={() => router.push('/register')} className="btn-primary">
                   Get Started
                 </button>
@@ -157,285 +162,360 @@ export default function Home() {
         </nav>
 
         {/* Hero Section */}
-        <section className="relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <div className="inline-block">
-                  <span className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
-                    🚀 Join 10,000+ Remote Workers
-                  </span>
-                </div>
-                <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                  A Smarter Path to{' '}
-                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Remote Income
-                  </span>
-                </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Rework gives you flexible ways to earn from global projects in evaluation, transcription, translation, 
-                  data labeling, and more. Work on your schedule or earn passively with our agent system.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <button onClick={() => router.push('/register')} className="btn-primary flex items-center justify-center group">
-                    Get Started Free
-                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition" />
-                  </button>
-                  <button onClick={() => router.push('/register?role=business')} className="btn-secondary">
-                    For Businesses
-                  </button>
-                </div>
-                <div className="flex items-center space-x-8 pt-4">
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">$5M+</div>
-                    <div className="text-gray-600">Paid to Workers</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">10K+</div>
-                    <div className="text-gray-600">Active Users</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gray-900">4.9★</div>
-                    <div className="text-gray-600">User Rating</div>
-                  </div>
-                </div>
+        <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 to-white">
+          <div className="section-container">
+            <div className="max-w-5xl mx-auto text-center space-y-8">
+              <div className="inline-flex items-center space-x-2 bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
+                <Sparkles className="w-4 h-4" />
+                <span>Where AI builders meet global companies</span>
               </div>
-              <div className="relative">
-                <div className="relative z-10">
-                  <img 
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" 
-                    alt="Remote team collaboration"
-                    className="rounded-2xl shadow-2xl"
-                  />
+
+              <h1 className="text-5xl md:text-7xl font-bold text-accent-dark leading-tight">
+                Hire AI talent.<br />
+                Manage projects.<br />
+                <span className="gradient-text">Ship across time zones.</span>
+              </h1>
+
+              <p className="text-xl md:text-2xl text-accent-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Relaywork connects startups and enterprises with verified AI freelancers — from prompt engineers
+                to automation builders — and gives them a shared workspace to plan, build, and verify AI projects asynchronously.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <button onClick={() => router.push('/register?type=client')} className="btn-primary flex items-center justify-center group text-lg">
+                  Find AI Freelancers
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition" />
+                </button>
+                <button onClick={() => router.push('/register?type=freelancer')} className="btn-secondary text-lg">
+                  Work as a Freelancer
+                </button>
+              </div>
+
+              {/* Globe Visual Concept */}
+              <div className="relative pt-12">
+                <div className="relative max-w-3xl mx-auto">
+                  <div className="bg-gradient-to-br from-primary-500/10 to-purple-500/10 rounded-3xl p-12 backdrop-blur-sm border border-primary-200">
+                    <div className="grid grid-cols-4 gap-4 text-center">
+                      <div className="space-y-2">
+                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                          🔨
+                        </div>
+                        <div className="text-sm font-semibold text-accent-gray-700">Build</div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                          🧪
+                        </div>
+                        <div className="text-sm font-semibold text-accent-gray-700">Test</div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                          🚀
+                        </div>
+                        <div className="text-sm font-semibold text-accent-gray-700">Deliver</div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="w-16 h-16 mx-auto bg-gradient-purple rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                          ⬆️
+                        </div>
+                        <div className="text-sm font-semibold text-accent-gray-700">Upgrade</div>
+                      </div>
+                    </div>
+                    <div className="mt-8 text-center text-accent-gray-600 font-medium">
+                      🌍 Projects moving 24/7 across time zones
+                    </div>
+                  </div>
                 </div>
-                <div className="absolute -bottom-8 -right-8 w-72 h-72 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-20 blur-3xl"></div>
-                <div className="absolute -top-8 -left-8 w-72 h-72 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-20 blur-3xl"></div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* How It Works */}
-        <section id="how-it-works" className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                How It Works
+        {/* Problem Section */}
+        <section className="section-container bg-accent-gray-100">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-bold text-accent-dark mb-6">
+                The Remote AI Chaos
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Start earning remotely in four simple steps. We make it easy to get started and scale your income.
+              <p className="text-xl text-accent-gray-600 max-w-3xl mx-auto">
+                AI projects stall — not because of skill, but because of miscommunication.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {howItWorks.map((step, index) => (
-                <div key={index} className="relative">
-                  <div className="bg-gradient-to-br from-slate-50 to-blue-50 p-8 rounded-2xl hover:shadow-xl transition transform hover:-translate-y-2">
-                    <div className="bg-gradient-to-br from-blue-500 to-purple-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
-                      {step.icon}
-                    </div>
-                    <div className="absolute -top-4 -right-4 bg-gradient-to-br from-blue-600 to-purple-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
-                      {index + 1}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">{step.description}</p>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              {problems.map((problem, index) => (
+                <div key={index} className="bg-white rounded-xl p-6 border-2 border-red-200 flex items-start space-x-4">
+                  <div className="text-red-500 flex-shrink-0 mt-1">
+                    {problem.icon}
                   </div>
-                  {index < howItWorks.length - 1 && (
-                    <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-blue-300 to-purple-300"></div>
-                  )}
+                  <p className="text-accent-gray-700 font-medium">{problem.text}</p>
                 </div>
               ))}
             </div>
+
+            {/* Visual Comparison */}
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="bg-white rounded-2xl p-8 border-2 border-red-300">
+                <div className="text-center mb-4 text-red-600 font-bold text-lg">❌ Without Relaywork</div>
+                <div className="flex flex-wrap gap-3 justify-center opacity-60">
+                  <div className="bg-blue-100 px-4 py-2 rounded-lg text-sm">Slack</div>
+                  <div className="bg-purple-100 px-4 py-2 rounded-lg text-sm">Zoom</div>
+                  <div className="bg-green-100 px-4 py-2 rounded-lg text-sm">Drive</div>
+                  <div className="bg-pink-100 px-4 py-2 rounded-lg text-sm">Figma</div>
+                  <div className="bg-yellow-100 px-4 py-2 rounded-lg text-sm">GitHub</div>
+                  <div className="bg-red-100 px-4 py-2 rounded-lg text-sm">Notion</div>
+                </div>
+                <div className="text-center mt-4 text-accent-gray-500 text-sm">Tangled mess of tools</div>
+              </div>
+              <div className="bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl p-8 text-white shadow-xl">
+                <div className="text-center mb-4 font-bold text-lg">✓ With Relaywork</div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
+                  <Globe2 className="w-16 h-16 mx-auto mb-3" />
+                  <div className="font-semibold">One unified workspace</div>
+                </div>
+                <div className="text-center mt-4 text-sm text-white/80">Everything in one place</div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* User Types / Opportunities */}
-        <section id="opportunities" className="py-20 bg-gradient-to-b from-slate-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Solution Section */}
+        <section id="features" className="section-container bg-white">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Opportunities for Everyone
+              <h2 className="text-4xl md:text-5xl font-bold text-accent-dark mb-6">
+                The Async AI Workspace
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Rework connects you to remote jobs or agents who can work for you – earn actively or passively 
-                with flexible, AI-matched & personalized support.
+              <p className="text-xl text-accent-gray-600 max-w-3xl mx-auto">
+                Every AI project, from idea to verified delivery — all in one async flow.
               </p>
             </div>
+
             <div className="grid md:grid-cols-3 gap-8">
-              {userTypes.map((type, index) => (
-                <div key={index} className="relative">
-                  {type.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-                      <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-                        ⭐ Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <div className={`bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2 ${type.popular ? 'border-4 border-yellow-400' : ''}`}>
-                    <div className={`bg-gradient-to-r ${type.color} text-white p-8 text-center`}>
-                      <div className="text-5xl mb-4">{type.icon}</div>
-                      <h3 className="text-2xl font-bold mb-2">{type.title}</h3>
-                      <p className="text-blue-100">{type.subtitle}</p>
-                    </div>
-                    <div className="p-8">
-                      <ul className="space-y-4 mb-8">
-                        {type.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                            <span className="text-gray-700">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <button onClick={() => router.push('/register')} className={`w-full bg-gradient-to-r ${type.color} text-white py-4 rounded-xl font-semibold hover:shadow-lg transition transform hover:scale-105`}>
-                        {type.cta}
-                      </button>
-                    </div>
+              {solutions.map((solution, index) => (
+                <div key={index} className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-2xl p-8 card-hover border border-primary-200">
+                  <div className="text-6xl text-center mb-6">{solution.visual}</div>
+                  <div className="bg-gradient-purple text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    {solution.icon}
                   </div>
+                  <h3 className="text-2xl font-bold text-accent-dark mb-4">{solution.title}</h3>
+                  <p className="text-accent-gray-600 leading-relaxed">{solution.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Value Props Section */}
+        <section className="section-container bg-accent-dark text-white">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Why Thousands Choose Rework
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Built for Global Async Teams
               </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                We've built the most comprehensive platform for remote work, combining AI technology 
-                with human expertise to deliver exceptional results.
+              <p className="text-xl text-accent-gray-300 max-w-3xl mx-auto">
+                The most powerful features for distributed AI development teams.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {benefits.map((benefit, index) => (
-                <div key={index} className="bg-gradient-to-br from-slate-50 to-blue-50 p-8 rounded-2xl hover:shadow-xl transition">
-                  <div className="bg-gradient-to-br from-blue-500 to-purple-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
-                    {benefit.icon}
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {valueProps.map((prop, index) => (
+                <div key={index} className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition">
+                  <div className="bg-gradient-purple w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+                    {prop.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{benefit.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
+                  <h3 className="text-2xl font-bold mb-4">{prop.title}</h3>
+                  <p className="text-accent-gray-300 leading-relaxed">{prop.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Who It's For Section */}
+        <section id="for-who" className="section-container bg-white">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Freelancers Love Our Platform
+              <h2 className="text-4xl md:text-5xl font-bold text-accent-dark mb-6">
+                Who It's For
               </h2>
-              <p className="text-xl text-gray-600">Real stories from real people earning remotely with Rework</p>
             </div>
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white rounded-2xl shadow-2xl p-12">
-                <div className="flex justify-center mb-8">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-8 h-8 fill-yellow-400 text-yellow-400" />
+
+            <div className="grid md:grid-cols-2 gap-12">
+              {/* For Companies */}
+              <div className="bg-gradient-to-br from-blue-50 to-primary-50 rounded-2xl p-10 border-2 border-primary-200">
+                <div className="w-16 h-16 bg-gradient-purple rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Briefcase className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-accent-dark mb-6">For Companies</h3>
+                <ul className="space-y-4">
+                  {forCompanies.map((item, index) => (
+                    <li key={index} className="flex items-start space-x-3">
+                      <CheckCircle className="w-6 h-6 text-primary-500 flex-shrink-0 mt-1" />
+                      <span className="text-accent-gray-700 text-lg">{item}</span>
+                    </li>
                   ))}
+                </ul>
+                <button onClick={() => router.push('/register?type=client')} className="btn-primary w-full mt-8">
+                  Find AI Freelancers
+                </button>
+              </div>
+
+              {/* For Freelancers */}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-10 border-2 border-purple-200">
+                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Users className="w-8 h-8 text-white" />
                 </div>
-                <blockquote className="text-2xl text-gray-700 text-center mb-8 leading-relaxed italic">
-                  &quot;{testimonials[activeTestimonial].quote}&quot;
-                </blockquote>
-                <div className="flex items-center justify-center space-x-4">
-                  <img 
-                    src={testimonials[activeTestimonial].image} 
-                    alt={testimonials[activeTestimonial].name}
-                    className="w-16 h-16 rounded-full object-cover border-4 border-blue-500"
-                  />
-                  <div>
-                    <div className="font-bold text-gray-900 text-lg">{testimonials[activeTestimonial].name}</div>
-                    <div className="text-gray-600">{testimonials[activeTestimonial].role}</div>
-                  </div>
-                </div>
-                <div className="flex justify-center space-x-3 mt-8">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveTestimonial(index)}
-                      className={`w-3 h-3 rounded-full transition ${
-                        activeTestimonial === index ? 'bg-blue-600 w-8' : 'bg-gray-300'
-                      }`}
-                    />
+                <h3 className="text-3xl font-bold text-accent-dark mb-6">For Freelancers</h3>
+                <ul className="space-y-4">
+                  {forFreelancers.map((item, index) => (
+                    <li key={index} className="flex items-start space-x-3">
+                      <CheckCircle className="w-6 h-6 text-purple-500 flex-shrink-0 mt-1" />
+                      <span className="text-accent-gray-700 text-lg">{item}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
+                <button onClick={() => router.push('/register?type=freelancer')} className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-8 rounded-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 w-full mt-8">
+                  Join the Network
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Start Earning Remotely?
+        {/* Pricing Section */}
+        <section id="pricing" className="section-container bg-gradient-to-b from-accent-gray-100 to-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-accent-dark mb-6">
+                Simple, Transparent Pricing
+              </h2>
+              <p className="text-xl text-accent-gray-600 max-w-3xl mx-auto">
+                Choose the plan that fits your needs. All plans include our core collaboration features.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {pricingTiers.map((tier, index) => (
+                <div
+                  key={index}
+                  className={`bg-white rounded-2xl overflow-hidden card-hover border-2 ${
+                    tier.highlighted ? 'border-primary-500 shadow-2xl scale-105' : 'border-accent-gray-200'
+                  }`}
+                >
+                  {tier.highlighted && (
+                    <div className="bg-gradient-purple text-white text-center py-3 font-bold text-sm">
+                      ⭐ MOST POPULAR
+                    </div>
+                  )}
+                  <div className="p-8">
+                    <h3 className="text-2xl font-bold text-accent-dark mb-2">{tier.name}</h3>
+                    <div className="mb-4">
+                      <span className="text-5xl font-bold text-accent-dark">{tier.price}</span>
+                      <span className="text-accent-gray-500">{tier.period}</span>
+                    </div>
+                    <p className="text-accent-gray-600 mb-4">{tier.description}</p>
+                    <div className="bg-primary-50 rounded-lg p-3 mb-6">
+                      <p className="text-sm text-primary-700 font-semibold">Ideal for:</p>
+                      <p className="text-sm text-accent-gray-700">{tier.idealFor}</p>
+                    </div>
+                    <ul className="space-y-3 mb-8">
+                      {tier.features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start space-x-3">
+                          <CheckCircle className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-accent-gray-700 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => router.push('/register')}
+                      className={tier.highlighted ? 'btn-primary w-full' : 'btn-outline w-full'}
+                    >
+                      {tier.cta}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <section className="section-container bg-gradient-to-br from-primary-500 to-purple-600 text-white">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              AI work never sleeps — but you should.
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of freelancers, agents, and businesses who trust Rework for their remote work needs.
+            <p className="text-2xl text-white/90 mb-10">
+              Relaywork keeps your projects moving while you rest.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={() => router.push('/register')} className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:shadow-2xl transition transform hover:scale-105 flex items-center justify-center">
-                Create Free Account
-                <ArrowRight className="ml-2 w-5 h-5" />
+              <button onClick={() => router.push('/register?type=client')} className="bg-white text-primary-500 px-10 py-4 rounded-lg font-bold hover:shadow-2xl transition transform hover:scale-105 text-lg">
+                Start a Project
               </button>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-blue-600 transition">
-                Talk to Sales
+              <button onClick={() => router.push('/register?type=freelancer')} className="bg-white/10 backdrop-blur-sm border-2 border-white text-white px-10 py-4 rounded-lg font-bold hover:bg-white/20 transition text-lg">
+                Join the Freelance Network
               </button>
             </div>
-            <p className="text-blue-100 mt-6">No credit card required • Free forever • Cancel anytime</p>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-gray-300 py-12">
+        <footer className="bg-accent-dark text-accent-gray-300 py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-8 mb-8">
-              <div>
-                <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-4">
-                  Remote Works
+            <div className="grid md:grid-cols-5 gap-12 mb-12">
+              <div className="md:col-span-2">
+                <div className="flex items-center mb-4">
+                  <Globe2 className="w-8 h-8 text-primary-400 mr-2" />
+                  <div className="text-2xl font-bold text-white">
+                    Relay<span className="text-primary-400">work</span>
+                  </div>
                 </div>
-                <p className="text-gray-400 mb-4">
-                  Empowering anyone, anywhere to earn remotely and unlock real income through AI-driven opportunities.
+                <p className="text-accent-gray-400 leading-relaxed mb-6">
+                  Where AI builders and companies work across time zones — without the chaos.
+                </p>
+                <p className="text-accent-gray-500 text-sm">
+                  AI work never sleeps — but you should.
                 </p>
               </div>
+
               <div>
-                <h4 className="font-bold text-white mb-4">For Workers</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="hover:text-blue-400 transition">Become a Freelancer</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Become an Agent</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Browse Projects</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">How It Works</a></li>
+                <h4 className="font-bold text-white mb-4">Product</h4>
+                <ul className="space-y-3">
+                  <li><a href="#features" className="hover:text-primary-400 transition">Features</a></li>
+                  <li><a href="#pricing" className="hover:text-primary-400 transition">Pricing</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">API</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">Integrations</a></li>
                 </ul>
               </div>
-              <div>
-                <h4 className="font-bold text-white mb-4">For Businesses</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="hover:text-blue-400 transition">Hire Talent</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Pricing</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Enterprise Solutions</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Success Stories</a></li>
-                </ul>
-              </div>
+
               <div>
                 <h4 className="font-bold text-white mb-4">Company</h4>
-                <ul className="space-y-2">
-                  <li><a href="#" className="hover:text-blue-400 transition">About Us</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Contact</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Privacy Policy</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition">Terms of Service</a></li>
+                <ul className="space-y-3">
+                  <li><a href="#" className="hover:text-primary-400 transition">About</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">Blog</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">Careers</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">Contact</a></li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-white mb-4">Legal</h4>
+                <ul className="space-y-3">
+                  <li><a href="#" className="hover:text-primary-400 transition">Privacy</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">Terms</a></li>
+                  <li><a href="#" className="hover:text-primary-400 transition">Security</a></li>
                 </ul>
               </div>
             </div>
-            <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-400">© 2025 Remote Works. All rights reserved.</p>
+
+            <div className="border-t border-accent-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+              <p className="text-accent-gray-500 text-sm">© 2025 Relaywork. All rights reserved.</p>
               <div className="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" className="hover:text-blue-400 transition">Twitter</a>
-                <a href="#" className="hover:text-blue-400 transition">LinkedIn</a>
-                <a href="#" className="hover:text-blue-400 transition">Facebook</a>
+                <a href="#" className="text-accent-gray-500 hover:text-primary-400 transition">Twitter</a>
+                <a href="#" className="text-accent-gray-500 hover:text-primary-400 transition">LinkedIn</a>
+                <a href="#" className="text-accent-gray-500 hover:text-primary-400 transition">GitHub</a>
               </div>
             </div>
           </div>

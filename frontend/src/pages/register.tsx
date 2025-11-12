@@ -4,7 +4,7 @@ import { useAuthStore } from '@/lib/authStore';
 import Link from 'next/link';
 import Head from 'next/head';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import { Users, Briefcase, Building } from 'lucide-react';
+import { Users, Building, Globe2, ArrowLeft, Check } from 'lucide-react';
 
 export default function Register() {
   const router = useRouter();
@@ -16,6 +16,17 @@ export default function Register() {
   const [isConfigured, setIsConfigured] = useState(true);
 
   useEffect(() => {
+    // Check if there's a pre-selected role from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+    if (typeParam === 'client') {
+      setRole('business');
+      setStep(2);
+    } else if (typeParam === 'freelancer') {
+      setRole('freelancer');
+      setStep(2);
+    }
+
     // Check if Google OAuth is configured
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId || clientId === '') {
@@ -27,24 +38,29 @@ export default function Register() {
   const roles = [
     {
       value: 'freelancer',
-      title: 'Freelancer',
-      description: 'Work on projects and earn 99.9% of your income',
+      title: 'AI Freelancer',
+      description: 'Work on AI projects, automations, and get verified for your skills',
       icon: <Users className="w-12 h-12" />,
-      color: 'blue'
-    },
-    {
-      value: 'agent',
-      title: 'Agent',
-      description: 'Work on behalf of others and earn 3x more',
-      icon: <Briefcase className="w-12 h-12" />,
-      color: 'purple'
+      features: [
+        'Access to global AI projects',
+        'Verified freelancer badge',
+        'Portfolio & skills showcase',
+        'Flexible async work'
+      ],
+      color: 'primary'
     },
     {
       value: 'business',
-      title: 'Business',
-      description: 'Hire talented remote workers for your projects',
+      title: 'Company',
+      description: 'Hire verified AI freelancers and manage projects across time zones',
       icon: <Building className="w-12 h-12" />,
-      color: 'green'
+      features: [
+        'Access verified AI talent',
+        'Project management tools',
+        'AI PM Co-Pilot',
+        'Shared sandbox environment'
+      ],
+      color: 'purple'
     }
   ];
 
@@ -74,27 +90,37 @@ export default function Register() {
   return (
     <>
       <Head>
-        <title>Sign Up - Remote Works</title>
+        <title>Sign Up - Relaywork</title>
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center px-4 py-12">
-        <div className="max-w-4xl w-full">
-          <div className="bg-white rounded-2xl shadow-2xl p-8">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-50 flex items-center justify-center px-4 py-12">
+        <div className="max-w-5xl w-full">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border border-accent-gray-200">
+            {/* Logo */}
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
+                <Globe2 className="w-10 h-10 text-primary-500 mr-2" />
+                <div className="text-3xl font-bold text-accent-dark">
+                  Relay<span className="gradient-text">work</span>
+                </div>
+              </div>
+            </div>
+
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold text-accent-dark mb-2">
                 Create Your Account
               </h1>
-              <p className="text-gray-600">Start your remote work journey today</p>
+              <p className="text-accent-gray-600 text-lg">Join the async AI workspace</p>
             </div>
 
             {/* Progress Steps */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-12">
               <div className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
-                  1
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition ${step >= 1 ? 'bg-primary-500 text-white' : 'bg-accent-gray-200 text-accent-gray-600'}`}>
+                  {step > 1 ? <Check className="w-6 h-6" /> : '1'}
                 </div>
-                <div className={`w-20 h-1 ${step >= 2 ? 'bg-blue-600' : 'bg-gray-200'}`}></div>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+                <div className={`w-24 h-1 transition ${step >= 2 ? 'bg-primary-500' : 'bg-accent-gray-200'}`}></div>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition ${step >= 2 ? 'bg-primary-500 text-white' : 'bg-accent-gray-200 text-accent-gray-600'}`}>
                   2
                 </div>
               </div>
@@ -108,10 +134,10 @@ export default function Register() {
 
             {step === 1 && (
               <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">
-                  Choose Your Role
+                <h2 className="text-2xl font-bold text-accent-dark mb-8 text-center">
+                  How will you use Relaywork?
                 </h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                   {roles.map((r) => (
                     <button
                       key={r.value}
@@ -119,15 +145,23 @@ export default function Register() {
                         setRole(r.value);
                         setStep(2);
                       }}
-                      className={`p-6 border-2 rounded-xl hover:shadow-lg transition transform hover:-translate-y-1 ${
-                        role === r.value ? 'border-blue-600 bg-blue-50' : 'border-gray-200'
+                      className={`p-8 border-2 rounded-2xl hover:shadow-xl transition-all transform hover:-translate-y-1 text-left ${
+                        role === r.value ? 'border-primary-500 bg-primary-50 shadow-lg' : 'border-accent-gray-200 hover:border-primary-300'
                       }`}
                     >
-                      <div className={`text-${r.color}-600 mb-4 flex justify-center`}>
+                      <div className={`text-primary-500 mb-6`}>
                         {r.icon}
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{r.title}</h3>
-                      <p className="text-gray-600 text-sm">{r.description}</p>
+                      <h3 className="text-2xl font-bold text-accent-dark mb-3">{r.title}</h3>
+                      <p className="text-accent-gray-600 mb-6">{r.description}</p>
+                      <ul className="space-y-3">
+                        {r.features.map((feature, idx) => (
+                          <li key={idx} className="flex items-start space-x-2 text-sm text-accent-gray-700">
+                            <Check className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </button>
                   ))}
                 </div>
@@ -136,21 +170,26 @@ export default function Register() {
 
             {step === 2 && (
               <div className="max-w-md mx-auto">
-                <div className="text-center mb-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-2">
-                    Sign Up as {roles.find(r => r.value === role)?.title}
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center space-x-3 bg-primary-100 px-6 py-3 rounded-full mb-4">
+                    <span className="text-primary-700 font-semibold">
+                      Signing up as {roles.find(r => r.value === role)?.title}
+                    </span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-accent-dark mb-2">
+                    Sign Up with Google
                   </h2>
-                  <p className="text-gray-600">Sign in with your Google account</p>
+                  <p className="text-accent-gray-600">Quick and secure authentication</p>
                 </div>
 
                 {loading && (
                   <div className="text-center mb-6">
-                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    <p className="mt-2 text-gray-600">Creating your account...</p>
+                    <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500"></div>
+                    <p className="mt-3 text-accent-gray-600 font-medium">Creating your account...</p>
                   </div>
                 )}
 
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center mb-8">
                   {isConfigured ? (
                     <GoogleLogin
                       onSuccess={handleGoogleSuccess}
@@ -162,7 +201,7 @@ export default function Register() {
                       shape="rectangular"
                     />
                   ) : (
-                    <div className="text-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="text-center p-6 bg-yellow-50 border border-yellow-200 rounded-lg w-full">
                       <p className="text-yellow-800 font-semibold mb-2">Google OAuth Not Configured</p>
                       <p className="text-yellow-700 text-sm mb-2">
                         Please configure your Google OAuth credentials to enable sign up.
@@ -186,34 +225,36 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
                   )}
                 </div>
 
-                <div className="flex justify-center">
+                <div className="flex justify-center mb-6">
                   <button
                     type="button"
                     onClick={() => setStep(1)}
-                    className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                    className="btn-outline inline-flex items-center"
                   >
-                    ← Back to Role Selection
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Change Role
                   </button>
                 </div>
 
-                <div className="mt-6 text-center text-xs text-gray-500">
-                  <p>By signing up, you agree to our Terms of Service and Privacy Policy</p>
+                <div className="text-center text-xs text-accent-gray-500">
+                  <p>By signing up, you agree to our <a href="#" className="text-primary-500 hover:underline">Terms of Service</a> and <a href="#" className="text-primary-500 hover:underline">Privacy Policy</a></p>
                 </div>
               </div>
             )}
 
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <p className="text-gray-600 mb-4">
+            <div className="mt-12 pt-8 border-t border-accent-gray-200 text-center">
+              <p className="text-accent-gray-600 mb-4">
                 Already have an account?{' '}
-                <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
+                <Link href="/login" className="text-primary-500 hover:text-primary-600 font-semibold">
                   Login
                 </Link>
               </p>
               <button
                 onClick={() => router.push('/')}
-                className="text-gray-600 hover:text-gray-800 text-sm"
+                className="text-accent-gray-600 hover:text-accent-dark text-sm inline-flex items-center"
               >
-                ← Back to Home
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back to Home
               </button>
             </div>
           </div>
