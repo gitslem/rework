@@ -49,12 +49,13 @@ async def startup_event():
         logger.error("Database initialization failed - some features may not work")
 
 # Include routers
-# Auth router is included both with and without API version prefix for backwards compatibility
+# Auth and users routers are included both with and without API version prefix for backwards compatibility
 app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth-v1"])
 app.include_router(auth.router, tags=["auth"])  # Direct /auth/* endpoints
+app.include_router(users.router, prefix=settings.API_V1_STR, tags=["users-v1"])
+app.include_router(users.router, tags=["users"])  # Direct /users/* endpoints
 app.include_router(projects.router, prefix=settings.API_V1_STR)
 app.include_router(applications.router, prefix=settings.API_V1_STR)
-app.include_router(users.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")
@@ -190,7 +191,7 @@ def run_diagnostics(db: Session = Depends(get_db)):
                 result = db.execute(text("SELECT typname FROM pg_type WHERE typtype = 'e'"))
                 enum_names = [row[0] for row in result]
                 diagnostics["enums"]["found"] = enum_names
-                diagnostics["enums"]["expected"] = ["userrole", "projectstatus", "applicationstatus", "paymentstatus"]
+                diagnostics["enums"]["expected"] = ["user_role", "project_status", "application_status", "payment_status"]
                 missing_enums = set(diagnostics["enums"]["expected"]) - set(enum_names)
                 if missing_enums:
                     diagnostics["enums"]["missing"] = list(missing_enums)
