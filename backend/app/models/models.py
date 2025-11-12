@@ -48,6 +48,27 @@ class SandboxLanguage(str, enum.Enum):
     TYPESCRIPT = "typescript"
 
 
+class ProofType(str, enum.Enum):
+    COMMIT = "commit"
+    PULL_REQUEST = "pull_request"
+    REPOSITORY = "repository"
+    FILE = "file"
+    SCREENSHOT = "screenshot"
+
+
+class ProofStatus(str, enum.Enum):
+    PENDING = "pending"
+    VERIFIED = "verified"
+    FAILED = "failed"
+    EXPIRED = "expired"
+
+
+class CertificateStatus(str, enum.Enum):
+    ACTIVE = "active"
+    REVOKED = "revoked"
+    EXPIRED = "expired"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -55,6 +76,8 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=True)  # Nullable for OAuth users
     google_id = Column(String, unique=True, nullable=True, index=True)  # Google OAuth ID
+    github_id = Column(String, unique=True, nullable=True, index=True)  # GitHub OAuth ID
+    github_access_token = Column(String, nullable=True)  # GitHub OAuth access token (encrypted in production)
     role = Column(Enum(UserRole, name="user_role", create_type=False, values_callable=lambda x: [e.value for e in x]), default=UserRole.FREELANCER)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
@@ -98,6 +121,8 @@ class User(Base):
     payments_sent = relationship("Payment", foreign_keys="Payment.payer_id", back_populates="payer")
     payments_received = relationship("Payment", foreign_keys="Payment.payee_id", back_populates="payee")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    proofs = relationship("ProofOfBuild", back_populates="user", cascade="all, delete-orphan")
+    certificates = relationship("BuildCertificate", back_populates="user", cascade="all, delete-orphan")
 
 
 class Profile(Base):
@@ -160,6 +185,8 @@ class Project(Base):
     agent_assignments = relationship("AgentAssignment", back_populates="project", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="project", cascade="all, delete-orphan")
     payments = relationship("Payment", back_populates="project", cascade="all, delete-orphan")
+    proofs = relationship("ProofOfBuild", back_populates="project", cascade="all, delete-orphan")
+    certificates = relationship("BuildCertificate", back_populates="project", cascade="all, delete-orphan")
 
 
 class Application(Base):
@@ -369,3 +396,144 @@ class SandboxCollaborator(Base):
     # Relationships
     sandbox = relationship("SandboxSession", back_populates="collaborators")
     user = relationship("User")
+
+
+class ProofOfBuild(Base):
+    """Proof-of-Build verification records - tracks verified work delivery"""
+    __tablename__ = "proofs_of_build"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Ownership & Project linking
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+
+    # Proof metadata
+    proof_type = Column(
+        Enum(ProofType, name="proof_type", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        nullable=False
+    )
+    status = Column(
+        Enum(ProofStatus, name="proof_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=ProofStatus.PENDING
+    )
+
+    # GitHub data (for commits, PRs, repos)
+    github_repo_url = Column(String, nullable=True)
+    github_repo_name = Column(String, nullable=True)  # e.g., "username/repo"
+    github_commit_hash = Column(String, nullable=True, index=True)
+    github_pr_number = Column(Integer, nullable=True)
+    github_pr_url = Column(String, nullable=True)
+    github_branch = Column(String, nullable=True)
+
+    # File/Screenshot verification
+    file_name = Column(String, nullable=True)
+    file_url = Column(String, nullable=True)  # S3 or storage URL
+    file_hash = Column(String, nullable=True, index=True)  # SHA-256 hash
+    file_size = Column(Integer, nullable=True)
+
+    # Verification data
+    verified_at = Column(DateTime(timezone=True), nullable=True)
+    verification_signature = Column(Text, nullable=True)  # Cryptographic signature
+    verification_metadata = Column(JSON, default={})  # Additional verification data
+
+    # Milestone tracking
+    milestone_name = Column(String, nullable=True)
+    milestone_description = Column(Text, nullable=True)
+
+    # Timestamps
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())  # When proof was created
+    expires_at = Column(DateTime(timezone=True), nullable=True)  # Optional expiration
+
+    # Additional metadata
+    description = Column(Text, nullable=True)
+    metadata = Column(JSON, default={})  # Flexible metadata storage
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    user = relationship("User", back_populates="proofs")
+    project = relationship("Project", back_populates="proofs")
+    artifacts = relationship("ProofArtifact", back_populates="proof", cascade="all, delete-orphan")
+
+
+class ProofArtifact(Base):
+    """Additional artifacts attached to proofs (screenshots, logs, test results)"""
+    __tablename__ = "proof_artifacts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    proof_id = Column(Integer, ForeignKey("proofs_of_build.id"), nullable=False)
+
+    # Artifact data
+    artifact_type = Column(String, nullable=False)  # "screenshot", "log", "test_result", "document"
+    file_name = Column(String, nullable=False)
+    file_url = Column(String, nullable=False)
+    file_hash = Column(String, nullable=False, index=True)  # SHA-256 hash
+    file_size = Column(Integer, nullable=False)
+    mime_type = Column(String, nullable=True)
+
+    # Metadata
+    description = Column(Text, nullable=True)
+    metadata = Column(JSON, default={})
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    proof = relationship("ProofOfBuild", back_populates="artifacts")
+
+
+class BuildCertificate(Base):
+    """Signed certificates/badges for verified milestones"""
+    __tablename__ = "build_certificates"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Ownership
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)
+
+    # Certificate data
+    certificate_id = Column(String, unique=True, nullable=False, index=True)  # Unique certificate identifier
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+
+    # Milestone info
+    milestone_name = Column(String, nullable=False)
+    milestone_date = Column(DateTime(timezone=True), nullable=False)
+
+    # Verification
+    status = Column(
+        Enum(CertificateStatus, name="certificate_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=CertificateStatus.ACTIVE
+    )
+    signature = Column(Text, nullable=False)  # Cryptographic signature
+    signature_algorithm = Column(String, default="HMAC-SHA256")
+
+    # Certificate content
+    certificate_data = Column(JSON, nullable=False)  # Complete certificate data
+    badge_url = Column(String, nullable=True)  # URL to badge image
+
+    # Blockchain/notarization (for future)
+    blockchain_tx_hash = Column(String, nullable=True, index=True)
+    blockchain_network = Column(String, nullable=True)  # "polygon", "ethereum", etc.
+    notarized_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Verification URL
+    verification_url = Column(String, nullable=True)  # Public verification URL
+
+    # Proof references
+    proof_ids = Column(JSON, default=[])  # Array of proof IDs included in this certificate
+
+    # Expiration
+    issued_at = Column(DateTime(timezone=True), server_default=func.now())
+    expires_at = Column(DateTime(timezone=True), nullable=True)
+    revoked_at = Column(DateTime(timezone=True), nullable=True)
+    revocation_reason = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    user = relationship("User", back_populates="certificates")
+    project = relationship("Project", back_populates="certificates")

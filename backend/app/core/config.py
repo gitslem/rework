@@ -49,6 +49,13 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
 
+    # GitHub OAuth
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
+
+    # Proof-of-Build
+    PROOF_SIGNATURE_KEY: str = "proof-signature-key-change-in-production"  # Key for signing certificates
+
     # Environment
     ENVIRONMENT: str = "development"
 
