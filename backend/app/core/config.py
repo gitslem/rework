@@ -54,6 +54,10 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_SECRET: str = ""
     GITHUB_WEBHOOK_SECRET: str = ""  # Secret for verifying GitHub webhook signatures
 
+    # Hugging Face OAuth
+    HUGGINGFACE_CLIENT_ID: str = ""
+    HUGGINGFACE_CLIENT_SECRET: str = ""
+
     # Proof-of-Build
     PROOF_SIGNATURE_KEY: str = "proof-signature-key-change-in-production"  # Key for signing certificates
 

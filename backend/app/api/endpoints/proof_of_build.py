@@ -728,3 +728,149 @@ def revoke_certificate(
     db.commit()
 
     return {"message": "Certificate revoked successfully"}
+
+
+# Hugging Face helper function
+def get_huggingface_headers(user: User) -> dict:
+    """Get Hugging Face API headers with user's access token"""
+    if not user.huggingface_access_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Hugging Face account not connected. Please connect your Hugging Face account first."
+        )
+    return {
+        "Authorization": f"Bearer {user.huggingface_access_token}",
+        "Accept": "application/json"
+    }
+
+
+# Hugging Face Model Verification
+@router.post("/verify/huggingface/model", response_model=ProofOfBuildResponse)
+def verify_huggingface_model(
+    model_id: str,
+    project_id: Optional[int] = None,
+    description: Optional[str] = None,
+    milestone_name: Optional[str] = None,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Verify a Hugging Face model and create proof.
+    
+    Args:
+        model_id: HF model ID (e.g., "username/model-name" or full URL)
+        project_id: Optional project to link proof to
+        description: Optional description for the proof
+        milestone_name: Optional milestone name
+    """
+    try:
+        headers = get_huggingface_headers(current_user)
+        
+        # Extract model ID from URL if provided
+        if "huggingface.co" in model_id:
+            # Extract from URL like https://huggingface.co/username/model-name
+            parts = model_id.split("/")
+            if len(parts) >= 2:
+                model_id = "/".join(parts[-2:])  # Get username/model-name
+        
+        # Get model info from Hugging Face API
+        api_url = f"https://huggingface.co/api/models/{model_id}"
+        response = requests.get(api_url, headers=headers)
+        
+        if response.status_code == 404:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Model '{model_id}' not found or not accessible"
+            )
+        elif response.status_code != 200:
+            logger.error(f"Hugging Face API error: {response.text}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Hugging Face API error: {response.text}"
+            )
+        
+        model_data = response.json()
+        
+        # Extract model information
+        model_name = model_data.get("id") or model_data.get("modelId") or model_id
+        author = model_data.get("author", "")
+        created_at_str = model_data.get("created_at") or model_data.get("createdAt")
+        last_modified_str = model_data.get("lastModified") or model_data.get("last_modified")
+        
+        # Parse dates
+        created_at = None
+        if created_at_str:
+            try:
+                created_at = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
+            except:
+                pass
+        
+        last_modified = None
+        if last_modified_str:
+            try:
+                last_modified = datetime.fromisoformat(last_modified_str.replace("Z", "+00:00"))
+            except:
+                pass
+        
+        # Create verification metadata
+        verification_metadata = {
+            "model_id": model_name,
+            "author": author,
+            "model_type": model_data.get("pipeline_tag") or model_data.get("pipelineTag"),
+            "library_name": model_data.get("library_name") or model_data.get("libraryName"),
+            "tags": model_data.get("tags", []),
+            "downloads": model_data.get("downloads", 0),
+            "likes": model_data.get("likes", 0),
+            "created_at": created_at.isoformat() if created_at else None,
+            "last_modified": last_modified.isoformat() if last_modified else None,
+            "private": model_data.get("private", False),
+            "disabled": model_data.get("disabled", False)
+        }
+        
+        # Add card data if available
+        if "cardData" in model_data or "card_data" in model_data:
+            card_data = model_data.get("cardData") or model_data.get("card_data", {})
+            verification_metadata["license"] = card_data.get("license")
+            verification_metadata["language"] = card_data.get("language")
+            verification_metadata["datasets"] = card_data.get("datasets", [])
+        
+        # Create data string for signature
+        signature_data = f"{current_user.id}:hf-model:{model_name}:{datetime.utcnow().isoformat()}"
+        signature = sign_data(signature_data)
+        
+        # Create model URL
+        model_url = f"https://huggingface.co/{model_name}"
+        
+        # Create proof
+        proof = ProofOfBuild(
+            user_id=current_user.id,
+            project_id=project_id,
+            proof_type=ProofType.HUGGINGFACE_MODEL,
+            status=ProofStatus.VERIFIED,
+            description=description or f"Hugging Face Model: {model_name}",
+            milestone_name=milestone_name,
+            verified_at=datetime.utcnow(),
+            verification_signature=signature,
+            verification_metadata=verification_metadata,
+            proof_metadata={
+                "huggingface_model_id": model_name,
+                "huggingface_model_url": model_url,
+                "huggingface_api_response": model_data
+            }
+        )
+        
+        db.add(proof)
+        db.commit()
+        db.refresh(proof)
+        
+        logger.info(f"Created Hugging Face model proof {proof.id} for user {current_user.id}, model: {model_name}")
+        return proof
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to verify Hugging Face model: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to verify Hugging Face model: {str(e)}"
+        )

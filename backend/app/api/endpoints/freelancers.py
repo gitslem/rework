@@ -4,7 +4,7 @@ from sqlalchemy import or_, and_, func
 from typing import List, Optional
 from datetime import datetime
 from app.db.database import get_db
-from app.models.models import User, Profile, PortfolioItem, UserRole
+from app.models.models import User, Profile, PortfolioItem, UserRole, ProofOfBuild, ProofStatus, ProofApproval, ApprovalStatus
 from app.schemas.schemas import (
     PortfolioItemCreate,
     PortfolioItemUpdate,
@@ -241,6 +241,8 @@ def search_freelancers(
     min_rating: Optional[float] = Query(None, ge=0, le=5),
     verified_skills_only: bool = Query(False, description="Only show freelancers with verified skills"),
     search_query: Optional[str] = Query(None, description="Search in name, bio, skills"),
+    min_verified_proofs: Optional[int] = Query(None, ge=0, description="Minimum number of verified proofs"),
+    min_verified_percentage: Optional[float] = Query(None, ge=0, le=100, description="Minimum verified proof percentage"),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
@@ -308,6 +310,34 @@ def search_freelancers(
         if verified_skills_only and not any(vs.get("verified", False) for vs in verified_skills_list):
             continue
 
+        # Calculate proof metrics
+        total_proofs = db.query(func.count(ProofOfBuild.id)).filter(
+            ProofOfBuild.user_id == user.id
+        ).scalar() or 0
+
+        verified_proofs = db.query(func.count(ProofOfBuild.id)).filter(
+            ProofOfBuild.user_id == user.id,
+            ProofOfBuild.status == ProofStatus.VERIFIED
+        ).scalar() or 0
+
+        verified_percentage = (verified_proofs / total_proofs * 100) if total_proofs > 0 else 0
+
+        projects_with_proofs = db.query(
+            func.count(func.distinct(ProofOfBuild.project_id))
+        ).filter(
+            ProofOfBuild.user_id == user.id,
+            ProofOfBuild.project_id.isnot(None)
+        ).scalar() or 0
+
+        # Apply proof metric filters
+        if min_verified_proofs is not None and verified_proofs < min_verified_proofs:
+            continue
+
+        if min_verified_percentage is not None and verified_percentage < min_verified_percentage:
+            continue
+
+        badges = _calculate_badges(total_proofs, verified_percentage, projects_with_proofs)
+
         response.append(FreelancerSearchResponse(
             user_id=user.id,
             profile_id=profile.id,
@@ -325,7 +355,10 @@ def search_freelancers(
             completed_projects=profile.completed_projects,
             portfolio_items_count=portfolio_count,
             github_username=profile.github_username,
-            huggingface_username=profile.huggingface_username
+            huggingface_username=profile.huggingface_username,
+            total_proofs=total_proofs,
+            verified_percentage=round(verified_percentage, 1),
+            badges=badges
         ))
 
     return response
@@ -382,3 +415,114 @@ def get_featured_freelancers(
         ))
 
     return response
+
+
+# ================== Proof Metrics Endpoints ==================
+
+@router.get("/{user_id}/proof-metrics")
+def get_user_proof_metrics(
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Calculate proof-of-build metrics for a specific user
+
+    Returns:
+    - Total proofs created
+    - Verified proofs count and percentage
+    - Approved proofs count
+    - Projects with proofs
+    - Average proofs per project
+    - Recent proof activity
+    """
+    # Total proofs created by user
+    total_proofs = db.query(func.count(ProofOfBuild.id)).filter(
+        ProofOfBuild.user_id == user_id
+    ).scalar() or 0
+
+    # Verified proofs
+    verified_proofs = db.query(func.count(ProofOfBuild.id)).filter(
+        ProofOfBuild.user_id == user_id,
+        ProofOfBuild.status == ProofStatus.VERIFIED
+    ).scalar() or 0
+
+    # Calculate verified percentage
+    verified_percentage = (verified_proofs / total_proofs * 100) if total_proofs > 0 else 0
+
+    # Approved proofs (proofs with approval records marked as approved)
+    approved_proofs = db.query(func.count(ProofApproval.id)).join(
+        ProofOfBuild, ProofApproval.proof_id == ProofOfBuild.id
+    ).filter(
+        ProofOfBuild.user_id == user_id,
+        ProofApproval.status == ApprovalStatus.APPROVED
+    ).scalar() or 0
+
+    # Projects with proofs
+    projects_with_proofs = db.query(
+        func.count(func.distinct(ProofOfBuild.project_id))
+    ).filter(
+        ProofOfBuild.user_id == user_id,
+        ProofOfBuild.project_id.isnot(None)
+    ).scalar() or 0
+
+    # Average proofs per project
+    avg_proofs_per_project = round(total_proofs / projects_with_proofs, 1) if projects_with_proofs > 0 else 0
+
+    # Recent proof activity (last 30 days)
+    from datetime import timedelta
+    thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+
+    recent_proofs = db.query(func.count(ProofOfBuild.id)).filter(
+        ProofOfBuild.user_id == user_id,
+        ProofOfBuild.created_at >= thirty_days_ago
+    ).scalar() or 0
+
+    # Proof types breakdown
+    from app.models.models import ProofType
+    proof_types_breakdown = {}
+    for pt in ProofType:
+        count = db.query(func.count(ProofOfBuild.id)).filter(
+            ProofOfBuild.user_id == user_id,
+            ProofOfBuild.proof_type == pt
+        ).scalar() or 0
+        proof_types_breakdown[pt.value] = count
+
+    return {
+        "user_id": user_id,
+        "total_proofs": total_proofs,
+        "verified_proofs": verified_proofs,
+        "verified_percentage": round(verified_percentage, 1),
+        "approved_proofs": approved_proofs,
+        "projects_with_proofs": projects_with_proofs,
+        "avg_proofs_per_project": avg_proofs_per_project,
+        "recent_proofs_30_days": recent_proofs,
+        "proof_types_breakdown": proof_types_breakdown,
+        "badges": _calculate_badges(total_proofs, verified_percentage, projects_with_proofs)
+    }
+
+
+def _calculate_badges(total_proofs: int, verified_percentage: float, projects_with_proofs: int) -> List[str]:
+    """Calculate achievement badges based on proof metrics"""
+    badges = []
+
+    if total_proofs >= 10:
+        badges.append("verified_builder")
+    if total_proofs >= 50:
+        badges.append("prolific_builder")
+    if verified_percentage >= 90:
+        badges.append("consistent_deliverer")
+    if projects_with_proofs >= 5:
+        badges.append("multi_project_veteran")
+    if projects_with_proofs >= 15:
+        badges.append("platform_expert")
+
+    return badges
+
+
+@router.get("/me/proof-metrics")
+def get_my_proof_metrics(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get proof metrics for the current authenticated user"""
+    return get_user_proof_metrics(current_user.id, db)
