@@ -242,3 +242,35 @@ class Notification(Base):
 
     # Relationships
     user = relationship("User", back_populates="notifications")
+
+
+class ProjectBrief(Base):
+    """AI-generated project briefs - Smart Project Brief feature"""
+    __tablename__ = "project_briefs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Raw input
+    raw_description = Column(Text, nullable=False)  # What the user typed
+    project_type = Column(String, nullable=False)  # "chatbot", "automation", "fine-tune", etc.
+    reference_files = Column(JSON, default=[])  # URLs to uploaded reference files
+
+    # AI-generated structured data
+    goal = Column(Text, nullable=True)  # Main objective
+    deliverables = Column(JSON, default=[])  # List of deliverables
+    tech_stack = Column(JSON, default=[])  # Recommended technologies/tools
+    steps = Column(JSON, default=[])  # Implementation steps
+    estimated_timeline = Column(String, nullable=True)  # e.g., "2-3 weeks"
+    estimated_budget_min = Column(Float, nullable=True)
+    estimated_budget_max = Column(Float, nullable=True)
+    required_skills = Column(JSON, default=[])  # Skills needed
+
+    # Meta
+    ai_model_used = Column(String, nullable=True)  # e.g., "gpt-4", "claude-3"
+    confidence_score = Column(Float, nullable=True)  # 0-1 confidence
+    status = Column(String, default="draft")  # "draft", "approved", "converted_to_project"
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True)  # If converted
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
