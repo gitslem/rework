@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.database import get_db
-from app.models.models import Project, User, ProjectStatus
-from app.schemas.schemas import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectFilter
+from app.models.models import Project, User, ProjectStatus, ProofOfBuild, Application, ApplicationStatus
+from app.schemas.schemas import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectFilter, ProofOfBuildResponse
 from app.api.dependencies import get_current_user, get_current_user_optional
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -157,3 +157,47 @@ def get_my_projects(
     """Get all projects created by the current user"""
     projects = db.query(Project).filter(Project.owner_id == current_user.id).all()
     return projects
+
+
+@router.get("/{project_id}/proofs", response_model=List[ProofOfBuildResponse])
+def get_project_proofs(
+    project_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get all proofs for a specific project.
+    Accessible by:
+    - Project owner (company)
+    - Freelancers with accepted applications on the project
+    """
+    # Check if project exists
+    project = db.query(Project).filter(Project.id == project_id).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    # Check authorization
+    is_owner = project.owner_id == current_user.id
+
+    # Check if user is an accepted freelancer on this project
+    is_accepted_freelancer = db.query(Application).filter(
+        Application.project_id == project_id,
+        Application.applicant_id == current_user.id,
+        Application.status == ApplicationStatus.ACCEPTED
+    ).first() is not None
+
+    if not is_owner and not is_accepted_freelancer:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to view proofs for this project"
+        )
+
+    # Get all proofs for this project
+    proofs = db.query(ProofOfBuild).filter(
+        ProofOfBuild.project_id == project_id
+    ).order_by(ProofOfBuild.created_at.desc()).all()
+
+    return proofs
