@@ -5,7 +5,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from app.db.database import get_db
 from app.models.models import User, Profile
-from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest
+from app.schemas.schemas import UserCreate, UserLogin, Token, UserResponse, RefreshTokenRequest, GoogleAuthRequest
 from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token
 from app.core.config import settings
 import logging
@@ -126,14 +126,11 @@ def refresh_token(token_data: RefreshTokenRequest, db: Session = Depends(get_db)
 
 
 @router.post("/google", response_model=Token)
-def google_auth(auth_data: dict, db: Session = Depends(get_db)):
+def google_auth(auth_data: GoogleAuthRequest, db: Session = Depends(get_db)):
     """Authenticate with Google OAuth"""
     try:
-        token = auth_data.get("token")
-        role = auth_data.get("role", "freelancer")
-
-        # Normalize role to lowercase to match database enum values
-        role = role.lower() if role else "freelancer"
+        token = auth_data.token
+        role = auth_data.role.value  # Get the string value from the enum
 
         logger.info(f"Google OAuth attempt with role: {role}")
 

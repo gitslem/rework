@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
 from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus
@@ -8,6 +8,15 @@ from app.models.models import UserRole, ProjectStatus, ApplicationStatus, Paymen
 class UserBase(BaseModel):
     email: EmailStr
     role: UserRole = UserRole.FREELANCER
+
+    @field_validator('role', mode='before')
+    @classmethod
+    def normalize_role(cls, v):
+        """Normalize role to handle case-insensitive input"""
+        if isinstance(v, str):
+            # Convert string to lowercase to match enum values
+            return v.lower()
+        return v
 
 
 class UserCreate(UserBase):
@@ -47,6 +56,15 @@ class RefreshTokenRequest(BaseModel):
 class GoogleAuthRequest(BaseModel):
     token: str
     role: Optional[UserRole] = UserRole.FREELANCER
+
+    @field_validator('role', mode='before')
+    @classmethod
+    def normalize_role(cls, v):
+        """Normalize role to handle case-insensitive input"""
+        if isinstance(v, str):
+            # Convert string to lowercase to match enum values
+            return v.lower()
+        return v
 
 
 # Profile Schemas
