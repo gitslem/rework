@@ -49,7 +49,9 @@ async def startup_event():
         logger.error("Database initialization failed - some features may not work")
 
 # Include routers
-app.include_router(auth.router, prefix=settings.API_V1_STR)
+# Auth router is included both with and without API version prefix for backwards compatibility
+app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth-v1"])
+app.include_router(auth.router, tags=["auth"])  # Direct /auth/* endpoints
 app.include_router(projects.router, prefix=settings.API_V1_STR)
 app.include_router(applications.router, prefix=settings.API_V1_STR)
 app.include_router(users.router, prefix=settings.API_V1_STR)
