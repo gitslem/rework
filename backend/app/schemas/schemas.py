@@ -445,7 +445,7 @@ class ProofOfBuildCreate(ProofOfBuildBase):
     file_hash: Optional[str] = None
     file_size: Optional[int] = None
 
-    metadata: Dict[str, Any] = {}
+    proof_metadata: Dict[str, Any] = {}
 
 
 class ProofOfBuildResponse(ProofOfBuildBase):
@@ -474,7 +474,7 @@ class ProofOfBuildResponse(ProofOfBuildBase):
 
     timestamp: datetime
     expires_at: Optional[datetime]
-    metadata: Dict[str, Any]
+    proof_metadata: Dict[str, Any]
     created_at: datetime
     updated_at: Optional[datetime]
 
@@ -490,7 +490,7 @@ class ProofArtifactCreate(BaseModel):
     file_size: int
     mime_type: Optional[str] = None
     description: Optional[str] = None
-    metadata: Dict[str, Any] = {}
+    artifact_metadata: Dict[str, Any] = {}
 
 
 class ProofArtifactResponse(BaseModel):
@@ -503,7 +503,7 @@ class ProofArtifactResponse(BaseModel):
     file_size: int
     mime_type: Optional[str]
     description: Optional[str]
-    metadata: Dict[str, Any]
+    artifact_metadata: Dict[str, Any]
     created_at: datetime
 
     class Config:

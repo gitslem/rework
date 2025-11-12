@@ -123,7 +123,7 @@ def verify_github_commit(
             verified_at=datetime.utcnow(),
             verification_signature=signature,
             verification_metadata=verification_metadata,
-            metadata={"github_api_response": commit_data}
+            proof_metadata={"github_api_response": commit_data}
         )
 
         db.add(proof)
@@ -211,7 +211,7 @@ def verify_github_pr(
             verified_at=datetime.utcnow(),
             verification_signature=signature,
             verification_metadata=verification_metadata,
-            metadata={"github_api_response": pr_data}
+            proof_metadata={"github_api_response": pr_data}
         )
 
         db.add(proof)
@@ -295,7 +295,7 @@ def verify_github_repo(
             verified_at=datetime.utcnow(),
             verification_signature=signature,
             verification_metadata=verification_metadata,
-            metadata={"github_api_response": repo_data}
+            proof_metadata={"github_api_response": repo_data}
         )
 
         db.add(proof)
@@ -484,7 +484,7 @@ def add_proof_artifact(
         file_size=artifact.file_size,
         mime_type=artifact.mime_type,
         description=artifact.description,
-        metadata=artifact.metadata
+        artifact_metadata=artifact.artifact_metadata
     )
 
     db.add(db_artifact)

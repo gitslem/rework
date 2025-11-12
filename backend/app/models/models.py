@@ -447,7 +447,7 @@ class ProofOfBuild(Base):
 
     # Additional metadata
     description = Column(Text, nullable=True)
-    metadata = Column(JSON, default={})  # Flexible metadata storage
+    proof_metadata = Column(JSON, default={})  # Flexible metadata storage
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -475,7 +475,7 @@ class ProofArtifact(Base):
 
     # Metadata
     description = Column(Text, nullable=True)
-    metadata = Column(JSON, default={})
+    artifact_metadata = Column(JSON, default={})
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
