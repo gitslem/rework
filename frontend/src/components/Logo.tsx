@@ -46,17 +46,16 @@ export default function Logo({ className = '', textClassName = '', onClick, show
       className={`flex items-center cursor-pointer group ${className}`}
       onClick={handleClick}
     >
-      {/* Logo Image - with white space removal */}
-      <div className={`relative ${sizeClasses[size]} ${showText ? 'mr-3' : ''} transition-transform group-hover:scale-110 duration-200 overflow-hidden`}>
+      {/* Logo Image - circular with all text visible */}
+      <div className={`relative ${sizeClasses[size]} ${showText ? 'mr-3' : ''} transition-transform group-hover:scale-105 duration-200`}>
         <Image
           src="/logo.jpeg"
           alt="RemoteWorks Logo"
           width={imageSizes[size].width}
           height={imageSizes[size].height}
-          className="object-cover rounded-lg"
+          className="object-contain rounded-full"
           style={{
-            objectPosition: 'center',
-            transform: 'scale(1.2)'
+            objectPosition: 'center'
           }}
           priority
         />
