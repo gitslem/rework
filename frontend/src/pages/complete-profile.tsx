@@ -148,11 +148,11 @@ export default function CompleteProfile() {
       return;
     }
 
-    // Validate ID card upload
-    if (!idCardFile) {
-      setError('Please upload your ID card for verification');
-      return;
-    }
+    // Validate ID card upload (now optional)
+    // if (!idCardFile) {
+    //   setError('Please upload your ID card for verification');
+    //   return;
+    // }
 
     setSubmitting(true);
 
@@ -160,12 +160,23 @@ export default function CompleteProfile() {
       const db = getFirebaseFirestore();
       const storage = getFirebaseStorage();
 
-      // Upload ID card
-      setUploadingIdCard(true);
-      const idCardRef = ref(storage, `id-cards/${user.uid}/${Date.now()}_${idCardFile.name}`);
-      await uploadBytes(idCardRef, idCardFile);
-      const idCardUrl = await getDownloadURL(idCardRef);
-      setUploadingIdCard(false);
+      let idCardUrl = '';
+
+      // Upload ID card only if provided
+      if (idCardFile) {
+        try {
+          setUploadingIdCard(true);
+          const idCardRef = ref(storage, `id-cards/${user.uid}/${Date.now()}_${idCardFile.name}`);
+          await uploadBytes(idCardRef, idCardFile);
+          idCardUrl = await getDownloadURL(idCardRef);
+          setUploadingIdCard(false);
+        } catch (uploadError: any) {
+          console.warn('ID card upload failed, continuing without it:', uploadError);
+          setUploadingIdCard(false);
+          // Continue without ID card - don't throw error
+          idCardUrl = '';
+        }
+      }
 
       // Create or update profile
       await setDoc(doc(db, 'profiles', user.uid), {
@@ -187,8 +198,8 @@ export default function CompleteProfile() {
         },
         // PayPal info
         paypalEmail: formData.paypalEmail,
-        // ID card URL
-        idCardUrl: idCardUrl,
+        // ID card URL (optional)
+        idCardUrl: idCardUrl || '',
         // Verification status
         verificationStatus: 'pending',
         isVerified: false,
@@ -526,7 +537,7 @@ export default function CompleteProfile() {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    ID Card <span className="text-red-500">*</span>
+                    ID Card <span className="text-gray-500 font-normal">(Optional - for faster verification)</span>
                   </label>
                   <div className="relative">
                     <input

@@ -35,29 +35,31 @@ export default function AdminAgents() {
       setLoading(true);
       const db = getFirebaseFirestore();
 
-      let q = query(collection(db, 'profiles'));
+      // First, get all users with role === 'agent'
+      const usersQuery = query(collection(db, 'users'), where('role', '==', 'agent'));
+      const usersSnapshot = await getDocs(usersQuery);
 
-      // Filter by verification status
-      if (filter !== 'all') {
-        q = query(collection(db, 'profiles'), where('agentVerificationStatus', '==', filter));
-      }
-
-      const querySnapshot = await getDocs(q);
       const apps: AgentApplication[] = [];
 
-      for (const docSnap of querySnapshot.docs) {
-        const profileData = docSnap.data() as Profile;
+      for (const userDoc of usersSnapshot.docs) {
+        const userData = userDoc.data();
 
-        // Only include agent profiles
-        const userDoc = await getDoc(doc(db, 'users', profileData.uid));
-        if (userDoc.exists() && userDoc.data().role === 'agent') {
-          apps.push({
-            ...profileData,
-            user: {
-              email: userDoc.data().email,
-              createdAt: userDoc.data().createdAt,
-            }
-          });
+        // Get the profile for this agent
+        const profileDoc = await getDoc(doc(db, 'profiles', userDoc.id));
+
+        if (profileDoc.exists()) {
+          const profileData = profileDoc.data() as Profile;
+
+          // Filter by verification status if needed
+          if (filter === 'all' || profileData.agentVerificationStatus === filter) {
+            apps.push({
+              ...profileData,
+              user: {
+                email: userData.email,
+                createdAt: userData.createdAt,
+              }
+            });
+          }
         }
       }
 
@@ -83,10 +85,10 @@ export default function AdminAgents() {
         updatedAt: Timestamp.now(),
       });
 
-      // Also update user document
+      // Also update user document - set isAgentApproved for agents
       await updateDoc(doc(db, 'users', agentUid), {
-        isCandidateApproved: true,
-        candidateApprovedAt: Timestamp.now(),
+        isAgentApproved: true,
+        agentApprovedAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
 
