@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Globe2, ChevronDown, ChevronUp, Search
+  ChevronDown, ChevronUp, Search
 } from 'lucide-react';
 import Head from 'next/head';
+import Logo from '@/components/Logo';
+import Footer from '@/components/Footer';
 
 export default function FAQ() {
   const router = useRouter();
@@ -179,23 +181,15 @@ export default function FAQ() {
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              <div className="flex items-center cursor-pointer group" onClick={() => router.push('/')}>
-                <div className="relative">
-                  <Globe2 className="w-9 h-9 text-blue-600 group-hover:scale-110 transition-transform" />
-                  <div className="absolute -inset-1 bg-blue-600 opacity-20 blur-md group-hover:opacity-30 transition-opacity rounded-full"></div>
-                </div>
-                <div className="ml-3 text-2xl font-bold text-gray-900">
-                  Remote-<span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Works</span>
-                </div>
-              </div>
+              <Logo onClick={() => router.push('/')} />
               <div className="flex items-center space-x-8">
-                <button onClick={() => router.push('/')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">Home</button>
-                <button onClick={() => router.push('/about')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">About</button>
-                <button onClick={() => router.push('/support')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">Support</button>
-                <button onClick={() => router.push('/login')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">Sign In</button>
+                <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium">Home</button>
+                <button onClick={() => router.push('/about')} className="text-gray-600 hover:text-black transition-colors font-medium">About</button>
+                <button onClick={() => router.push('/support')} className="text-gray-600 hover:text-black transition-colors font-medium">Support</button>
+                <button onClick={() => router.push('/login')} className="text-gray-600 hover:text-black transition-colors font-medium">Sign In</button>
                 <button
                   onClick={() => router.push('/register')}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200"
+                  className="bg-black text-white px-6 py-2.5 rounded-full font-semibold hover:bg-gray-800 hover:scale-105 transition-all duration-200"
                 >
                   Get Started
                 </button>
@@ -205,12 +199,12 @@ export default function FAQ() {
         </nav>
 
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-20 pb-16">
+        <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-20 pb-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center space-y-6">
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
                 Frequently Asked
-                <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="block text-black">
                   Questions
                 </span>
               </h1>
@@ -227,7 +221,7 @@ export default function FAQ() {
                     placeholder="Search for answers..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:ring-0 outline-none transition-colors text-gray-900 placeholder-gray-400"
+                    className="w-full pl-12 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:border-black focus:ring-0 outline-none transition-colors text-gray-900 placeholder-gray-400"
                   />
                 </div>
               </div>
@@ -255,7 +249,7 @@ export default function FAQ() {
                         return (
                           <div
                             key={faqIndex}
-                            className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden transition-all hover:border-blue-300"
+                            className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden transition-all hover:border-black"
                           >
                             <button
                               onClick={() => setOpenIndex(isOpen ? null : globalIndex)}
@@ -263,7 +257,7 @@ export default function FAQ() {
                             >
                               <span className="text-lg font-semibold text-gray-900 pr-8">{faq.question}</span>
                               {isOpen ? (
-                                <ChevronUp className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                                <ChevronUp className="w-6 h-6 text-black flex-shrink-0" />
                               ) : (
                                 <ChevronDown className="w-6 h-6 text-gray-400 flex-shrink-0" />
                               )}
@@ -285,17 +279,17 @@ export default function FAQ() {
         </section>
 
         {/* Still Have Questions */}
-        <section className="py-24 bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+        <section className="py-24 bg-black text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Still Have Questions?
             </h2>
-            <p className="text-xl text-white/90 mb-10">
+            <p className="text-xl text-gray-300 mb-10">
               Our support team is here to help 24/7
             </p>
             <button
               onClick={() => router.push('/support')}
-              className="bg-white text-gray-900 px-10 py-5 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-2xl"
+              className="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-2xl"
             >
               Contact Support
             </button>
@@ -303,52 +297,7 @@ export default function FAQ() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-gray-400 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-5 gap-12 mb-12">
-              <div className="md:col-span-2">
-                <div className="flex items-center mb-6">
-                  <Globe2 className="w-9 h-9 text-blue-500 mr-3" />
-                  <div className="text-2xl font-bold text-white">
-                    Remote-<span className="text-blue-500">Works</span>
-                  </div>
-                </div>
-                <p className="text-gray-400 leading-relaxed">
-                  The trusted marketplace connecting candidates with verified agents for AI training and remote work opportunities.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-white mb-4">Company</h4>
-                <ul className="space-y-3">
-                  <li><button onClick={() => router.push('/about')} className="hover:text-blue-400 transition-colors">About Us</button></li>
-                  <li><button onClick={() => router.push('/faq')} className="hover:text-blue-400 transition-colors">FAQ</button></li>
-                  <li><button onClick={() => router.push('/support')} className="hover:text-blue-400 transition-colors">Support</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-white mb-4">Legal</h4>
-                <ul className="space-y-3">
-                  <li><button onClick={() => router.push('/terms')} className="hover:text-blue-400 transition-colors">Terms of Service</button></li>
-                  <li><button onClick={() => router.push('/privacy')} className="hover:text-blue-400 transition-colors">Privacy Policy</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-white mb-4">Get Started</h4>
-                <ul className="space-y-3">
-                  <li><button onClick={() => router.push('/register?type=candidate')} className="hover:text-blue-400 transition-colors">Find an Agent</button></li>
-                  <li><button onClick={() => router.push('/register?type=agent')} className="hover:text-blue-400 transition-colors">Become an Agent</button></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-800 pt-8 text-center">
-              <p className="text-gray-500 text-sm">© 2025 Remote-Works. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
