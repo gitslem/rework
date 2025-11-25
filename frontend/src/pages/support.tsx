@@ -32,22 +32,22 @@ export default function Support() {
     {
       icon: <Mail className="w-8 h-8" />,
       title: "Email Support",
-      description: "support@remote-works.io",
+      description: "support@remoteworks.io",
       detail: "Response within 24 hours",
       color: "bg-black"
     },
     {
-      icon: <MessageSquare className="w-8 h-8" />,
-      title: "Live Chat",
-      description: "Available 9 AM - 6 PM EST",
-      detail: "Instant responses during business hours",
+      icon: <Phone className="w-8 h-8" />,
+      title: "Phone Support",
+      description: "+1 (925) 375-4195",
+      detail: "Monday - Friday, 9 AM - 6 PM EST",
       color: "bg-gray-800"
     },
     {
-      icon: <Phone className="w-8 h-8" />,
-      title: "Phone Support",
-      description: "+1 (555) 123-4567",
-      detail: "Monday - Friday, 9 AM - 6 PM EST",
+      icon: <MessageSquare className="w-8 h-8" />,
+      title: "Location",
+      description: "5 Buttermill Ave, ON CA",
+      detail: "Canada Office",
       color: "bg-gray-700"
     }
   ];
@@ -247,9 +247,10 @@ export default function Support() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">Support Hours</h3>
                   <div className="space-y-2 text-gray-700">
                     <p><span className="font-semibold">Email Support:</span> 24/7 (Response within 24 hours)</p>
-                    <p><span className="font-semibold">Live Chat:</span> Monday - Friday, 9 AM - 6 PM EST</p>
-                    <p><span className="font-semibold">Phone Support:</span> Monday - Friday, 9 AM - 6 PM EST</p>
-                    <p className="text-sm text-gray-600 mt-4">Premium users receive priority support with faster response times.</p>
+                    <p><span className="font-semibold">Phone Support:</span> +1 (925) 375-4195</p>
+                    <p><span className="font-semibold">Phone Hours:</span> Monday - Friday, 9 AM - 6 PM EST</p>
+                    <p><span className="font-semibold">Address:</span> 5 Buttermill Ave, ON CA</p>
+                    <p className="text-sm text-gray-600 mt-4">We're here to help! Reach out anytime for support.</p>
                   </div>
                 </div>
               </div>
