@@ -3,8 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import { Shield, Users, CheckCircle, Clock, AlertCircle, ArrowRight } from 'lucide-react';
-import { getFirebaseAuth } from '../../../firebase.config';
-import { getFirebaseFirestore } from '../../../firebase.config';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 

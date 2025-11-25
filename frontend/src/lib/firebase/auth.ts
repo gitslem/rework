@@ -10,7 +10,7 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { getFirebaseAuth, getFirebaseFirestore } from '../../../firebase.config';
+import { getFirebaseAuth, getFirebaseFirestore } from './config';
 import { User, UserRole } from '@/types';
 
 export const registerWithEmail = async (
