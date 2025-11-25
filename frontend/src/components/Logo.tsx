@@ -61,7 +61,7 @@ export default function Logo({ className = '', textClassName = '', onClick, show
       {/* Logo Text */}
       {showText && (
         <div className={`${textSizes[size]} font-bold ${textClassName || 'text-black'}`}>
-          Remote<span className="font-light">Works</span>
+          Remote-<span className="font-light">Works</span>
         </div>
       )}
     </div>

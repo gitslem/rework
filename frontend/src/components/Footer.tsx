@@ -44,8 +44,8 @@ export default function Footer() {
               <div className="space-y-3 text-sm">
                 <div className="flex items-start space-x-2">
                   <Mail className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <a href="mailto:support@remoteworks.io" className="hover:text-white transition-colors break-all">
-                    support@remoteworks.io
+                  <a href="mailto:support@remote-works.io" className="hover:text-white transition-colors break-all">
+                    support@remote-works.io
                   </a>
                 </div>
                 <div className="flex items-start space-x-2">
@@ -197,7 +197,7 @@ export default function Footer() {
           {/* Bottom Section */}
           <div className="border-t border-gray-800 mt-12 pt-8 text-center">
             <p className="text-gray-600 text-sm">
-              © {new Date().getFullYear()} RemoteWorks. All rights reserved.
+              © {new Date().getFullYear()} Remote-Works. All rights reserved.
             </p>
           </div>
         </div>

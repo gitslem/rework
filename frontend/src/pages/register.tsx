@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Users, Building, Globe2, ArrowLeft, Check } from 'lucide-react';
+import { Users, Building, ArrowLeft, Check } from 'lucide-react';
 import { signInWithGoogle } from '@/lib/firebase/auth';
 import { UserRole } from '@/types';
+import Logo from '@/components/Logo';
 
 export default function Register() {
   const router = useRouter();
@@ -88,12 +89,7 @@ export default function Register() {
           <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border border-accent-gray-200">
             {/* Logo */}
             <div className="flex justify-center mb-8">
-              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
-                <Globe2 className="w-10 h-10 text-primary-500 mr-2" />
-                <div className="text-3xl font-bold text-accent-dark">
-                  Remote-<span className="gradient-text">Works</span>
-                </div>
-              </div>
+              <Logo size="lg" showText={true} onClick={() => router.push('/')} />
             </div>
 
             <div className="text-center mb-8">
@@ -207,7 +203,7 @@ export default function Register() {
                 </div>
 
                 <div className="text-center text-xs text-accent-gray-500">
-                  <p>By signing up, you agree to our <a href="#" className="text-primary-500 hover:underline">Terms of Service</a> and <a href="#" className="text-primary-500 hover:underline">Privacy Policy</a></p>
+                  <p>By signing up, you agree to our <Link href="/terms" className="text-primary-500 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary-500 hover:underline">Privacy Policy</Link></p>
                 </div>
               </div>
             )}
