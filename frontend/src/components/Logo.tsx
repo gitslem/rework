@@ -6,7 +6,7 @@ interface LogoProps {
   textClassName?: string;
   onClick?: () => void;
   showText?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export default function Logo({ className = '', textClassName = '', onClick, showText = true, size = 'md' }: LogoProps) {
@@ -21,21 +21,24 @@ export default function Logo({ className = '', textClassName = '', onClick, show
   };
 
   const sizeClasses = {
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-20 h-20'
+    sm: 'w-16 h-16',
+    md: 'w-20 h-20',
+    lg: 'w-24 h-24',
+    xl: 'w-32 h-32'
   };
 
   const imageSizes = {
-    sm: { width: 48, height: 48 },
-    md: { width: 64, height: 64 },
-    lg: { width: 80, height: 80 }
+    sm: { width: 64, height: 64 },
+    md: { width: 80, height: 80 },
+    lg: { width: 96, height: 96 },
+    xl: { width: 128, height: 128 }
   };
 
   const textSizes = {
     sm: 'text-xl',
     md: 'text-2xl',
-    lg: 'text-4xl'
+    lg: 'text-3xl',
+    xl: 'text-4xl'
   };
 
   return (

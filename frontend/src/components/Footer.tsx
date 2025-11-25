@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, ArrowRight, Briefcase } from 'lucide-react';
+import { Mail, MapPin, ArrowRight, Briefcase, Phone, Send, Linkedin, Star } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
@@ -37,20 +37,26 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-1">
-              <Logo textClassName="text-white" className="mb-4" showText={true} size="sm" />
+              <Logo textClassName="text-white" className="mb-4" showText={true} size="md" />
               <p className="text-gray-500 leading-relaxed text-sm mb-6">
                 Connecting candidates with verified agents for AI training opportunities.
               </p>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Mail className="w-4 h-4 text-gray-600" />
-                  <a href="mailto:support@remoteworks.io" className="hover:text-white transition-colors">
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start space-x-2">
+                  <Mail className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <a href="mailto:support@remoteworks.io" className="hover:text-white transition-colors break-all">
                     support@remoteworks.io
                   </a>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-gray-600" />
-                  <span>Available Worldwide</span>
+                <div className="flex items-start space-x-2">
+                  <Phone className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <a href="tel:+19253754195" className="hover:text-white transition-colors">
+                    +1 (925) 375-4195
+                  </a>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <MapPin className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <span>5 Buttermill Ave, ON CA</span>
                 </div>
               </div>
             </div>
@@ -137,55 +143,62 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Stay Connected */}
+            {/* Social Links */}
             <div>
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                Stay Connected
+                Connect With Us
               </h4>
               <p className="text-sm text-gray-500 mb-4">
-                Get updates on new opportunities and platform features.
+                Follow us on social media and leave a review.
               </p>
-              <form className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg focus:outline-none focus:border-gray-700 text-white text-sm"
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-white text-black px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-colors"
+              <div className="space-y-3">
+                {/* LinkedIn */}
+                <a
+                  href="https://www.linkedin.com/company/remo-teworks/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
                 >
-                  Subscribe
-                </button>
-              </form>
+                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                    <Linkedin className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-medium">LinkedIn</span>
+                </a>
+
+                {/* Telegram */}
+                <a
+                  href="https://t.me/remote_worksio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                    <Send className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-medium">Telegram</span>
+                </a>
+
+                {/* Trustpilot */}
+                <a
+                  href="https://ca.trustpilot.com/review/remote-works.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                    <Star className="w-5 h-5 fill-current" />
+                  </div>
+                  <span className="text-sm font-medium">Trustpilot</span>
+                </a>
+              </div>
             </div>
           </div>
 
           {/* Bottom Section */}
-          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm gap-4">
-            <p className="text-gray-600 text-center md:text-left">
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-600 text-sm">
               © {new Date().getFullYear()} RemoteWorks. All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <button
-                onClick={() => router.push('/about')}
-                className="hover:text-white transition-colors"
-              >
-                About
-              </button>
-              <button
-                onClick={() => router.push('/faq')}
-                className="hover:text-white transition-colors"
-              >
-                FAQ
-              </button>
-              <button
-                onClick={() => router.push('/support')}
-                className="hover:text-white transition-colors"
-              >
-                Support
-              </button>
-            </div>
           </div>
         </div>
       </div>
