@@ -324,6 +324,51 @@ export default function AgentDashboard() {
     }
   };
 
+  const handleRejectRequest = async (message: Message) => {
+    if (!user) return;
+
+    if (!confirm('Are you sure you want to reject this service request?')) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const db = getFirebaseFirestore();
+
+      // Update message status to rejected
+      await updateDoc(doc(db, 'messages', message.id), {
+        status: 'rejected',
+        updatedAt: Timestamp.now()
+      });
+
+      // Send rejection message to candidate
+      await addDoc(collection(db, 'messages'), {
+        senderId: user.uid,
+        senderName: `${profile?.firstName} ${profile?.lastName}`,
+        senderEmail: user.email,
+        recipientId: message.senderId,
+        recipientName: message.senderName,
+        message: 'Thank you for your interest. Unfortunately, I am unable to accept your service request at this time.',
+        subject: 'Service Request Declined',
+        status: 'unread',
+        createdAt: Timestamp.now(),
+        type: 'general'
+      });
+
+      // Refresh messages
+      await loadMessages(db, user.uid);
+
+      alert('Request declined. A notification has been sent to the candidate.');
+      setShowMessageModal(false);
+      setSelectedMessage(null);
+    } catch (error: any) {
+      console.error('Error rejecting request:', error);
+      alert('Failed to reject request: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveEnhancedSettings = async () => {
     if (!profile) return;
 
@@ -612,10 +657,10 @@ export default function AgentDashboard() {
 
       <div className="min-h-screen bg-gray-50">
         {/* Navigation */}
-        <nav className="bg-white border-b border-gray-200 shadow-sm">
+        <nav className="bg-white border-b-2 border-gradient shadow-lg sticky top-0 z-50" style={{borderImage: 'linear-gradient(to right, #2563eb, #9333ea) 1'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16 md:h-20">
-              <Logo showText={false} onClick={() => router.push('/')} />
+              <Logo showText={true} onClick={() => router.push('/')} size="sm" />
               <div className="flex items-center space-x-4">
                 <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
                   <Settings className="w-5 h-5" />
@@ -831,6 +876,9 @@ export default function AgentDashboard() {
                               {message.status === 'accepted' && (
                                 <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">Accepted</span>
                               )}
+                              {message.status === 'rejected' && (
+                                <span className="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">Rejected</span>
+                              )}
                             </div>
                             <p className="text-sm text-gray-600">{message.senderEmail}</p>
                           </div>
@@ -849,7 +897,16 @@ export default function AgentDashboard() {
                               }}
                               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold"
                             >
-                              Accept Request
+                              Accept
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRejectRequest(message);
+                              }}
+                              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-semibold"
+                            >
+                              Reject
                             </button>
                             <button
                               onClick={(e) => {
@@ -911,13 +968,22 @@ export default function AgentDashboard() {
 
             <div className="flex gap-3">
               {selectedMessage.status === 'unread' && selectedMessage.type === 'service_request' && (
-                <button
-                  onClick={() => handleAcceptRequest(selectedMessage)}
-                  disabled={saving}
-                  className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
-                >
-                  {saving ? 'Accepting...' : 'Accept & Reply'}
-                </button>
+                <>
+                  <button
+                    onClick={() => handleAcceptRequest(selectedMessage)}
+                    disabled={saving}
+                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {saving ? 'Processing...' : 'Accept'}
+                  </button>
+                  <button
+                    onClick={() => handleRejectRequest(selectedMessage)}
+                    disabled={saving}
+                    className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {saving ? 'Processing...' : 'Reject'}
+                  </button>
+                </>
               )}
               <button
                 onClick={handleSendReply}

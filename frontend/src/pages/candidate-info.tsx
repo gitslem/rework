@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import {
   Play, BookOpen, Lightbulb, CheckCircle, Users, TrendingUp,
@@ -12,6 +12,14 @@ export default function CandidateInfo() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'learn' | 'tips'>('learn');
   const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handlePlayVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   const features = [
     {
@@ -211,9 +219,9 @@ export default function CandidateInfo() {
                 </p>
                 <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
                   <video
+                    ref={videoRef}
                     controls
                     className="w-full h-full"
-                    poster="/api/placeholder/1280/720"
                     onPlay={() => setIsPlaying(true)}
                     onPause={() => setIsPlaying(false)}
                   >
@@ -221,8 +229,11 @@ export default function CandidateInfo() {
                     Your browser does not support the video tag.
                   </video>
                   {!isPlaying && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-                      <div className="bg-white rounded-full p-6 shadow-2xl hover:scale-110 transition-transform cursor-pointer">
+                    <div
+                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 cursor-pointer"
+                      onClick={handlePlayVideo}
+                    >
+                      <div className="bg-white rounded-full p-6 shadow-2xl hover:scale-110 transition-transform">
                         <Play className="w-12 h-12 text-blue-600" />
                       </div>
                     </div>

@@ -423,10 +423,10 @@ export default function CandidateDashboard() {
 
       <div className="min-h-screen bg-gray-50">
         {/* Navigation */}
-        <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <nav className="bg-white border-b-2 border-gradient shadow-lg sticky top-0 z-50" style={{borderImage: 'linear-gradient(to right, #2563eb, #9333ea) 1'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16 md:h-20">
-              <Logo showText={false} onClick={() => router.push('/')} />
+              <Logo showText={true} onClick={() => router.push('/')} size="sm" />
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-6">
