@@ -371,3 +371,10 @@ export default function RegisterNew() {
     </>
   );
 }
+
+// Force server-side rendering to avoid Firebase initialization during build
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
+}
