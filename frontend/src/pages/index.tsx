@@ -202,7 +202,7 @@ export default function Home() {
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
-                  onClick={() => router.push('/register?type=agent')}
+                  onClick={() => router.push('/agent-signup')}
                   className="bg-white text-black px-8 py-4 rounded-full font-medium text-lg border-2 border-black hover:bg-black hover:text-white transition-all"
                 >
                   Become an Agent
@@ -351,7 +351,7 @@ export default function Home() {
                 Get Started as Candidate
               </button>
               <button
-                onClick={() => router.push('/register?type=agent')}
+                onClick={() => router.push('/agent-signup')}
                 className="bg-white text-black px-10 py-4 rounded-full font-medium text-lg border-2 border-black hover:bg-black hover:text-white transition-all"
               >
                 Become an Agent
@@ -386,7 +386,7 @@ export default function Home() {
               <div>
                 <h4 className="font-bold text-white mb-4 text-sm">Agents</h4>
                 <ul className="space-y-3 text-sm">
-                  <li><button onClick={() => router.push('/register?type=agent')} className="hover:text-white transition-colors">Become an Agent</button></li>
+                  <li><button onClick={() => router.push('/agent-signup')} className="hover:text-white transition-colors">Become an Agent</button></li>
                   <li><a href="#" className="hover:text-white transition-colors">Guidelines</a></li>
                 </ul>
               </div>
