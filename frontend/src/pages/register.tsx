@@ -64,9 +64,10 @@ export default function Register() {
 
       // Redirect based on selected role
       if (role === 'agent') {
-        router.push('/agent-dashboard');
+        router.push('/agent-signup');
       } else {
-        router.push('/candidate-dashboard');
+        // Redirect candidates to complete their profile
+        router.push('/complete-profile');
       }
     } catch (err: any) {
       console.error('Registration error:', err);

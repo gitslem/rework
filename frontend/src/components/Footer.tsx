@@ -1,202 +1,191 @@
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, Phone, MapPin, Twitter, Linkedin, Github } from 'lucide-react';
+import { Mail, MapPin, ArrowRight, Briefcase } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
 
-  const footerSections = [
-    {
-      title: 'For Candidates',
-      links: [
-        { label: 'Find an Agent', href: '/register?type=candidate' },
-        { label: 'Browse Agents', href: '/agents' },
-        { label: 'How It Works', href: '/#how-it-works' },
-        { label: 'Pricing', href: '/pricing' },
-        { label: 'Success Stories', href: '/testimonials' }
-      ]
-    },
-    {
-      title: 'For Agents',
-      links: [
-        { label: 'Become an Agent', href: '/agent-signup' },
-        { label: 'Agent Guidelines', href: '/agent-guidelines' },
-        { label: 'Pricing & Fees', href: '/agent-pricing' },
-        { label: 'Resources', href: '/resources' }
-      ]
-    },
-    {
-      title: 'Platforms',
-      links: [
-        { label: 'Outlier AI', href: '/platforms/outlier' },
-        { label: 'Alignerr', href: '/platforms/alignerr' },
-        { label: 'OneForma', href: '/platforms/oneforma' },
-        { label: 'All Platforms', href: '/platforms' }
-      ]
-    },
-    {
-      title: 'Company',
-      links: [
-        { label: 'About Us', href: '/about' },
-        { label: 'Contact', href: '/support' },
-        { label: 'Careers', href: '/careers' },
-        { label: 'Blog', href: '/blog' },
-        { label: 'Press Kit', href: '/press' }
-      ]
-    },
-    {
-      title: 'Support',
-      links: [
-        { label: 'Help Center', href: '/support' },
-        { label: 'FAQ', href: '/faq' },
-        { label: 'Community', href: '/community' },
-        { label: 'Status', href: '/status' },
-        { label: 'Report Issue', href: '/report' }
-      ]
-    },
-    {
-      title: 'Legal',
-      links: [
-        { label: 'Terms of Service', href: '/terms' },
-        { label: 'Privacy Policy', href: '/privacy' },
-        { label: 'Cookie Policy', href: '/cookies' },
-        { label: 'GDPR', href: '/gdpr' },
-        { label: 'Compliance', href: '/compliance' }
-      ]
-    }
-  ];
-
   return (
-    <footer className="bg-black text-gray-400 py-16 px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Top Section */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-6 gap-8 mb-12">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <Logo textClassName="text-white" className="mb-4" />
-            <p className="text-gray-500 leading-relaxed text-sm mb-6">
-              The trusted marketplace connecting candidates with verified agents for AI training and remote work opportunities worldwide.
-            </p>
-
-            {/* Contact Info */}
-            <div className="space-y-3 text-sm">
-              <div className="flex items-center space-x-2">
-                <Mail className="w-4 h-4 text-gray-600" />
-                <a href="mailto:support@remoteworks.io" className="hover:text-white transition-colors">
-                  support@remoteworks.io
-                </a>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="w-4 h-4 text-gray-600" />
-                <a href="tel:+1234567890" className="hover:text-white transition-colors">
-                  +1 (234) 567-8900
-                </a>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4 text-gray-600" />
-                <span>San Francisco, CA</span>
-              </div>
+    <footer className="bg-black text-gray-400">
+      {/* Agent CTA Banner */}
+      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 py-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                Become a Verified Agent
+              </h3>
+              <p className="text-white text-opacity-90 text-lg">
+                Help candidates succeed and earn money doing it
+              </p>
             </div>
-
-            {/* Social Links */}
-            <div className="flex space-x-4 mt-6">
-              <a
-                href="https://twitter.com/remoteworks"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-900 hover:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="https://linkedin.com/company/remoteworks"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-900 hover:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
-              >
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a
-                href="https://github.com/remoteworks"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-900 hover:bg-gray-800 rounded-full flex items-center justify-center transition-colors"
-              >
-                <Github className="w-5 h-5" />
-              </a>
-            </div>
+            <button
+              onClick={() => router.push('/agent-signup')}
+              className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all flex items-center shadow-xl hover-lift"
+            >
+              <Briefcase className="w-5 h-5 mr-2" />
+              Apply Now
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </button>
           </div>
+        </div>
+      </div>
 
-          {/* Navigation Sections */}
-          {footerSections.map((section, index) => (
-            <div key={index}>
+      {/* Main Footer Content */}
+      <div className="py-12 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+            {/* Brand Section */}
+            <div className="lg:col-span-1">
+              <Logo textClassName="text-white" className="mb-4" showText={true} size="sm" />
+              <p className="text-gray-500 leading-relaxed text-sm mb-6">
+                Connecting candidates with verified agents for AI training opportunities.
+              </p>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Mail className="w-4 h-4 text-gray-600" />
+                  <a href="mailto:support@remoteworks.io" className="hover:text-white transition-colors">
+                    support@remoteworks.io
+                  </a>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4 text-gray-600" />
+                  <span>Available Worldwide</span>
+                </div>
+              </div>
+            </div>
+
+            {/* For Candidates */}
+            <div>
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                {section.title}
+                For Candidates
               </h4>
               <ul className="space-y-3 text-sm">
-                {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <button
-                      onClick={() => router.push(link.href)}
-                      className="hover:text-white transition-colors inline-block"
-                    >
-                      {link.label}
-                    </button>
-                  </li>
-                ))}
+                <li>
+                  <button
+                    onClick={() => router.push('/register?type=candidate')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Find an Agent
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/agents')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Browse Agents
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/#how-it-works')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    How It Works
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/faq')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    FAQ
+                  </button>
+                </li>
               </ul>
             </div>
-          ))}
-        </div>
 
-        {/* Newsletter Section */}
-        <div className="border-t border-gray-800 pt-8 pb-8">
-          <div className="max-w-md">
-            <h3 className="font-bold text-white mb-2">Stay Updated</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Subscribe to our newsletter for the latest updates and opportunities.
-            </p>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg focus:outline-none focus:border-gray-700 text-white text-sm"
-              />
-              <button
-                type="submit"
-                className="bg-white text-black px-6 py-2 rounded-lg font-medium text-sm hover:bg-gray-200 transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
+            {/* Company */}
+            <div>
+              <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
+                Company
+              </h4>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <button
+                    onClick={() => router.push('/about')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    About Us
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/support')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Support
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/terms')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Terms of Service
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/privacy')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Privacy Policy
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Stay Connected */}
+            <div>
+              <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
+                Stay Connected
+              </h4>
+              <p className="text-sm text-gray-500 mb-4">
+                Get updates on new opportunities and platform features.
+              </p>
+              <form className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg focus:outline-none focus:border-gray-700 text-white text-sm"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-white text-black px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-colors"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
-          <p className="text-gray-600">
-            © {new Date().getFullYear()} RemoteWorks. All rights reserved.
-          </p>
-
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <button
-              onClick={() => router.push('/sitemap')}
-              className="hover:text-white transition-colors"
-            >
-              Sitemap
-            </button>
-            <button
-              onClick={() => router.push('/accessibility')}
-              className="hover:text-white transition-colors"
-            >
-              Accessibility
-            </button>
-            <button
-              onClick={() => router.push('/security')}
-              className="hover:text-white transition-colors"
-            >
-              Security
-            </button>
+          {/* Bottom Section */}
+          <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm gap-4">
+            <p className="text-gray-600 text-center md:text-left">
+              © {new Date().getFullYear()} RemoteWorks. All rights reserved.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <button
+                onClick={() => router.push('/about')}
+                className="hover:text-white transition-colors"
+              >
+                About
+              </button>
+              <button
+                onClick={() => router.push('/faq')}
+                className="hover:text-white transition-colors"
+              >
+                FAQ
+              </button>
+              <button
+                onClick={() => router.push('/support')}
+                className="hover:text-white transition-colors"
+              >
+                Support
+              </button>
+            </div>
           </div>
         </div>
       </div>
