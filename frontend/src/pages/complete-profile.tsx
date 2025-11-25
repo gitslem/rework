@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { User, MapPin, Globe, FileText, Check, Loader } from 'lucide-react';
-import { getFirebaseAuth, getFirebaseFirestore } from '../../firebase.config';
+import { User, MapPin, Globe, FileText, Check, Loader, Linkedin, Twitter, Facebook, Instagram, CreditCard, Upload, Link as LinkIcon } from 'lucide-react';
+import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '../../../firebase.config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Link from 'next/link';
 
 export default function CompleteProfile() {
   const router = useRouter();
@@ -22,7 +24,16 @@ export default function CompleteProfile() {
     city: '',
     phone: '',
     bio: '',
+    linkedinUrl: '',
+    twitterUrl: '',
+    facebookUrl: '',
+    instagramUrl: '',
+    paypalEmail: '',
   });
+
+  const [idCardFile, setIdCardFile] = useState<File | null>(null);
+  const [idCardPreview, setIdCardPreview] = useState<string>('');
+  const [uploadingIdCard, setUploadingIdCard] = useState(false);
 
   useEffect(() => {
     checkAuthAndProfile();
@@ -76,6 +87,37 @@ export default function CompleteProfile() {
     });
   };
 
+  const handleIdCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('ID card file size must be less than 5MB');
+        return;
+      }
+
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('ID card must be an image (JPEG, PNG, WebP) or PDF file');
+        return;
+      }
+
+      setIdCardFile(file);
+
+      // Create preview for images
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setIdCardPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setIdCardPreview(''); // Clear preview for PDFs
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -86,10 +128,44 @@ export default function CompleteProfile() {
       return;
     }
 
+    // Validate at least one social link
+    const hasSocialLink = formData.linkedinUrl || formData.twitterUrl || formData.facebookUrl || formData.instagramUrl;
+    if (!hasSocialLink) {
+      setError('Please provide at least one social media profile for verification');
+      return;
+    }
+
+    // Validate PayPal email
+    if (!formData.paypalEmail) {
+      setError('PayPal email is required for payments');
+      return;
+    }
+
+    // Validate PayPal email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.paypalEmail)) {
+      setError('Please enter a valid PayPal email address');
+      return;
+    }
+
+    // Validate ID card upload
+    if (!idCardFile) {
+      setError('Please upload your ID card for verification');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       const db = getFirebaseFirestore();
+      const storage = getFirebaseStorage();
+
+      // Upload ID card
+      setUploadingIdCard(true);
+      const idCardRef = ref(storage, `id-cards/${user.uid}/${Date.now()}_${idCardFile.name}`);
+      await uploadBytes(idCardRef, idCardFile);
+      const idCardUrl = await getDownloadURL(idCardRef);
+      setUploadingIdCard(false);
 
       // Create or update profile
       await setDoc(doc(db, 'profiles', user.uid), {
@@ -102,6 +178,20 @@ export default function CompleteProfile() {
         bio: formData.bio || '',
         location: `${formData.city}, ${formData.country}`,
         avatarURL: user.photoURL || '',
+        // Social links for verification
+        socialLinks: {
+          linkedin: formData.linkedinUrl || '',
+          twitter: formData.twitterUrl || '',
+          facebook: formData.facebookUrl || '',
+          instagram: formData.instagramUrl || '',
+        },
+        // PayPal info
+        paypalEmail: formData.paypalEmail,
+        // ID card URL
+        idCardUrl: idCardUrl,
+        // Verification status
+        verificationStatus: 'pending',
+        isVerified: false,
         totalEarnings: 0,
         completedProjects: 0,
         averageRating: 0,
@@ -128,6 +218,7 @@ export default function CompleteProfile() {
       console.error('Error creating profile:', error);
       setError(error.message || 'Failed to create profile. Please try again.');
       setSubmitting(false);
+      setUploadingIdCard(false);
     }
   };
 
@@ -309,6 +400,188 @@ export default function CompleteProfile() {
                 <p className="text-xs text-gray-500 mt-1">
                   This helps agents understand your background and goals
                 </p>
+              </div>
+
+              {/* Social Media Links - At least one required */}
+              <div className="border-t border-gray-200 pt-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <LinkIcon className="w-5 h-5 mr-2" />
+                    Social Media Profiles
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="text-red-500 font-semibold">* Required:</span> Add at least one social media profile for verification
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* LinkedIn */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Linkedin className="w-4 h-4 inline mr-1 text-blue-600" />
+                      LinkedIn Profile
+                    </label>
+                    <input
+                      type="url"
+                      name="linkedinUrl"
+                      value={formData.linkedinUrl}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="https://linkedin.com/in/yourprofile"
+                    />
+                  </div>
+
+                  {/* Twitter */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Twitter className="w-4 h-4 inline mr-1 text-blue-400" />
+                      Twitter/X Profile
+                    </label>
+                    <input
+                      type="url"
+                      name="twitterUrl"
+                      value={formData.twitterUrl}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="https://twitter.com/yourhandle"
+                    />
+                  </div>
+
+                  {/* Facebook */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Facebook className="w-4 h-4 inline mr-1 text-blue-700" />
+                      Facebook Profile
+                    </label>
+                    <input
+                      type="url"
+                      name="facebookUrl"
+                      value={formData.facebookUrl}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="https://facebook.com/yourprofile"
+                    />
+                  </div>
+
+                  {/* Instagram */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Instagram className="w-4 h-4 inline mr-1 text-pink-600" />
+                      Instagram Profile
+                    </label>
+                    <input
+                      type="url"
+                      name="instagramUrl"
+                      value={formData.instagramUrl}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="https://instagram.com/yourhandle"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* PayPal Information */}
+              <div className="border-t border-gray-200 pt-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Payment Information
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Required for receiving payments from agents
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    PayPal Email or Username <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="paypalEmail"
+                    value={formData.paypalEmail}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="your-paypal@email.com"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    <strong>Important:</strong> Your name on PayPal must match your name on Remote-Works and your social media profiles for verification purposes.
+                  </p>
+                </div>
+              </div>
+
+              {/* ID Card Upload */}
+              <div className="border-t border-gray-200 pt-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <Upload className="w-5 h-5 mr-2" />
+                    Identity Verification
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Upload a valid government-issued ID card for verification
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    ID Card <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handleIdCardChange}
+                      className="hidden"
+                      id="idCardUpload"
+                    />
+                    <label
+                      htmlFor="idCardUpload"
+                      className="flex flex-col items-center justify-center w-full px-4 py-8 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-black hover:bg-gray-50 transition-colors"
+                    >
+                      {idCardPreview ? (
+                        <div className="relative w-full">
+                          <img src={idCardPreview} alt="ID Card Preview" className="max-h-48 mx-auto rounded" />
+                          <p className="text-sm text-gray-600 mt-2 text-center">{idCardFile?.name}</p>
+                        </div>
+                      ) : idCardFile ? (
+                        <div className="text-center">
+                          <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-600">{idCardFile.name}</p>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-semibold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500">PNG, JPG, WebP or PDF (max. 5MB)</p>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Accepted documents: Driver's License, Passport, National ID Card, or other government-issued ID
+                  </p>
+                </div>
+              </div>
+
+              {/* Terms and Privacy Notice */}
+              <div className="border-t border-gray-200 pt-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-xs text-gray-600">
+                    By completing your profile, you agree to our{' '}
+                    <Link href="/terms" className="text-black font-semibold hover:underline">
+                      Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" className="text-black font-semibold hover:underline">
+                      Privacy Policy
+                    </Link>
+                    . Your information will be securely stored and used for verification purposes only.
+                  </p>
+                </div>
               </div>
 
               {/* Submit Button */}

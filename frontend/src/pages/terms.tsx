@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
-import { Globe2 } from 'lucide-react';
 import Head from 'next/head';
+import Logo from '@/components/Logo';
+import Footer from '@/components/Footer';
 
 export default function Terms() {
   const router = useRouter();
@@ -17,15 +18,7 @@ export default function Terms() {
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              <div className="flex items-center cursor-pointer group" onClick={() => router.push('/')}>
-                <div className="relative">
-                  <Globe2 className="w-9 h-9 text-blue-600 group-hover:scale-110 transition-transform" />
-                  <div className="absolute -inset-1 bg-blue-600 opacity-20 blur-md group-hover:opacity-30 transition-opacity rounded-full"></div>
-                </div>
-                <div className="ml-3 text-2xl font-bold text-gray-900">
-                  Remote-<span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Works</span>
-                </div>
-              </div>
+              <Logo size="md" showText={true} />
               <button onClick={() => router.push('/')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
                 Back to Home
               </button>
@@ -197,7 +190,7 @@ export default function Terms() {
                 If you have questions about these Terms, please contact us at:
               </p>
               <p className="text-gray-700 mt-4">
-                <strong>Email:</strong> legal@remote-works.io<br />
+                <strong>Email:</strong> support@remote-works.io<br />
                 <strong>Mail:</strong> Remote-Works Legal Department<br />
                 123 Platform Street, Suite 100<br />
                 Wilmington, DE 19801
@@ -207,19 +200,7 @@ export default function Terms() {
         </div>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-gray-400 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-6">
-                <Globe2 className="w-9 h-9 text-blue-500 mr-3" />
-                <div className="text-2xl font-bold text-white">
-                  Remote-<span className="text-blue-500">Works</span>
-                </div>
-              </div>
-              <p className="text-gray-500 text-sm">© 2025 Remote-Works. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
