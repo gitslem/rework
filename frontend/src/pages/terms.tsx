@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { Menu, X } from 'lucide-react';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
 
 export default function Terms() {
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -17,12 +20,31 @@ export default function Terms() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-20">
-              <Logo size="md" showText={true} />
-              <button onClick={() => router.push('/')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+            <div className="flex justify-between items-center h-16 md:h-20">
+              <Logo size="md" showText={false} onClick={() => router.push('/')} />
+
+              {/* Desktop Navigation */}
+              <button onClick={() => router.push('/')} className="hidden md:block text-gray-600 hover:text-blue-600 transition-colors font-medium">
                 Back to Home
               </button>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
+
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+              <div className="md:hidden py-4 border-t border-gray-200">
+                <button onClick={() => { router.push('/'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">
+                  Back to Home
+                </button>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -170,7 +192,7 @@ export default function Terms() {
               <h2 className="text-3xl font-bold text-gray-900 mb-4">10. Dispute Resolution</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
                 Any disputes arising from these Terms or use of the Platform shall be resolved through binding arbitration in
-                accordance with the rules of the American Arbitration Association.
+                accordance with the rules of the ADR Institute of Canada (ADRIC).
               </p>
               <p className="text-gray-700 leading-relaxed">
                 For disputes between Candidates and Agents, we offer mediation services to help reach a fair resolution.
@@ -180,7 +202,9 @@ export default function Terms() {
             <section className="mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">11. Governing Law</h2>
               <p className="text-gray-700 leading-relaxed">
-                These Terms are governed by the laws of the State of Delaware, United States, without regard to conflict of law provisions.
+                These Terms are governed by the laws of the Province of Ontario and the federal laws of Canada applicable therein,
+                without regard to conflict of law provisions. Any legal action or proceeding relating to these Terms shall be
+                brought exclusively in the courts of Ontario.
               </p>
             </section>
 
@@ -191,9 +215,10 @@ export default function Terms() {
               </p>
               <p className="text-gray-700 mt-4">
                 <strong>Email:</strong> support@remote-works.io<br />
+                <strong>Phone:</strong> +1 (647) 982-1234<br />
                 <strong>Mail:</strong> Remote-Works Legal Department<br />
-                123 Platform Street, Suite 100<br />
-                Wilmington, DE 19801
+                5 Buttermill Avenue<br />
+                Concord, ON L4K 3X2, Canada
               </p>
             </section>
           </div>

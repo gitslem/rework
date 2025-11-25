@@ -50,13 +50,13 @@ export default function Footer() {
                 </div>
                 <div className="flex items-start space-x-2">
                   <Phone className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <a href="tel:+19253754195" className="hover:text-white transition-colors">
-                    +1 (925) 375-4195
+                  <a href="tel:+16479821234" className="hover:text-white transition-colors">
+                    +1 (647) 982-1234
                   </a>
                 </div>
                 <div className="flex items-start space-x-2">
                   <MapPin className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <span>5 Buttermill Ave, ON CA</span>
+                  <span>5 Buttermill Avenue, Concord, ON L4K 3X2, Canada</span>
                 </div>
               </div>
             </div>
