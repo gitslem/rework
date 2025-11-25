@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Globe2, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import Logo from '@/components/Logo';
 import { signInWithGoogle } from '@/lib/firebase/auth';
 
 export default function Login() {
@@ -43,12 +44,7 @@ export default function Login() {
           <div className="bg-white rounded-2xl shadow-2xl p-8 border border-accent-gray-200">
             {/* Logo */}
             <div className="flex justify-center mb-8">
-              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
-                <Globe2 className="w-10 h-10 text-primary-500 mr-2" />
-                <div className="text-3xl font-bold text-accent-dark">
-                  Remote-<span className="gradient-text">Works</span>
-                </div>
-              </div>
+              <Logo size="lg" showText={true} />
             </div>
 
             <div className="text-center mb-8">
