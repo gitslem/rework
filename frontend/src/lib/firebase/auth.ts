@@ -120,10 +120,6 @@ export const signInWithGoogle = async (role: UserRole): Promise<User> => {
     }
 
     // Create new user
-    const names = firebaseUser.displayName?.split(' ') || ['', ''];
-    const firstName = names[0];
-    const lastName = names.slice(1).join(' ');
-
     const userData: User = {
       uid: firebaseUser.uid,
       email: firebaseUser.email!,
@@ -139,11 +135,13 @@ export const signInWithGoogle = async (role: UserRole): Promise<User> => {
 
     await setDoc(doc(db, 'users', firebaseUser.uid), userData);
 
-    // Create profile
+    // Create basic profile without firstName/lastName
+    // This ensures candidates will be directed to complete-profile page
+    // Agents will fill this in during agent-signup
     const profileData = {
       uid: firebaseUser.uid,
-      firstName,
-      lastName,
+      firstName: '', // Empty so users complete their profile
+      lastName: '', // Empty so users complete their profile
       bio: '',
       avatarURL: firebaseUser.photoURL || '',
       location: '',
