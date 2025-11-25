@@ -1,0 +1,81 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules for Remote-Works
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if the user is the owner of the file
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Helper function to validate file size (max 5MB)
+    function isValidSize() {
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    // Helper function to validate image or PDF file type
+    function isValidFileType() {
+      return request.resource.contentType.matches('image/.*') ||
+             request.resource.contentType == 'application/pdf';
+    }
+
+    // ID Cards - Users can upload their own ID cards
+    match /id-cards/{userId}/{fileName} {
+      // Allow authenticated users to upload their own ID card
+      allow create: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       isValidSize() &&
+                       isValidFileType();
+
+      // Allow users to read their own ID cards
+      allow read: if isAuthenticated() && isOwner(userId);
+
+      // Allow users to update their own ID cards
+      allow update: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       isValidSize() &&
+                       isValidFileType();
+
+      // Allow users to delete their own ID cards
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Profile Pictures - Users can upload their own profile pictures
+    match /profile-pictures/{userId}/{fileName} {
+      allow create, update: if isAuthenticated() &&
+                               isOwner(userId) &&
+                               isValidSize() &&
+                               request.resource.contentType.matches('image/.*');
+      allow read: if isAuthenticated();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Project Files - Authenticated users can upload project-related files
+    match /projects/{projectId}/{fileName} {
+      allow create, update: if isAuthenticated() && isValidSize();
+      allow read: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    // Portfolio Files - Agents can upload portfolio items
+    match /portfolio/{userId}/{fileName} {
+      allow create, update: if isAuthenticated() &&
+                               isOwner(userId) &&
+                               isValidSize();
+      allow read: if isAuthenticated();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Admin access - Admins can read all files (define admin check in your app)
+    match /{allPaths=**} {
+      // By default, deny all other access
+      allow read, write: if false;
+    }
+  }
+}

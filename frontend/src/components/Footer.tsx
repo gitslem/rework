@@ -7,30 +7,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-black text-gray-400">
-      {/* Agent CTA Banner */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 py-12 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                Become a Verified Agent
-              </h3>
-              <p className="text-white text-opacity-90 text-lg">
-                Help candidates succeed and earn money doing it
-              </p>
-            </div>
-            <button
-              onClick={() => router.push('/agent-signup')}
-              className="bg-white text-black px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all flex items-center shadow-xl hover-lift"
-            >
-              <Briefcase className="w-5 h-5 mr-2" />
-              Apply Now
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Main Footer Content */}
       <div className="py-12 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -138,6 +114,14 @@ export default function Footer() {
                     className="hover:text-white transition-colors inline-block"
                   >
                     Privacy Policy
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/agent-signup')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Become an Agent
                   </button>
                 </li>
               </ul>
