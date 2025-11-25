@@ -10,7 +10,7 @@ export default function Register() {
   const router = useRouter();
   const googleAuth = useAuthStore((state) => state.googleAuth);
   const [step, setStep] = useState(1);
-  const [role, setRole] = useState('freelancer');
+  const [role, setRole] = useState('candidate');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isConfigured, setIsConfigured] = useState(true);
@@ -19,11 +19,11 @@ export default function Register() {
     // Check if there's a pre-selected role from URL params
     const urlParams = new URLSearchParams(window.location.search);
     const typeParam = urlParams.get('type');
-    if (typeParam === 'client') {
-      setRole('business');
+    if (typeParam === 'candidate') {
+      setRole('candidate');
       setStep(2);
-    } else if (typeParam === 'freelancer') {
-      setRole('freelancer');
+    } else if (typeParam === 'agent') {
+      setRole('agent');
       setStep(2);
     }
 
@@ -37,28 +37,28 @@ export default function Register() {
 
   const roles = [
     {
-      value: 'freelancer',
-      title: 'AI Freelancer',
-      description: 'Work on AI projects, automations, and get verified for your skills',
+      value: 'candidate',
+      title: 'Candidate',
+      description: 'Get expert help getting approved for Outlier, Alignerr, OneForma, and more',
       icon: <Users className="w-12 h-12" />,
       features: [
-        'Access to global AI projects',
-        'Verified freelancer badge',
-        'Portfolio & skills showcase',
-        'Flexible async work'
+        'Browse verified agents',
+        'Direct messaging with agents',
+        'Money-back guarantee',
+        '98% success rate'
       ],
       color: 'primary'
     },
     {
-      value: 'business',
-      title: 'Company',
-      description: 'Hire verified AI freelancers and manage projects across time zones',
+      value: 'agent',
+      title: 'Agent',
+      description: 'Help candidates get approved and earn money for each successful placement',
       icon: <Building className="w-12 h-12" />,
       features: [
-        'Access verified AI talent',
-        'Project management tools',
-        'AI PM Co-Pilot',
-        'Shared sandbox environment'
+        'Build your client base',
+        'Set your own rates',
+        'Secure payment processing',
+        'Verified agent badge'
       ],
       color: 'purple'
     }
@@ -76,10 +76,10 @@ export default function Register() {
       await googleAuth(credentialResponse.credential, role);
 
       // Redirect based on selected role
-      if (role === 'business') {
-        router.push('/company-dashboard');
+      if (role === 'agent') {
+        router.push('/agent-dashboard');
       } else {
-        router.push('/dashboard');
+        router.push('/candidate-dashboard');
       }
     } catch (err: any) {
       console.error('Registration error:', err);
