@@ -19,13 +19,14 @@ import {
   increment,
   Timestamp
 } from 'firebase/firestore';
-import { db } from '../../../firebase.config';
+import { getFirebaseFirestore } from '../../../firebase.config';
 import { Profile, ServiceRequest, Review, Message, Notification } from '@/types';
 
 // ============ PROFILES ============
 
 export const getProfile = async (uid: string): Promise<Profile | null> => {
   try {
+    const db = getFirebaseFirestore();
     const profileDoc = await getDoc(doc(db, 'profiles', uid));
     if (profileDoc.exists()) {
       return { ...profileDoc.data(), uid: profileDoc.id } as Profile;
@@ -39,6 +40,7 @@ export const getProfile = async (uid: string): Promise<Profile | null> => {
 
 export const updateProfile = async (uid: string, data: Partial<Profile>): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     await updateDoc(doc(db, 'profiles', uid), {
       ...data,
       updatedAt: serverTimestamp(),
@@ -55,6 +57,7 @@ export const getAgents = async (filters?: {
   maxPrice?: number;
 }): Promise<Profile[]> => {
   try {
+    const db = getFirebaseFirestore();
     const constraints: QueryConstraint[] = [
       where('isAgentApproved', '==', true),
       where('agentVerificationStatus', '==', 'verified'),
@@ -89,6 +92,7 @@ export const getAgents = async (filters?: {
 
 export const createServiceRequest = async (data: Omit<ServiceRequest, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
   try {
+    const db = getFirebaseFirestore();
     const docRef = await addDoc(collection(db, 'serviceRequests'), {
       ...data,
       createdAt: serverTimestamp(),
@@ -103,6 +107,7 @@ export const createServiceRequest = async (data: Omit<ServiceRequest, 'id' | 'cr
 
 export const getServiceRequest = async (id: string): Promise<ServiceRequest | null> => {
   try {
+    const db = getFirebaseFirestore();
     const docSnap = await getDoc(doc(db, 'serviceRequests', id));
     if (docSnap.exists()) {
       return { ...docSnap.data(), id: docSnap.id } as ServiceRequest;
@@ -116,6 +121,7 @@ export const getServiceRequest = async (id: string): Promise<ServiceRequest | nu
 
 export const updateServiceRequest = async (id: string, data: Partial<ServiceRequest>): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     await updateDoc(doc(db, 'serviceRequests', id), {
       ...data,
       updatedAt: serverTimestamp(),
@@ -128,6 +134,7 @@ export const updateServiceRequest = async (id: string, data: Partial<ServiceRequ
 
 export const getServiceRequestsByUser = async (uid: string, role: 'candidate' | 'agent'): Promise<ServiceRequest[]> => {
   try {
+    const db = getFirebaseFirestore();
     const field = role === 'candidate' ? 'candidateId' : 'agentId';
     const q = query(
       collection(db, 'serviceRequests'),
@@ -152,6 +159,7 @@ export const getServiceRequestsByUser = async (uid: string, role: 'candidate' | 
 
 export const sendMessage = async (data: Omit<Message, 'id' | 'createdAt'>): Promise<string> => {
   try {
+    const db = getFirebaseFirestore();
     const docRef = await addDoc(collection(db, 'messages'), {
       ...data,
       createdAt: serverTimestamp(),
@@ -165,6 +173,7 @@ export const sendMessage = async (data: Omit<Message, 'id' | 'createdAt'>): Prom
 
 export const getConversation = async (conversationId: string): Promise<Message[]> => {
   try {
+    const db = getFirebaseFirestore();
     const q = query(
       collection(db, 'messages'),
       where('conversationId', '==', conversationId),
@@ -188,6 +197,7 @@ export const subscribeToConversation = (
   conversationId: string,
   callback: (messages: Message[]) => void
 ): Unsubscribe => {
+  const db = getFirebaseFirestore();
   const q = query(
     collection(db, 'messages'),
     where('conversationId', '==', conversationId),
@@ -205,6 +215,7 @@ export const subscribeToConversation = (
 
 export const markMessageAsRead = async (messageId: string): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     await updateDoc(doc(db, 'messages', messageId), {
       isRead: true,
     });
@@ -215,6 +226,7 @@ export const markMessageAsRead = async (messageId: string): Promise<void> => {
 
 export const getUserConversations = async (uid: string): Promise<string[]> => {
   try {
+    const db = getFirebaseFirestore();
     // Get all conversations where user is sender or recipient
     const q1 = query(collection(db, 'messages'), where('senderId', '==', uid));
     const q2 = query(collection(db, 'messages'), where('recipientId', '==', uid));
@@ -236,6 +248,7 @@ export const getUserConversations = async (uid: string): Promise<string[]> => {
 
 export const createReview = async (data: Omit<Review, 'id' | 'createdAt'>): Promise<string> => {
   try {
+    const db = getFirebaseFirestore();
     const docRef = await addDoc(collection(db, 'reviews'), {
       ...data,
       createdAt: serverTimestamp(),
@@ -253,6 +266,7 @@ export const createReview = async (data: Omit<Review, 'id' | 'createdAt'>): Prom
 
 export const getReviewsForUser = async (uid: string): Promise<Review[]> => {
   try {
+    const db = getFirebaseFirestore();
     const q = query(
       collection(db, 'reviews'),
       where('revieweeId', '==', uid),
@@ -274,6 +288,7 @@ export const getReviewsForUser = async (uid: string): Promise<Review[]> => {
 
 const updateRevieweeRating = async (uid: string): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     const reviews = await getReviewsForUser(uid);
     if (reviews.length === 0) return;
 
@@ -293,6 +308,7 @@ const updateRevieweeRating = async (uid: string): Promise<void> => {
 
 export const createNotification = async (data: Omit<Notification, 'id' | 'createdAt'>): Promise<string> => {
   try {
+    const db = getFirebaseFirestore();
     const docRef = await addDoc(collection(db, 'notifications'), {
       ...data,
       createdAt: serverTimestamp(),
@@ -306,6 +322,7 @@ export const createNotification = async (data: Omit<Notification, 'id' | 'create
 
 export const getUserNotifications = async (uid: string): Promise<Notification[]> => {
   try {
+    const db = getFirebaseFirestore();
     const q = query(
       collection(db, 'notifications'),
       where('userId', '==', uid),
@@ -328,6 +345,7 @@ export const getUserNotifications = async (uid: string): Promise<Notification[]>
 
 export const markNotificationAsRead = async (notificationId: string): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     await updateDoc(doc(db, 'notifications', notificationId), {
       isRead: true,
     });
@@ -340,6 +358,7 @@ export const subscribeToNotifications = (
   uid: string,
   callback: (notifications: Notification[]) => void
 ): Unsubscribe => {
+  const db = getFirebaseFirestore();
   const q = query(
     collection(db, 'notifications'),
     where('userId', '==', uid),
@@ -360,6 +379,7 @@ export const subscribeToNotifications = (
 
 export const getPendingUsers = async (role: 'candidate' | 'agent'): Promise<any[]> => {
   try {
+    const db = getFirebaseFirestore();
     const q = query(
       collection(db, 'users'),
       where('role', '==', role),
@@ -390,6 +410,7 @@ export const getPendingUsers = async (role: 'candidate' | 'agent'): Promise<any[
 
 export const approveUser = async (uid: string, role: 'candidate' | 'agent'): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     if (role === 'candidate') {
       await updateDoc(doc(db, 'users', uid), {
         isCandidateApproved: true,
@@ -419,6 +440,7 @@ export const approveUser = async (uid: string, role: 'candidate' | 'agent'): Pro
 
 export const rejectUser = async (uid: string, role: 'candidate' | 'agent', reason: string): Promise<void> => {
   try {
+    const db = getFirebaseFirestore();
     if (role === 'agent') {
       await updateDoc(doc(db, 'profiles', uid), {
         agentVerificationStatus: 'rejected',

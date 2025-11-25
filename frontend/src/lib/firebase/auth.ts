@@ -10,7 +10,7 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../../../firebase.config';
+import { getFirebaseAuth, getFirebaseFirestore } from '../../../firebase.config';
 import { User, UserRole } from '@/types';
 
 export const registerWithEmail = async (
@@ -21,6 +21,9 @@ export const registerWithEmail = async (
   lastName: string
 ): Promise<User> => {
   try {
+    const auth = getFirebaseAuth();
+    const db = getFirebaseFirestore();
+
     // Create Firebase Auth user
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
@@ -80,6 +83,9 @@ export const registerWithEmail = async (
 
 export const signInWithEmail = async (email: string, password: string): Promise<User> => {
   try {
+    const auth = getFirebaseAuth();
+    const db = getFirebaseFirestore();
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
 
@@ -99,6 +105,9 @@ export const signInWithEmail = async (email: string, password: string): Promise<
 
 export const signInWithGoogle = async (role: UserRole): Promise<User> => {
   try {
+    const auth = getFirebaseAuth();
+    const db = getFirebaseFirestore();
+
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const firebaseUser = userCredential.user;
@@ -167,6 +176,7 @@ export const signInWithGoogle = async (role: UserRole): Promise<User> => {
 
 export const signOut = async (): Promise<void> => {
   try {
+    const auth = getFirebaseAuth();
     await firebaseSignOut(auth);
   } catch (error: any) {
     console.error('Sign out error:', error);
@@ -176,6 +186,7 @@ export const signOut = async (): Promise<void> => {
 
 export const resetPassword = async (email: string): Promise<void> => {
   try {
+    const auth = getFirebaseAuth();
     await sendPasswordResetEmail(auth, email);
   } catch (error: any) {
     console.error('Password reset error:', error);
@@ -185,6 +196,7 @@ export const resetPassword = async (email: string): Promise<void> => {
 
 export const getCurrentUser = (): Promise<FirebaseUser | null> => {
   return new Promise((resolve) => {
+    const auth = getFirebaseAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
       resolve(user);
@@ -194,6 +206,7 @@ export const getCurrentUser = (): Promise<FirebaseUser | null> => {
 
 export const getUserData = async (uid: string): Promise<User | null> => {
   try {
+    const db = getFirebaseFirestore();
     const userDoc = await getDoc(doc(db, 'users', uid));
     if (userDoc.exists()) {
       return userDoc.data() as User;
