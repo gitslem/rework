@@ -23,9 +23,32 @@ export interface Profile {
   bio: string;
   avatarURL?: string;
   location?: string;
+  country?: string;
+  city?: string;
+  timezone?: string;
   phone?: string;
   website?: string;
   linkedin?: string;
+
+  // Agent specific - Professional Info
+  yearsOfExperience?: number;
+  education?: string; // 'high-school' | 'bachelor' | 'master' | 'phd'
+  languagesSpoken?: string[]; // ['English', 'Spanish', etc.]
+
+  // Agent specific - Technical Details
+  devices?: string[]; // ['Laptop', 'Desktop', 'Tablet']
+  internetSpeed?: string; // 'Slow' | 'Medium' | 'Fast' | 'Very Fast'
+  workingHours?: string; // 'Full-time' | 'Part-time' | 'Flexible'
+
+  // Agent specific - Platforms & Services
+  platformsExperience?: string[]; // Platforms they have experience with
+  platformsAccounts?: Record<string, string>; // { 'Outlier AI': 'active', 'Alignerr': 'pending' }
+  specializations?: string[]; // ['AI Training', 'Data Annotation', 'Translation']
+
+  // Agent specific - Verification Documents (stored as URLs)
+  idVerificationURL?: string;
+  proofOfExperienceURLs?: string[];
+  certificationURLs?: string[];
 
   // Statistics
   totalEarnings: number;
@@ -33,13 +56,14 @@ export interface Profile {
   averageRating: number;
   totalReviews: number;
 
-  // Agent specific
+  // Agent approval
   isAgentApproved: boolean;
   agentServices: string[]; // ['Outlier AI', 'Alignerr', etc.]
   agentSuccessRate: number;
   agentTotalClients: number;
   agentVerificationStatus: 'pending' | 'verified' | 'rejected';
   agentVerifiedAt?: Timestamp;
+  agentRejectedReason?: string;
   agentPricing: Record<string, number>; // { 'Outlier AI': 100, 'Alignerr': 75 }
   agentPortfolio: PortfolioItem[];
   paypalEmail?: string;
