@@ -114,7 +114,10 @@ export default function AgentDashboard() {
         setProfile(profileData);
 
         // Check if agent is approved
-        const approved = profileData.isAgentApproved === true || profileData.agentVerificationStatus === 'verified';
+        // Check both the profile and user document for approval status
+        const userApproved = userData.isAgentApproved === true;
+        const profileApproved = profileData.isAgentApproved === true || profileData.agentVerificationStatus === 'verified' || profileData.agentVerificationStatus === 'approved';
+        const approved = userApproved || profileApproved;
         setIsApproved(approved);
 
         // Load current services and pricing

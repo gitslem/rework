@@ -3,13 +3,13 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit
+  CheckCircle, Clock, DollarSign, Edit, Loader
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp } from 'firebase/firestore';
 
 interface Agent {
   id: string;
@@ -56,6 +56,8 @@ export default function CandidateDashboard() {
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [messageText, setMessageText] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
 
   useEffect(() => {
     checkAuthAndLoadProfile();
@@ -101,7 +103,10 @@ export default function CandidateDashboard() {
         setProfile(profileData);
 
         // Check if user is verified/approved
-        const approved = profileData.isVerified === true || profileData.verificationStatus === 'approved';
+        // Check both the profile and user document for approval status
+        const userApproved = userData.isCandidateApproved === true;
+        const profileVerified = profileData.isVerified === true || profileData.verificationStatus === 'approved';
+        const approved = userApproved || profileVerified;
         setIsApproved(approved);
 
         // Load agents if approved
@@ -169,7 +174,44 @@ export default function CandidateDashboard() {
 
   const handleRequestService = (agent: Agent) => {
     setSelectedAgent(agent);
+    setMessageText('');
     setShowMessageModal(true);
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !selectedAgent || !user) {
+      alert('Please enter a message');
+      return;
+    }
+
+    try {
+      setSendingMessage(true);
+      const db = getFirebaseFirestore();
+
+      // Create a message document
+      await addDoc(collection(db, 'messages'), {
+        senderId: user.uid,
+        senderName: `${profile?.firstName} ${profile?.lastName}`,
+        senderEmail: user.email,
+        recipientId: selectedAgent.id,
+        recipientName: selectedAgent.name,
+        message: messageText,
+        subject: 'Service Request',
+        status: 'unread',
+        createdAt: Timestamp.now(),
+        type: 'service_request'
+      });
+
+      alert('Message sent successfully! The agent will contact you soon.');
+      setShowMessageModal(false);
+      setMessageText('');
+      setSelectedAgent(null);
+    } catch (error: any) {
+      console.error('Error sending message:', error);
+      alert('Failed to send message: ' + error.message);
+    } finally {
+      setSendingMessage(false);
+    }
   };
 
   const formatDate = (timestamp: any) => {
@@ -576,26 +618,37 @@ export default function CandidateDashboard() {
               <p className="text-gray-700 mb-2">Send a request to <span className="font-semibold">{selectedAgent.name}</span></p>
               <p className="text-sm text-gray-600 mb-4">Price: <span className="font-bold">${selectedAgent.price}</span></p>
               <textarea
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Tell the agent which platform you need help with and any specific requirements..."
                 className="w-full h-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+                disabled={sendingMessage}
               />
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowMessageModal(false)}
-                className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-all"
+                disabled={sendingMessage}
+                className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-all disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  alert('Service request sent!');
-                  setShowMessageModal(false);
-                }}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+                onClick={handleSendMessage}
+                disabled={sendingMessage || !messageText.trim()}
+                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="w-4 h-4" />
-                Send Request
+                {sendingMessage ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Send Request
+                  </>
+                )}
               </button>
             </div>
           </div>
