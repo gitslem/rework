@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const router = useRouter();
@@ -363,49 +364,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="bg-black text-gray-400 py-16 px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-12 mb-12">
-              <div className="md:col-span-1">
-                <Logo textClassName="text-white" className="mb-6" />
-                <p className="text-gray-500 leading-relaxed text-sm">
-                  The trusted marketplace for AI training opportunities.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-white mb-4 text-sm">Candidates</h4>
-                <ul className="space-y-3 text-sm">
-                  <li><a href="#platforms" className="hover:text-white transition-colors">Platforms</a></li>
-                  <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-                  <li><button onClick={() => router.push('/register?type=candidate')} className="hover:text-white transition-colors">Sign Up</button></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-white mb-4 text-sm">Agents</h4>
-                <ul className="space-y-3 text-sm">
-                  <li><button onClick={() => router.push('/agent-signup')} className="hover:text-white transition-colors">Become an Agent</button></li>
-                  <li><a href="#" className="hover:text-white transition-colors">Guidelines</a></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-white mb-4 text-sm">Company</h4>
-                <ul className="space-y-3 text-sm">
-                  <li><button onClick={() => router.push('/about')} className="hover:text-white transition-colors">About</button></li>
-                  <li><button onClick={() => router.push('/support')} className="hover:text-white transition-colors">Support</button></li>
-                  <li><button onClick={() => router.push('/faq')} className="hover:text-white transition-colors">FAQ</button></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-800 pt-8">
-              <p className="text-gray-600 text-sm text-center">© 2025 RemoteWorks. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
