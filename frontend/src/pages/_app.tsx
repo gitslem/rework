@@ -7,7 +7,8 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/lib/authStore';
 
 const queryClient = new QueryClient();
-const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+// Use a placeholder during build, actual value will be used at runtime
+const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'placeholder-client-id';
 
 export default function App({ Component, pageProps }: AppProps) {
   const fetchUser = useAuthStore((state) => state.fetchUser);
@@ -16,22 +17,11 @@ export default function App({ Component, pageProps }: AppProps) {
     fetchUser();
   }, [fetchUser]);
 
-  const content = (
-    <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
-    </QueryClientProvider>
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <QueryClientProvider client={queryClient}>
+        <Component {...pageProps} />
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
-
-  // Only wrap with GoogleOAuthProvider if client ID is configured
-  if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== '') {
-    return (
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        {content}
-      </GoogleOAuthProvider>
-    );
-  }
-
-  // Return without GoogleOAuthProvider if not configured
-  // The auth pages will show appropriate error messages
-  return content;
 }
