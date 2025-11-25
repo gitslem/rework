@@ -6,7 +6,7 @@ import {
   CheckCircle, XCircle, Clock, User, MapPin, Briefcase, Monitor,
   Mail, Phone, Globe, Calendar, Award, Filter, Search, X
 } from 'lucide-react';
-import { getFirebaseFirestore } from '../../../firebase.config';
+import { getFirebaseFirestore } from '@/lib/firebase/config';
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { Profile } from '@/types';
 

@@ -6,7 +6,7 @@ import {
   Users, TrendingUp, DollarSign, CheckCircle, Activity,
   Calendar, BarChart3, PieChart, ArrowUp, ArrowDown, Star
 } from 'lucide-react';
-import { getFirebaseAuth, getFirebaseFirestore } from '../../../firebase.config';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { collection, getDocs, query, where, doc, getDoc, orderBy, limit } from 'firebase/firestore';
 

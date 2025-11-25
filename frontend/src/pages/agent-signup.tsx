@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import { signInWithGoogle } from '@/lib/firebase/auth';
-import { getFirebaseAuth, getFirebaseFirestore } from '../../firebase.config';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle } from 'lucide-react';

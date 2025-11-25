@@ -19,7 +19,7 @@ import {
   increment,
   Timestamp
 } from 'firebase/firestore';
-import { getFirebaseFirestore } from '../../../firebase.config';
+import { getFirebaseFirestore } from './config';
 import { Profile, ServiceRequest, Review, Message, Notification } from '@/types';
 
 // ============ PROFILES ============
