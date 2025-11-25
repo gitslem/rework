@@ -46,7 +46,7 @@ export default function Logo({ className = '', textClassName = '', onClick, show
       {/* Logo Image */}
       <div className={`relative ${sizeClasses[size]} mr-3 transition-transform group-hover:scale-110 duration-200`}>
         <Image
-          src="/logo.svg"
+          src="/logo.jpeg"
           alt="RemoteWorks Logo"
           width={imageSizes[size].width}
           height={imageSizes[size].height}
