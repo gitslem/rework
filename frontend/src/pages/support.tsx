@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Mail, MessageSquare, Phone, Clock, Send
+  Mail, MessageSquare, Phone, Clock, Send, Menu, X
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 
 export default function Support() {
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -39,14 +40,14 @@ export default function Support() {
     {
       icon: <Phone className="w-8 h-8" />,
       title: "Phone Support",
-      description: "+1 (925) 375-4195",
+      description: "+1 (647) 982-1234",
       detail: "Monday - Friday, 9 AM - 6 PM EST",
       color: "bg-gray-800"
     },
     {
       icon: <MessageSquare className="w-8 h-8" />,
       title: "Location",
-      description: "5 Buttermill Ave, ON CA",
+      description: "5 Buttermill Avenue, Concord, ON L4K 3X2",
       detail: "Canada Office",
       color: "bg-gray-700"
     }
@@ -63,9 +64,11 @@ export default function Support() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-20">
-              <Logo onClick={() => router.push('/')} />
-              <div className="flex items-center space-x-8">
+            <div className="flex justify-between items-center h-16 md:h-20">
+              <Logo onClick={() => router.push('/')} showText={false} />
+
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-8">
                 <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium">Home</button>
                 <button onClick={() => router.push('/about')} className="text-gray-600 hover:text-black transition-colors font-medium">About</button>
                 <button onClick={() => router.push('/faq')} className="text-gray-600 hover:text-black transition-colors font-medium">FAQ</button>
@@ -77,7 +80,26 @@ export default function Support() {
                   Get Started
                 </button>
               </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
+
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+              <div className="md:hidden py-4 space-y-3 border-t border-gray-200">
+                <button onClick={() => { router.push('/'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">Home</button>
+                <button onClick={() => { router.push('/about'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">About</button>
+                <button onClick={() => { router.push('/faq'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">FAQ</button>
+                <button onClick={() => { router.push('/login'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">Sign In</button>
+                <button onClick={() => { router.push('/register'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors mx-4">Get Started</button>
+              </div>
+            )}
           </div>
         </nav>
 
@@ -247,9 +269,9 @@ export default function Support() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">Support Hours</h3>
                   <div className="space-y-2 text-gray-700">
                     <p><span className="font-semibold">Email Support:</span> 24/7 (Response within 24 hours)</p>
-                    <p><span className="font-semibold">Phone Support:</span> +1 (925) 375-4195</p>
+                    <p><span className="font-semibold">Phone Support:</span> +1 (647) 982-1234</p>
                     <p><span className="font-semibold">Phone Hours:</span> Monday - Friday, 9 AM - 6 PM EST</p>
-                    <p><span className="font-semibold">Address:</span> 5 Buttermill Ave, ON CA</p>
+                    <p><span className="font-semibold">Address:</span> 5 Buttermill Avenue, Concord, ON L4K 3X2, Canada</p>
                     <p className="text-sm text-gray-600 mt-4">We're here to help! Reach out anytime for support.</p>
                   </div>
                 </div>
