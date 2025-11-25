@@ -3,10 +3,13 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign
+  CheckCircle, Clock, DollarSign, Edit
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 
 interface Agent {
   id: string;
@@ -20,121 +23,144 @@ interface Agent {
   responseTime: string;
 }
 
-interface ServiceRequest {
-  id: string;
-  agentName: string;
-  platform: string;
-  status: 'pending' | 'accepted' | 'in_progress' | 'completed';
-  createdAt: string;
-  price: number;
-}
-
-interface Message {
-  id: string;
-  from: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
+interface UserProfile {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  country: string;
+  location: string;
+  bio: string;
+  socialLinks: {
+    linkedin: string;
+    twitter: string;
+    facebook: string;
+    instagram: string;
+  };
+  verificationStatus: string;
+  isVerified: boolean;
+  createdAt: any;
 }
 
 export default function CandidateDashboard() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview'); // overview, search, requests, messages
-  const [isApproved, setIsApproved] = useState(true); // Set to true to show full dashboard
+  const [activeTab, setActiveTab] = useState('overview');
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isApproved, setIsApproved] = useState(false);
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('all');
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
 
-  // Mock user data
-  const userData = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    location: 'Toronto, ON, Canada',
-    joinedDate: 'January 2025',
-    platformsInterested: ['Outlier AI', 'Alignerr', 'Mindrift AI']
+  useEffect(() => {
+    checkAuthAndLoadProfile();
+  }, []);
+
+  const checkAuthAndLoadProfile = async () => {
+    try {
+      const auth = getFirebaseAuth();
+      const db = getFirebaseFirestore();
+
+      onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!firebaseUser) {
+          router.push('/login');
+          return;
+        }
+
+        setUser(firebaseUser);
+
+        // Get user document to check role
+        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        if (!userDoc.exists()) {
+          router.push('/complete-profile');
+          return;
+        }
+
+        const userData = userDoc.data();
+
+        // Redirect agents to their dashboard
+        if (userData.role === 'agent') {
+          router.push('/agent-dashboard');
+          return;
+        }
+
+        // Get profile document
+        const profileDoc = await getDoc(doc(db, 'profiles', firebaseUser.uid));
+        if (!profileDoc.exists()) {
+          router.push('/complete-profile');
+          return;
+        }
+
+        const profileData = profileDoc.data() as UserProfile;
+        profileData.email = firebaseUser.email || '';
+        setProfile(profileData);
+
+        // Check if user is verified/approved
+        const approved = profileData.isVerified === true || profileData.verificationStatus === 'approved';
+        setIsApproved(approved);
+
+        // Load agents if approved
+        if (approved) {
+          await loadAgents(db);
+        }
+
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      setLoading(false);
+    }
   };
 
-  // Mock agents data
-  const mockAgents: Agent[] = [
-    {
-      id: '1',
-      name: 'Sarah Johnson',
-      rating: 4.9,
-      reviews: 234,
-      successRate: 98,
-      price: 150,
-      platforms: ['Outlier AI', 'Alignerr', 'Mindrift AI'],
-      location: 'United States',
-      responseTime: '< 2 hours'
-    },
-    {
-      id: '2',
-      name: 'Michael Chen',
-      rating: 4.8,
-      reviews: 189,
-      successRate: 97,
-      price: 120,
-      platforms: ['OneForma', 'Appen', 'TELUS Digital'],
-      location: 'Canada',
-      responseTime: '< 4 hours'
-    },
-    {
-      id: '3',
-      name: 'Emily Rodriguez',
-      rating: 5.0,
-      reviews: 156,
-      successRate: 99,
-      price: 180,
-      platforms: ['Outlier AI', 'RWS', 'DataAnnotation'],
-      location: 'United Kingdom',
-      responseTime: '< 1 hour'
-    }
-  ];
+  const loadAgents = async (db: any) => {
+    try {
+      // Get all users with role 'agent' and approved status
+      const usersQuery = query(
+        collection(db, 'users'),
+        where('role', '==', 'agent')
+      );
+      const usersSnapshot = await getDocs(usersQuery);
 
-  // Mock service requests
-  const mockRequests: ServiceRequest[] = [
-    {
-      id: '1',
-      agentName: 'Sarah Johnson',
-      platform: 'Outlier AI',
-      status: 'in_progress',
-      createdAt: '2025-01-15',
-      price: 150
-    },
-    {
-      id: '2',
-      agentName: 'Michael Chen',
-      platform: 'OneForma',
-      status: 'completed',
-      createdAt: '2025-01-10',
-      price: 120
-    }
-  ];
+      const agentsList: Agent[] = [];
 
-  // Mock messages
-  const mockMessages: Message[] = [
-    {
-      id: '1',
-      from: 'Sarah Johnson',
-      message: 'Hi! I have reviewed your profile and I can definitely help you get approved for Outlier AI.',
-      timestamp: '2 hours ago',
-      read: false
-    },
-    {
-      id: '2',
-      from: 'Michael Chen',
-      message: 'Your application has been submitted! I will keep you updated on the progress.',
-      timestamp: '1 day ago',
-      read: true
+      for (const userDoc of usersSnapshot.docs) {
+        // Get the agent's profile
+        const profileDoc = await getDoc(doc(db, 'profiles', userDoc.id));
+
+        if (profileDoc.exists()) {
+          const profileData = profileDoc.data();
+
+          // Only show approved agents
+          if (profileData.isAgentApproved === true || profileData.agentVerificationStatus === 'approved') {
+            agentsList.push({
+              id: userDoc.id,
+              name: `${profileData.firstName} ${profileData.lastName}`,
+              rating: profileData.averageRating || 4.5,
+              reviews: profileData.totalReviews || 0,
+              successRate: profileData.agentSuccessRate || 95,
+              price: profileData.agentPricing?.basePrice || 100,
+              platforms: profileData.agentServices || [],
+              location: profileData.location || 'Unknown',
+              responseTime: '< 24 hours'
+            });
+          }
+        }
+      }
+
+      setAgents(agentsList);
+    } catch (error) {
+      console.error('Error loading agents:', error);
     }
-  ];
+  };
 
   const platforms = ['all', 'Outlier AI', 'Alignerr', 'OneForma', 'Appen', 'RWS', 'Mindrift AI', 'TELUS Digital'];
 
-  const filteredAgents = mockAgents.filter(agent => {
+  const filteredAgents = agents.filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       agent.platforms.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesPlatform = selectedPlatform === 'all' || agent.platforms.includes(selectedPlatform);
@@ -146,14 +172,26 @@ export default function CandidateDashboard() {
     setShowMessageModal(true);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'in_progress': return 'bg-blue-100 text-blue-800';
-      case 'accepted': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-yellow-100 text-yellow-800';
-    }
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return 'Recently';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return null;
+  }
 
   if (!isApproved) {
     // Show pending approval state
@@ -163,7 +201,6 @@ export default function CandidateDashboard() {
           <title>Candidate Dashboard | Remote-Works</title>
         </Head>
         <div className="min-h-screen bg-gray-50">
-          {/* Pending approval UI - same as before */}
           <nav className="bg-white border-b border-gray-200 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center h-16 md:h-20">
@@ -185,9 +222,64 @@ export default function CandidateDashboard() {
                 Your account is being reviewed by our admin team. You'll be able to browse and hire agents once your account is approved (usually within 24-48 hours).
               </p>
             </div>
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-              <h1 className="text-4xl font-bold mb-2">Welcome to Remote-Works! 👋</h1>
-              <p className="text-xl text-blue-100">We're reviewing your account. Soon you'll be able to browse verified agents.</p>
+
+            {/* Show user's profile while waiting */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <User className="w-6 h-6 text-blue-600" />
+                Your Profile
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Full Name</p>
+                    <p className="text-gray-900 font-semibold">{profile.firstName} {profile.lastName}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Email</p>
+                    <p className="text-gray-900 font-semibold">{profile.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Phone</p>
+                    <p className="text-gray-900 font-semibold">{profile.phone || 'Not provided'}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Location</p>
+                    <p className="text-gray-900 font-semibold">{profile.location}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-gray-400 mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Joined</p>
+                    <p className="text-gray-900 font-semibold">{formatDate(profile.createdAt)}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-yellow-500 mt-1" />
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Account Status</p>
+                    <p className="text-yellow-600 font-semibold">Pending Approval</p>
+                  </div>
+                </div>
+              </div>
+
+              {profile.bio && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Bio</h3>
+                  <p className="text-gray-700">{profile.bio}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -218,24 +310,6 @@ export default function CandidateDashboard() {
                   <Search className="w-5 h-5" />
                   Find Agents
                 </button>
-                <button onClick={() => setActiveTab('requests')} className={`flex items-center gap-2 transition-colors ${activeTab === 'requests' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
-                  <Calendar className="w-5 h-5" />
-                  My Requests
-                  {mockRequests.filter(r => r.status === 'pending' || r.status === 'accepted').length > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {mockRequests.filter(r => r.status === 'pending' || r.status === 'accepted').length}
-                    </span>
-                  )}
-                </button>
-                <button onClick={() => setActiveTab('messages')} className={`flex items-center gap-2 transition-colors ${activeTab === 'messages' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
-                  <MessageSquare className="w-5 h-5" />
-                  Messages
-                  {mockMessages.filter(m => !m.read).length > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {mockMessages.filter(m => !m.read).length}
-                    </span>
-                  )}
-                </button>
                 <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
                   <Settings className="w-5 h-5" />
                 </button>
@@ -258,8 +332,6 @@ export default function CandidateDashboard() {
               <div className="md:hidden py-4 space-y-2 border-t border-gray-200">
                 <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Profile</button>
                 <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Find Agents</button>
-                <button onClick={() => { setActiveTab('requests'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">My Requests</button>
-                <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Messages</button>
                 <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Settings</button>
                 <button onClick={() => router.push('/login')} className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">Logout</button>
               </div>
@@ -274,50 +346,59 @@ export default function CandidateDashboard() {
             <div className="space-y-6">
               {/* Welcome Banner */}
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 text-white">
-                <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {userData.name}! 👋</h1>
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {profile.firstName}! 👋</h1>
                 <p className="text-lg md:text-xl text-blue-100">Your account is approved. Start searching for agents to help you succeed.</p>
               </div>
 
               {/* Profile Information */}
               <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <User className="w-6 h-6 text-blue-600" />
-                  Your Profile
-                </h2>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <User className="w-6 h-6 text-blue-600" />
+                    Your Profile
+                  </h2>
+                  <button
+                    onClick={() => router.push('/profile-settings')}
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+                  >
+                    <Edit className="w-5 h-5" />
+                    Edit Profile
+                  </button>
+                </div>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="flex items-start gap-3">
                     <User className="w-5 h-5 text-gray-400 mt-1" />
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                      <p className="text-gray-900 font-semibold">{userData.name}</p>
+                      <p className="text-gray-900 font-semibold">{profile.firstName} {profile.lastName}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Mail className="w-5 h-5 text-gray-400 mt-1" />
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Email</p>
-                      <p className="text-gray-900 font-semibold">{userData.email}</p>
+                      <p className="text-gray-900 font-semibold">{profile.email}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Phone className="w-5 h-5 text-gray-400 mt-1" />
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Phone</p>
-                      <p className="text-gray-900 font-semibold">{userData.phone}</p>
+                      <p className="text-gray-900 font-semibold">{profile.phone || 'Not provided'}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-gray-400 mt-1" />
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Location</p>
-                      <p className="text-gray-900 font-semibold">{userData.location}</p>
+                      <p className="text-gray-900 font-semibold">{profile.location}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Calendar className="w-5 h-5 text-gray-400 mt-1" />
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Joined</p>
-                      <p className="text-gray-900 font-semibold">{userData.joinedDate}</p>
+                      <p className="text-gray-900 font-semibold">{formatDate(profile.createdAt)}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -329,41 +410,41 @@ export default function CandidateDashboard() {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Interested Platforms</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {userData.platformsInterested.map((platform, idx) => (
-                      <span key={idx} className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
-                        {platform}
-                      </span>
-                    ))}
+                {profile.bio && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Bio</h3>
+                    <p className="text-gray-700">{profile.bio}</p>
                   </div>
-                </div>
-              </div>
+                )}
 
-              {/* Quick Stats */}
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-gray-600 font-medium">Active Requests</h3>
-                    <Calendar className="w-5 h-5 text-blue-600" />
+                {/* Social Links */}
+                {(profile.socialLinks?.linkedin || profile.socialLinks?.twitter || profile.socialLinks?.facebook || profile.socialLinks?.instagram) && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Social Links</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {profile.socialLinks?.linkedin && (
+                        <a href={profile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">
+                          LinkedIn
+                        </a>
+                      )}
+                      {profile.socialLinks?.twitter && (
+                        <a href={profile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-500">
+                          Twitter
+                        </a>
+                      )}
+                      {profile.socialLinks?.facebook && (
+                        <a href={profile.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-800">
+                          Facebook
+                        </a>
+                      )}
+                      {profile.socialLinks?.instagram && (
+                        <a href={profile.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:text-pink-700">
+                          Instagram
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-3xl font-bold text-gray-900">{mockRequests.filter(r => r.status !== 'completed').length}</p>
-                </div>
-                <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-gray-600 font-medium">Completed</h3>
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  </div>
-                  <p className="text-3xl font-bold text-gray-900">{mockRequests.filter(r => r.status === 'completed').length}</p>
-                </div>
-                <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-gray-600 font-medium">Unread Messages</h3>
-                    <MessageSquare className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <p className="text-3xl font-bold text-gray-900">{mockMessages.filter(m => !m.read).length}</p>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -407,138 +488,73 @@ export default function CandidateDashboard() {
 
                 {/* Agents List */}
                 <div className="space-y-4">
-                  {filteredAgents.map((agent) => (
-                    <div key={agent.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all hover:border-blue-300">
-                      <div className="flex flex-col md:flex-row justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-3">
-                            <div>
-                              <h3 className="text-xl font-bold text-gray-900">{agent.name}</h3>
-                              <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="w-4 h-4" />
-                                  {agent.location}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-4 h-4" />
-                                  {agent.responseTime}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="flex items-center gap-1 text-yellow-500 mb-1">
-                                <Star className="w-5 h-5 fill-current" />
-                                <span className="font-bold text-gray-900">{agent.rating}</span>
-                                <span className="text-gray-500 text-sm">({agent.reviews})</span>
-                              </div>
-                              <p className="text-sm text-gray-600">{agent.successRate}% success rate</p>
-                            </div>
-                          </div>
-
-                          <div className="mb-3">
-                            <p className="text-sm text-gray-600 mb-2">Specializes in:</p>
-                            <div className="flex flex-wrap gap-2">
-                              {agent.platforms.map((platform, idx) => (
-                                <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                                  {platform}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col justify-between items-end min-w-[150px]">
-                          <div className="text-right mb-4">
-                            <p className="text-3xl font-bold text-gray-900">${agent.price}</p>
-                            <p className="text-sm text-gray-600">per application</p>
-                          </div>
-                          <button
-                            onClick={() => handleRequestService(agent)}
-                            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
-                          >
-                            <Send className="w-4 h-4" />
-                            Request Service
-                          </button>
-                        </div>
-                      </div>
+                  {filteredAgents.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-500 text-lg">No agents found. Check back later!</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+                  ) : (
+                    filteredAgents.map((agent) => (
+                      <div key={agent.id} className="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all hover:border-blue-300">
+                        <div className="flex flex-col md:flex-row justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-900">{agent.name}</h3>
+                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                  <span className="flex items-center gap-1">
+                                    <MapPin className="w-4 h-4" />
+                                    {agent.location}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-4 h-4" />
+                                    {agent.responseTime}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="flex items-center gap-1 text-yellow-500 mb-1">
+                                  <Star className="w-5 h-5 fill-current" />
+                                  <span className="font-bold text-gray-900">{agent.rating.toFixed(1)}</span>
+                                  {agent.reviews > 0 && (
+                                    <span className="text-gray-500 text-sm">({agent.reviews})</span>
+                                  )}
+                                </div>
+                                <p className="text-sm text-gray-600">{agent.successRate}% success rate</p>
+                              </div>
+                            </div>
 
-          {/* Service Requests Tab */}
-          {activeTab === 'requests' && (
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <Calendar className="w-6 h-6 text-blue-600" />
-                  My Service Requests
-                </h2>
-
-                <div className="space-y-4">
-                  {mockRequests.map((request) => (
-                    <div key={request.id} className="border border-gray-200 rounded-xl p-6">
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-bold text-gray-900">{request.agentName}</h3>
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(request.status)}`}>
-                              {request.status.replace('_', ' ').toUpperCase()}
-                            </span>
+                            {agent.platforms.length > 0 && (
+                              <div className="mb-3">
+                                <p className="text-sm text-gray-600 mb-2">Specializes in:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {agent.platforms.map((platform, idx) => (
+                                    <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                                      {platform}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          <p className="text-gray-600 mb-2">Platform: <span className="font-semibold">{request.platform}</span></p>
-                          <p className="text-sm text-gray-500">Created on {request.createdAt}</p>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <p className="text-2xl font-bold text-gray-900">${request.price}</p>
-                          {request.status === 'in_progress' && (
+
+                          <div className="flex flex-col justify-between items-end min-w-[150px]">
+                            <div className="text-right mb-4">
+                              <p className="text-3xl font-bold text-gray-900">${agent.price}</p>
+                              <p className="text-sm text-gray-600">per application</p>
+                            </div>
                             <button
-                              onClick={() => setActiveTab('messages')}
-                              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all flex items-center gap-2"
+                              onClick={() => handleRequestService(agent)}
+                              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
                             >
-                              <MessageSquare className="w-4 h-4" />
-                              Message Agent
+                              <Send className="w-4 h-4" />
+                              Request Service
                             </button>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Messages Tab */}
-          {activeTab === 'messages' && (
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <MessageSquare className="w-6 h-6 text-blue-600" />
-                  Messages
-                </h2>
-
-                <div className="space-y-4">
-                  {mockMessages.map((message) => (
-                    <div key={message.id} className={`border rounded-xl p-6 ${!message.read ? 'border-blue-300 bg-blue-50' : 'border-gray-200'}`}>
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900">{message.from}</h3>
-                          <p className="text-sm text-gray-500">{message.timestamp}</p>
-                        </div>
-                        {!message.read && (
-                          <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">New</span>
-                        )}
-                      </div>
-                      <p className="text-gray-700">{message.message}</p>
-                      <button className="mt-4 text-blue-600 font-semibold hover:text-blue-700 flex items-center gap-2">
-                        <Send className="w-4 h-4" />
-                        Reply
-                      </button>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -575,7 +591,6 @@ export default function CandidateDashboard() {
                 onClick={() => {
                   alert('Service request sent!');
                   setShowMessageModal(false);
-                  setActiveTab('requests');
                 }}
                 className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
               >
