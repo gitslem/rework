@@ -21,21 +21,21 @@ export default function Logo({ className = '', textClassName = '', onClick, show
   };
 
   const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16'
+    sm: 'w-12 h-12',
+    md: 'w-16 h-16',
+    lg: 'w-20 h-20'
   };
 
   const imageSizes = {
-    sm: { width: 32, height: 32 },
-    md: { width: 48, height: 48 },
-    lg: { width: 64, height: 64 }
+    sm: { width: 48, height: 48 },
+    md: { width: 64, height: 64 },
+    lg: { width: 80, height: 80 }
   };
 
   const textSizes = {
-    sm: 'text-lg',
+    sm: 'text-xl',
     md: 'text-2xl',
-    lg: 'text-3xl'
+    lg: 'text-4xl'
   };
 
   return (
