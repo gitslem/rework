@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit, Loader
+  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -438,6 +438,10 @@ export default function CandidateDashboard() {
                   <Search className="w-5 h-5" />
                   Find Agents
                 </button>
+                <button onClick={() => router.push('/candidate-info')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                  <BookOpen className="w-5 h-5" />
+                  Info
+                </button>
                 <button onClick={() => setActiveTab('messages')} className={`flex items-center gap-2 transition-colors relative ${activeTab === 'messages' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
                   <MessageSquare className="w-5 h-5" />
                   Messages
@@ -469,6 +473,7 @@ export default function CandidateDashboard() {
               <div className="md:hidden py-4 space-y-2 border-t border-gray-200">
                 <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Profile</button>
                 <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Find Agents</button>
+                <button onClick={() => { router.push('/candidate-info'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Info</button>
                 <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
                   Messages {unreadCount > 0 && `(${unreadCount})`}
                 </button>
