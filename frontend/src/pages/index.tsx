@@ -251,6 +251,17 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            {/* View All Button */}
+            <div className="flex justify-center mt-8 animate-fade-in">
+              <button
+                onClick={() => router.push('/platforms')}
+                className="group flex items-center space-x-2 bg-black text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover-lift shadow-lg"
+              >
+                <span>View All Platforms</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+              </button>
+            </div>
           </div>
         </section>
 
