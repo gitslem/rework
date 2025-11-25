@@ -704,7 +704,6 @@ export default function CandidateDashboard() {
               </div>
             </div>
           )}
-        </div>
 
           {/* Messages Tab */}
           {activeTab === 'messages' && (
