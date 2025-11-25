@@ -269,8 +269,3 @@ NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
     </>
   );
 }
-
-// Force server-side rendering to avoid static generation issues with GoogleLogin
-export async function getServerSideProps() {
-  return { props: {} };
-}

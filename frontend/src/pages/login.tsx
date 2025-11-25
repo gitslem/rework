@@ -143,8 +143,3 @@ export default function Login() {
     </>
   );
 }
-
-// Force server-side rendering to avoid static generation issues with GoogleLogin
-export async function getServerSideProps() {
-  return { props: {} };
-}
