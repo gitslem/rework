@@ -28,3 +28,9 @@ yarn-error.log*
 tmp/
 temp/
 *.tmp
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc.local
