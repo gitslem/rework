@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X
+  Target, Search, FileCheck, Menu, X, Rocket
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -13,6 +13,11 @@ import Footer from '@/components/Footer';
 export default function Home() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const stats = [
     { number: "50K+", label: "Active Candidates", icon: <Users className="w-5 h-5" /> },
@@ -117,8 +122,8 @@ export default function Home() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <Logo />
+            <div className="flex justify-between items-center h-20">
+              <Logo showText={false} size="md" />
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-8">
@@ -162,64 +167,92 @@ export default function Home() {
         </nav>
 
         {/* Hero Section */}
-        <section className="pt-20 pb-24 px-6 lg:px-8">
+        <section className="relative pt-24 pb-32 px-6 lg:px-8 overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
+            <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
+          </div>
+
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-8">
               {/* Badge */}
-              <div className="inline-flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-full">
-                <BadgeCheck className="w-4 h-4 text-black" />
-                <span className="text-black font-medium text-sm">Trusted by 50,000+ Worldwide</span>
+              <div className={`inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <Sparkles className="w-4 h-4 animate-pulse-custom" />
+                <span className="font-semibold text-sm">Trusted by 50,000+ Worldwide</span>
               </div>
 
               {/* Main Headline */}
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-tight tracking-tight">
-                Get Approved for<br />
-                AI Training Projects
+              <h1 className={`text-5xl sm:text-6xl lg:text-8xl font-extrabold text-black leading-tight tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
+                Get Approved for
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
+                  AI Training Projects
+                </span>
               </h1>
 
               {/* Subheadline */}
-              <p className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Connect with verified agents who specialize in getting candidates approved for Outlier, Alignerr, OneForma, and more.
+              <p className={`text-xl sm:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                Connect with verified agents who specialize in getting candidates approved for
+                <span className="font-bold text-black"> Outlier, Alignerr, OneForma,</span> and more.
               </p>
 
-              <div className="flex items-center justify-center space-x-6 text-sm font-medium">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>98% Success Rate</span>
+              <div className={`flex items-center justify-center flex-wrap gap-6 text-sm font-semibold ${isVisible ? 'animate-fade-in-up stagger-3' : 'opacity-0'}`}>
+                <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="text-green-900">98% Success Rate</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5" />
-                  <span>Money-Back Guarantee</span>
+                <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <span className="text-blue-900">Money-Back Guarantee</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-purple-50 px-4 py-2 rounded-full border border-purple-200">
+                  <Zap className="w-5 h-5 text-purple-600" />
+                  <span className="text-purple-900">24hr Response</span>
                 </div>
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <div className={`flex flex-col sm:flex-row gap-4 justify-center pt-6 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
                 <button
                   onClick={() => router.push('/register?type=candidate')}
-                  className="group bg-black text-white px-8 py-4 rounded-full font-medium text-lg hover:bg-gray-800 transition-all flex items-center justify-center"
+                  className="group relative bg-black text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-gray-900 transition-smooth hover-lift shadow-2xl overflow-hidden"
                 >
-                  Find an Agent
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <span className="relative z-10 flex items-center justify-center">
+                    <Rocket className="mr-2 w-5 h-5 animate-bounce-subtle" />
+                    Find an Agent
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </button>
                 <button
                   onClick={() => router.push('/agent-signup')}
-                  className="bg-white text-black px-8 py-4 rounded-full font-medium text-lg border-2 border-black hover:bg-black hover:text-white transition-all"
+                  className="bg-white text-black px-10 py-5 rounded-full font-bold text-lg border-3 border-black hover:bg-black hover:text-white transition-smooth hover-lift shadow-xl"
                 >
                   Become an Agent
                 </button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className={`pt-12 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
+                <p className="text-sm text-gray-500 mb-4">No credit card required • Start in 2 minutes • 24/7 support</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Platform Badges */}
-        <section id="platforms" className="py-12 px-6 lg:px-8 bg-gray-50">
+        <section id="platforms" className="py-16 px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
           <div className="max-w-6xl mx-auto">
-            <p className="text-center text-xs font-semibold text-gray-500 mb-8 tracking-wider uppercase">Platforms</p>
+            <p className="text-center text-xs font-bold text-gray-600 mb-8 tracking-widest uppercase animate-fade-in">
+              Trusted Platforms We Work With
+            </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {platforms.map((platform) => (
-                <div key={platform} className="bg-white px-6 py-4 rounded-lg text-center font-medium text-gray-900 border border-gray-200 hover:border-black transition-colors">
+              {platforms.map((platform, index) => (
+                <div
+                  key={platform}
+                  className={`bg-white px-6 py-5 rounded-xl text-center font-bold text-gray-900 border-2 border-gray-200 hover:border-black hover-lift transition-smooth shadow-sm hover:shadow-xl animate-fade-in-scale stagger-${(index % 6) + 1}`}
+                >
                   {platform}
                 </div>
               ))}
@@ -228,16 +261,16 @@ export default function Home() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-20 px-6 lg:px-8 bg-white">
+        <section className="py-24 px-6 lg:px-8 bg-gradient-animated text-white">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
               {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-black text-white rounded-full mb-4">
+                <div key={index} className={`text-center animate-fade-in-up stagger-${index + 1}`}>
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white text-black rounded-2xl mb-4 shadow-lg hover-lift animate-float" style={{ animationDelay: `${index * 0.5}s` }}>
                     {stat.icon}
                   </div>
-                  <div className="text-4xl font-bold text-black mb-1">{stat.number}</div>
-                  <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+                  <div className="text-5xl font-extrabold mb-2">{stat.number}</div>
+                  <div className="text-sm text-gray-300 font-semibold tracking-wide">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -245,26 +278,33 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gray-50">
+        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
+              <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
                 How It Works
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
                 Four simple steps to get approved and start earning
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {howItWorks.map((item, index) => (
-                <div key={index} className="relative bg-white rounded-2xl p-8 border border-gray-200 hover:border-black transition-all group">
-                  <div className="text-6xl font-bold text-gray-100 mb-4">{item.step}</div>
-                  <h3 className="text-xl font-bold text-black mb-3">{item.title}</h3>
+                <div
+                  key={index}
+                  className={`relative bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-smooth group hover-lift shadow-lg animate-fade-in-scale stagger-${index + 1}`}
+                >
+                  <div className="text-7xl font-extrabold bg-gradient-to-br from-purple-200 to-blue-200 bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform">
+                    {item.step}
+                  </div>
+                  <h3 className="text-xl font-bold text-black mb-3 group-hover:text-purple-600 transition-colors">
+                    {item.title}
+                  </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">{item.description}</p>
                   {index < howItWorks.length - 1 && (
                     <div className="hidden lg:block absolute top-12 -right-3 w-6 h-6">
-                      <ArrowRight className="w-6 h-6 text-gray-300" />
+                      <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-purple-500 transition-colors animate-bounce-subtle" />
                     </div>
                   )}
                 </div>
@@ -277,21 +317,29 @@ export default function Home() {
         <section className="py-24 px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
-                Why Choose RemoteWorks
+              <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
+                Why Choose
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  RemoteWorks
+                </span>
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
                 The safest, most effective way to get approved
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <div key={index} className="group">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-black text-white rounded-full mb-6 group-hover:scale-110 transition-transform">
+                <div
+                  key={index}
+                  className={`group bg-gray-50 p-8 rounded-2xl hover-lift transition-smooth border-2 border-transparent hover:border-black animate-fade-in-scale stagger-${(index % 6) + 1}`}
+                >
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-black to-gray-700 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-black mb-3">{feature.title}</h3>
+                  <h3 className="text-xl font-bold text-black mb-3 group-hover:text-purple-600 transition-colors">
+                    {feature.title}
+                  </h3>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
                 </div>
               ))}
@@ -336,30 +384,56 @@ export default function Home() {
         </section>
 
         {/* Final CTA Section */}
-        <section className="py-24 px-6 lg:px-8 bg-white">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 text-black">
-              Ready to Get Approved?
+        <section className="relative py-32 px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-black text-white overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-10 left-10 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float"></div>
+            <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '3s' }}></div>
+          </div>
+
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <div className="mb-6 animate-fade-in">
+              <span className="inline-block bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg px-6 py-2 rounded-full text-sm font-semibold border border-white border-opacity-30">
+                Start Your Journey Today
+              </span>
+            </div>
+
+            <h2 className="text-5xl md:text-7xl font-extrabold mb-6 animate-fade-in-up stagger-1">
+              Ready to Get
+              <span className="block mt-2">Approved?</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-10">
+
+            <p className="text-xl md:text-2xl text-white text-opacity-90 mb-12 animate-fade-in-up stagger-2">
               Join 50,000+ candidates who found success with our verified agents.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10 animate-fade-in-scale stagger-3">
               <button
                 onClick={() => router.push('/register?type=candidate')}
-                className="bg-black text-white px-10 py-4 rounded-full font-medium text-lg hover:bg-gray-800 transition-all"
+                className="group bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-smooth hover-lift shadow-2xl"
               >
-                Get Started as Candidate
+                <span className="flex items-center justify-center">
+                  Get Started as Candidate
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </span>
               </button>
               <button
                 onClick={() => router.push('/agent-signup')}
-                className="bg-white text-black px-10 py-4 rounded-full font-medium text-lg border-2 border-black hover:bg-black hover:text-white transition-all"
+                className="bg-transparent text-white px-12 py-5 rounded-full font-bold text-lg border-3 border-white hover:bg-white hover:text-black transition-smooth hover-lift shadow-xl"
               >
                 Become an Agent
               </button>
             </div>
-            <p className="mt-8 text-sm text-gray-500">
-              No credit card required • Money-back guarantee • 24/7 support
+
+            <p className="text-sm text-white text-opacity-80 animate-fade-in stagger-4">
+              <CheckCircle className="inline w-4 h-4 mr-1" />
+              No credit card required
+              <span className="mx-3">•</span>
+              <Shield className="inline w-4 h-4 mr-1" />
+              Money-back guarantee
+              <span className="mx-3">•</span>
+              <Clock className="inline w-4 h-4 mr-1" />
+              24/7 support
             </p>
           </div>
         </section>
