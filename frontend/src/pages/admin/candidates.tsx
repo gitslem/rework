@@ -117,8 +117,17 @@ export default function AdminCandidates() {
       setActionLoading(true);
       const db = getFirebaseFirestore();
 
+      // Update users collection
       await updateDoc(doc(db, 'users', candidateUid), {
         isCandidateApproved: true,
+        candidateApprovedAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      });
+
+      // Also update profiles collection for consistency
+      await updateDoc(doc(db, 'profiles', candidateUid), {
+        isVerified: true,
+        verificationStatus: 'approved',
         candidateApprovedAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
@@ -142,8 +151,16 @@ export default function AdminCandidates() {
       setActionLoading(true);
       const db = getFirebaseFirestore();
 
+      // Update users collection
       await updateDoc(doc(db, 'users', candidateUid), {
         isCandidateApproved: false,
+        updatedAt: Timestamp.now(),
+      });
+
+      // Also update profiles collection for consistency
+      await updateDoc(doc(db, 'profiles', candidateUid), {
+        isVerified: false,
+        verificationStatus: 'rejected',
         updatedAt: Timestamp.now(),
       });
 
