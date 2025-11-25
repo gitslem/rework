@@ -213,23 +213,17 @@ export default function Home() {
               </div>
 
               {/* CTA Buttons */}
-              <div className={`flex flex-col sm:flex-row gap-4 justify-center pt-6 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
+              <div className={`flex justify-center pt-6 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
                 <button
                   onClick={() => router.push('/register?type=candidate')}
-                  className="group relative bg-black text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-gray-900 transition-smooth hover-lift shadow-2xl overflow-hidden"
+                  className="group relative bg-black text-white px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-900 transition-smooth hover-lift shadow-2xl overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center justify-center">
                     <Rocket className="mr-2 w-5 h-5 animate-bounce-subtle" />
-                    Find an Agent
+                    Find an Agent Now
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                   </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </button>
-                <button
-                  onClick={() => router.push('/agent-signup')}
-                  className="bg-white text-black px-10 py-5 rounded-full font-bold text-lg border-3 border-black hover:bg-black hover:text-white transition-smooth hover-lift shadow-xl"
-                >
-                  Become an Agent
                 </button>
               </div>
 
@@ -407,21 +401,15 @@ export default function Home() {
               Join 50,000+ candidates who found success with our verified agents.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10 animate-fade-in-scale stagger-3">
+            <div className="flex justify-center mb-10 animate-fade-in-scale stagger-3">
               <button
                 onClick={() => router.push('/register?type=candidate')}
                 className="group bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-smooth hover-lift shadow-2xl"
               >
                 <span className="flex items-center justify-center">
-                  Get Started as Candidate
+                  Get Started Now
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </span>
-              </button>
-              <button
-                onClick={() => router.push('/agent-signup')}
-                className="bg-transparent text-white px-12 py-5 rounded-full font-bold text-lg border-3 border-white hover:bg-white hover:text-black transition-smooth hover-lift shadow-xl"
-              >
-                Become an Agent
               </button>
             </div>
 

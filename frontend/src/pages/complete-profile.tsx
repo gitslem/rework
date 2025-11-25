@@ -1,0 +1,347 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import Logo from '@/components/Logo';
+import { User, MapPin, Globe, FileText, Check, Loader } from 'lucide-react';
+import { getFirebaseAuth, getFirebaseFirestore } from '../../firebase.config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+
+export default function CompleteProfile() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [user, setUser] = useState<any>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    country: '',
+    city: '',
+    phone: '',
+    bio: '',
+  });
+
+  useEffect(() => {
+    checkAuthAndProfile();
+  }, []);
+
+  const checkAuthAndProfile = async () => {
+    try {
+      const auth = getFirebaseAuth();
+      const db = getFirebaseFirestore();
+
+      onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!firebaseUser) {
+          router.push('/login');
+          return;
+        }
+
+        setUser(firebaseUser);
+
+        // Check if profile already exists and is complete
+        const profileDoc = await getDoc(doc(db, 'profiles', firebaseUser.uid));
+        if (profileDoc.exists()) {
+          const profileData = profileDoc.data();
+          // If profile has firstName, consider it complete
+          if (profileData.firstName) {
+            // Redirect to dashboard
+            const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              if (userData.role === 'agent') {
+                router.push('/agent-dashboard');
+              } else {
+                router.push('/candidate-dashboard');
+              }
+              return;
+            }
+          }
+        }
+
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.country || !formData.city) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const db = getFirebaseFirestore();
+
+      // Create or update profile
+      await setDoc(doc(db, 'profiles', user.uid), {
+        uid: user.uid,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        country: formData.country,
+        city: formData.city,
+        phone: formData.phone || '',
+        bio: formData.bio || '',
+        location: `${formData.city}, ${formData.country}`,
+        avatarURL: user.photoURL || '',
+        totalEarnings: 0,
+        completedProjects: 0,
+        averageRating: 0,
+        totalReviews: 0,
+        isAgentApproved: false,
+        agentServices: [],
+        agentSuccessRate: 0,
+        agentTotalClients: 0,
+        agentVerificationStatus: 'pending',
+        agentPricing: {},
+        agentPortfolio: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      // Show success message
+      setShowSuccess(true);
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        router.push('/candidate-dashboard');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Error creating profile:', error);
+      setError(error.message || 'Failed to create profile. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showSuccess) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Check className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-black mb-2">Profile Created!</h1>
+          <p className="text-gray-600 mb-4">Redirecting to your dashboard...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Complete Your Profile - RemoteWorks</title>
+      </Head>
+
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+        {/* Navigation */}
+        <nav className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <Logo showText={false} size="md" />
+          </div>
+        </nav>
+
+        <div className="max-w-2xl mx-auto px-6 py-12">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12 animate-fade-in">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold text-black mb-2">
+                Complete Your Profile
+              </h1>
+              <p className="text-gray-600">
+                Just a few more details to get you started
+              </p>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name Fields */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    First Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="John"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Doe"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Location Fields */}
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <MapPin className="w-4 h-4 inline mr-1" />
+                    Country <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select Country</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="India">India</option>
+                    <option value="Philippines">Philippines</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Poland">Poland</option>
+                    <option value="Pakistan">Pakistan</option>
+                    <option value="Bangladesh">Bangladesh</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    City <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="New York"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Phone Number (Optional)
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="+1 (234) 567-8900"
+                />
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <FileText className="w-4 h-4 inline mr-1" />
+                  Bio (Optional)
+                </label>
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                  placeholder="Tell us a bit about yourself and what you're looking for..."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  This helps agents understand your background and goals
+                </p>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-black text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader className="w-5 h-5 mr-2 animate-spin" />
+                      Creating Profile...
+                    </>
+                  ) : (
+                    <>
+                      Complete Profile
+                      <Check className="w-5 h-5 ml-2" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* Footer Note */}
+            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+              <p className="text-sm text-gray-500">
+                Your profile information will be visible to verified agents
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -1,75 +1,227 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import AgentRegistrationForm from '@/components/AgentRegistrationForm';
 import { signInWithGoogle } from '@/lib/firebase/auth';
-import { getFirebaseFirestore } from '../../firebase.config';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { ArrowLeft } from 'lucide-react';
+import { getFirebaseAuth, getFirebaseFirestore } from '../../firebase.config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle } from 'lucide-react';
 
 export default function AgentSignup() {
   const router = useRouter();
-  const [step, setStep] = useState<'select' | 'google' | 'form'>('select');
-  const [userUid, setUserUid] = useState<string | null>(null);
+  const [step, setStep] = useState<'google' | 'form'>('google');
+  const [user, setUser] = useState<any>(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    country: '',
+    city: '',
+    phone: '',
+    platforms: [] as string[],
+    socialAccount: '',
+    bio: '',
+    whyAgent: '',
+  });
+
+  const aiPlatforms = [
+    'Outlier AI',
+    'Mindrift AI',
+    'Alignerr',
+    'OneForma',
+    'Appen',
+    'RWS',
+    'TELUS Digital',
+    'Scale AI',
+    'Remotasks',
+    'DataAnnotation',
+    'Other',
+  ];
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const auth = getFirebaseAuth();
+
+      onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          // User is logged in, check if they already have a profile
+          const db = getFirebaseFirestore();
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+
+          if (userDoc.exists() && userDoc.data().role === 'agent') {
+            // Check if profile is complete
+            const profileDoc = await getDoc(doc(db, 'profiles', firebaseUser.uid));
+            if (profileDoc.exists() && profileDoc.data().firstName) {
+              // Profile complete, redirect to dashboard
+              router.push('/agent-dashboard');
+              return;
+            }
+            // User exists but profile incomplete, show form
+            setUser(firebaseUser);
+            setStep('form');
+          }
+        }
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      setLoading(false);
+    }
+  };
 
   const handleGoogleSignup = async () => {
     setError('');
-    setLoading(true);
+    setSubmitting(true);
 
     try {
-      const user = await signInWithGoogle('agent');
-      setUserUid(user.uid);
+      const firebaseUser = await signInWithGoogle('agent');
+      setUser(firebaseUser);
       setStep('form');
     } catch (err: any) {
       console.error('Google signup error:', err);
       setError(err.message || 'Failed to sign up with Google');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  const handleFormSubmit = async (formData: any) => {
-    if (!userUid) {
-      throw new Error('User not authenticated');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handlePlatformToggle = (platform: string) => {
+    if (formData.platforms.includes(platform)) {
+      setFormData({
+        ...formData,
+        platforms: formData.platforms.filter(p => p !== platform),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        platforms: [...formData.platforms, platform],
+      });
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.country || !formData.city) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    if (formData.platforms.length === 0) {
+      setError('Please select at least one AI platform');
+      return;
+    }
+
+    if (!formData.bio || formData.bio.length < 50) {
+      setError('Bio must be at least 50 characters');
+      return;
+    }
+
+    if (!formData.whyAgent || formData.whyAgent.length < 50) {
+      setError('Please explain why you want to be an agent (at least 50 characters)');
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       const db = getFirebaseFirestore();
 
-      // Update profile with all the collected data
-      await updateDoc(doc(db, 'profiles', userUid), {
+      // Create or update profile
+      await setDoc(doc(db, 'profiles', user.uid), {
+        uid: user.uid,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: formData.phone,
         country: formData.country,
         city: formData.city,
-        timezone: formData.timezone,
+        location: `${formData.city}, ${formData.country}`,
+        phone: formData.phone || '',
+        platformsExperience: formData.platforms,
+        linkedin: formData.socialAccount || '',
         bio: formData.bio,
-        yearsOfExperience: formData.yearsOfExperience,
-        education: formData.education,
-        languagesSpoken: formData.languagesSpoken,
-        devices: formData.devices,
-        internetSpeed: formData.internetSpeed,
-        workingHours: formData.workingHours,
-        platformsExperience: formData.platformsExperience,
-        specializations: formData.specializations,
-        linkedin: formData.linkedin,
-        website: formData.website,
+        whyAgent: formData.whyAgent,
+        avatarURL: user.photoURL || '',
         agentVerificationStatus: 'pending',
         isAgentApproved: false,
+        agentServices: formData.platforms,
+        agentSuccessRate: 0,
+        agentTotalClients: 0,
+        agentPricing: {},
+        agentPortfolio: [],
+        totalEarnings: 0,
+        completedProjects: 0,
+        averageRating: 0,
+        totalReviews: 0,
+        specializations: [],
+        createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      });
+      }, { merge: true });
 
-      // Redirect to a thank you page
-      router.push('/agent-signup-success');
+      // Show success popup
+      setShowSuccess(true);
     } catch (error: any) {
-      console.error('Error submitting form:', error);
-      throw new Error(error.message || 'Failed to submit application');
+      console.error('Error creating profile:', error);
+      setError(error.message || 'Failed to submit application. Please try again.');
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Success Popup
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl max-w-md w-full p-8 text-center animate-fade-in-scale">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-black mb-4">
+            Application Submitted!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Thank you for applying to become an agent. Our admin team will review your application and get back to you within 24-48 hours.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            You'll receive an email notification once your application is reviewed.
+          </p>
+          <button
+            onClick={() => router.push('/')}
+            className="bg-black text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all"
+          >
+            Return to Homepage
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -78,12 +230,12 @@ export default function AgentSignup() {
         <meta name="description" content="Join RemoteWorks as a verified agent and help candidates get approved for AI training projects." />
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="flex justify-between items-center">
-              <Logo />
+              <Logo showText={false} size="md" />
               <button
                 onClick={() => router.push('/')}
                 className="text-sm font-medium text-gray-600 hover:text-black flex items-center"
@@ -95,51 +247,51 @@ export default function AgentSignup() {
           </div>
         </nav>
 
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          {/* Method Selection */}
-          {step === 'select' && (
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          {/* Google Sign In Step */}
+          {step === 'google' && (
             <div className="max-w-2xl mx-auto text-center space-y-8 animate-fade-in">
               <div>
-                <h1 className="text-4xl font-bold text-black mb-4">
+                <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
                   Become a Verified Agent
                 </h1>
                 <p className="text-xl text-gray-600">
-                  Join our platform and help candidates get approved for AI training projects
+                  Help candidates get approved for AI training projects and earn money
                 </p>
               </div>
 
-              <div className="bg-gray-50 p-8 rounded-2xl border border-gray-200">
+              <div className="bg-white p-8 rounded-2xl border-2 border-gray-200 shadow-lg">
                 <h2 className="text-2xl font-bold text-black mb-6">How It Works</h2>
-                <ol className="text-left space-y-4">
-                  <li className="flex items-start">
-                    <span className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold mr-4">1</span>
+                <div className="grid md:grid-cols-2 gap-6 text-left">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
                     <div>
-                      <h3 className="font-semibold text-black">Sign up with Google</h3>
+                      <h3 className="font-semibold text-black mb-1">Sign up with Google</h3>
                       <p className="text-sm text-gray-600">Quick and secure authentication</p>
                     </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold mr-4">2</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
                     <div>
-                      <h3 className="font-semibold text-black">Complete your profile</h3>
+                      <h3 className="font-semibold text-black mb-1">Complete application</h3>
                       <p className="text-sm text-gray-600">Share your experience and expertise</p>
                     </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold mr-4">3</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
                     <div>
-                      <h3 className="font-semibold text-black">Get verified</h3>
-                      <p className="text-sm text-gray-600">Admin review (24-48 hours)</p>
+                      <h3 className="font-semibold text-black mb-1">Get verified</h3>
+                      <p className="text-sm text-gray-600">Admin review within 24-48 hours</p>
                     </div>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold mr-4">4</span>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
                     <div>
-                      <h3 className="font-semibold text-black">Start earning</h3>
+                      <h3 className="font-semibold text-black mb-1">Start earning</h3>
                       <p className="text-sm text-gray-600">Accept clients and help them succeed</p>
                     </div>
-                  </li>
-                </ol>
+                  </div>
+                </div>
               </div>
 
               {error && (
@@ -148,61 +300,261 @@ export default function AgentSignup() {
                 </div>
               )}
 
-              <div className="space-y-4">
-                <button
-                  onClick={handleGoogleSignup}
-                  disabled={loading}
-                  className="w-full bg-black text-white px-8 py-4 rounded-full font-semibold hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {loading ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Signing up...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      Continue with Google
-                    </>
-                  )}
-                </button>
+              <button
+                onClick={handleGoogleSignup}
+                disabled={submitting}
+                className="w-full max-w-md mx-auto bg-white border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover-lift"
+              >
+                {submitting ? (
+                  <>
+                    <Loader className="w-5 h-5 mr-3 animate-spin" />
+                    Signing up...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Continue with Google
+                  </>
+                )}
+              </button>
 
-                <p className="text-sm text-gray-500">
-                  Already have an account?{' '}
-                  <button
-                    onClick={() => router.push('/login')}
-                    className="text-black font-semibold hover:underline"
-                  >
-                    Sign in
-                  </button>
-                </p>
-              </div>
+              <p className="text-sm text-gray-500">
+                Already have an account?{' '}
+                <button
+                  onClick={() => router.push('/login')}
+                  className="text-black font-semibold hover:underline"
+                >
+                  Sign in
+                </button>
+              </p>
             </div>
           )}
 
-          {/* Registration Form */}
+          {/* Application Form Step */}
           {step === 'form' && (
-            <div className="animate-fade-in">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12 animate-fade-in">
               <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="w-8 h-8 text-white" />
+                </div>
                 <h1 className="text-3xl font-bold text-black mb-2">
-                  Complete Your Profile
+                  Complete Your Application
                 </h1>
                 <p className="text-gray-600">
-                  Help us understand your expertise and experience
+                  Tell us about yourself and your experience
                 </p>
               </div>
 
-              <AgentRegistrationForm
-                onSubmit={handleFormSubmit}
-                initialData={{
-                  email: '',
-                }}
-              />
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name Fields */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <User className="w-4 h-4 inline mr-1" />
+                      First Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Last Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <MapPin className="w-4 h-4 inline mr-1" />
+                      Country <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      required
+                    >
+                      <option value="">Select Country</option>
+                      <option value="United States">United States</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Australia">Australia</option>
+                      <option value="Germany">Germany</option>
+                      <option value="France">France</option>
+                      <option value="India">India</option>
+                      <option value="Philippines">Philippines</option>
+                      <option value="Nigeria">Nigeria</option>
+                      <option value="Pakistan">Pakistan</option>
+                      <option value="Bangladesh">Bangladesh</option>
+                      <option value="Kenya">Kenya</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      City <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Phone Number (Optional)
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    placeholder="+1 (234) 567-8900"
+                  />
+                </div>
+
+                {/* AI Platforms */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    <Briefcase className="w-4 h-4 inline mr-1" />
+                    AI Training Platforms You're Experienced With <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {aiPlatforms.map((platform) => (
+                      <button
+                        key={platform}
+                        type="button"
+                        onClick={() => handlePlatformToggle(platform)}
+                        className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
+                          formData.platforms.includes(platform)
+                            ? 'bg-black text-white border-black'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-black'
+                        }`}
+                      >
+                        {formData.platforms.includes(platform) && (
+                          <Check className="w-4 h-4 inline mr-1" />
+                        )}
+                        {platform}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Select all platforms you have experience with
+                  </p>
+                </div>
+
+                {/* Social Account */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <Globe className="w-4 h-4 inline mr-1" />
+                    Social Account (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="socialAccount"
+                    value={formData.socialAccount}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    placeholder="LinkedIn, Twitter, or personal website"
+                  />
+                </div>
+
+                {/* Bio */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <FileText className="w-4 h-4 inline mr-1" />
+                    Bio <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleChange}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                    placeholder="Tell us about your background, experience with AI platforms, and skills..."
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Minimum 50 characters • {formData.bio.length}/50
+                  </p>
+                </div>
+
+                {/* Why Agent */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <MessageSquare className="w-4 h-4 inline mr-1" />
+                    Why do you want to be an agent on RemoteWorks? <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    name="whyAgent"
+                    value={formData.whyAgent}
+                    onChange={handleChange}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                    placeholder="Share your motivation, goals, and how you can help candidates succeed..."
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Minimum 50 characters • {formData.whyAgent.length}/50
+                  </p>
+                </div>
+
+                {/* Submit Button */}
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full bg-black text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader className="w-5 h-5 mr-2 animate-spin" />
+                        Submitting Application...
+                      </>
+                    ) : (
+                      <>
+                        Submit Application
+                        <CheckCircle className="w-5 h-5 ml-2" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </div>
