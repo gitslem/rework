@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   Users, DollarSign, Star, TrendingUp, Settings, MessageSquare, LogOut,
-  User, MapPin, Mail, Phone, Calendar, CheckCircle, Clock, X, Edit, Upload as UploadIcon, Plus, Trash2
+  User, MapPin, Mail, Phone, Calendar, CheckCircle, Clock, X, Edit, Upload as UploadIcon, Plus, Trash2,
+  Bell, Send, Loader, FileText, CreditCard, Percent, DollarSign as Dollar, CalendarClock
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp, collection, query, where, getDocs, orderBy, addDoc, limit } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 interface AgentProfile {
@@ -32,6 +33,9 @@ interface AgentProfile {
   agentServices: string[];
   agentPricing: {
     [key: string]: number | undefined;
+    basePrice?: number;
+    percentageCharge?: number;
+    oneTimeApprovalFee?: number;
   };
   agentPortfolio: string[];
   agentTotalClients: number;
@@ -39,7 +43,30 @@ interface AgentProfile {
   totalEarnings: number;
   averageRating: number;
   totalReviews: number;
+  agentTerms?: string;
+  agentWorkingHours?: {
+    start: string;
+    end: string;
+    timezone: string;
+    days: string[];
+  };
+  agentServiceType?: 'full' | 'partial' | 'approval_only';
   createdAt: any;
+}
+
+interface Message {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderEmail: string;
+  recipientId: string;
+  recipientName: string;
+  message: string;
+  subject: string;
+  status: 'unread' | 'read' | 'accepted' | 'rejected';
+  createdAt: any;
+  type: 'service_request' | 'general' | 'payment_confirmation';
+  conversationId?: string;
 }
 
 export default function AgentDashboard() {
@@ -48,13 +75,36 @@ export default function AgentDashboard() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<AgentProfile | null>(null);
   const [isApproved, setIsApproved] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages'>('overview');
+
+  // Profile modals
   const [showServicesModal, setShowServicesModal] = useState(false);
   const [showRatesModal, setShowRatesModal] = useState(false);
   const [showCredentialsModal, setShowCredentialsModal] = useState(false);
+  const [showEnhancedSettingsModal, setShowEnhancedSettingsModal] = useState(false);
+
+  // Profile data
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [pricing, setPricing] = useState<{[key: string]: number | undefined}>({});
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Messaging
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
+
+  // Enhanced settings
+  const [agentTerms, setAgentTerms] = useState('');
+  const [serviceType, setServiceType] = useState<'full' | 'partial' | 'approval_only'>('full');
+  const [percentageCharge, setPercentageCharge] = useState<number>(0);
+  const [oneTimeApprovalFee, setOneTimeApprovalFee] = useState<number>(0);
+  const [workingHoursStart, setWorkingHoursStart] = useState('09:00');
+  const [workingHoursEnd, setWorkingHoursEnd] = useState('17:00');
+  const [workingDays, setWorkingDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
 
   const availablePlatforms = [
     'Outlier AI',
@@ -128,11 +178,192 @@ export default function AgentDashboard() {
           setPricing(profileData.agentPricing);
         }
 
+        // Load enhanced settings if exists
+        if (profileData.agentTerms) setAgentTerms(profileData.agentTerms);
+        if (profileData.agentServiceType) setServiceType(profileData.agentServiceType);
+        if (profileData.agentPricing?.percentageCharge) setPercentageCharge(profileData.agentPricing.percentageCharge);
+        if (profileData.agentPricing?.oneTimeApprovalFee) setOneTimeApprovalFee(profileData.agentPricing.oneTimeApprovalFee);
+        if (profileData.agentWorkingHours) {
+          setWorkingHoursStart(profileData.agentWorkingHours.start || '09:00');
+          setWorkingHoursEnd(profileData.agentWorkingHours.end || '17:00');
+          setWorkingDays(profileData.agentWorkingHours.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
+        }
+
+        // Load messages if approved
+        if (approved) {
+          await loadMessages(db, firebaseUser.uid);
+        }
+
         setLoading(false);
       });
     } catch (error) {
       console.error('Error loading profile:', error);
       setLoading(false);
+    }
+  };
+
+  const loadMessages = async (db: any, agentId: string) => {
+    try {
+      const messagesQuery = query(
+        collection(db, 'messages'),
+        where('recipientId', '==', agentId),
+        orderBy('createdAt', 'desc'),
+        limit(50)
+      );
+
+      const messagesSnapshot = await getDocs(messagesQuery);
+      const messagesList: Message[] = [];
+      let unread = 0;
+
+      messagesSnapshot.forEach((doc) => {
+        const data = doc.data();
+        messagesList.push({
+          id: doc.id,
+          ...data
+        } as Message);
+        if (data.status === 'unread') unread++;
+      });
+
+      setMessages(messagesList);
+      setUnreadCount(unread);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const handleAcceptRequest = async (message: Message) => {
+    if (!user) return;
+
+    try {
+      setSaving(true);
+      const db = getFirebaseFirestore();
+
+      // Update message status to accepted
+      await updateDoc(doc(db, 'messages', message.id), {
+        status: 'accepted',
+        updatedAt: Timestamp.now()
+      });
+
+      // Create a conversation/thread ID for ongoing communication
+      const conversationId = `conv_${message.senderId}_${user.uid}_${Date.now()}`;
+
+      // Send acceptance message to candidate
+      await addDoc(collection(db, 'messages'), {
+        senderId: user.uid,
+        senderName: `${profile?.firstName} ${profile?.lastName}`,
+        senderEmail: user.email,
+        recipientId: message.senderId,
+        recipientName: message.senderName,
+        message: `I've accepted your service request. Let's discuss the details. ${profile?.agentTerms ? '\n\nTerms: ' + profile.agentTerms : ''}`,
+        subject: 'Service Request Accepted',
+        status: 'unread',
+        createdAt: Timestamp.now(),
+        type: 'general',
+        conversationId
+      });
+
+      // Refresh messages
+      await loadMessages(db, user.uid);
+
+      alert('Request accepted! You can now message the candidate.');
+      setShowMessageModal(false);
+      setSelectedMessage(null);
+    } catch (error: any) {
+      console.error('Error accepting request:', error);
+      alert('Failed to accept request: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSendReply = async () => {
+    if (!replyText.trim() || !selectedMessage || !user) {
+      alert('Please enter a message');
+      return;
+    }
+
+    try {
+      setSendingReply(true);
+      const db = getFirebaseFirestore();
+
+      // Send reply
+      await addDoc(collection(db, 'messages'), {
+        senderId: user.uid,
+        senderName: `${profile?.firstName} ${profile?.lastName}`,
+        senderEmail: user.email,
+        recipientId: selectedMessage.senderId,
+        recipientName: selectedMessage.senderName,
+        message: replyText,
+        subject: `Re: ${selectedMessage.subject}`,
+        status: 'unread',
+        createdAt: Timestamp.now(),
+        type: 'general',
+        conversationId: selectedMessage.conversationId || selectedMessage.id
+      });
+
+      // Mark original as read if unread
+      if (selectedMessage.status === 'unread') {
+        await updateDoc(doc(db, 'messages', selectedMessage.id), {
+          status: 'read',
+          updatedAt: Timestamp.now()
+        });
+      }
+
+      alert('Reply sent successfully!');
+      setReplyText('');
+      setShowMessageModal(false);
+      setSelectedMessage(null);
+
+      // Refresh messages
+      await loadMessages(db, user.uid);
+    } catch (error: any) {
+      console.error('Error sending reply:', error);
+      alert('Failed to send reply: ' + error.message);
+    } finally {
+      setSendingReply(false);
+    }
+  };
+
+  const handleSaveEnhancedSettings = async () => {
+    if (!profile) return;
+
+    try {
+      setSaving(true);
+      const db = getFirebaseFirestore();
+
+      await updateDoc(doc(db, 'profiles', profile.uid), {
+        agentTerms,
+        agentServiceType: serviceType,
+        agentPricing: {
+          ...pricing,
+          percentageCharge,
+          oneTimeApprovalFee
+        },
+        agentWorkingHours: {
+          start: workingHoursStart,
+          end: workingHoursEnd,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          days: workingDays
+        },
+        updatedAt: Timestamp.now()
+      });
+
+      alert('Enhanced settings saved successfully!');
+      setShowEnhancedSettingsModal(false);
+
+      // Refresh profile
+      const updatedProfile = await getDoc(doc(db, 'profiles', profile.uid));
+      if (updatedProfile.exists()) {
+        const updatedData = updatedProfile.data() as AgentProfile;
+        updatedData.email = user.email || '';
+        updatedData.uid = user.uid;
+        setProfile(updatedData);
+      }
+    } catch (error: any) {
+      console.error('Error saving enhanced settings:', error);
+      alert('Failed to save settings: ' + error.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -407,6 +638,40 @@ export default function AgentDashboard() {
             <p className="text-lg md:text-xl text-blue-100">Your agent account is active and ready to help candidates</p>
           </div>
 
+          {/* Tab Navigation */}
+          <div className="flex gap-4 mb-8">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === 'overview'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <User className="w-5 h-5" />
+              Overview
+            </button>
+            <button
+              onClick={() => setActiveTab('messages')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all relative ${
+                activeTab === 'messages'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <MessageSquare className="w-5 h-5" />
+              Messages
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <>
           {/* Stats Grid */}
           <div className="grid md:grid-cols-4 gap-6 mb-8">
             {stats.map((stat, index) => (
@@ -505,10 +770,325 @@ export default function AgentDashboard() {
                   Manage
                 </button>
               </div>
+
+              {/* Enhanced Settings Button */}
+              <div className="mt-4">
+                <button
+                  onClick={() => setShowEnhancedSettingsModal(true)}
+                  className="w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 font-semibold"
+                >
+                  <Settings className="w-5 h-5" />
+                  Enhanced Settings (Pricing, Terms, Availability)
+                </button>
+              </div>
+            </div>
+          </div>
+            </>
+          )}
+
+          {/* Messages Tab */}
+          {activeTab === 'messages' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <MessageSquare className="w-6 h-6 text-blue-600" />
+                  Inbox
+                  {unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </h2>
+
+                {messages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg">No messages yet</p>
+                    <p className="text-gray-400 text-sm mt-2">Service requests from candidates will appear here</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        onClick={() => {
+                          setSelectedMessage(message);
+                          setShowMessageModal(true);
+                        }}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                          message.status === 'unread'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 bg-white'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900">{message.senderName}</h3>
+                              {message.status === 'unread' && (
+                                <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">New</span>
+                              )}
+                              {message.status === 'accepted' && (
+                                <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">Accepted</span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600">{message.senderEmail}</p>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {message.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
+                          </span>
+                        </div>
+                        <p className="font-medium text-gray-900 mb-2">{message.subject}</p>
+                        <p className="text-gray-700 line-clamp-2">{message.message}</p>
+                        {message.type === 'service_request' && message.status === 'unread' && (
+                          <div className="mt-3 flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAcceptRequest(message);
+                              }}
+                              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold"
+                            >
+                              Accept Request
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedMessage(message);
+                                setShowMessageModal(true);
+                              }}
+                              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-semibold"
+                            >
+                              View & Reply
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Message Detail/Reply Modal */}
+      {showMessageModal && selectedMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold text-gray-900">Message from {selectedMessage.senderName}</h3>
+              <button onClick={() => { setShowMessageModal(false); setSelectedMessage(null); setReplyText(''); }} className="text-gray-500 hover:text-gray-700">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
+                  <p className="text-sm text-gray-600">{selectedMessage.senderEmail}</p>
+                </div>
+                <p className="text-sm text-gray-500">
+                  {selectedMessage.createdAt?.toDate?.()?.toLocaleString() || 'Recently'}
+                </p>
+              </div>
+              <p className="font-medium text-gray-900 mb-2">{selectedMessage.subject}</p>
+              <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Reply</label>
+              <textarea
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                rows={5}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Type your reply here..."
+              />
+            </div>
+
+            <div className="flex gap-3">
+              {selectedMessage.status === 'unread' && selectedMessage.type === 'service_request' && (
+                <button
+                  onClick={() => handleAcceptRequest(selectedMessage)}
+                  disabled={saving}
+                  className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+                >
+                  {saving ? 'Accepting...' : 'Accept & Reply'}
+                </button>
+              )}
+              <button
+                onClick={handleSendReply}
+                disabled={sendingReply || !replyText.trim()}
+                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {sendingReply ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Send Reply
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Enhanced Settings Modal */}
+      {showEnhancedSettingsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-3xl w-full p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold text-gray-900">Enhanced Agent Settings</h3>
+              <button onClick={() => setShowEnhancedSettingsModal(false)} className="text-gray-500 hover:text-gray-700">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Service Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
+                <select
+                  value={serviceType}
+                  onChange={(e) => setServiceType(e.target.value as any)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="full">Full Service - Handle all tasks</option>
+                  <option value="partial">Partial Service - Handle some tasks</option>
+                  <option value="approval_only">Approval Only - Help get approved</option>
+                </select>
+              </div>
+
+              {/* Percentage Charge */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Percent className="w-4 h-4 inline mr-1" />
+                  Percentage Charge (per project)
+                </label>
+                <input
+                  type="number"
+                  value={percentageCharge}
+                  onChange={(e) => setPercentageCharge(Number(e.target.value))}
+                  min="0"
+                  max="100"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., 10 for 10%"
+                />
+                <p className="text-sm text-gray-500 mt-1">Charge a percentage of project earnings (if handling some/all tasks)</p>
+              </div>
+
+              {/* One-Time Approval Fee */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Dollar className="w-4 h-4 inline mr-1" />
+                  One-Time Approval Fee ($)
+                </label>
+                <input
+                  type="number"
+                  value={oneTimeApprovalFee}
+                  onChange={(e) => setOneTimeApprovalFee(Number(e.target.value))}
+                  min="0"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., 100"
+                />
+                <p className="text-sm text-gray-500 mt-1">One-time fee to help candidate get approved for a platform</p>
+              </div>
+
+              {/* Working Hours */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <CalendarClock className="w-4 h-4 inline mr-1" />
+                  Availability Hours
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Start Time</label>
+                    <input
+                      type="time"
+                      value={workingHoursStart}
+                      onChange={(e) => setWorkingHoursStart(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">End Time</label>
+                    <input
+                      type="time"
+                      value={workingHoursEnd}
+                      onChange={(e) => setWorkingHoursEnd(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Working Days */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Available Days</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                    <label key={day} className="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={workingDays.includes(day)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setWorkingDays([...workingDays, day]);
+                          } else {
+                            setWorkingDays(workingDays.filter(d => d !== day));
+                          }
+                        }}
+                        className="rounded"
+                      />
+                      <span className="text-sm">{day.slice(0, 3)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Terms & Conditions */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <FileText className="w-4 h-4 inline mr-1" />
+                  Your Terms & Conditions
+                </label>
+                <textarea
+                  value={agentTerms}
+                  onChange={(e) => setAgentTerms(e.target.value)}
+                  rows={5}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter your service terms, payment conditions, cancellation policy, etc..."
+                />
+                <p className="text-sm text-gray-500 mt-1">These will be shown to candidates when they request your services</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowEnhancedSettingsModal(false)}
+                className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEnhancedSettings}
+                disabled={saving}
+                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
+              >
+                {saving ? 'Saving...' : 'Save Settings'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Services Modal */}
       {showServicesModal && (

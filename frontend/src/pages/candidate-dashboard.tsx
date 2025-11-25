@@ -9,7 +9,7 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc, orderBy, limit } from 'firebase/firestore';
 
 interface Agent {
   id: string;
@@ -47,7 +47,7 @@ export default function CandidateDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'search' | 'messages'>('overview');
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isApproved, setIsApproved] = useState(false);
@@ -58,6 +58,14 @@ export default function CandidateDashboard() {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [messageText, setMessageText] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+
+  // Messages
+  const [messages, setMessages] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
+  const [showMessageDetailModal, setShowMessageDetailModal] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [sendingReply, setSendingReply] = useState(false);
 
   useEffect(() => {
     checkAuthAndLoadProfile();
@@ -112,6 +120,7 @@ export default function CandidateDashboard() {
         // Load agents if approved
         if (approved) {
           await loadAgents(db);
+          await loadMessages(db, firebaseUser.uid);
         }
 
         setLoading(false);
@@ -119,6 +128,83 @@ export default function CandidateDashboard() {
     } catch (error) {
       console.error('Error loading profile:', error);
       setLoading(false);
+    }
+  };
+
+  const loadMessages = async (db: any, candidateId: string) => {
+    try {
+      const messagesQuery = query(
+        collection(db, 'messages'),
+        where('recipientId', '==', candidateId),
+        orderBy('createdAt', 'desc'),
+        limit(50)
+      );
+
+      const messagesSnapshot = await getDocs(messagesQuery);
+      const messagesList: any[] = [];
+      let unread = 0;
+
+      messagesSnapshot.forEach((doc) => {
+        const data = doc.data();
+        messagesList.push({
+          id: doc.id,
+          ...data
+        });
+        if (data.status === 'unread') unread++;
+      });
+
+      setMessages(messagesList);
+      setUnreadCount(unread);
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
+  const handleSendReply = async () => {
+    if (!replyText.trim() || !selectedMessage || !user) {
+      alert('Please enter a message');
+      return;
+    }
+
+    try {
+      setSendingReply(true);
+      const db = getFirebaseFirestore();
+
+      // Send reply
+      await addDoc(collection(db, 'messages'), {
+        senderId: user.uid,
+        senderName: `${profile?.firstName} ${profile?.lastName}`,
+        senderEmail: user.email,
+        recipientId: selectedMessage.senderId,
+        recipientName: selectedMessage.senderName,
+        message: replyText,
+        subject: `Re: ${selectedMessage.subject}`,
+        status: 'unread',
+        createdAt: Timestamp.now(),
+        type: 'general',
+        conversationId: selectedMessage.conversationId || selectedMessage.id
+      });
+
+      // Mark original as read if unread
+      if (selectedMessage.status === 'unread') {
+        await updateDoc(doc(db, 'messages', selectedMessage.id), {
+          status: 'read',
+          updatedAt: Timestamp.now()
+        });
+      }
+
+      alert('Reply sent successfully!');
+      setReplyText('');
+      setShowMessageDetailModal(false);
+      setSelectedMessage(null);
+
+      // Refresh messages
+      await loadMessages(db, user.uid);
+    } catch (error: any) {
+      console.error('Error sending reply:', error);
+      alert('Failed to send reply: ' + error.message);
+    } finally {
+      setSendingReply(false);
     }
   };
 
@@ -352,6 +438,15 @@ export default function CandidateDashboard() {
                   <Search className="w-5 h-5" />
                   Find Agents
                 </button>
+                <button onClick={() => setActiveTab('messages')} className={`flex items-center gap-2 transition-colors relative ${activeTab === 'messages' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
+                  <MessageSquare className="w-5 h-5" />
+                  Messages
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
                 <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
                   <Settings className="w-5 h-5" />
                 </button>
@@ -374,6 +469,9 @@ export default function CandidateDashboard() {
               <div className="md:hidden py-4 space-y-2 border-t border-gray-200">
                 <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Profile</button>
                 <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Find Agents</button>
+                <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
+                  Messages {unreadCount > 0 && `(${unreadCount})`}
+                </button>
                 <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Settings</button>
                 <button onClick={() => router.push('/login')} className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">Logout</button>
               </div>
@@ -602,7 +700,129 @@ export default function CandidateDashboard() {
             </div>
           )}
         </div>
+
+          {/* Messages Tab */}
+          {activeTab === 'messages' && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <MessageSquare className="w-6 h-6 text-blue-600" />
+                  Messages
+                  {unreadCount > 0 && (
+                    <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                      {unreadCount} new
+                    </span>
+                  )}
+                </h2>
+
+                {messages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg">No messages yet</p>
+                    <p className="text-gray-400 text-sm mt-2">Responses from agents will appear here</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        onClick={() => {
+                          setSelectedMessage(message);
+                          setShowMessageDetailModal(true);
+                        }}
+                        className={`border rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
+                          message.status === 'unread'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 bg-white'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900">{message.senderName}</h3>
+                              {message.status === 'unread' && (
+                                <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">New</span>
+                              )}
+                              {message.status === 'accepted' && (
+                                <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">Accepted</span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-600">{message.senderEmail}</p>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {message.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
+                          </span>
+                        </div>
+                        <p className="font-medium text-gray-900 mb-2">{message.subject}</p>
+                        <p className="text-gray-700 line-clamp-2">{message.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Message Detail Modal */}
+      {showMessageDetailModal && selectedMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold text-gray-900">Message from {selectedMessage.senderName}</h3>
+              <button onClick={() => { setShowMessageDetailModal(false); setSelectedMessage(null); setReplyText(''); }} className="text-gray-500 hover:text-gray-700">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
+                  <p className="text-sm text-gray-600">{selectedMessage.senderEmail}</p>
+                </div>
+                <p className="text-sm text-gray-500">
+                  {selectedMessage.createdAt?.toDate?.()?.toLocaleString() || 'Recently'}
+                </p>
+              </div>
+              <p className="font-medium text-gray-900 mb-2">{selectedMessage.subject}</p>
+              <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Reply</label>
+              <textarea
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                rows={5}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Type your reply here..."
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleSendReply}
+                disabled={sendingReply || !replyText.trim()}
+                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {sendingReply ? (
+                  <>
+                    <Loader className="w-5 h-5 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Send Reply
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Request Service Modal */}
       {showMessageModal && selectedAgent && (
