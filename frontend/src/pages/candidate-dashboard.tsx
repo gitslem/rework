@@ -301,9 +301,15 @@ export default function CandidateDashboard() {
       setSendingMessage(true);
       const db = getFirebaseFirestore();
 
+      // Create consistent conversation ID for the same sender-recipient pair
+      // Sort IDs to ensure same conversation ID regardless of who initiated
+      const ids = [user.uid, selectedAgent.id].sort();
+      const conversationId = `conv_${ids[0]}_${ids[1]}`;
+
       const messageData = {
         senderId: user.uid,
         senderName: `${profile?.firstName} ${profile?.lastName}`,
+        senderEmail: user.email || profile?.email || '',
         recipientId: selectedAgent.id,
         recipientName: selectedAgent.name,
         message: messageText,
@@ -311,7 +317,7 @@ export default function CandidateDashboard() {
         status: 'unread',
         createdAt: Timestamp.now(),
         type: 'service_request',
-        conversationId: `conv_${user.uid}_${selectedAgent.id}_${Date.now()}`
+        conversationId: conversationId
       };
 
       console.log('Sending message to agent:', messageData);

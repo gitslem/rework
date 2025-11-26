@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Briefcase, Monitor,
-  Mail, Phone, Globe, Calendar, Award, Filter, Search, X
+  Mail, Phone, Globe, Calendar, Award, Filter, Search, X, ArrowLeft
 } from 'lucide-react';
 import { getFirebaseFirestore } from '@/lib/firebase/config';
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp } from 'firebase/firestore';
@@ -146,7 +146,16 @@ export default function AdminAgents() {
         <nav className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-6 py-4">
             <div className="flex justify-between items-center">
-              <Logo showText={false} size="lg" />
+              <div className="flex items-center space-x-4">
+                <Logo showText={false} size="lg" />
+                <button
+                  onClick={() => router.push('/admin')}
+                  className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back to Dashboard
+                </button>
+              </div>
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-gray-600">Admin Panel</span>
                 <button
