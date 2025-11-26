@@ -14,7 +14,7 @@ import {
   Timestamp,
   onSnapshot
 } from 'firebase/firestore';
-import { db } from '../lib/firebase/config';
+import { getFirebaseFirestore } from '../lib/firebase/config';
 import { useAuthStore } from '../lib/authStore';
 import {
   CandidateProjectStatus,
@@ -26,6 +26,9 @@ import {
 const PROJECTS_COLLECTION = 'candidate_projects';
 const UPDATES_COLLECTION = 'project_updates';
 const ACTIONS_COLLECTION = 'project_actions';
+
+// Get Firestore instance
+const getDb = () => getFirebaseFirestore();
 
 export default function CandidateProjectsPage() {
   const router = useRouter();
@@ -55,7 +58,7 @@ export default function CandidateProjectsPage() {
     if (!user) return;
 
     const projectsQuery = query(
-      collection(db, PROJECTS_COLLECTION),
+      collection(getDb(), PROJECTS_COLLECTION),
       where('status', '==', activeTab),
       user.role === 'agent'
         ? where('agent_id', '==', user.uid)
@@ -87,7 +90,7 @@ export default function CandidateProjectsPage() {
   const fetchProjectDetails = async (projectId: string) => {
     try {
       // Get project
-      const projectDoc = await getDoc(doc(db, PROJECTS_COLLECTION, projectId));
+      const projectDoc = await getDoc(doc(getDb(),PROJECTS_COLLECTION, projectId));
       if (!projectDoc.exists()) {
         setError('Project not found');
         return;
@@ -97,7 +100,7 @@ export default function CandidateProjectsPage() {
 
       // Subscribe to updates
       const updatesQuery = query(
-        collection(db, UPDATES_COLLECTION),
+        collection(getDb(),UPDATES_COLLECTION),
         where('project_id', '==', projectId),
         orderBy('created_at', 'desc')
       );
@@ -112,7 +115,7 @@ export default function CandidateProjectsPage() {
 
       // Subscribe to actions
       const actionsQuery = query(
-        collection(db, ACTIONS_COLLECTION),
+        collection(getDb(),ACTIONS_COLLECTION),
         where('project_id', '==', projectId),
         orderBy('created_at', 'desc')
       );
@@ -156,7 +159,7 @@ export default function CandidateProjectsPage() {
     if (!user) return;
 
     try {
-      await addDoc(collection(db, PROJECTS_COLLECTION), {
+      await addDoc(collection(getDb(),PROJECTS_COLLECTION), {
         ...projectData,
         agent_id: user.uid,
         created_at: Timestamp.now(),
@@ -173,7 +176,7 @@ export default function CandidateProjectsPage() {
     if (!selectedProject || !user) return;
 
     try {
-      await addDoc(collection(db, UPDATES_COLLECTION), {
+      await addDoc(collection(getDb(),UPDATES_COLLECTION), {
         ...updateData,
         project_id: selectedProject.id,
         agent_id: user.uid,
@@ -191,7 +194,7 @@ export default function CandidateProjectsPage() {
     if (!selectedProject || !user) return;
 
     try {
-      await addDoc(collection(db, ACTIONS_COLLECTION), {
+      await addDoc(collection(getDb(),ACTIONS_COLLECTION), {
         ...actionData,
         project_id: selectedProject.id,
         creator_id: user.uid,
@@ -207,7 +210,7 @@ export default function CandidateProjectsPage() {
 
   const updateActionStatus = async (actionId: string, status: ProjectActionStatus) => {
     try {
-      const actionRef = doc(db, ACTIONS_COLLECTION, actionId);
+      const actionRef = doc(getDb(),ACTIONS_COLLECTION, actionId);
       await updateDoc(actionRef, {
         status,
         ...(status === 'completed' ? { completed_at: Timestamp.now() } : {}),
