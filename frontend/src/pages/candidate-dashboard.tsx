@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen
+  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
