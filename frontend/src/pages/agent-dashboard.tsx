@@ -223,9 +223,9 @@ export default function AgentDashboard() {
 
       console.log('Messages found:', messagesSnapshot.size);
 
-      // Calculate cutoff date (30 days ago)
+      // Calculate cutoff date (3 days ago for recent messages)
       const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - 30);
+      cutoffDate.setDate(cutoffDate.getDate() - 3);
 
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
@@ -233,7 +233,7 @@ export default function AgentDashboard() {
 
         // Only include messages that are either:
         // 1. Saved, OR
-        // 2. Created within the last 30 days
+        // 2. Created within the last 3 days (recent messages only)
         if (data.saved === true || messageDate >= cutoffDate) {
           messagesList.push({
             id: doc.id,

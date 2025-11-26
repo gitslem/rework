@@ -46,6 +46,16 @@ export default function Agents() {
       const profilesSnapshot = await getDocs(profilesQuery);
       const agentsList = profilesSnapshot.docs.map(doc => {
         const data = doc.data();
+
+        // Calculate price range with proper type casting
+        let priceRange = 'N/A';
+        if (data.agentPricing && typeof data.agentPricing === 'object') {
+          const prices = Object.values(data.agentPricing).filter((p): p is number => typeof p === 'number');
+          if (prices.length > 0) {
+            priceRange = `$${Math.min(...prices)} - $${Math.max(...prices)}`;
+          }
+        }
+
         return {
           id: doc.id,
           name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Anonymous Agent',
@@ -54,7 +64,7 @@ export default function Agents() {
           totalClients: data.agentTotalClients || 0,
           successRate: data.agentSuccessRate || 0,
           platforms: data.agentServices || [],
-          priceRange: data.agentPricing ? `$${Math.min(...Object.values(data.agentPricing))} - $${Math.max(...Object.values(data.agentPricing))}` : 'N/A',
+          priceRange,
           bio: data.agentBio || 'Experienced agent ready to help you succeed.',
           avatarURL: data.avatarURL
         };
