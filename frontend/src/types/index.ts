@@ -148,3 +148,79 @@ export interface AnalyticsData {
   topAgents: Array<{ uid: string; name: string; revenue: number }>;
   recentActivity: Array<{ type: string; description: string; timestamp: Timestamp }>;
 }
+
+// Candidate Project Management Types
+export type CandidateProjectStatus = 'active' | 'pending' | 'completed' | 'cancelled';
+export type ProjectActionStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+export type ProjectActionPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface CandidateProject {
+  id: number;
+  candidate_id: number;
+  agent_id: number;
+  title: string;
+  description?: string;
+  platform?: string;
+  project_url?: string;
+  status: CandidateProjectStatus;
+  budget?: number;
+  deadline?: string;
+  started_at?: string;
+  completed_at?: string;
+  tags: string[];
+  project_metadata: Record<string, any>;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface ProjectUpdate {
+  id: number;
+  project_id: number;
+  agent_id: number;
+  week_number?: number;
+  update_title: string;
+  update_content: string;
+  hours_completed: number;
+  screen_sharing_hours: number;
+  progress_percentage: number;
+  blockers: string[];
+  concerns?: string;
+  next_steps: string[];
+  attachments: string[];
+  update_metadata: Record<string, any>;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface ProjectAction {
+  id: number;
+  project_id: number;
+  creator_id: number;
+  assigned_to_candidate: boolean;
+  assigned_to_agent: boolean;
+  title: string;
+  description?: string;
+  action_type?: string;
+  status: ProjectActionStatus;
+  priority: ProjectActionPriority;
+  due_date?: string;
+  scheduled_time?: string;
+  duration_minutes?: number;
+  platform?: string;
+  platform_url?: string;
+  completed_at?: string;
+  completion_notes?: string;
+  attachments: string[];
+  action_metadata: Record<string, any>;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface CandidateProjectDetail extends CandidateProject {
+  updates: ProjectUpdate[];
+  actions: ProjectAction[];
+  total_hours: number;
+  total_screen_sharing_hours: number;
+  pending_actions_count: number;
+  completed_actions_count: number;
+}
