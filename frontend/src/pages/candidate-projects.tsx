@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { ArrowLeft } from 'lucide-react';
 import {
   collection,
   query,
@@ -336,13 +337,35 @@ export default function CandidateProjectsPage() {
   };
 
   const updateActionStatus = async (actionId: string, status: ProjectActionStatus) => {
+    if (!selectedProject || !user) return;
+
     try {
       const actionRef = doc(getDb(), ACTIONS_COLLECTION, actionId);
+
+      // Get action details before updating
+      const actionDoc = await getDoc(actionRef);
+      const actionData = actionDoc.data();
+
       await updateDoc(actionRef, {
         status,
         ...(status === 'completed' ? { completed_at: Timestamp.now() } : {}),
         updated_at: Timestamp.now()
       });
+
+      // Notify the other party (agent if candidate updates, candidate if agent updates)
+      const notifyUserId = userRole === 'agent' ? selectedProject.candidate_id : selectedProject.agent_id;
+
+      if (status === 'completed' && notifyUserId) {
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: notifyUserId,
+          type: 'action_completed',
+          title: 'Action Completed',
+          message: `Action "${actionData?.title}" has been marked as completed on project "${selectedProject.title}"`,
+          projectId: selectedProject.id,
+          read: false,
+          createdAt: Timestamp.now()
+        });
+      }
     } catch (err: any) {
       console.error('Error updating action:', err);
       setError(err.message || 'Failed to update action');
@@ -385,14 +408,25 @@ export default function CandidateProjectsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            My Projects
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {userRole === 'agent'
-              ? 'Manage candidate projects and provide updates'
-              : 'View your projects and track progress'}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                My Projects
+              </h1>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                {userRole === 'agent'
+                  ? 'Manage candidate projects and provide updates'
+                  : 'View your projects and track progress'}
+              </p>
+            </div>
+            <button
+              onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-dashboard')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -1030,7 +1064,7 @@ function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
                 <option value="">Choose a connected candidate...</option>
                 {connectedCandidates.map((candidate: any) => (
                   <option key={candidate.candidateId} value={candidate.candidateId}>
-                    {candidate.candidateName} ({candidate.candidateEmail})
+                    {candidate.candidateName}
                   </option>
                 ))}
               </select>
