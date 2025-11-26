@@ -54,7 +54,9 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-1">
-              <Logo textClassName="text-white" className="mb-4" showText={true} size="md" />
+              <div className="flex items-start mb-4">
+                <Logo textClassName="text-white" showText={true} size="sm" />
+              </div>
               <p className="text-gray-500 leading-relaxed text-sm mb-6">
                 Connecting candidates with verified agents for AI training opportunities.
               </p>
@@ -83,21 +85,13 @@ export default function Footer() {
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
                 For Candidates
               </h4>
-              <ul className="space-y-3 text-sm">
+              <ul className="space-y-3 text-sm mb-6">
                 <li>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
                     className="hover:text-white transition-colors inline-block"
                   >
                     Find an Agent
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push('/agents')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Browse Agents
                   </button>
                 </li>
                 <li>
@@ -117,6 +111,48 @@ export default function Footer() {
                   </button>
                 </li>
               </ul>
+
+              {/* Simple Newsletter Subscription */}
+              <div className="mt-6">
+                <h5 className="text-white font-semibold text-xs mb-3 uppercase tracking-wider">Stay Updated</h5>
+                <form onSubmit={handleSubscribe} className="space-y-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Your email"
+                    disabled={subscriptionStatus === 'loading'}
+                    className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  <button
+                    type="submit"
+                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {subscriptionStatus === 'loading' ? (
+                      <>
+                        <Loader className="w-3 h-3 animate-spin" />
+                        <span>Subscribing...</span>
+                      </>
+                    ) : subscriptionStatus === 'success' ? (
+                      <>
+                        <CheckCircle className="w-3 h-3" />
+                        <span>Subscribed!</span>
+                      </>
+                    ) : (
+                      <span>Subscribe</span>
+                    )}
+                  </button>
+
+                  {/* Status Messages */}
+                  {subscriptionStatus === 'success' && (
+                    <p className="text-green-400 text-xs">Successfully subscribed!</p>
+                  )}
+                  {subscriptionStatus === 'error' && errorMessage && (
+                    <p className="text-red-400 text-xs">{errorMessage}</p>
+                  )}
+                </form>
+              </div>
             </div>
 
             {/* Company */}
@@ -215,84 +251,6 @@ export default function Footer() {
                   </div>
                   <span className="text-sm font-medium">Trustpilot</span>
                 </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Newsletter Subscription Section */}
-          <div className="border-t border-gray-800 mt-12 pt-12">
-            <div className="max-w-2xl mx-auto">
-              <div className="bg-gradient-to-r from-purple-900 via-pink-900 to-blue-900 rounded-2xl p-8 md:p-10 relative overflow-hidden">
-                {/* Background decoration */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full opacity-5 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full opacity-5 blur-3xl"></div>
-
-                <div className="relative z-10 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-10 rounded-full mb-4 backdrop-blur-sm">
-                    <Mail className="w-8 h-8 text-white" />
-                  </div>
-
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                    Stay Updated
-                  </h3>
-                  <p className="text-gray-300 mb-6 text-sm md:text-base">
-                    Get the latest opportunities, success stories, and exclusive tips delivered to your inbox.
-                  </p>
-
-                  <form onSubmit={handleSubscribe} className="max-w-md mx-auto">
-                    <div className="flex flex-col sm:flex-row gap-3">
-                      <div className="flex-1 relative">
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="Enter your email address"
-                          disabled={subscriptionStatus === 'loading'}
-                          className="w-full px-5 py-4 rounded-full bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                        className="bg-white text-black px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
-                      >
-                        {subscriptionStatus === 'loading' ? (
-                          <>
-                            <Loader className="w-4 h-4 animate-spin" />
-                            <span>Subscribing...</span>
-                          </>
-                        ) : subscriptionStatus === 'success' ? (
-                          <>
-                            <CheckCircle className="w-4 h-4" />
-                            <span>Subscribed!</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Subscribe</span>
-                            <ArrowRight className="w-4 h-4" />
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Status Messages */}
-                    {subscriptionStatus === 'success' && (
-                      <div className="mt-4 flex items-center justify-center gap-2 text-green-300 text-sm">
-                        <CheckCircle className="w-4 h-4" />
-                        <span>Successfully subscribed! Check your inbox.</span>
-                      </div>
-                    )}
-                    {subscriptionStatus === 'error' && errorMessage && (
-                      <div className="mt-4 text-red-300 text-sm text-center">
-                        {errorMessage}
-                      </div>
-                    )}
-                  </form>
-
-                  <p className="text-gray-400 text-xs mt-4">
-                    No spam, unsubscribe anytime. We respect your privacy.
-                  </p>
-                </div>
               </div>
             </div>
           </div>
