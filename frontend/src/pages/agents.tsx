@@ -1,51 +1,103 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Globe2, Search, Star, TrendingUp, Users, MessageSquare, Filter } from 'lucide-react';
+import { Search, Star, TrendingUp, Users, MessageSquare, Filter } from 'lucide-react';
 import Head from 'next/head';
+import Logo from '@/components/Logo';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 export default function Agents() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('all');
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [agents, setAgents] = useState<any[]>([]);
 
-  // Mock data - in production, this would come from API
-  const agents = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      avatar: "SJ",
-      rating: 4.9,
-      totalClients: 127,
-      successRate: 98,
-      platforms: ['Outlier AI', 'Alignerr', 'OneForma'],
-      priceRange: '$75 - $150',
-      bio: "Specialized in getting candidates approved for AI training platforms. 5+ years experience."
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      avatar: "MC",
-      rating: 5.0,
-      totalClients: 89,
-      successRate: 100,
-      platforms: ['Appen', 'RWS', 'TELUS Digital'],
-      priceRange: '$100 - $200',
-      bio: "Expert in data annotation and localization platforms. Perfect track record."
-    },
-    {
-      id: 3,
-      name: "Maria Rodriguez",
-      avatar: "MR",
-      rating: 4.8,
-      totalClients: 156,
-      successRate: 96,
-      platforms: ['Outlier AI', 'Mindrift AI', 'Appen'],
-      priceRange: '$50 - $120',
-      bio: "Helping candidates succeed since 2020. Multilingual support available."
+  // Check authentication
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (!firebaseUser) {
+        // Not logged in, redirect to login
+        router.push('/login?redirect=/agents');
+      } else {
+        setUser(firebaseUser);
+        loadAgents();
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  const loadAgents = async () => {
+    try {
+      const db = getFirebaseFirestore();
+
+      // Get verified agent profiles
+      const profilesQuery = query(
+        collection(db, 'profiles'),
+        where('isAgentApproved', '==', true),
+        where('agentVerificationStatus', '==', 'verified')
+      );
+
+      const profilesSnapshot = await getDocs(profilesQuery);
+      const agentsList = profilesSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Anonymous Agent',
+          avatar: `${data.firstName?.[0] || 'A'}${data.lastName?.[0] || 'A'}`,
+          rating: data.agentRating || 0,
+          totalClients: data.agentTotalClients || 0,
+          successRate: data.agentSuccessRate || 0,
+          platforms: data.agentServices || [],
+          priceRange: data.agentPricing ? `$${Math.min(...Object.values(data.agentPricing))} - $${Math.max(...Object.values(data.agentPricing))}` : 'N/A',
+          bio: data.agentBio || 'Experienced agent ready to help you succeed.',
+          avatarURL: data.avatarURL
+        };
+      });
+
+      setAgents(agentsList);
+      console.log('Loaded agents:', agentsList.length);
+    } catch (error) {
+      console.error('Error loading agents:', error);
     }
-  ];
+  };
 
-  const platforms = ['All Platforms', 'Outlier AI', 'Alignerr', 'OneForma', 'Appen', 'RWS', 'Mindrift AI', 'TELUS Digital'];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
+
+  // Get unique platforms from all agents
+  const allPlatforms = agents.reduce((acc: string[], agent) => {
+    agent.platforms.forEach((platform: string) => {
+      if (!acc.includes(platform)) {
+        acc.push(platform);
+      }
+    });
+    return acc;
+  }, []);
+  const platforms = ['All Platforms', ...allPlatforms];
+
+  // Filter agents based on search and platform
+  const filteredAgents = agents.filter(agent => {
+    const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          agent.bio.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPlatform = selectedPlatform === 'all' ||
+                            agent.platforms.includes(selectedPlatform);
+    return matchesSearch && matchesPlatform;
+  });
 
   return (
     <>
@@ -58,12 +110,7 @@ export default function Agents() {
         <nav className="bg-white border-b border-gray-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              <div className="flex items-center cursor-pointer group" onClick={() => router.push('/')}>
-                <Globe2 className="w-9 h-9 text-blue-600" />
-                <div className="ml-3 text-2xl font-bold text-gray-900">
-                  Remote-<span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Works</span>
-                </div>
-              </div>
+              <Logo showText={true} onClick={() => router.push('/')} size="md" />
               <div className="flex items-center space-x-4">
                 <button onClick={() => router.push('/candidate-dashboard')} className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
                   Dashboard
@@ -116,8 +163,13 @@ export default function Agents() {
 
         {/* Agents Grid */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {agents.map((agent) => (
+          {filteredAgents.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No agents found matching your criteria.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredAgents.map((agent) => (
               <div key={agent.id} className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all border border-gray-200 overflow-hidden group cursor-pointer">
                 <div className="p-8">
                   {/* Agent Header */}
@@ -185,14 +237,7 @@ export default function Agents() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Empty State */}
-          {agents.length === 0 && (
-            <div className="text-center py-16">
-              <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-xl text-gray-600">No agents found. Try adjusting your filters.</p>
+              ))}
             </div>
           )}
         </div>

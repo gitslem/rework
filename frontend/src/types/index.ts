@@ -61,11 +61,13 @@ export interface Profile {
   agentServices: string[]; // ['Outlier AI', 'Alignerr', etc.]
   agentSuccessRate: number;
   agentTotalClients: number;
+  agentRating: number; // Average rating (0-5)
   agentVerificationStatus: 'pending' | 'verified' | 'rejected';
   agentVerifiedAt?: Timestamp;
   agentRejectedReason?: string;
   agentPricing: Record<string, number>; // { 'Outlier AI': 100, 'Alignerr': 75 }
   agentPortfolio: PortfolioItem[];
+  agentBio?: string; // Agent bio/description
   paypalEmail?: string;
 
   createdAt: Timestamp;

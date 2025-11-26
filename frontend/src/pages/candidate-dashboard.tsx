@@ -150,13 +150,24 @@ export default function CandidateDashboard() {
 
       console.log('Messages found:', messagesSnapshot.size);
 
+      // Calculate cutoff date (30 days ago)
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - 30);
+
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
-        messagesList.push({
-          id: doc.id,
-          ...data
-        });
-        if (data.status === 'unread') unread++;
+        const messageDate = data.createdAt?.toDate?.() || new Date(0);
+
+        // Only include messages that are either:
+        // 1. Saved, OR
+        // 2. Created within the last 30 days
+        if (data.saved === true || messageDate >= cutoffDate) {
+          messagesList.push({
+            id: doc.id,
+            ...data
+          });
+          if (data.status === 'unread') unread++;
+        }
       });
 
       // Sort messages by createdAt in JavaScript instead of Firestore
@@ -500,7 +511,7 @@ export default function CandidateDashboard() {
         <nav className="bg-white border-b-2 border-gradient shadow-lg sticky top-0 z-50" style={{borderImage: 'linear-gradient(to right, #2563eb, #9333ea) 1'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16 md:h-20">
-              <Logo showText={true} onClick={() => router.push('/')} size="sm" />
+              <Logo showText={false} onClick={() => router.push('/')} size="sm" />
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-4">
