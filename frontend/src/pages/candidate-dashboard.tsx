@@ -367,6 +367,14 @@ export default function CandidateDashboard() {
               <div className="flex justify-between items-center h-16 md:h-20">
                 <Logo showText={false} onClick={() => router.push('/')} />
                 <div className="flex items-center space-x-4">
+                  <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden md:inline">Projects</span>
+                  </button>
+                  <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                    <Settings className="w-5 h-5" />
+                    <span className="hidden md:inline">Settings</span>
+                  </button>
                   <button onClick={() => router.push('/login')} className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
                     <LogOut className="w-5 h-5" />
                     <span className="hidden md:inline">Logout</span>
@@ -475,6 +483,10 @@ export default function CandidateDashboard() {
                   <BookOpen className="w-5 h-5" />
                   Info
                 </button>
+                <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                  <FileText className="w-5 h-5" />
+                  Projects
+                </button>
                 <button onClick={() => setActiveTab('messages')} className={`flex items-center gap-2 transition-colors relative ${activeTab === 'messages' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
                   <MessageSquare className="w-5 h-5" />
                   Messages
@@ -507,6 +519,7 @@ export default function CandidateDashboard() {
                 <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Profile</button>
                 <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Find Agents</button>
                 <button onClick={() => { router.push('/candidate-info'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Info</button>
+                <button onClick={() => { router.push('/candidate-projects'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Projects</button>
                 <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
                   Messages {unreadCount > 0 && `(${unreadCount})`}
                 </button>
