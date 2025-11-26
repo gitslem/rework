@@ -851,3 +851,164 @@ class PortfolioItem(Base):
 
     # Relationships
     profile = relationship("Profile", back_populates="portfolio_items")
+
+
+class CandidateProjectStatus(str, enum.Enum):
+    ACTIVE = "active"
+    PENDING = "pending"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class ProjectActionStatus(str, enum.Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class ProjectActionPriority(str, enum.Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
+
+
+class CandidateProject(Base):
+    """Projects managed by agents for candidates"""
+    __tablename__ = "candidate_projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Ownership
+    candidate_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # The candidate
+    agent_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # The assigned agent
+
+    # Project details
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    platform = Column(String, nullable=True)  # e.g., "Upwork", "Freelancer", "Internal"
+    project_url = Column(String, nullable=True)  # External project URL if applicable
+
+    # Status
+    status = Column(
+        Enum(CandidateProjectStatus, name="candidate_project_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=CandidateProjectStatus.PENDING
+    )
+
+    # Budget and timeline
+    budget = Column(Float, nullable=True)
+    deadline = Column(DateTime(timezone=True), nullable=True)
+    started_at = Column(DateTime(timezone=True), nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Metadata
+    tags = Column(JSON, default=[])  # Technologies, skills, categories
+    project_metadata = Column(JSON, default={})  # Additional flexible data
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    candidate = relationship("User", foreign_keys=[candidate_id])
+    agent = relationship("User", foreign_keys=[agent_id])
+    updates = relationship("ProjectUpdate", back_populates="project", cascade="all, delete-orphan")
+    actions = relationship("ProjectAction", back_populates="project", cascade="all, delete-orphan")
+
+
+class ProjectUpdate(Base):
+    """Weekly updates from agents on project progress"""
+    __tablename__ = "project_updates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("candidate_projects.id"), nullable=False)
+    agent_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    # Update details
+    week_number = Column(Integer, nullable=True)  # Week number (optional)
+    update_title = Column(String, nullable=False)
+    update_content = Column(Text, nullable=False)
+
+    # Work tracking
+    hours_completed = Column(Float, default=0.0)  # Hours worked this update
+    screen_sharing_hours = Column(Float, default=0.0)  # Hours of screen sharing with candidate
+
+    # Progress indicators
+    progress_percentage = Column(Float, default=0.0)  # Overall project progress (0-100)
+
+    # Issues and blockers
+    blockers = Column(JSON, default=[])  # List of blocking issues
+    concerns = Column(Text, nullable=True)  # General concerns
+
+    # Next steps
+    next_steps = Column(JSON, default=[])  # Planned next steps
+
+    # Attachments
+    attachments = Column(JSON, default=[])  # Screenshots, files, links
+
+    # Metadata
+    update_metadata = Column(JSON, default={})
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    project = relationship("CandidateProject", back_populates="updates")
+    agent = relationship("User", foreign_keys=[agent_id])
+
+
+class ProjectAction(Base):
+    """Actions needed from candidates or scheduled tasks for agents"""
+    __tablename__ = "project_actions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("candidate_projects.id"), nullable=False)
+
+    # Who is responsible
+    assigned_to_candidate = Column(Boolean, default=False)  # True if candidate needs to do it
+    assigned_to_agent = Column(Boolean, default=False)  # True if agent needs to do it
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Who created the action
+
+    # Action details
+    title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    action_type = Column(String, nullable=True)  # "signup", "verification", "exam", "meeting", "document", etc.
+
+    # Status and priority
+    status = Column(
+        Enum(ProjectActionStatus, name="project_action_status", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=ProjectActionStatus.PENDING
+    )
+    priority = Column(
+        Enum(ProjectActionPriority, name="project_action_priority", create_type=False, values_callable=lambda x: [e.value for e in x]),
+        default=ProjectActionPriority.MEDIUM
+    )
+
+    # Scheduling
+    due_date = Column(DateTime(timezone=True), nullable=True)
+    scheduled_time = Column(DateTime(timezone=True), nullable=True)  # For meetings, exams, etc.
+    duration_minutes = Column(Integer, nullable=True)  # Expected duration
+
+    # Platform-specific actions (for pending projects)
+    platform = Column(String, nullable=True)  # e.g., "Upwork", "LinkedIn", "Google"
+    platform_url = Column(String, nullable=True)  # Link to signup/verification page
+
+    # Completion tracking
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    completion_notes = Column(Text, nullable=True)
+
+    # Attachments
+    attachments = Column(JSON, default=[])  # Instructions, forms, screenshots
+
+    # Metadata
+    action_metadata = Column(JSON, default={})
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    project = relationship("CandidateProject", back_populates="actions")
+    creator = relationship("User", foreign_keys=[creator_id])

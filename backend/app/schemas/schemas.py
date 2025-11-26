@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus, SummaryType, PortfolioItemType
+from app.models.models import UserRole, ProjectStatus, ApplicationStatus, PaymentStatus, SandboxStatus, SandboxLanguage, ProofType, ProofStatus, CertificateStatus, EscrowStatus, SummaryType, PortfolioItemType, CandidateProjectStatus, ProjectActionStatus, ProjectActionPriority
 
 
 # User Schemas
@@ -1087,3 +1087,155 @@ class MilestoneApprovalRequest(BaseModel):
     approved: bool
     feedback: Optional[str] = None
     release_payment: bool = False  # Whether to automatically release escrow payment
+
+
+# Candidate Project Schemas
+class CandidateProjectBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    platform: Optional[str] = None
+    project_url: Optional[str] = None
+    budget: Optional[float] = Field(None, gt=0)
+    deadline: Optional[datetime] = None
+    tags: List[str] = []
+
+
+class CandidateProjectCreate(CandidateProjectBase):
+    candidate_id: int
+    agent_id: int
+    status: CandidateProjectStatus = CandidateProjectStatus.PENDING
+
+
+class CandidateProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    platform: Optional[str] = None
+    project_url: Optional[str] = None
+    budget: Optional[float] = Field(None, gt=0)
+    deadline: Optional[datetime] = None
+    status: Optional[CandidateProjectStatus] = None
+    tags: Optional[List[str]] = None
+
+
+class CandidateProjectResponse(CandidateProjectBase):
+    id: int
+    candidate_id: int
+    agent_id: int
+    status: CandidateProjectStatus
+    started_at: Optional[datetime]
+    completed_at: Optional[datetime]
+    project_metadata: Dict[str, Any]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Project Update Schemas
+class ProjectUpdateBase(BaseModel):
+    update_title: str = Field(..., min_length=1, max_length=255)
+    update_content: str = Field(..., min_length=1)
+    week_number: Optional[int] = None
+    hours_completed: float = Field(0.0, ge=0)
+    screen_sharing_hours: float = Field(0.0, ge=0)
+    progress_percentage: float = Field(0.0, ge=0, le=100)
+    blockers: List[str] = []
+    concerns: Optional[str] = None
+    next_steps: List[str] = []
+    attachments: List[str] = []
+
+
+class ProjectUpdateCreate(ProjectUpdateBase):
+    project_id: int
+
+
+class ProjectUpdateUpdate(BaseModel):
+    update_title: Optional[str] = None
+    update_content: Optional[str] = None
+    week_number: Optional[int] = None
+    hours_completed: Optional[float] = Field(None, ge=0)
+    screen_sharing_hours: Optional[float] = Field(None, ge=0)
+    progress_percentage: Optional[float] = Field(None, ge=0, le=100)
+    blockers: Optional[List[str]] = None
+    concerns: Optional[str] = None
+    next_steps: Optional[List[str]] = None
+    attachments: Optional[List[str]] = None
+
+
+class ProjectUpdateResponse(ProjectUpdateBase):
+    id: int
+    project_id: int
+    agent_id: int
+    update_metadata: Dict[str, Any]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Project Action Schemas
+class ProjectActionBase(BaseModel):
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    action_type: Optional[str] = None
+    assigned_to_candidate: bool = False
+    assigned_to_agent: bool = False
+    priority: ProjectActionPriority = ProjectActionPriority.MEDIUM
+    due_date: Optional[datetime] = None
+    scheduled_time: Optional[datetime] = None
+    duration_minutes: Optional[int] = Field(None, gt=0)
+    platform: Optional[str] = None
+    platform_url: Optional[str] = None
+    attachments: List[str] = []
+
+
+class ProjectActionCreate(ProjectActionBase):
+    project_id: int
+
+
+class ProjectActionUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    action_type: Optional[str] = None
+    assigned_to_candidate: Optional[bool] = None
+    assigned_to_agent: Optional[bool] = None
+    status: Optional[ProjectActionStatus] = None
+    priority: Optional[ProjectActionPriority] = None
+    due_date: Optional[datetime] = None
+    scheduled_time: Optional[datetime] = None
+    duration_minutes: Optional[int] = Field(None, gt=0)
+    platform: Optional[str] = None
+    platform_url: Optional[str] = None
+    completion_notes: Optional[str] = None
+    attachments: Optional[List[str]] = None
+
+
+class ProjectActionResponse(ProjectActionBase):
+    id: int
+    project_id: int
+    creator_id: int
+    status: ProjectActionStatus
+    completed_at: Optional[datetime]
+    completion_notes: Optional[str]
+    action_metadata: Dict[str, Any]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# Composite Response Schemas
+class CandidateProjectDetailResponse(CandidateProjectResponse):
+    """Detailed candidate project with updates and actions"""
+    updates: List[ProjectUpdateResponse] = []
+    actions: List[ProjectActionResponse] = []
+    total_hours: float = 0.0
+    total_screen_sharing_hours: float = 0.0
+    pending_actions_count: int = 0
+    completed_actions_count: int = 0
+
+    class Config:
+        from_attributes = True
