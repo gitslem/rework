@@ -14,8 +14,8 @@ import {
   Timestamp,
   onSnapshot
 } from 'firebase/firestore';
-import { getFirebaseFirestore } from '../lib/firebase/config';
-import { useAuthStore } from '../lib/authStore';
+import { getFirebaseFirestore, getFirebaseAuth } from '../lib/firebase/config';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import {
   CandidateProjectStatus,
   ProjectActionStatus,
@@ -32,7 +32,8 @@ const getDb = () => getFirebaseFirestore();
 
 export default function CandidateProjectsPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [userRole, setUserRole] = useState<string>('candidate');
   const [activeTab, setActiveTab] = useState<'active' | 'pending'>('active');
   const [projects, setProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
@@ -46,12 +47,35 @@ export default function CandidateProjectsPage() {
   const [showActionModal, setShowActionModal] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
 
-  // Check if user is logged in
+  // Check Firebase authentication and get user role
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
-    }
-  }, [user, router]);
+    const auth = getFirebaseAuth();
+    const db = getDb();
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
+        router.push('/login');
+        return;
+      }
+
+      setUser(firebaseUser);
+
+      // Get user document to check role
+      try {
+        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role || 'candidate');
+        }
+      } catch (err) {
+        console.error('Error fetching user role:', err);
+      }
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   // Fetch projects in real-time
   useEffect(() => {
@@ -60,7 +84,7 @@ export default function CandidateProjectsPage() {
     const projectsQuery = query(
       collection(getDb(), PROJECTS_COLLECTION),
       where('status', '==', activeTab),
-      user.role === 'agent'
+      userRole === 'agent'
         ? where('agent_id', '==', user.uid)
         : where('candidate_id', '==', user.uid),
       orderBy('created_at', 'desc')
@@ -84,7 +108,7 @@ export default function CandidateProjectsPage() {
     );
 
     return () => unsubscribe();
-  }, [user, activeTab]);
+  }, [user, userRole, activeTab]);
 
   // Fetch project details with real-time updates
   const fetchProjectDetails = async (projectId: string) => {
@@ -262,7 +286,7 @@ export default function CandidateProjectsPage() {
             My Projects
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {user.role === 'agent'
+            {userRole === 'agent'
               ? 'Manage candidate projects and provide updates'
               : 'View your projects and track progress'}
           </p>
@@ -297,7 +321,7 @@ export default function CandidateProjectsPage() {
         </div>
 
         {/* Add Project Button for Agents */}
-        {user.role === 'agent' && (
+        {userRole === 'agent' && (
           <div className="mb-6">
             <button
               onClick={() => setShowProjectModal(true)}
@@ -395,7 +419,7 @@ export default function CandidateProjectsPage() {
             project={selectedProject}
             updates={projectUpdates}
             actions={projectActions}
-            userRole={user.role}
+            userRole={userRole}
             onClose={() => setSelectedProject(null)}
             onAddUpdate={() => setShowUpdateModal(true)}
             onAddAction={() => setShowActionModal(true)}
@@ -407,7 +431,7 @@ export default function CandidateProjectsPage() {
         )}
 
         {/* Modals */}
-        {showUpdateModal && selectedProject && user.role === 'agent' && (
+        {showUpdateModal && selectedProject && userRole === 'agent' && (
           <UpdateFormModal
             onClose={() => setShowUpdateModal(false)}
             onSubmit={createUpdate}
@@ -421,7 +445,7 @@ export default function CandidateProjectsPage() {
           />
         )}
 
-        {showProjectModal && user.role === 'agent' && (
+        {showProjectModal && userRole === 'agent' && (
           <ProjectFormModal
             onClose={() => setShowProjectModal(false)}
             onSubmit={createProject}
