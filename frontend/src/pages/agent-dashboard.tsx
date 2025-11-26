@@ -68,6 +68,9 @@ interface Message {
   createdAt: any;
   type: 'service_request' | 'general' | 'payment_confirmation';
   conversationId?: string;
+  saved?: boolean;
+  isReply?: boolean;
+  updatedAt?: any;
 }
 
 export default function AgentDashboard() {
