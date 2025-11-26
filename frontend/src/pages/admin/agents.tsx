@@ -25,6 +25,12 @@ export default function AdminAgents() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAgent, setSelectedAgent] = useState<AgentApplication | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [editingStats, setEditingStats] = useState(false);
+  const [agentStats, setAgentStats] = useState({
+    successRate: 0,
+    totalClients: 0,
+    rating: 0
+  });
 
   useEffect(() => {
     fetchApplications();
@@ -124,6 +130,31 @@ export default function AdminAgents() {
     } catch (error: any) {
       console.error('Error rejecting agent:', error);
       alert('Failed to reject agent: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateStats = async () => {
+    if (!selectedAgent) return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      await updateDoc(doc(db, 'profiles', selectedAgent.uid), {
+        agentSuccessRate: agentStats.successRate,
+        agentTotalClients: agentStats.totalClients,
+        agentRating: agentStats.rating,
+        updatedAt: Timestamp.now(),
+      });
+
+      alert('Agent stats updated successfully!');
+      setEditingStats(false);
+      fetchApplications();
+    } catch (error: any) {
+      console.error('Error updating agent stats:', error);
+      alert('Failed to update stats: ' + error.message);
     } finally {
       setActionLoading(false);
     }
@@ -425,6 +456,104 @@ export default function AdminAgents() {
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Agent Stats (Editable by Admin) */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-bold text-black">Agent Performance Stats</h3>
+                    {!editingStats ? (
+                      <button
+                        onClick={() => {
+                          setAgentStats({
+                            successRate: selectedAgent.agentSuccessRate || 0,
+                            totalClients: selectedAgent.agentTotalClients || 0,
+                            rating: selectedAgent.agentRating || 0
+                          });
+                          setEditingStats(true);
+                        }}
+                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Edit Stats
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleUpdateStats}
+                          disabled={actionLoading}
+                          className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingStats(false)}
+                          disabled={actionLoading}
+                          className="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {editingStats ? (
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Success Rate (%)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={agentStats.successRate}
+                          onChange={(e) => setAgentStats({ ...agentStats, successRate: parseFloat(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Total Clients
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={agentStats.totalClients}
+                          onChange={(e) => setAgentStats({ ...agentStats, totalClients: parseInt(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Rating (0-5)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="5"
+                          step="0.1"
+                          value={agentStats.rating}
+                          onChange={(e) => setAgentStats({ ...agentStats, rating: parseFloat(e.target.value) || 0 })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid md:grid-cols-3 gap-4">
+                      <div className="bg-white p-3 rounded-lg">
+                        <span className="text-gray-600 text-sm">Success Rate:</span>
+                        <p className="text-2xl font-bold text-green-600">{selectedAgent.agentSuccessRate || 0}%</p>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg">
+                        <span className="text-gray-600 text-sm">Total Clients:</span>
+                        <p className="text-2xl font-bold text-blue-600">{selectedAgent.agentTotalClients || 0}</p>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg">
+                        <span className="text-gray-600 text-sm">Rating:</span>
+                        <p className="text-2xl font-bold text-yellow-600">{selectedAgent.agentRating || 0}/5</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}
