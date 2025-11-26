@@ -90,7 +90,7 @@ export default function CandidateProjectsPage() {
   const fetchProjectDetails = async (projectId: string) => {
     try {
       // Get project
-      const projectDoc = await getDoc(doc(getDb(),PROJECTS_COLLECTION, projectId));
+      const projectDoc = await getDoc(doc(getDb(), PROJECTS_COLLECTION, projectId));
       if (!projectDoc.exists()) {
         setError('Project not found');
         return;
@@ -100,7 +100,7 @@ export default function CandidateProjectsPage() {
 
       // Subscribe to updates
       const updatesQuery = query(
-        collection(getDb(),UPDATES_COLLECTION),
+        collection(getDb(), UPDATES_COLLECTION),
         where('project_id', '==', projectId),
         orderBy('created_at', 'desc')
       );
@@ -115,7 +115,7 @@ export default function CandidateProjectsPage() {
 
       // Subscribe to actions
       const actionsQuery = query(
-        collection(getDb(),ACTIONS_COLLECTION),
+        collection(getDb(), ACTIONS_COLLECTION),
         where('project_id', '==', projectId),
         orderBy('created_at', 'desc')
       );
@@ -159,7 +159,7 @@ export default function CandidateProjectsPage() {
     if (!user) return;
 
     try {
-      await addDoc(collection(getDb(),PROJECTS_COLLECTION), {
+      await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
         agent_id: user.uid,
         created_at: Timestamp.now(),
@@ -176,7 +176,7 @@ export default function CandidateProjectsPage() {
     if (!selectedProject || !user) return;
 
     try {
-      await addDoc(collection(getDb(),UPDATES_COLLECTION), {
+      await addDoc(collection(getDb(), UPDATES_COLLECTION), {
         ...updateData,
         project_id: selectedProject.id,
         agent_id: user.uid,
@@ -194,7 +194,7 @@ export default function CandidateProjectsPage() {
     if (!selectedProject || !user) return;
 
     try {
-      await addDoc(collection(getDb(),ACTIONS_COLLECTION), {
+      await addDoc(collection(getDb(), ACTIONS_COLLECTION), {
         ...actionData,
         project_id: selectedProject.id,
         creator_id: user.uid,
@@ -210,7 +210,7 @@ export default function CandidateProjectsPage() {
 
   const updateActionStatus = async (actionId: string, status: ProjectActionStatus) => {
     try {
-      const actionRef = doc(getDb(),ACTIONS_COLLECTION, actionId);
+      const actionRef = doc(getDb(), ACTIONS_COLLECTION, actionId);
       await updateDoc(actionRef, {
         status,
         ...(status === 'completed' ? { completed_at: Timestamp.now() } : {}),
