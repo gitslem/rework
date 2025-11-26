@@ -222,7 +222,7 @@ export default function Agents() {
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-gray-500 mb-2">SPECIALIZES IN:</p>
                     <div className="flex flex-wrap gap-2">
-                      {agent.platforms.map((platform, idx) => (
+                      {agent.platforms.map((platform: string, idx: number) => (
                         <span key={idx} className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold">
                           {platform}
                         </span>
