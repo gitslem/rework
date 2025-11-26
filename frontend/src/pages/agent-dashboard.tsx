@@ -189,10 +189,9 @@ export default function AgentDashboard() {
           setWorkingDays(profileData.agentWorkingHours.days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
         }
 
-        // Load messages if approved
-        if (approved) {
-          await loadMessages(db, firebaseUser.uid);
-        }
+        // Load messages regardless of approval status (so agents can see why they can't get messages)
+        console.log('Agent approval status:', approved);
+        await loadMessages(db, firebaseUser.uid);
 
         setLoading(false);
       });
@@ -204,16 +203,20 @@ export default function AgentDashboard() {
 
   const loadMessages = async (db: any, agentId: string) => {
     try {
+      console.log('Loading messages for agent:', agentId);
+
+      // Query messages - removed orderBy to avoid composite index requirement
       const messagesQuery = query(
         collection(db, 'messages'),
         where('recipientId', '==', agentId),
-        orderBy('createdAt', 'desc'),
         limit(50)
       );
 
       const messagesSnapshot = await getDocs(messagesQuery);
       const messagesList: Message[] = [];
       let unread = 0;
+
+      console.log('Messages found:', messagesSnapshot.size);
 
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
@@ -224,10 +227,19 @@ export default function AgentDashboard() {
         if (data.status === 'unread') unread++;
       });
 
+      // Sort messages by createdAt in JavaScript instead of Firestore
+      messagesList.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime; // Descending order (newest first)
+      });
+
       setMessages(messagesList);
       setUnreadCount(unread);
+      console.log('Messages loaded successfully:', messagesList.length, 'unread:', unread);
     } catch (error) {
       console.error('Error loading messages:', error);
+      alert('Error loading messages. Please refresh the page.');
     }
   };
 

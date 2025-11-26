@@ -133,16 +133,20 @@ export default function CandidateDashboard() {
 
   const loadMessages = async (db: any, candidateId: string) => {
     try {
+      console.log('Loading messages for candidate:', candidateId);
+
+      // Query messages - removed orderBy to avoid composite index requirement
       const messagesQuery = query(
         collection(db, 'messages'),
         where('recipientId', '==', candidateId),
-        orderBy('createdAt', 'desc'),
         limit(50)
       );
 
       const messagesSnapshot = await getDocs(messagesQuery);
       const messagesList: any[] = [];
       let unread = 0;
+
+      console.log('Messages found:', messagesSnapshot.size);
 
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
@@ -153,10 +157,19 @@ export default function CandidateDashboard() {
         if (data.status === 'unread') unread++;
       });
 
+      // Sort messages by createdAt in JavaScript instead of Firestore
+      messagesList.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime; // Descending order (newest first)
+      });
+
       setMessages(messagesList);
       setUnreadCount(unread);
+      console.log('Messages loaded successfully:', messagesList.length, 'unread:', unread);
     } catch (error) {
       console.error('Error loading messages:', error);
+      alert('Error loading messages. Please refresh the page.');
     }
   };
 
@@ -210,12 +223,16 @@ export default function CandidateDashboard() {
 
   const loadAgents = async (db: any) => {
     try {
+      console.log('Loading agents...');
+
       // Get all users with role 'agent' and approved status
       const usersQuery = query(
         collection(db, 'users'),
         where('role', '==', 'agent')
       );
       const usersSnapshot = await getDocs(usersQuery);
+
+      console.log('Found', usersSnapshot.size, 'agent users');
 
       const agentsList: Agent[] = [];
 
@@ -228,7 +245,7 @@ export default function CandidateDashboard() {
 
           // Only show approved agents
           if (profileData.isAgentApproved === true || profileData.agentVerificationStatus === 'approved') {
-            agentsList.push({
+            const agent = {
               id: userDoc.id,
               name: `${profileData.firstName} ${profileData.lastName}`,
               rating: profileData.averageRating || 4.5,
@@ -238,14 +255,20 @@ export default function CandidateDashboard() {
               platforms: profileData.agentServices || [],
               location: profileData.location || 'Unknown',
               responseTime: '< 24 hours'
-            });
+            };
+            console.log('Added approved agent:', agent.name, 'ID:', agent.id);
+            agentsList.push(agent);
+          } else {
+            console.log('Skipping unapproved agent:', profileData.firstName, profileData.lastName);
           }
         }
       }
 
+      console.log('Total approved agents loaded:', agentsList.length);
       setAgents(agentsList);
     } catch (error) {
       console.error('Error loading agents:', error);
+      alert('Error loading agents. Please refresh the page.');
     }
   };
 
@@ -274,8 +297,7 @@ export default function CandidateDashboard() {
       setSendingMessage(true);
       const db = getFirebaseFirestore();
 
-      // Create a message document
-      await addDoc(collection(db, 'messages'), {
+      const messageData = {
         senderId: user.uid,
         senderName: `${profile?.firstName} ${profile?.lastName}`,
         senderEmail: user.email,
@@ -286,7 +308,14 @@ export default function CandidateDashboard() {
         status: 'unread',
         createdAt: Timestamp.now(),
         type: 'service_request'
-      });
+      };
+
+      console.log('Sending message to agent:', messageData);
+
+      // Create a message document
+      const docRef = await addDoc(collection(db, 'messages'), messageData);
+
+      console.log('Message sent successfully with ID:', docRef.id);
 
       alert('Message sent successfully! The agent will contact you soon.');
       setShowMessageModal(false);
