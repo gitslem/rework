@@ -284,16 +284,8 @@ export default function CandidateProjectsPage() {
         updated_at: Timestamp.now()
       });
 
-      // Create notification for candidate
-      await addDoc(collection(getDb(), 'notifications'), {
-        userId: selectedProject.candidate_id,
-        type: 'project_update',
-        title: 'Project Update',
-        message: `New update on project "${selectedProject.title}": ${updateData.update_title}`,
-        projectId: selectedProject.id,
-        read: false,
-        createdAt: Timestamp.now()
-      });
+      // Note: Removed automatic notification for project updates to reduce spam.
+      // Only critical actions will trigger notifications.
 
       setShowUpdateModal(false);
     } catch (err: any) {
@@ -384,15 +376,23 @@ export default function CandidateProjectsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            My Projects
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {userRole === 'agent'
-              ? 'Manage candidate projects and provide updates'
-              : 'View your projects and track progress'}
-          </p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Projects
+            </h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              {userRole === 'agent'
+                ? 'Manage candidate projects and provide updates'
+                : 'View your projects and track progress'}
+            </p>
+          </div>
+          <button
+            onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-dashboard')}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            ← Back to Dashboard
+          </button>
         </div>
 
         {/* Tabs */}
@@ -1030,7 +1030,7 @@ function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
                 <option value="">Choose a connected candidate...</option>
                 {connectedCandidates.map((candidate: any) => (
                   <option key={candidate.candidateId} value={candidate.candidateId}>
-                    {candidate.candidateName} ({candidate.candidateEmail})
+                    {candidate.candidateName}
                   </option>
                 ))}
               </select>

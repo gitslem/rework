@@ -224,6 +224,57 @@ export const markMessageAsRead = async (messageId: string): Promise<void> => {
   }
 };
 
+export const saveMessage = async (messageId: string): Promise<void> => {
+  try {
+    const db = getFirebaseFirestore();
+    await updateDoc(doc(db, 'messages', messageId), {
+      saved: true,
+    });
+  } catch (error) {
+    console.error('Save message error:', error);
+    throw error;
+  }
+};
+
+export const unsaveMessage = async (messageId: string): Promise<void> => {
+  try {
+    const db = getFirebaseFirestore();
+    await updateDoc(doc(db, 'messages', messageId), {
+      saved: false,
+    });
+  } catch (error) {
+    console.error('Unsave message error:', error);
+    throw error;
+  }
+};
+
+export const deleteUnsavedMessages = async (userId: string, daysOld: number = 30): Promise<void> => {
+  try {
+    const db = getFirebaseFirestore();
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    // Query unsaved messages older than cutoff date
+    const messagesQuery = query(
+      collection(db, 'messages'),
+      where('recipientId', '==', userId),
+      where('saved', '==', false),
+      where('createdAt', '<', Timestamp.fromDate(cutoffDate))
+    );
+
+    const snapshot = await getDocs(messagesQuery);
+
+    // Delete each message
+    const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+
+    console.log(`Deleted ${snapshot.size} unsaved messages older than ${daysOld} days`);
+  } catch (error) {
+    console.error('Delete unsaved messages error:', error);
+    throw error;
+  }
+};
+
 export const getUserConversations = async (uid: string): Promise<string[]> => {
   try {
     const db = getFirebaseFirestore();

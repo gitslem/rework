@@ -3,13 +3,14 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText
+  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc, orderBy, limit } from 'firebase/firestore';
+import { saveMessage, unsaveMessage } from '@/lib/firebase/firestore';
 
 interface Agent {
   id: string;
@@ -339,6 +340,32 @@ export default function CandidateDashboard() {
     }
   };
 
+  const handleToggleSaveMessage = async (message: any) => {
+    try {
+      if (message.saved) {
+        await unsaveMessage(message.id);
+        alert('Message unsaved');
+      } else {
+        await saveMessage(message.id);
+        alert('Message saved');
+      }
+
+      // Refresh messages
+      if (user) {
+        const db = getFirebaseFirestore();
+        await loadMessages(db, user.uid);
+
+        // Update selected message if it's the one being toggled
+        if (selectedMessage?.id === message.id) {
+          setSelectedMessage({ ...message, saved: !message.saved });
+        }
+      }
+    } catch (error: any) {
+      console.error('Error toggling save message:', error);
+      alert('Failed to save/unsave message: ' + error.message);
+    }
+  };
+
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'Recently';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -476,36 +503,65 @@ export default function CandidateDashboard() {
               <Logo showText={true} onClick={() => router.push('/')} size="sm" />
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-6">
-                <button onClick={() => setActiveTab('overview')} className={`flex items-center gap-2 transition-colors ${activeTab === 'overview' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
+              <div className="hidden md:flex items-center space-x-4">
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  title="Profile"
+                >
                   <User className="w-5 h-5" />
-                  Profile
+                  <span>Profile</span>
                 </button>
-                <button onClick={() => setActiveTab('search')} className={`flex items-center gap-2 transition-colors ${activeTab === 'search' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
+                <button
+                  onClick={() => setActiveTab('search')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'search' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  title="Find Agents"
+                >
                   <Search className="w-5 h-5" />
-                  Find Agents
+                  <span>Find Agents</span>
                 </button>
-                <button onClick={() => router.push('/candidate-info')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                  <BookOpen className="w-5 h-5" />
-                  Info
-                </button>
-                <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <button
+                  onClick={() => router.push('/candidate-projects')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  title="Projects"
+                >
                   <FileText className="w-5 h-5" />
-                  Projects
+                  <span>Projects</span>
                 </button>
-                <button onClick={() => setActiveTab('messages')} className={`flex items-center gap-2 transition-colors relative ${activeTab === 'messages' ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'}`}>
+                <button
+                  onClick={() => setActiveTab('messages')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  title="Messages"
+                >
                   <MessageSquare className="w-5 h-5" />
-                  Messages
+                  <span>Messages</span>
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {unreadCount}
                     </span>
                   )}
                 </button>
-                <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <button
+                  onClick={() => router.push('/candidate-info')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  title="Info"
+                >
+                  <BookOpen className="w-5 h-5" />
+                  <span>Info</span>
+                </button>
+                <div className="h-8 w-px bg-gray-300 mx-2"></div>
+                <button
+                  onClick={() => router.push('/profile-settings')}
+                  className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  title="Settings"
+                >
                   <Settings className="w-5 h-5" />
                 </button>
-                <button onClick={() => router.push('/login')} className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
+                <button
+                  onClick={() => router.push('/login')}
+                  className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-all"
+                  title="Logout"
+                >
                   <LogOut className="w-5 h-5" />
                 </button>
               </div>
@@ -522,15 +578,35 @@ export default function CandidateDashboard() {
             {/* Mobile Menu */}
             {mobileMenuOpen && (
               <div className="md:hidden py-4 space-y-2 border-t border-gray-200">
-                <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Profile</button>
-                <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Find Agents</button>
-                <button onClick={() => { router.push('/candidate-info'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Info</button>
-                <button onClick={() => { router.push('/candidate-projects'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Projects</button>
-                <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
-                  Messages {unreadCount > 0 && `(${unreadCount})`}
+                <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <User className="w-5 h-5" />
+                  <span>Profile</span>
                 </button>
-                <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">Settings</button>
-                <button onClick={() => router.push('/login')} className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">Logout</button>
+                <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <Search className="w-5 h-5" />
+                  <span>Find Agents</span>
+                </button>
+                <button onClick={() => { router.push('/candidate-projects'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <FileText className="w-5 h-5" />
+                  <span>Projects</span>
+                </button>
+                <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <MessageSquare className="w-5 h-5" />
+                  <span>Messages {unreadCount > 0 && `(${unreadCount})`}</span>
+                </button>
+                <button onClick={() => { router.push('/candidate-info'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <BookOpen className="w-5 h-5" />
+                  <span>Info</span>
+                </button>
+                <div className="border-t border-gray-200 my-2"></div>
+                <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors">
+                  <Settings className="w-5 h-5" />
+                  <span>Settings</span>
+                </button>
+                <button onClick={() => router.push('/login')} className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
               </div>
             )}
           </div>
@@ -844,11 +920,29 @@ export default function CandidateDashboard() {
                               {message.status === 'accepted' && (
                                 <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">Accepted</span>
                               )}
+                              {message.saved && (
+                                <span className="bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                  <Bookmark className="w-3 h-3" />
+                                  Saved
+                                </span>
+                              )}
                             </div>
                           </div>
-                          <span className="text-xs text-gray-500">
-                            {message.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleToggleSaveMessage(message);
+                              }}
+                              className={`p-1 rounded transition-colors ${message.saved ? 'text-yellow-500 hover:text-yellow-600' : 'text-gray-400 hover:text-yellow-500'}`}
+                              title={message.saved ? 'Unsave message' : 'Save message'}
+                            >
+                              <Bookmark className={`w-4 h-4 ${message.saved ? 'fill-current' : ''}`} />
+                            </button>
+                            <span className="text-xs text-gray-500">
+                              {message.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
+                            </span>
+                          </div>
                         </div>
                         <p className="font-medium text-gray-900 mb-2">{message.subject}</p>
                         <p className="text-gray-700 line-clamp-2">{message.message}</p>
@@ -867,10 +961,27 @@ export default function CandidateDashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold text-gray-900">Message from {selectedMessage.senderName}</h3>
-              <button onClick={() => { setShowMessageDetailModal(false); setSelectedMessage(null); setReplyText(''); }} className="text-gray-500 hover:text-gray-700">
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-3">
+                <h3 className="text-2xl font-bold text-gray-900">Message from {selectedMessage.senderName}</h3>
+                {selectedMessage.saved && (
+                  <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                    <Bookmark className="w-3 h-3" />
+                    Saved
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleToggleSaveMessage(selectedMessage)}
+                  className={`p-2 rounded-lg transition-colors ${selectedMessage.saved ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  title={selectedMessage.saved ? 'Unsave message' : 'Save message'}
+                >
+                  <Bookmark className={`w-5 h-5 ${selectedMessage.saved ? 'fill-current' : ''}`} />
+                </button>
+                <button onClick={() => { setShowMessageDetailModal(false); setSelectedMessage(null); setReplyText(''); }} className="text-gray-500 hover:text-gray-700">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
