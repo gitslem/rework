@@ -41,6 +41,7 @@ export default function CandidateProjectsPage() {
   const [projectActions, setProjectActions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [connectedCandidates, setConnectedCandidates] = useState<any[]>([]);
 
   // Modal states
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -109,6 +110,32 @@ export default function CandidateProjectsPage() {
 
     return () => unsubscribe();
   }, [user, userRole, activeTab]);
+
+  // Fetch connected candidates for agents
+  useEffect(() => {
+    if (!user || userRole !== 'agent') return;
+
+    const fetchConnections = async () => {
+      try {
+        const connectionsQuery = query(
+          collection(getDb(), 'connections'),
+          where('agentId', '==', user.uid),
+          where('status', '==', 'connected')
+        );
+
+        const snapshot = await getDocs(connectionsQuery);
+        const candidates = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setConnectedCandidates(candidates);
+      } catch (err) {
+        console.error('Error fetching connected candidates:', err);
+      }
+    };
+
+    fetchConnections();
+  }, [user, userRole]);
 
   // Fetch project details with real-time updates
   const fetchProjectDetails = async (projectId: string) => {
@@ -220,12 +247,24 @@ export default function CandidateProjectsPage() {
     if (!user) return;
 
     try {
-      await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
+      const projectRef = await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
         agent_id: user.uid,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now()
       });
+
+      // Create notification for candidate
+      await addDoc(collection(getDb(), 'notifications'), {
+        userId: projectData.candidate_id,
+        type: 'project_created',
+        title: 'New Project Assigned',
+        message: `You have been assigned to a new project: ${projectData.title}`,
+        projectId: projectRef.id,
+        read: false,
+        createdAt: Timestamp.now()
+      });
+
       setShowProjectModal(false);
     } catch (err: any) {
       console.error('Error creating project:', err);
@@ -244,6 +283,18 @@ export default function CandidateProjectsPage() {
         created_at: Timestamp.now(),
         updated_at: Timestamp.now()
       });
+
+      // Create notification for candidate
+      await addDoc(collection(getDb(), 'notifications'), {
+        userId: selectedProject.candidate_id,
+        type: 'project_update',
+        title: 'Project Update',
+        message: `New update on project "${selectedProject.title}": ${updateData.update_title}`,
+        projectId: selectedProject.id,
+        read: false,
+        createdAt: Timestamp.now()
+      });
+
       setShowUpdateModal(false);
     } catch (err: any) {
       console.error('Error creating update:', err);
@@ -262,6 +313,21 @@ export default function CandidateProjectsPage() {
         created_at: Timestamp.now(),
         updated_at: Timestamp.now()
       });
+
+      // Create notification for assigned user(s)
+      if (actionData.assigned_to_candidate) {
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: selectedProject.candidate_id,
+          type: 'action_needed',
+          title: 'Action Required',
+          message: `New action on project "${selectedProject.title}": ${actionData.title}`,
+          projectId: selectedProject.id,
+          priority: actionData.priority || 'medium',
+          read: false,
+          createdAt: Timestamp.now()
+        });
+      }
+
       setShowActionModal(false);
     } catch (err: any) {
       console.error('Error creating action:', err);
@@ -486,6 +552,7 @@ export default function CandidateProjectsPage() {
           <ProjectFormModal
             onClose={() => setShowProjectModal(false)}
             onSubmit={createProject}
+            connectedCandidates={connectedCandidates}
           />
         )}
       </div>
@@ -912,9 +979,11 @@ function ActionFormModal({ onClose, onSubmit }: any) {
   );
 }
 
-function ProjectFormModal({ onClose, onSubmit }: any) {
+function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
   const [formData, setFormData] = useState({
     candidate_id: '',
+    candidate_name: '',
+    candidate_email: '',
     title: '',
     description: '',
     platform: '',
@@ -928,6 +997,18 @@ function ProjectFormModal({ onClose, onSubmit }: any) {
     onSubmit(formData);
   };
 
+  const handleCandidateSelect = (candidateId: string) => {
+    const selected = connectedCandidates.find((c: any) => c.candidateId === candidateId);
+    if (selected) {
+      setFormData({
+        ...formData,
+        candidate_id: selected.candidateId,
+        candidate_name: selected.candidateName,
+        candidate_email: selected.candidateEmail
+      });
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -937,16 +1018,27 @@ function ProjectFormModal({ onClose, onSubmit }: any) {
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Candidate User ID *
+              Select Candidate *
             </label>
-            <input
-              type="text"
-              required
-              value={formData.candidate_id}
-              onChange={(e) => setFormData({ ...formData, candidate_id: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-              placeholder="Enter candidate's Firebase UID"
-            />
+            {connectedCandidates && connectedCandidates.length > 0 ? (
+              <select
+                required
+                value={formData.candidate_id}
+                onChange={(e) => handleCandidateSelect(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">Choose a connected candidate...</option>
+                {connectedCandidates.map((candidate: any) => (
+                  <option key={candidate.candidateId} value={candidate.candidateId}>
+                    {candidate.candidateName} ({candidate.candidateEmail})
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300">
+                No connected candidates. Accept a service request to connect with candidates.
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

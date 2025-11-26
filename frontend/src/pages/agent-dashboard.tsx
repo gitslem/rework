@@ -260,6 +260,20 @@ export default function AgentDashboard() {
       // Create a conversation/thread ID for ongoing communication
       const conversationId = `conv_${message.senderId}_${user.uid}_${Date.now()}`;
 
+      // Create connection/friendship between agent and candidate
+      await addDoc(collection(db, 'connections'), {
+        agentId: user.uid,
+        agentName: `${profile?.firstName} ${profile?.lastName}`,
+        agentEmail: profile?.email || user.email,
+        candidateId: message.senderId,
+        candidateName: message.senderName,
+        candidateEmail: message.senderEmail,
+        conversationId: conversationId,
+        status: 'connected',
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      });
+
       // Send acceptance message to candidate
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
