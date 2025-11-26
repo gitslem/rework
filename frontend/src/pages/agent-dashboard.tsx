@@ -582,6 +582,14 @@ export default function AgentDashboard() {
               <div className="flex justify-between items-center h-16 md:h-20">
                 <Logo showText={false} onClick={() => router.push('/')} />
                 <div className="flex items-center space-x-4">
+                  <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden md:inline">Projects</span>
+                  </button>
+                  <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                    <Settings className="w-5 h-5" />
+                    <span className="hidden md:inline">Settings</span>
+                  </button>
                   <button onClick={() => router.push('/login')} className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
                     <LogOut className="w-5 h-5" />
                     <span className="hidden md:inline">Logout</span>
@@ -676,6 +684,10 @@ export default function AgentDashboard() {
             <div className="flex justify-between items-center h-16 md:h-20">
               <Logo showText={true} onClick={() => router.push('/')} size="sm" />
               <div className="flex items-center space-x-4">
+                <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                  <FileText className="w-5 h-5" />
+                  <span className="hidden md:inline">Projects</span>
+                </button>
                 <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
                   <Settings className="w-5 h-5" />
                   <span className="hidden md:inline">Settings</span>
