@@ -96,6 +96,7 @@ export default function AgentDashboard() {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
+  const [messageFilter, setMessageFilter] = useState<'all' | 'unread' | 'read'>('all');
 
   // Enhanced settings
   const [agentTerms, setAgentTerms] = useState('');
@@ -263,7 +264,6 @@ export default function AgentDashboard() {
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
         senderName: `${profile?.firstName} ${profile?.lastName}`,
-        senderEmail: user.email,
         recipientId: message.senderId,
         recipientName: message.senderName,
         message: `I've accepted your service request. Let's discuss the details. ${profile?.agentTerms ? '\n\nTerms: ' + profile.agentTerms : ''}`,
@@ -298,19 +298,22 @@ export default function AgentDashboard() {
       setSendingReply(true);
       const db = getFirebaseFirestore();
 
-      // Send reply
+      // Get or create conversation ID
+      const conversationId = selectedMessage.conversationId || selectedMessage.id;
+
+      // Send reply - use original subject without adding "Re:"
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
         senderName: `${profile?.firstName} ${profile?.lastName}`,
-        senderEmail: user.email,
         recipientId: selectedMessage.senderId,
         recipientName: selectedMessage.senderName,
         message: replyText,
-        subject: `Re: ${selectedMessage.subject}`,
+        subject: selectedMessage.subject.replace(/^(Re:\s*)+/g, ''), // Remove any existing "Re:" prefixes
         status: 'unread',
         createdAt: Timestamp.now(),
         type: 'general',
-        conversationId: selectedMessage.conversationId || selectedMessage.id
+        conversationId: conversationId,
+        isReply: true
       });
 
       // Mark original as read if unread
@@ -357,7 +360,6 @@ export default function AgentDashboard() {
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
         senderName: `${profile?.firstName} ${profile?.lastName}`,
-        senderEmail: user.email,
         recipientId: message.senderId,
         recipientName: message.senderName,
         message: 'Thank you for your interest. Unfortunately, I am unable to accept your service request at this time.',
@@ -847,7 +849,7 @@ export default function AgentDashboard() {
           {activeTab === 'messages' && (
             <div className="space-y-6">
               <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <MessageSquare className="w-6 h-6 text-blue-600" />
                   Inbox
                   {unreadCount > 0 && (
@@ -857,7 +859,45 @@ export default function AgentDashboard() {
                   )}
                 </h2>
 
-                {messages.length === 0 ? (
+                {/* Message Filters */}
+                <div className="flex gap-2 mb-6">
+                  <button
+                    onClick={() => setMessageFilter('all')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      messageFilter === 'all'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    All ({messages.length})
+                  </button>
+                  <button
+                    onClick={() => setMessageFilter('unread')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      messageFilter === 'unread'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Unread ({unreadCount})
+                  </button>
+                  <button
+                    onClick={() => setMessageFilter('read')}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      messageFilter === 'read'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Read ({messages.length - unreadCount})
+                  </button>
+                </div>
+
+                {messages.filter(m => {
+                  if (messageFilter === 'unread') return m.status === 'unread';
+                  if (messageFilter === 'read') return m.status !== 'unread';
+                  return true;
+                }).length === 0 ? (
                   <div className="text-center py-12">
                     <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                     <p className="text-gray-500 text-lg">No messages yet</p>
@@ -865,7 +905,11 @@ export default function AgentDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {messages.map((message) => (
+                    {messages.filter(m => {
+                      if (messageFilter === 'unread') return m.status === 'unread';
+                      if (messageFilter === 'read') return m.status !== 'unread';
+                      return true;
+                    }).map((message) => (
                       <div
                         key={message.id}
                         onClick={() => {
@@ -892,7 +936,6 @@ export default function AgentDashboard() {
                                 <span className="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">Rejected</span>
                               )}
                             </div>
-                            <p className="text-sm text-gray-600">{message.senderEmail}</p>
                           </div>
                           <span className="text-xs text-gray-500">
                             {message.createdAt?.toDate?.()?.toLocaleDateString() || 'Recently'}
@@ -955,10 +998,7 @@ export default function AgentDashboard() {
 
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-between items-start mb-3">
-                <div>
-                  <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
-                  <p className="text-sm text-gray-600">{selectedMessage.senderEmail}</p>
-                </div>
+                <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
                 <p className="text-sm text-gray-500">
                   {selectedMessage.createdAt?.toDate?.()?.toLocaleString() || 'Recently'}
                 </p>
