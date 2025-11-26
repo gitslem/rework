@@ -257,8 +257,10 @@ export default function AgentDashboard() {
         updatedAt: Timestamp.now()
       });
 
-      // Create a conversation/thread ID for ongoing communication
-      const conversationId = `conv_${message.senderId}_${user.uid}_${Date.now()}`;
+      // Use existing conversation ID from message, or create consistent one
+      // Sort IDs to ensure same conversation ID regardless of who initiated
+      const ids = [message.senderId, user.uid].sort();
+      const conversationId = message.conversationId || `conv_${ids[0]}_${ids[1]}`;
 
       // Create connection/friendship between agent and candidate
       await addDoc(collection(db, 'connections'), {

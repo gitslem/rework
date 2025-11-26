@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper function to check if user is agent
+    function isAgent() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'agent';
+    }
+
+    // Helper function to check if user is candidate
+    function isCandidate() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'candidate';
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Allow read if authenticated
+      allow read: if isAuthenticated();
+
+      // Allow create for anyone (during signup)
+      allow create: if true;
+
+      // Allow update if it's the user's own document or user is admin
+      allow update: if isAuthenticated() &&
+                      (request.auth.uid == userId || isAdmin());
+
+      // Allow delete only for admin
+      allow delete: if isAdmin();
+    }
+
+    // Profiles collection
+    match /profiles/{profileId} {
+      // Allow read if authenticated
+      allow read: if isAuthenticated();
+
+      // Allow create if user is creating their own profile
+      allow create: if isAuthenticated() && request.auth.uid == profileId;
+
+      // Allow update if it's the user's own profile or user is admin
+      allow update: if isAuthenticated() &&
+                      (request.auth.uid == profileId || isAdmin());
+
+      // Allow delete only for admin
+      allow delete: if isAdmin();
+    }
+
+    // Connections collection
+    match /connections/{connectionId} {
+      // Allow read if user is part of the connection
+      allow read: if isAuthenticated() &&
+        (resource.data.agentId == request.auth.uid ||
+         resource.data.candidateId == request.auth.uid);
+
+      // Allow create if user is an agent and creating connection for themselves
+      allow create: if isAuthenticated() &&
+                      request.resource.data.agentId == request.auth.uid;
+
+      // Allow update if user is part of the connection
+      allow update: if isAuthenticated() &&
+        (resource.data.agentId == request.auth.uid ||
+         resource.data.candidateId == request.auth.uid);
+
+      // Allow delete only if user is the agent
+      allow delete: if isAuthenticated() && resource.data.agentId == request.auth.uid;
+    }
+
+    // Projects collection
+    match /candidate_projects/{projectId} {
+      // Allow read if user is agent or candidate in the project
+      allow read: if isAuthenticated() &&
+        (resource.data.agent_id == request.auth.uid ||
+         resource.data.candidate_id == request.auth.uid);
+
+      // Allow create if user is an agent
+      allow create: if isAuthenticated() &&
+                      request.resource.data.agent_id == request.auth.uid;
+
+      // Allow update if user is agent or candidate in the project
+      allow update: if isAuthenticated() &&
+        (resource.data.agent_id == request.auth.uid ||
+         resource.data.candidate_id == request.auth.uid);
+
+      // Allow delete only if user is the agent
+      allow delete: if isAuthenticated() && resource.data.agent_id == request.auth.uid;
+    }
+
+    // Project updates collection
+    match /project_updates/{updateId} {
+      // Allow read if authenticated (will check project access in app logic)
+      allow read: if isAuthenticated();
+
+      // Allow create if authenticated (will check project ownership in app logic)
+      allow create: if isAuthenticated();
+
+      // Allow update if user is the creator
+      allow update: if isAuthenticated() && resource.data.agent_id == request.auth.uid;
+
+      // Allow delete if user is the creator
+      allow delete: if isAuthenticated() && resource.data.agent_id == request.auth.uid;
+    }
+
+    // Project actions collection
+    match /project_actions/{actionId} {
+      // Allow read if authenticated
+      allow read: if isAuthenticated();
+
+      // Allow create if authenticated
+      allow create: if isAuthenticated();
+
+      // Allow update if authenticated (anyone can update status)
+      allow update: if isAuthenticated();
+
+      // Allow delete if user is the creator
+      allow delete: if isAuthenticated() && resource.data.creator_id == request.auth.uid;
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Allow read if notification belongs to the user
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Allow create if authenticated (any user can create notifications for others)
+      allow create: if isAuthenticated();
+
+      // Allow update if notification belongs to the user
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Allow delete if notification belongs to the user
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Messages collection
+    match /messages/{messageId} {
+      // Allow read if user is sender or recipient
+      allow read: if isAuthenticated() &&
+        (resource.data.senderId == request.auth.uid ||
+         resource.data.recipientId == request.auth.uid);
+
+      // Allow create if authenticated (any user can send messages)
+      allow create: if isAuthenticated();
+
+      // Allow update if user is sender or recipient
+      allow update: if isAuthenticated() &&
+        (resource.data.senderId == request.auth.uid ||
+         resource.data.recipientId == request.auth.uid);
+
+      // Allow delete if user is sender
+      allow delete: if isAuthenticated() && resource.data.senderId == request.auth.uid;
+    }
+  }
+}
