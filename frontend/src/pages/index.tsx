@@ -65,8 +65,8 @@ export default function Home() {
     },
     {
       icon: <Award className="w-6 h-6" />,
-      title: "Money-Back Guarantee",
-      description: "If you don't get approved, you don't pay. Agents earn only when you succeed."
+      title: "100% Free to Use",
+      description: "No subscription fees, no hidden charges. Connect with agents and only pay for services you choose."
     }
   ];
 
@@ -227,7 +227,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
                   <Shield className="w-5 h-5 text-blue-600" />
-                  <span className="text-blue-900">Money-Back Guarantee</span>
+                  <span className="text-blue-900">100% Free Platform</span>
                 </div>
                 <div className="flex items-center space-x-2 bg-purple-50 px-4 py-2 rounded-full border border-purple-200">
                   <Zap className="w-5 h-5 text-purple-600" />
@@ -452,7 +452,7 @@ export default function Home() {
               No credit card required
               <span className="mx-3">•</span>
               <Shield className="inline w-4 h-4 mr-1" />
-              Money-back guarantee
+              100% Free to use
               <span className="mx-3">•</span>
               <Clock className="inline w-4 h-4 mr-1" />
               24/7 support

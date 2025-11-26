@@ -1,9 +1,98 @@
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Phone, Send, Linkedin, Star, CheckCircle } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Linkedin, Star, CheckCircle, Loader } from 'lucide-react';
+import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
+import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
 
 export default function Footer() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setErrorMessage('Please enter a valid email address');
+      setSubscriptionStatus('error');
+      setTimeout(() => {
+        setSubscriptionStatus('idle');
+        setErrorMessage('');
+      }, 3000);
+      return;
+    }
+
+    // Check Firebase configuration
+    if (!isFirebaseConfigured) {
+      setErrorMessage('Service temporarily unavailable. Please try again later.');
+      setSubscriptionStatus('error');
+      setTimeout(() => {
+        setSubscriptionStatus('idle');
+        setErrorMessage('');
+      }, 3000);
+      return;
+    }
+
+    setSubscriptionStatus('loading');
+
+    try {
+      const db = getFirebaseFirestore();
+      const emailLower = email.toLowerCase().trim();
+
+      // Check if email already exists
+      const q = query(
+        collection(db, 'newsletter_subscriptions'),
+        where('email', '==', emailLower)
+      );
+      const existingDocs = await getDocs(q);
+
+      if (!existingDocs.empty) {
+        setErrorMessage('This email is already subscribed');
+        setSubscriptionStatus('error');
+        setTimeout(() => {
+          setSubscriptionStatus('idle');
+          setErrorMessage('');
+        }, 3000);
+        return;
+      }
+
+      // Add new subscription
+      await addDoc(collection(db, 'newsletter_subscriptions'), {
+        email: emailLower,
+        subscribedAt: Timestamp.now(),
+        source: 'footer',
+        status: 'active',
+        ipAddress: null,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null
+      });
+
+      setSubscriptionStatus('success');
+      setEmail('');
+      setTimeout(() => setSubscriptionStatus('idle'), 5000);
+    } catch (error: any) {
+      console.error('Subscription error:', error);
+
+      // Provide specific error messages
+      if (error.code === 'permission-denied') {
+        setErrorMessage('Unable to subscribe. Please contact support.');
+      } else if (error.code === 'unavailable') {
+        setErrorMessage('Service temporarily unavailable. Please try again later.');
+      } else {
+        setErrorMessage('Failed to subscribe. Please try again.');
+      }
+
+      setSubscriptionStatus('error');
+      setTimeout(() => {
+        setSubscriptionStatus('idle');
+        setErrorMessage('');
+      }, 3000);
+    }
+  };
 
   return (
     <footer className="bg-black text-gray-400">
@@ -16,13 +105,9 @@ export default function Footer() {
               <div className="flex items-start mb-4">
                 <Logo textClassName="text-white" showText={true} size="sm" />
               </div>
-              <p className="text-gray-500 leading-relaxed text-sm mb-4">
+              <p className="text-gray-500 leading-relaxed text-sm mb-6">
                 Connecting candidates with verified agents for AI training opportunities.
               </p>
-              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold mb-6">
-                <CheckCircle className="w-4 h-4" />
-                <span>100% Free Platform</span>
-              </div>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start space-x-2">
                   <Mail className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
@@ -48,7 +133,7 @@ export default function Footer() {
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
                 For Candidates
               </h4>
-              <ul className="space-y-3 text-sm">
+              <ul className="space-y-3 text-sm mb-6">
                 <li>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
@@ -82,6 +167,48 @@ export default function Footer() {
                   </button>
                 </li>
               </ul>
+
+              {/* Newsletter Subscription */}
+              <div className="mt-6">
+                <h5 className="text-white font-semibold text-xs mb-3 uppercase tracking-wider">Stay Updated</h5>
+                <form onSubmit={handleSubscribe} className="space-y-2">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Your email"
+                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                    className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  />
+                  <button
+                    type="submit"
+                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {subscriptionStatus === 'loading' ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        <span>Subscribing...</span>
+                      </>
+                    ) : subscriptionStatus === 'success' ? (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Subscribed!</span>
+                      </>
+                    ) : (
+                      <span>Subscribe</span>
+                    )}
+                  </button>
+
+                  {/* Status Messages */}
+                  {subscriptionStatus === 'success' && (
+                    <p className="text-green-400 text-xs animate-fade-in">Thanks for subscribing!</p>
+                  )}
+                  {subscriptionStatus === 'error' && errorMessage && (
+                    <p className="text-red-400 text-xs animate-fade-in">{errorMessage}</p>
+                  )}
+                </form>
+              </div>
             </div>
 
             {/* For Agents */}
@@ -210,16 +337,10 @@ export default function Footer() {
           </div>
 
           {/* Bottom Section */}
-          <div className="border-t border-gray-800 mt-12 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-gray-600 text-sm">
-                © {new Date().getFullYear()} Remote-Works. All rights reserved.
-              </p>
-              <p className="text-gray-500 text-sm flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span>Free to join • No hidden fees • No credit card required</span>
-              </p>
-            </div>
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-600 text-sm">
+              © {new Date().getFullYear()} Remote-Works. All rights reserved.
+            </p>
           </div>
         </div>
       </div>
