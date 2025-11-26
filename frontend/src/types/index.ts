@@ -85,11 +85,19 @@ export interface Message {
   id: string;
   senderId: string;
   recipientId: string;
+  senderName?: string;
+  senderEmail?: string;
+  recipientName?: string;
   subject?: string;
   message: string;
   isRead: boolean;
+  saved?: boolean;
+  status?: 'unread' | 'read' | 'accepted' | 'rejected';
+  type?: 'service_request' | 'general' | 'payment_confirmation';
   conversationId: string;
+  isReply?: boolean;
   createdAt: Timestamp;
+  updatedAt?: Timestamp;
 }
 
 export interface ServiceRequest {
