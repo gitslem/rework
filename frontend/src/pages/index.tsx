@@ -192,10 +192,31 @@ export default function Home() {
               </h1>
 
               {/* Subheadline */}
-              <p className={`text-xl sm:text-2xl text-gray-700 max-w-3xl mx-auto leading-relaxed ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
-                Connect with verified agents who specialize in getting candidates approved for
-                <span className="font-bold text-black"> Outlier, Alignerr, OneForma,</span> and more.
-              </p>
+              <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                <div className="relative inline-block">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-lg blur opacity-20 animate-pulse-custom"></div>
+                  <p className="relative text-xl sm:text-2xl text-gray-700 leading-relaxed px-8 py-4 bg-white rounded-lg border-2 border-gray-100">
+                    Connect with verified{' '}
+                    <span className="font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                      onboarding specialists
+                    </span>{' '}
+                    who help candidates qualify for{' '}
+                    <span className="relative inline-block">
+                      <span className="font-bold text-black">top global data and AI training opportunities</span>
+                      <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 100 8" preserveAspectRatio="none">
+                        <path d="M0,4 Q25,8 50,4 T100,4" stroke="url(#gradient)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                        <defs>
+                          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#9333ea" />
+                            <stop offset="50%" stopColor="#ec4899" />
+                            <stop offset="100%" stopColor="#2563eb" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </span>
+                  </p>
+                </div>
+              </div>
 
               <div className={`flex items-center justify-center flex-wrap gap-6 text-sm font-semibold ${isVisible ? 'animate-fade-in-up stagger-3' : 'opacity-0'}`}>
                 <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
