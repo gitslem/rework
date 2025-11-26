@@ -122,27 +122,69 @@ export default function CandidateProjectsPage() {
 
       const projectData = { id: projectDoc.id, ...projectDoc.data() };
 
-      // Subscribe to updates
+      // Fetch initial updates
       const updatesQuery = query(
         collection(getDb(), UPDATES_COLLECTION),
         where('project_id', '==', projectId),
         orderBy('created_at', 'desc')
       );
 
+      const updatesSnapshot = await getDocs(updatesQuery);
+      const initialUpdates = updatesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProjectUpdates(initialUpdates);
+
+      // Fetch initial actions
+      const actionsQuery = query(
+        collection(getDb(), ACTIONS_COLLECTION),
+        where('project_id', '==', projectId),
+        orderBy('created_at', 'desc')
+      );
+
+      const actionsSnapshot = await getDocs(actionsQuery);
+      const initialActions = actionsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setProjectActions(initialActions);
+
+      // Calculate statistics with initial data
+      const totalHours = initialUpdates.reduce((sum, u: any) => sum + (u.hours_completed || 0), 0);
+      const totalScreenSharingHours = initialUpdates.reduce((sum, u: any) => sum + (u.screen_sharing_hours || 0), 0);
+      const pendingActionsCount = initialActions.filter((a: any) => a.status === 'pending').length;
+      const completedActionsCount = initialActions.filter((a: any) => a.status === 'completed').length;
+
+      setSelectedProject({
+        ...projectData,
+        updates: initialUpdates,
+        actions: initialActions,
+        total_hours: totalHours,
+        total_screen_sharing_hours: totalScreenSharingHours,
+        pending_actions_count: pendingActionsCount,
+        completed_actions_count: completedActionsCount
+      });
+
+      // Subscribe to real-time updates
       const unsubUpdates = onSnapshot(updatesQuery, (snapshot) => {
         const updates = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setProjectUpdates(updates);
-      });
 
-      // Subscribe to actions
-      const actionsQuery = query(
-        collection(getDb(), ACTIONS_COLLECTION),
-        where('project_id', '==', projectId),
-        orderBy('created_at', 'desc')
-      );
+        // Recalculate statistics
+        const totalHours = updates.reduce((sum, u: any) => sum + (u.hours_completed || 0), 0);
+        const totalScreenSharingHours = updates.reduce((sum, u: any) => sum + (u.screen_sharing_hours || 0), 0);
+
+        setSelectedProject((prev: any) => prev ? {
+          ...prev,
+          updates,
+          total_hours: totalHours,
+          total_screen_sharing_hours: totalScreenSharingHours
+        } : prev);
+      });
 
       const unsubActions = onSnapshot(actionsQuery, (snapshot) => {
         const actions = snapshot.docs.map(doc => ({
@@ -150,22 +192,17 @@ export default function CandidateProjectsPage() {
           ...doc.data()
         }));
         setProjectActions(actions);
-      });
 
-      // Calculate statistics
-      const totalHours = updates.reduce((sum, u) => sum + (u.hours_completed || 0), 0);
-      const totalScreenSharingHours = updates.reduce((sum, u) => sum + (u.screen_sharing_hours || 0), 0);
-      const pendingActionsCount = actions.filter(a => a.status === 'pending').length;
-      const completedActionsCount = actions.filter(a => a.status === 'completed').length;
+        // Recalculate statistics
+        const pendingActionsCount = actions.filter((a: any) => a.status === 'pending').length;
+        const completedActionsCount = actions.filter((a: any) => a.status === 'completed').length;
 
-      setSelectedProject({
-        ...projectData,
-        updates,
-        actions,
-        total_hours: totalHours,
-        total_screen_sharing_hours: totalScreenSharingHours,
-        pending_actions_count: pendingActionsCount,
-        completed_actions_count: completedActionsCount
+        setSelectedProject((prev: any) => prev ? {
+          ...prev,
+          actions,
+          pending_actions_count: pendingActionsCount,
+          completed_actions_count: completedActionsCount
+        } : prev);
       });
 
       // Return cleanup function
