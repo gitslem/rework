@@ -6,12 +6,32 @@ import {
   User as FirebaseUser,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendEmailVerification,
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { getFirebaseAuth, getFirebaseFirestore } from './config';
+import { getFirebaseAuth, getFirebaseFirestore, isFirebaseConfigured } from './config';
 import { User, UserRole } from '@/types';
+
+// Detect if user is on mobile device
+const isMobileDevice = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+// Detect if popup was blocked
+const wasPopupBlocked = (popup: Window | null): boolean => {
+  if (!popup) return true;
+  if (popup.closed) return true;
+  try {
+    if (!popup.window) return true;
+  } catch (e) {
+    return true;
+  }
+  return false;
+};
 
 export const registerWithEmail = async (
   email: string,
@@ -21,6 +41,10 @@ export const registerWithEmail = async (
   lastName: string
 ): Promise<User> => {
   try {
+    if (!isFirebaseConfigured) {
+      throw new Error('Firebase is not configured. Please contact support.');
+    }
+
     const auth = getFirebaseAuth();
     const db = getFirebaseFirestore();
 
@@ -29,7 +53,12 @@ export const registerWithEmail = async (
     const firebaseUser = userCredential.user;
 
     // Send verification email
-    await sendEmailVerification(firebaseUser);
+    try {
+      await sendEmailVerification(firebaseUser);
+    } catch (emailError) {
+      console.warn('Failed to send verification email:', emailError);
+      // Don't fail registration if email sending fails
+    }
 
     // Create user document in Firestore
     const userData: User = {
@@ -77,7 +106,19 @@ export const registerWithEmail = async (
     return userData;
   } catch (error: any) {
     console.error('Registration error:', error);
-    throw new Error(error.message || 'Failed to register');
+
+    // Provide user-friendly error messages
+    if (error.code === 'auth/email-already-in-use') {
+      throw new Error('This email is already registered. Please sign in instead.');
+    } else if (error.code === 'auth/invalid-email') {
+      throw new Error('Invalid email address.');
+    } else if (error.code === 'auth/weak-password') {
+      throw new Error('Password is too weak. Please use at least 6 characters.');
+    } else if (error.message) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('Failed to register. Please try again.');
+    }
   }
 };
 
@@ -103,14 +144,53 @@ export const signInWithEmail = async (email: string, password: string): Promise<
   }
 };
 
-export const signInWithGoogle = async (role: UserRole): Promise<User> => {
+export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = false): Promise<User> => {
   try {
+    if (!isFirebaseConfigured) {
+      throw new Error('Firebase is not configured. Please contact support.');
+    }
+
     const auth = getFirebaseAuth();
     const db = getFirebaseFirestore();
 
     const provider = new GoogleAuthProvider();
-    const userCredential = await signInWithPopup(auth, provider);
-    const firebaseUser = userCredential.user;
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    });
+
+    let firebaseUser: FirebaseUser;
+
+    // Use redirect on mobile devices or when explicitly requested
+    if (useRedirect || isMobileDevice()) {
+      // Store the role in session storage for after redirect
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('pendingRole', role);
+      }
+      await signInWithRedirect(auth, provider);
+      // The page will reload, so we throw to prevent further execution
+      throw new Error('REDIRECT_IN_PROGRESS');
+    }
+
+    // Try popup first for desktop browsers
+    try {
+      const userCredential = await signInWithPopup(auth, provider);
+      firebaseUser = userCredential.user;
+    } catch (popupError: any) {
+      // If popup was blocked or failed, fallback to redirect
+      if (
+        popupError.code === 'auth/popup-blocked' ||
+        popupError.code === 'auth/popup-closed-by-user' ||
+        popupError.code === 'auth/cancelled-popup-request'
+      ) {
+        // Store the role and try redirect instead
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('pendingRole', role);
+        }
+        await signInWithRedirect(auth, provider);
+        throw new Error('REDIRECT_IN_PROGRESS');
+      }
+      throw popupError;
+    }
 
     // Check if user already exists
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
@@ -168,7 +248,107 @@ export const signInWithGoogle = async (role: UserRole): Promise<User> => {
     return userData;
   } catch (error: any) {
     console.error('Google sign in error:', error);
-    throw new Error(error.message || 'Failed to sign in with Google');
+
+    // Don't show error for redirect in progress
+    if (error.message === 'REDIRECT_IN_PROGRESS') {
+      throw error;
+    }
+
+    // Provide user-friendly error messages
+    if (error.code === 'auth/popup-blocked') {
+      throw new Error('Popup was blocked by your browser. Please allow popups and try again, or we\'ll redirect you instead.');
+    } else if (error.code === 'auth/popup-closed-by-user') {
+      throw new Error('Sign in was cancelled. Please try again.');
+    } else if (error.code === 'auth/network-request-failed') {
+      throw new Error('Network error. Please check your internet connection and try again.');
+    } else if (error.code === 'auth/too-many-requests') {
+      throw new Error('Too many attempts. Please wait a moment and try again.');
+    } else if (error.message) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('Failed to sign in with Google. Please try again.');
+    }
+  }
+};
+
+// Handle redirect result after OAuth redirect
+export const handleRedirectResult = async (): Promise<User | null> => {
+  try {
+    if (!isFirebaseConfigured) {
+      return null;
+    }
+
+    const auth = getFirebaseAuth();
+    const db = getFirebaseFirestore();
+
+    const result = await getRedirectResult(auth);
+
+    if (!result || !result.user) {
+      return null;
+    }
+
+    const firebaseUser = result.user;
+
+    // Get the pending role from session storage
+    const pendingRole = (typeof window !== 'undefined' ? sessionStorage.getItem('pendingRole') : null) as UserRole || 'candidate';
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('pendingRole');
+    }
+
+    // Check if user already exists
+    const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+
+    if (userDoc.exists()) {
+      return userDoc.data() as User;
+    }
+
+    // Create new user (same logic as signInWithGoogle)
+    const userData: User = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email!,
+      role: pendingRole,
+      displayName: firebaseUser.displayName || undefined,
+      photoURL: firebaseUser.photoURL || undefined,
+      isActive: true,
+      isVerified: firebaseUser.emailVerified,
+      isCandidateApproved: pendingRole === 'agent',
+      createdAt: serverTimestamp() as any,
+      updatedAt: serverTimestamp() as any,
+    };
+
+    await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+
+    const profileData = {
+      uid: firebaseUser.uid,
+      firstName: '',
+      lastName: '',
+      bio: '',
+      avatarURL: firebaseUser.photoURL || '',
+      location: '',
+      phone: '',
+      website: '',
+      linkedin: '',
+      totalEarnings: 0,
+      completedProjects: 0,
+      averageRating: 0,
+      totalReviews: 0,
+      isAgentApproved: false,
+      agentServices: [],
+      agentSuccessRate: 0,
+      agentTotalClients: 0,
+      agentVerificationStatus: 'pending',
+      agentPricing: {},
+      agentPortfolio: [],
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+
+    await setDoc(doc(db, 'profiles', firebaseUser.uid), profileData);
+
+    return userData;
+  } catch (error: any) {
+    console.error('Redirect result error:', error);
+    return null;
   }
 };
 

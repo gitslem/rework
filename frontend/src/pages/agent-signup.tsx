@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { signInWithGoogle } from '@/lib/firebase/auth';
-import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
+import { signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
+import { getFirebaseAuth, getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function AgentSignup() {
   const router = useRouter();
@@ -16,6 +16,7 @@ export default function AgentSignup() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showFirebaseWarning, setShowFirebaseWarning] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -49,8 +50,38 @@ export default function AgentSignup() {
 
   const checkAuth = async () => {
     try {
+      // Check if Firebase is configured
+      if (!isFirebaseConfigured) {
+        setShowFirebaseWarning(true);
+        setLoading(false);
+        return;
+      }
+
       const auth = getFirebaseAuth();
 
+      // First, check for redirect result (for browsers that blocked popup)
+      const redirectUser = await handleRedirectResult();
+      if (redirectUser) {
+        const db = getFirebaseFirestore();
+        const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
+
+        if (profileDoc.exists() && profileDoc.data().firstName) {
+          // Profile complete, redirect to dashboard
+          router.push('/agent-dashboard');
+          return;
+        }
+
+        // User signed in via redirect, show form
+        const firebaseUser = auth.currentUser;
+        if (firebaseUser) {
+          setUser(firebaseUser);
+          setStep('form');
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Listen for auth state changes
       onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
           // User is logged in, check if they already have a profile
@@ -72,8 +103,11 @@ export default function AgentSignup() {
         }
         setLoading(false);
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking auth:', error);
+      if (error.message?.includes('Firebase is not configured')) {
+        setShowFirebaseWarning(true);
+      }
       setLoading(false);
     }
   };
@@ -88,6 +122,12 @@ export default function AgentSignup() {
       setStep('form');
     } catch (err: any) {
       console.error('Google signup error:', err);
+
+      // Don't show error if redirect is in progress
+      if (err.message === 'REDIRECT_IN_PROGRESS') {
+        return;
+      }
+
       setError(err.message || 'Failed to sign up with Google');
     } finally {
       setSubmitting(false);
@@ -190,6 +230,30 @@ export default function AgentSignup() {
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
           <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Firebase configuration warning
+  if (showFirebaseWarning) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-8 text-center">
+          <AlertCircle className="w-16 h-16 text-yellow-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Setup Required</h2>
+          <p className="text-gray-700 mb-6">
+            Firebase authentication is not configured. Please set up your Firebase credentials in the environment variables to enable signup.
+          </p>
+          <p className="text-sm text-gray-600 bg-white p-4 rounded-lg mb-6 font-mono text-left">
+            Create a <strong>.env.local</strong> file in the frontend directory with your Firebase credentials.
+          </p>
+          <button
+            onClick={() => router.push('/')}
+            className="bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all"
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );

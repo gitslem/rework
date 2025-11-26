@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Users, Building, ArrowLeft, Check } from 'lucide-react';
-import { signInWithGoogle } from '@/lib/firebase/auth';
+import { Users, Building, ArrowLeft, Check, AlertCircle } from 'lucide-react';
+import { signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
 import { UserRole } from '@/types';
 import Logo from '@/components/Logo';
+import { isFirebaseConfigured } from '@/lib/firebase/config';
 
 export default function Register() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function Register() {
   const [role, setRole] = useState<UserRole>('candidate');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     // Check if there's a pre-selected role from URL params
@@ -25,7 +27,33 @@ export default function Register() {
       setRole('agent');
       setStep(2);
     }
+
+    // Check for redirect result
+    checkRedirectResult();
   }, []);
+
+  const checkRedirectResult = async () => {
+    try {
+      if (!isFirebaseConfigured) {
+        setInitializing(false);
+        return;
+      }
+
+      const user = await handleRedirectResult();
+      if (user) {
+        // User signed in via redirect, navigate to appropriate page
+        if (user.role === 'agent') {
+          router.push('/agent-signup');
+        } else {
+          router.push('/complete-profile');
+        }
+      }
+    } catch (error) {
+      console.error('Error checking redirect result:', error);
+    } finally {
+      setInitializing(false);
+    }
+  };
 
   const roles = [
     {
@@ -61,6 +89,12 @@ export default function Register() {
     setLoading(true);
 
     try {
+      if (!isFirebaseConfigured) {
+        setError('Firebase is not configured. Please contact support.');
+        setLoading(false);
+        return;
+      }
+
       await signInWithGoogle(role);
 
       // Redirect based on selected role
@@ -72,6 +106,12 @@ export default function Register() {
       }
     } catch (err: any) {
       console.error('Registration error:', err);
+
+      // Don't show error if redirect is in progress
+      if (err.message === 'REDIRECT_IN_PROGRESS') {
+        return;
+      }
+
       setError(err.message || 'Google sign up failed. Please try again.');
     } finally {
       setLoading(false);

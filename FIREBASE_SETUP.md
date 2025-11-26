@@ -1,6 +1,136 @@
-# Firebase Setup for Candidate Projects
+# Firebase Setup Guide
 
-This guide shows you how to set up the candidate projects feature using **Firebase Firestore** instead of PostgreSQL.
+This comprehensive guide covers:
+1. Initial Firebase authentication setup for user signup/login
+2. Cross-browser compatibility fixes
+3. Firestore setup for candidate projects
+
+---
+
+## Part 1: Firebase Authentication Setup (Required for Signup/Login)
+
+### Prerequisites
+
+- A Google account
+- Node.js and npm installed
+- Access to the Firebase Console
+
+### Step 1.1: Create a Firebase Project
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Click "Add project" or select an existing project
+3. Follow the setup wizard:
+   - Enter your project name (e.g., "RemoteWorks")
+   - Enable Google Analytics (optional)
+   - Click "Create project"
+
+### Step 1.2: Register Your Web App
+
+1. In your Firebase project dashboard, click the **Web icon** (`</>`)
+2. Register your app:
+   - Enter a nickname for your app (e.g., "RemoteWorks Web")
+   - **Important:** Check "Also set up Firebase Hosting" if deploying
+   - Click "Register app"
+3. **Copy the Firebase configuration object** - you'll need these values
+
+### Step 1.3: Enable Authentication Methods
+
+1. In the Firebase Console, go to **Build > Authentication**
+2. Click "Get started" if you haven't set up Authentication yet
+3. Go to the **Sign-in method** tab
+4. Enable the following providers:
+
+   **Email/Password Authentication:**
+   - Click on "Email/Password"
+   - Toggle "Enable"
+   - Click "Save"
+
+   **Google Authentication:**
+   - Click on "Google"
+   - Toggle "Enable"
+   - Add your support email
+   - Click "Save"
+
+5. Under **Settings > Authorized domains**, add:
+   - `localhost` (for development)
+   - Your production domain (e.g., `remoteworks.com`)
+
+### Step 1.4: Configure Environment Variables
+
+1. In the `frontend` directory, create a `.env.local` file:
+   ```bash
+   cd frontend
+   cp .env.local.template .env.local
+   ```
+
+2. Open `.env.local` and add your Firebase configuration from Step 1.2:
+   ```env
+   NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSy...
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789012
+   NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789012:web:abc...
+   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
+   ```
+
+3. **Important:** Never commit `.env.local` to git (it's already in `.gitignore`)
+
+### Step 1.5: Test Authentication
+
+1. Install dependencies (if not already done):
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Navigate to `http://localhost:3000/register` or `http://localhost:3000/agent-signup`
+
+4. Try signing up with:
+   - Email/Password: Enter your details and create an account
+   - Google: Click "Continue with Google" and select your account
+
+---
+
+## Cross-Browser Compatibility
+
+### Automatic Fallback System
+
+The signup functionality includes intelligent cross-browser compatibility:
+
+#### Desktop Browsers (Chrome, Firefox, Safari, Edge)
+- **Primary:** Popup-based authentication (faster UX)
+- **Fallback:** Redirect-based authentication if popup is blocked
+
+#### Mobile Browsers (iOS Safari, Chrome Mobile, etc.)
+- **Automatic:** Redirect-based authentication (better mobile UX)
+
+### Popup Blocker Handling
+
+The app automatically detects when popups are blocked and:
+1. Shows a user-friendly error message
+2. Automatically falls back to redirect-based authentication
+3. Preserves user context (selected role) across redirects
+
+### Error Messages
+
+All Firebase errors are translated to user-friendly messages:
+- `auth/email-already-in-use` → "This email is already registered. Please sign in instead."
+- `auth/invalid-email` → "Invalid email address."
+- `auth/weak-password` → "Password is too weak. Please use at least 6 characters."
+- `auth/popup-blocked` → "Popup was blocked. Redirecting..."
+- `auth/network-request-failed` → "Network error. Please check your connection."
+
+---
+
+## Part 2: Firestore Setup for Candidate Projects
+
+This section shows you how to set up the candidate projects feature using **Firebase Firestore**.
 
 ## ✅ Why Firebase?
 
