@@ -31,7 +31,8 @@ export default function AdminAgents() {
     totalClients: 0,
     rating: 0,
     isFree: true,
-    basePrice: 100
+    basePrice: 100,
+    responseTime: '< 24 hours'
   });
 
   useEffect(() => {
@@ -191,6 +192,7 @@ export default function AdminAgents() {
           basePrice: agentStats.basePrice,
           currency: 'USD'
         },
+        agentResponseTime: agentStats.responseTime,
         updatedAt: Timestamp.now(),
       });
 
@@ -515,7 +517,8 @@ export default function AdminAgents() {
                             totalClients: selectedAgent.agentTotalClients || 0,
                             rating: selectedAgent.averageRating || 0,
                             isFree: selectedAgent.isFree !== undefined ? selectedAgent.isFree : true,
-                            basePrice: selectedAgent.agentPricing?.basePrice || 100
+                            basePrice: selectedAgent.agentPricing?.basePrice || 100,
+                            responseTime: selectedAgent.agentResponseTime || '< 24 hours'
                           });
                           setEditingStats(true);
                         }}
@@ -545,7 +548,7 @@ export default function AdminAgents() {
 
                   {editingStats ? (
                     <div className="space-y-4">
-                      <div className="grid md:grid-cols-3 gap-4">
+                      <div className="grid md:grid-cols-4 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Success Rate (%)
@@ -583,6 +586,18 @@ export default function AdminAgents() {
                             value={agentStats.rating}
                             onChange={(e) => setAgentStats({ ...agentStats, rating: parseFloat(e.target.value) || 0 })}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Response Time
+                          </label>
+                          <input
+                            type="text"
+                            value={agentStats.responseTime}
+                            onChange={(e) => setAgentStats({ ...agentStats, responseTime: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="< 24 hours"
                           />
                         </div>
                       </div>
