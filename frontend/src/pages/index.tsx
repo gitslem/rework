@@ -25,7 +25,7 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { number: "24hr", label: "Response Time", icon: <Clock className="w-5 h-5" /> },
+    { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
     { number: "$3k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
     { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
     { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
