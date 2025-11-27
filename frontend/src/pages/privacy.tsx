@@ -255,11 +255,7 @@ export default function Privacy() {
                 If you have questions about this Privacy Policy or our data practices, please contact us:
               </p>
               <p className="text-gray-700">
-                <strong>Email:</strong> support@remote-works.io<br />
-                <strong>Phone:</strong> +1 (647) 982-1234<br />
-                <strong>Mail:</strong> Remote-Works Privacy Team<br />
-                5 Buttermill Avenue<br />
-                Concord, ON L4K 3X2, Canada
+                <strong>Email:</strong> support@remote-works.io
               </p>
             </section>
           </div>
