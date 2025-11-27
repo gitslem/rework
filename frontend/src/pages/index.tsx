@@ -4,7 +4,7 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home, Coffee, Wifi, Monitor
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -560,7 +560,7 @@ export default function Home() {
                 <div className="grid grid-cols-4 gap-4 pt-4">
                   <div className="flex flex-col items-center space-y-2">
                     <div className="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center backdrop-filter backdrop-blur-lg border border-white border-opacity-20">
-                      <Home className="w-6 h-6 text-white" />
+                      <HomeIcon className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-xs text-gray-400 text-center">Home Office</span>
                   </div>
