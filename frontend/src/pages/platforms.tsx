@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { ArrowRight, CheckCircle, Star, Zap, Shield, Rocket, Globe, DollarSign, Clock, TrendingUp } from 'lucide-react';
+import { ArrowRight, CheckCircle, Shield, Clock, TrendingUp } from 'lucide-react';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
 
@@ -140,29 +140,6 @@ export default function Platforms() {
     }
   ];
 
-  const benefits = [
-    {
-      icon: <Globe className="w-6 h-6" />,
-      title: 'Access All Platforms',
-      description: 'Get help with applications across 20+ platforms from a single place'
-    },
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: 'Fast Approval Process',
-      description: 'Our verified agents know exactly what each platform looks for'
-    },
-    {
-      icon: <DollarSign className="w-6 h-6" />,
-      title: 'Maximize Your Earnings',
-      description: 'Work on multiple platforms simultaneously to maximize income'
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: 'Money-Back Guarantee',
-      description: 'Only pay when you get approved - risk-free process'
-    }
-  ];
-
   const whyRemoteWorks = [
     {
       stat: '20+',
@@ -213,61 +190,6 @@ export default function Platforms() {
             </div>
           </div>
         </nav>
-
-        {/* Hero Section */}
-        <section className="relative pt-20 pb-16 px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-blue-50 to-white overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
-            <div className="absolute bottom-20 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-          </div>
-
-          <div className="max-w-6xl mx-auto text-center relative z-10">
-            <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full shadow-lg mb-8">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="font-semibold text-sm">20+ Platforms Available</span>
-            </div>
-
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
-              Your Gateway to
-              <span className="block mt-2 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
-                All Remote Gigs
-              </span>
-            </h1>
-
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              Why apply to platforms one by one? Sign up on <span className="font-bold text-black">Remote-Works</span> and get expert help to get approved on all major remote work platforms. Start earning extra cash across multiple platforms today.
-            </p>
-
-            <div className="flex justify-center gap-4 mb-8">
-              <button
-                onClick={() => router.push('/register?type=candidate')}
-                className="group bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl"
-              >
-                <span className="flex items-center">
-                  <Rocket className="mr-2 w-5 h-5" />
-                  Get Started Now
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-              </button>
-            </div>
-
-            <div className="flex items-center justify-center flex-wrap gap-4 text-sm">
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700">98% Success Rate</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
-                <Shield className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-700">Money-Back Guarantee</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
-                <Clock className="w-4 h-4 text-purple-600" />
-                <span className="text-gray-700">24hr Response</span>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Why Remote-Works Stats */}
         <section className="py-16 px-6 lg:px-8 bg-gradient-to-r from-black via-gray-900 to-black text-white">
@@ -349,39 +271,6 @@ export default function Platforms() {
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-20 px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
-                Why Use Remote-Works?
-              </h2>
-              <p className="text-xl text-gray-600">
-                The smartest way to access multiple platforms
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {benefits.map((benefit, index) => (
-                <div
-                  key={index}
-                  className="group text-center"
-                >
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-black to-gray-700 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    {benefit.icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-black mb-3">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-black text-white">
           <div className="max-w-4xl mx-auto text-center">
@@ -411,10 +300,10 @@ export default function Platforms() {
               No credit card required
               <span className="mx-3">•</span>
               <Shield className="inline w-4 h-4 mr-1" />
-              Money-back guarantee
+              100% Free to use
               <span className="mx-3">•</span>
               <Clock className="inline w-4 h-4 mr-1" />
-              Start earning in 24 hours
+              24/7 support
             </p>
           </div>
         </section>
