@@ -4,11 +4,11 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Mail, Calendar,
-  Award, Filter, Search, X, Shield, AlertCircle
+  Award, Filter, Search, X, Shield, AlertCircle, Users, Star
 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp, setDoc } from 'firebase/firestore';
 import { User as UserType } from '@/types';
 
 interface CandidateWithProfile extends UserType {
@@ -20,6 +20,15 @@ interface CandidateWithProfile extends UserType {
     country?: string;
     phone?: string;
   };
+  assignedAgents?: string[];
+}
+
+interface Agent {
+  id: string;
+  name: string;
+  email: string;
+  rating: number;
+  verified: boolean;
 }
 
 export default function AdminCandidates() {
@@ -31,6 +40,8 @@ export default function AdminCandidates() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateWithProfile | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [availableAgents, setAvailableAgents] = useState<Agent[]>([]);
+  const [selectedAgentId, setSelectedAgentId] = useState<string>('');
 
   useEffect(() => {
     checkAdminAccess();
@@ -98,7 +109,8 @@ export default function AdminCandidates() {
             city: profileData.city,
             country: profileData.country,
             phone: profileData.phone,
-          }
+          },
+          assignedAgents: (userData as any).assignedAgents || []
         });
       }
 
@@ -174,6 +186,114 @@ export default function AdminCandidates() {
       setActionLoading(false);
     }
   };
+
+  const fetchAvailableAgents = async () => {
+    try {
+      const db = getFirebaseFirestore();
+      const agentsQuery = query(collection(db, 'users'), where('role', '==', 'agent'));
+      const agentsSnapshot = await getDocs(agentsQuery);
+
+      const agentsList: Agent[] = [];
+      for (const userDoc of agentsSnapshot.docs) {
+        const userData = userDoc.data();
+        const profileDoc = await getDoc(doc(db, 'profiles', userDoc.id));
+        const profileData = profileDoc.exists() ? profileDoc.data() : {};
+
+        if (profileData.isAgentApproved || profileData.agentVerificationStatus === 'verified') {
+          agentsList.push({
+            id: userDoc.id,
+            name: `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim() || userData.email,
+            email: userData.email,
+            rating: profileData.averageRating || 0,
+            verified: true
+          });
+        }
+      }
+
+      setAvailableAgents(agentsList);
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+    }
+  };
+
+  const assignAgentToCandidate = async (candidateUid: string, agentId: string) => {
+    if (!agentId) {
+      alert('Please select an agent');
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Get current assignments
+      const candidateDoc = await getDoc(doc(db, 'users', candidateUid));
+      const currentData = candidateDoc.data();
+      const currentAssignments = currentData?.assignedAgents || [];
+
+      // Check if already assigned
+      if (currentAssignments.includes(agentId)) {
+        alert('This agent is already assigned to this candidate');
+        return;
+      }
+
+      // Add to assignments
+      await updateDoc(doc(db, 'users', candidateUid), {
+        assignedAgents: [...currentAssignments, agentId],
+        updatedAt: Timestamp.now()
+      });
+
+      // Create assignment record for tracking
+      await setDoc(doc(db, 'agentAssignments', `${candidateUid}_${agentId}`), {
+        candidateId: candidateUid,
+        agentId: agentId,
+        assignedAt: Timestamp.now(),
+        assignedBy: 'admin',
+        status: 'active'
+      });
+
+      alert('Agent assigned successfully!');
+      setSelectedAgentId('');
+      fetchCandidates();
+    } catch (error: any) {
+      console.error('Error assigning agent:', error);
+      alert('Failed to assign agent: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const unassignAgent = async (candidateUid: string, agentId: string) => {
+    if (!confirm('Are you sure you want to unassign this agent?')) return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      const candidateDoc = await getDoc(doc(db, 'users', candidateUid));
+      const currentData = candidateDoc.data();
+      const currentAssignments = currentData?.assignedAgents || [];
+
+      await updateDoc(doc(db, 'users', candidateUid), {
+        assignedAgents: currentAssignments.filter((id: string) => id !== agentId),
+        updatedAt: Timestamp.now()
+      });
+
+      alert('Agent unassigned successfully!');
+      fetchCandidates();
+    } catch (error: any) {
+      console.error('Error unassigning agent:', error);
+      alert('Failed to unassign agent: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAdmin && selectedCandidate) {
+      fetchAvailableAgents();
+    }
+  }, [isAdmin, selectedCandidate]);
 
   const filteredCandidates = candidates.filter(candidate => {
     const searchLower = searchTerm.toLowerCase();
@@ -473,6 +593,81 @@ export default function AdminCandidates() {
                       Approved on: {selectedCandidate.candidateApprovedAt.toDate().toLocaleString()}
                     </p>
                   )}
+                </div>
+
+                {/* Agent Assignment Section */}
+                <div className="border-t border-gray-200 pt-6">
+                  <h3 className="text-lg font-bold text-black mb-4 flex items-center">
+                    <Users className="w-5 h-5 mr-2" />
+                    Assigned Agents
+                  </h3>
+
+                  {/* Currently Assigned Agents */}
+                  {selectedCandidate.assignedAgents && selectedCandidate.assignedAgents.length > 0 ? (
+                    <div className="mb-4 space-y-2">
+                      {selectedCandidate.assignedAgents.map((agentId: string) => {
+                        const agent = availableAgents.find(a => a.id === agentId);
+                        return (
+                          <div key={agentId} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                                {agent?.name?.[0] || '?'}
+                              </div>
+                              <div>
+                                <p className="font-medium text-gray-900">{agent?.name || agentId}</p>
+                                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                  <span>{agent?.rating.toFixed(1) || 'N/A'}</span>
+                                  <Shield className="w-3 h-3 text-green-600 ml-2" />
+                                  <span>Verified</span>
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => unassignAgent(selectedCandidate.uid, agentId)}
+                              disabled={actionLoading}
+                              className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mb-4 italic">No agents assigned yet</p>
+                  )}
+
+                  {/* Assign New Agent */}
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Assign New Agent
+                    </label>
+                    <div className="flex space-x-2">
+                      <select
+                        value={selectedAgentId}
+                        onChange={(e) => setSelectedAgentId(e.target.value)}
+                        disabled={actionLoading}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                      >
+                        <option value="">Select an agent...</option>
+                        {availableAgents
+                          .filter(agent => !selectedCandidate.assignedAgents?.includes(agent.id))
+                          .map(agent => (
+                            <option key={agent.id} value={agent.id}>
+                              {agent.name} - Rating: {agent.rating.toFixed(1)}
+                            </option>
+                          ))}
+                      </select>
+                      <button
+                        onClick={() => assignAgentToCandidate(selectedCandidate.uid, selectedAgentId)}
+                        disabled={actionLoading || !selectedAgentId}
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      >
+                        Assign
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Actions */}

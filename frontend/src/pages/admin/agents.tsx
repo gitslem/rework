@@ -29,7 +29,9 @@ export default function AdminAgents() {
   const [agentStats, setAgentStats] = useState({
     successRate: 0,
     totalClients: 0,
-    rating: 0
+    rating: 0,
+    isFree: true,
+    basePrice: 100
   });
 
   useEffect(() => {
@@ -145,7 +147,12 @@ export default function AdminAgents() {
       await updateDoc(doc(db, 'profiles', selectedAgent.uid), {
         agentSuccessRate: agentStats.successRate,
         agentTotalClients: agentStats.totalClients,
-        agentRating: agentStats.rating,
+        averageRating: agentStats.rating,
+        isFree: agentStats.isFree,
+        agentPricing: {
+          basePrice: agentStats.basePrice,
+          currency: 'USD'
+        },
         updatedAt: Timestamp.now(),
       });
 
@@ -468,7 +475,9 @@ export default function AdminAgents() {
                           setAgentStats({
                             successRate: selectedAgent.agentSuccessRate || 0,
                             totalClients: selectedAgent.agentTotalClients || 0,
-                            rating: selectedAgent.agentRating || 0
+                            rating: selectedAgent.averageRating || 0,
+                            isFree: selectedAgent.isFree !== undefined ? selectedAgent.isFree : true,
+                            basePrice: selectedAgent.agentPricing?.basePrice || 100
                           });
                           setEditingStats(true);
                         }}
@@ -497,60 +506,131 @@ export default function AdminAgents() {
                   </div>
 
                   {editingStats ? (
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Success Rate (%)
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          value={agentStats.successRate}
-                          onChange={(e) => setAgentStats({ ...agentStats, successRate: parseFloat(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
+                    <div className="space-y-4">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Success Rate (%)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={agentStats.successRate}
+                            onChange={(e) => setAgentStats({ ...agentStats, successRate: parseFloat(e.target.value) || 0 })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Total Clients
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={agentStats.totalClients}
+                            onChange={(e) => setAgentStats({ ...agentStats, totalClients: parseInt(e.target.value) || 0 })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Rating (0-5)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="5"
+                            step="0.1"
+                            value={agentStats.rating}
+                            onChange={(e) => setAgentStats({ ...agentStats, rating: parseFloat(e.target.value) || 0 })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Total Clients
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={agentStats.totalClients}
-                          onChange={(e) => setAgentStats({ ...agentStats, totalClients: parseInt(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Rating (0-5)
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          max="5"
-                          step="0.1"
-                          value={agentStats.rating}
-                          onChange={(e) => setAgentStats({ ...agentStats, rating: parseFloat(e.target.value) || 0 })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
+
+                      {/* Pricing Section */}
+                      <div className="border-t border-blue-300 pt-4">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Service Type
+                            </label>
+                            <div className="flex items-center space-x-4">
+                              <button
+                                type="button"
+                                onClick={() => setAgentStats({ ...agentStats, isFree: true })}
+                                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                                  agentStats.isFree
+                                    ? 'bg-green-600 text-white border-2 border-green-700'
+                                    : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400'
+                                }`}
+                              >
+                                100% Free
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setAgentStats({ ...agentStats, isFree: false })}
+                                className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                                  !agentStats.isFree
+                                    ? 'bg-blue-600 text-white border-2 border-blue-700'
+                                    : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400'
+                                }`}
+                              >
+                                Paid Service
+                              </button>
+                            </div>
+                          </div>
+
+                          {!agentStats.isFree && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Base Price (USD)
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                value={agentStats.basePrice}
+                                onChange={(e) => setAgentStats({ ...agentStats, basePrice: parseFloat(e.target.value) || 0 })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Per successful placement"
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-gray-600 text-sm">Success Rate:</span>
-                        <p className="text-2xl font-bold text-green-600">{selectedAgent.agentSuccessRate || 0}%</p>
+                    <div className="space-y-4">
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div className="bg-white p-3 rounded-lg">
+                          <span className="text-gray-600 text-sm">Success Rate:</span>
+                          <p className="text-2xl font-bold text-green-600">{selectedAgent.agentSuccessRate || 0}%</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg">
+                          <span className="text-gray-600 text-sm">Total Clients:</span>
+                          <p className="text-2xl font-bold text-blue-600">{selectedAgent.agentTotalClients || 0}</p>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg">
+                          <span className="text-gray-600 text-sm">Rating:</span>
+                          <p className="text-2xl font-bold text-yellow-600">{selectedAgent.averageRating || 0}/5</p>
+                        </div>
                       </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-gray-600 text-sm">Total Clients:</span>
-                        <p className="text-2xl font-bold text-blue-600">{selectedAgent.agentTotalClients || 0}</p>
-                      </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <span className="text-gray-600 text-sm">Rating:</span>
-                        <p className="text-2xl font-bold text-yellow-600">{selectedAgent.agentRating || 0}/5</p>
+
+                      {/* Pricing Display */}
+                      <div className="bg-white p-4 rounded-lg border-t border-blue-300">
+                        <span className="text-gray-600 text-sm block mb-2">Service Type:</span>
+                        {(selectedAgent.isFree !== undefined ? selectedAgent.isFree : true) ? (
+                          <div className="inline-flex items-center px-4 py-2 bg-green-50 border-2 border-green-200 rounded-lg">
+                            <p className="text-lg font-bold text-green-700">100% Free</p>
+                            <span className="ml-2 text-xs text-green-600">No charges - Complimentary service</span>
+                          </div>
+                        ) : (
+                          <div className="inline-flex items-center px-4 py-2 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                            <p className="text-lg font-bold text-blue-700">${selectedAgent.agentPricing?.basePrice || 100}</p>
+                            <span className="ml-2 text-xs text-blue-600">Per successful placement</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
