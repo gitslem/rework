@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {/* Brand Section */}
-            <div className="lg:col-span-2">
+            <div>
               <div className="flex items-start mb-4">
                 <Logo textClassName="text-white" showText={true} size="sm" />
               </div>

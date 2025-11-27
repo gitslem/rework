@@ -37,3 +37,18 @@
     @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
 }
+
+@layer utilities {
+  @keyframes slide {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100vw);
+    }
+  }
+
+  .animate-slide {
+    animation: slide 15s linear infinite;
+  }
+}
