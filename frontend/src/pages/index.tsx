@@ -25,6 +25,15 @@ export default function Home() {
     setIsVisible(true);
   }, []);
 
+  // Auto-play testimonials slider
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+    }, 5000); // Change testimonial every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   const stats = [
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
     { number: "$3k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
@@ -247,9 +256,9 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-8">
               {/* Badge */}
-              <div className={`inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+              <div className={`inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'} overflow-hidden`}>
                 <Bot className="w-4 h-4 animate-pulse-custom" />
-                <span className="font-semibold text-sm">Personalized Support + AI Powered</span>
+                <span className="font-semibold text-sm animate-typewriter">Personalized Support + AI Powered</span>
               </div>
 
               {/* Main Headline */}
