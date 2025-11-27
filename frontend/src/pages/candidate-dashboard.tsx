@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark, BadgeCheck
+  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark, BadgeCheck, Bot
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -742,17 +742,65 @@ export default function CandidateDashboard() {
             <div className="space-y-6">
               {/* Info Banner */}
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col lg:flex-row items-start gap-6">
+                  {/* AI Flow Illustration */}
                   <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                      <Users className="w-6 h-6 text-white" />
+                    <svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="hidden lg:block">
+                      {/* Candidate Circle */}
+                      <circle cx="30" cy="60" r="20" fill="#3B82F6" opacity="0.2"/>
+                      <circle cx="30" cy="60" r="15" fill="#3B82F6"/>
+                      <path d="M30 55 L30 60 L35 65" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="30" cy="52" r="4" stroke="white" strokeWidth="2" fill="none"/>
+                      <text x="30" y="95" textAnchor="middle" fontSize="11" fill="#1F2937" fontWeight="600">You</text>
+
+                      {/* AI Brain Center */}
+                      <circle cx="120" cy="60" r="25" fill="url(#gradient1)"/>
+                      <path d="M115 55 Q120 50 125 55 M115 65 Q120 70 125 65 M110 60 L115 60 M125 60 L130 60" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                      <circle cx="117" cy="58" r="2" fill="white"/>
+                      <circle cx="123" cy="58" r="2" fill="white"/>
+                      <text x="120" y="95" textAnchor="middle" fontSize="11" fill="#1F2937" fontWeight="600">AI Match</text>
+
+                      {/* Agent Circle */}
+                      <circle cx="210" cy="60" r="20" fill="#10B981" opacity="0.2"/>
+                      <circle cx="210" cy="60" r="15" fill="#10B981"/>
+                      <path d="M210 55 L210 60 L205 65" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <circle cx="210" cy="52" r="4" stroke="white" strokeWidth="2" fill="none"/>
+                      <path d="M206 67 L214 67" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                      <text x="210" y="95" textAnchor="middle" fontSize="11" fill="#1F2937" fontWeight="600">Agent</text>
+
+                      {/* Connecting Lines with Animation Effect */}
+                      <path d="M50 60 L95 60" stroke="#3B82F6" strokeWidth="2" strokeDasharray="4 4" opacity="0.6">
+                        <animate attributeName="stroke-dashoffset" from="8" to="0" dur="1s" repeatCount="indefinite"/>
+                      </path>
+                      <path d="M145 60 L190 60" stroke="#10B981" strokeWidth="2" strokeDasharray="4 4" opacity="0.6">
+                        <animate attributeName="stroke-dashoffset" from="8" to="0" dur="1s" repeatCount="indefinite"/>
+                      </path>
+
+                      {/* Gradient Definition */}
+                      <defs>
+                        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#8B5CF6"/>
+                          <stop offset="100%" stopColor="#3B82F6"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+
+                    {/* Mobile Version - Simpler Icon */}
+                    <div className="lg:hidden w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                      <Bot className="w-8 h-8 text-white" />
                     </div>
                   </div>
+
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">Your Assigned Agents</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                      Your Assigned Agents
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                        AI Powered
+                      </span>
+                    </h3>
                     <p className="text-gray-700 text-sm leading-relaxed mb-3">
-                      Our admin team has carefully selected these verified agents to help you get approved on your desired platforms.
-                      These agents have proven track records and will work with you personally.
+                      Our advanced AI has intelligently matched you with verified agents based on your profile, goals, and platform preferences.
+                      These carefully selected agents have proven track records and will work with you personally to maximize your approval chances.
                     </p>
                     <p className="text-sm text-gray-600">
                       <strong>Need more agents?</strong> Contact our support team at{' '}
@@ -862,12 +910,7 @@ export default function CandidateDashboard() {
                           </div>
 
                           <div className="flex flex-col justify-center items-end min-w-[180px]">
-                            {agent.isFree ? (
-                              <div className="text-center mb-4 px-4 py-3 bg-green-50 rounded-lg border border-green-200">
-                                <p className="text-2xl font-bold text-green-700">100% Free</p>
-                                <p className="text-xs text-green-600 font-medium">No charges - Complimentary service</p>
-                              </div>
-                            ) : (
+                            {!agent.isFree && (
                               <div className="text-center mb-4 px-4 py-3 bg-blue-50 rounded-lg border border-blue-200">
                                 <p className="text-2xl font-bold text-blue-700">${agent.price}</p>
                                 <p className="text-xs text-blue-600 font-medium">Per successful placement</p>
