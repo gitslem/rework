@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Mail, MessageSquare, Phone, Clock, Send, Menu, X
+  Mail, Send, Menu, X
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -33,23 +33,16 @@ export default function Support() {
     {
       icon: <Mail className="w-8 h-8" />,
       title: "Email Support",
-      description: "support@remoteworks.io",
+      description: "support@remote-works.io",
       detail: "Response within 24 hours",
       color: "bg-black"
     },
     {
-      icon: <Phone className="w-8 h-8" />,
-      title: "Phone Support",
-      description: "+1 (647) 982-1234",
-      detail: "Monday - Friday, 9 AM - 6 PM EST",
+      icon: <Send className="w-8 h-8" />,
+      title: "Telegram",
+      description: "@remote_worksio",
+      detail: "Join our community",
       color: "bg-gray-800"
-    },
-    {
-      icon: <MessageSquare className="w-8 h-8" />,
-      title: "Location",
-      description: "5 buttermill ave L4K 0J5, CA",
-      detail: "Canada Office",
-      color: "bg-gray-700"
     }
   ];
 
@@ -122,8 +115,8 @@ export default function Support() {
 
         {/* Contact Methods */}
         <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-2 gap-8">
               {contactMethods.map((method, index) => (
                 <div
                   key={index}
@@ -252,31 +245,6 @@ export default function Support() {
                 </div>
               </form>
             )}
-          </div>
-        </section>
-
-        {/* Business Hours */}
-        <section className="py-16 bg-white border-t border-gray-200">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-200">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Support Hours</h3>
-                  <div className="space-y-2 text-gray-700">
-                    <p><span className="font-semibold">Email Support:</span> 24/7 (Response within 24 hours)</p>
-                    <p><span className="font-semibold">Phone Support:</span> +1 (647) 982-1234</p>
-                    <p><span className="font-semibold">Phone Hours:</span> Monday - Friday, 9 AM - 6 PM EST</p>
-                    <p><span className="font-semibold">Address:</span> 5 buttermill ave L4K 0J5, CA</p>
-                    <p className="text-sm text-gray-600 mt-4">We're here to help! Reach out anytime for support.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
