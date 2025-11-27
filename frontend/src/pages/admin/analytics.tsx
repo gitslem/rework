@@ -174,8 +174,7 @@ export default function AdminAnalytics() {
       value: stats.totalUsers,
       icon: <Users className="w-6 h-6" />,
       color: 'bg-blue-500',
-      trend: '+12%',
-      trendUp: true,
+      subtitle: `${stats.totalCandidates + stats.totalAgents} registered users`,
     },
     {
       title: 'Total Candidates',
@@ -196,23 +195,21 @@ export default function AdminAnalytics() {
       value: stats.activeUsers,
       icon: <Activity className="w-6 h-6" />,
       color: 'bg-green-500',
-      trend: '+8%',
-      trendUp: true,
+      subtitle: `${stats.totalUsers > 0 ? ((stats.activeUsers / stats.totalUsers) * 100).toFixed(1) : 0}% of total`,
     },
     {
       title: 'Service Requests',
       value: stats.totalServiceRequests,
       icon: <CheckCircle className="w-6 h-6" />,
       color: 'bg-indigo-500',
-      subtitle: `${stats.completedServiceRequests} completed`,
+      subtitle: `${stats.completedServiceRequests} completed (${stats.totalServiceRequests > 0 ? ((stats.completedServiceRequests / stats.totalServiceRequests) * 100).toFixed(1) : 0}%)`,
     },
     {
       title: 'Total Revenue',
       value: `$${stats.totalRevenue.toLocaleString()}`,
       icon: <DollarSign className="w-6 h-6" />,
       color: 'bg-emerald-500',
-      trend: '+24%',
-      trendUp: true,
+      subtitle: `From ${stats.completedServiceRequests} completed requests`,
     },
   ];
 
@@ -268,14 +265,6 @@ export default function AdminAnalytics() {
                   <div className={`${card.color} text-white p-3 rounded-lg`}>
                     {card.icon}
                   </div>
-                  {card.trend && (
-                    <div className={`flex items-center text-sm font-semibold ${
-                      card.trendUp ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {card.trendUp ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
-                      {card.trend}
-                    </div>
-                  )}
                 </div>
                 <h3 className="text-gray-600 text-sm font-medium mb-1">{card.title}</h3>
                 <div className="text-3xl font-bold text-black mb-2">{card.value}</div>
