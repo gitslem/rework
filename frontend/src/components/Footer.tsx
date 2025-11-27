@@ -118,7 +118,7 @@ export default function Footer() {
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
                 For Candidates
               </h4>
-              <ul className="space-y-3 text-sm mb-6">
+              <ul className="space-y-3 text-sm">
                 <li>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
@@ -152,48 +152,6 @@ export default function Footer() {
                   </button>
                 </li>
               </ul>
-
-              {/* Newsletter Subscription */}
-              <div className="mt-6">
-                <h5 className="text-white font-semibold text-xs mb-3 uppercase tracking-wider">Stay Updated</h5>
-                <form onSubmit={handleSubscribe} className="space-y-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email"
-                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                    className="w-full px-4 py-2 rounded-lg bg-gray-900 border border-gray-700 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                  />
-                  <button
-                    type="submit"
-                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {subscriptionStatus === 'loading' ? (
-                      <>
-                        <Loader className="w-4 h-4 animate-spin" />
-                        <span>Subscribing...</span>
-                      </>
-                    ) : subscriptionStatus === 'success' ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        <span>Subscribed!</span>
-                      </>
-                    ) : (
-                      <span>Subscribe</span>
-                    )}
-                  </button>
-
-                  {/* Status Messages */}
-                  {subscriptionStatus === 'success' && (
-                    <p className="text-green-400 text-xs animate-fade-in">Thanks for subscribing!</p>
-                  )}
-                  {subscriptionStatus === 'error' && errorMessage && (
-                    <p className="text-red-400 text-xs animate-fade-in">{errorMessage}</p>
-                  )}
-                </form>
-              </div>
             </div>
 
             {/* For Agents */}
@@ -270,28 +228,15 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Social Links */}
+            {/* Social Links & Newsletter */}
             <div>
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
                 Connect With Us
               </h4>
               <p className="text-sm text-gray-500 mb-4">
-                Follow us on social media and leave a review.
+                Follow us on social media and subscribe to our newsletter.
               </p>
               <div className="space-y-3">
-                {/* LinkedIn */}
-                <a
-                  href="https://www.linkedin.com/company/remo-teworks/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
-                >
-                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                    <Linkedin className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-medium">LinkedIn</span>
-                </a>
-
                 {/* Telegram */}
                 <a
                   href="https://t.me/remote_worksio"
@@ -317,6 +262,51 @@ export default function Footer() {
                   </div>
                   <span className="text-sm font-medium">Trustpilot</span>
                 </a>
+              </div>
+
+              {/* Newsletter Subscription */}
+              <div className="mt-6 pt-6 border-t border-gray-800">
+                <h5 className="font-semibold text-white mb-3 text-sm">Stay Updated</h5>
+                <p className="text-xs text-gray-500 mb-3">
+                  Subscribe to our newsletter for updates.
+                </p>
+                <form onSubmit={handleSubscribe} className="space-y-2">
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                    className="w-full bg-black hover:bg-gray-800 text-white px-3 py-2 rounded-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 border border-gray-700"
+                  >
+                    {subscriptionStatus === 'loading' ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        <span>Subscribing...</span>
+                      </>
+                    ) : subscriptionStatus === 'success' ? (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Subscribed!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-4 h-4" />
+                        <span>Subscribe</span>
+                      </>
+                    )}
+                  </button>
+                  {errorMessage && (
+                    <p className="text-red-400 text-xs mt-2">{errorMessage}</p>
+                  )}
+                </form>
               </div>
             </div>
           </div>

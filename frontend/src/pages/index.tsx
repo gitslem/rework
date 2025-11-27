@@ -4,7 +4,7 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home, Coffee, Wifi, Monitor
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -14,6 +14,9 @@ export default function Home() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setIsVisible(true);
@@ -110,6 +113,62 @@ export default function Home() {
       role: "AI Trainer"
     }
   ];
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setErrorMessage('Please enter a valid email address');
+      setSubscriptionStatus('error');
+      setTimeout(() => {
+        setSubscriptionStatus('idle');
+        setErrorMessage('');
+      }, 3000);
+      return;
+    }
+
+    setSubscriptionStatus('loading');
+
+    try {
+      const { getFirebaseFirestore, isFirebaseConfigured } = await import('@/lib/firebase/config');
+      const { collection, addDoc, Timestamp } = await import('firebase/firestore');
+
+      if (!isFirebaseConfigured) {
+        setErrorMessage('Service temporarily unavailable. Please try again later.');
+        setSubscriptionStatus('error');
+        setTimeout(() => {
+          setSubscriptionStatus('idle');
+          setErrorMessage('');
+        }, 3000);
+        return;
+      }
+
+      const db = getFirebaseFirestore();
+      const emailLower = email.toLowerCase().trim();
+
+      await addDoc(collection(db, 'newsletter_subscriptions'), {
+        email: emailLower,
+        subscribedAt: Timestamp.now(),
+        source: 'homepage',
+        status: 'active'
+      });
+
+      setSubscriptionStatus('success');
+      setEmail('');
+      setTimeout(() => setSubscriptionStatus('idle'), 5000);
+    } catch (error: any) {
+      console.error('Subscription error:', error);
+      setErrorMessage(error.message || 'Failed to subscribe. Please try again.');
+      setSubscriptionStatus('error');
+      setTimeout(() => {
+        setSubscriptionStatus('idle');
+        setErrorMessage('');
+      }, 5000);
+    }
+  };
 
   return (
     <>
@@ -457,6 +516,149 @@ export default function Home() {
               <Clock className="inline w-4 h-4 mr-1" />
               24/7 support
             </p>
+          </div>
+        </section>
+
+        {/* Newsletter Section - Work From Home Theme */}
+        <section className="relative py-24 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800">
+          {/* Work From Home Background Illustrations */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            {/* Floating shapes representing work-from-home elements */}
+            <div className="absolute top-20 left-10 w-80 h-80 bg-gray-700 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
+            <div className="absolute top-40 right-20 w-72 h-72 bg-gray-600 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-gray-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '4s' }}></div>
+
+            {/* Decorative grid pattern */}
+            <div className="absolute inset-0 opacity-5" style={{
+              backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+              backgroundSize: '50px 50px'
+            }}></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              {/* Left Side - Content */}
+              <div className="space-y-6">
+                {/* Badge */}
+                <div className="inline-flex items-center space-x-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg px-4 py-2 rounded-full border border-white border-opacity-20">
+                  <Sparkles className="w-4 h-4 text-white" />
+                  <span className="text-white text-sm font-semibold">Work From Anywhere</span>
+                </div>
+
+                {/* Heading */}
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
+                  Stay Connected,
+                  <span className="block mt-2 text-gray-300">Work Remotely</span>
+                </h2>
+
+                {/* Description */}
+                <p className="text-lg text-gray-300 leading-relaxed">
+                  Join our community of remote workers. Get exclusive updates, tips, and opportunities delivered straight to your inbox.
+                </p>
+
+                {/* Work From Home Icons */}
+                <div className="grid grid-cols-4 gap-4 pt-4">
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center backdrop-filter backdrop-blur-lg border border-white border-opacity-20">
+                      <Home className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs text-gray-400 text-center">Home Office</span>
+                  </div>
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center backdrop-filter backdrop-blur-lg border border-white border-opacity-20">
+                      <Coffee className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs text-gray-400 text-center">Flexibility</span>
+                  </div>
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center backdrop-filter backdrop-blur-lg border border-white border-opacity-20">
+                      <Wifi className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs text-gray-400 text-center">Connected</span>
+                  </div>
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center backdrop-filter backdrop-blur-lg border border-white border-opacity-20">
+                      <Monitor className="w-6 h-6 text-white" />
+                    </div>
+                    <span className="text-xs text-gray-400 text-center">Digital</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side - Newsletter Form */}
+              <div className="relative">
+                {/* Decorative glow effect behind form */}
+                <div className="absolute -inset-4 bg-gradient-to-r from-gray-600 to-gray-700 rounded-2xl blur-2xl opacity-20"></div>
+
+                <div className="relative bg-white bg-opacity-10 backdrop-filter backdrop-blur-xl rounded-2xl p-8 border border-white border-opacity-20 shadow-2xl">
+                  <div className="space-y-6">
+                    {/* Form Header */}
+                    <div className="text-center space-y-2">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-full mb-2">
+                        <Mail className="w-8 h-8 text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white">Subscribe to Our Newsletter</h3>
+                      <p className="text-gray-300 text-sm">Get the latest updates, tips, and opportunities</p>
+                    </div>
+
+                    {/* Subscription Form */}
+                    <form onSubmit={handleSubscribe} className="space-y-4">
+                      <div className="relative">
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="Enter your email address"
+                          disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                          className="w-full px-6 py-4 bg-white bg-opacity-90 border-2 border-gray-300 rounded-xl text-black placeholder-gray-500 focus:outline-none focus:border-black focus:bg-white transition-all text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
+                        className="w-full bg-black hover:bg-gray-800 text-white px-6 py-4 rounded-xl transition-all text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        {subscriptionStatus === 'loading' ? (
+                          <>
+                            <Loader className="w-5 h-5 animate-spin" />
+                            <span>Subscribing...</span>
+                          </>
+                        ) : subscriptionStatus === 'success' ? (
+                          <>
+                            <CheckCircle className="w-5 h-5" />
+                            <span>Successfully Subscribed!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Send className="w-5 h-5" />
+                            <span>Subscribe Now</span>
+                          </>
+                        )}
+                      </button>
+
+                      {errorMessage && (
+                        <div className="bg-red-500 bg-opacity-20 border border-red-500 border-opacity-30 rounded-lg p-3">
+                          <p className="text-red-200 text-sm text-center">{errorMessage}</p>
+                        </div>
+                      )}
+
+                      {subscriptionStatus === 'success' && !errorMessage && (
+                        <div className="bg-green-500 bg-opacity-20 border border-green-500 border-opacity-30 rounded-lg p-3">
+                          <p className="text-green-200 text-sm text-center">Thanks for subscribing! Check your inbox.</p>
+                        </div>
+                      )}
+                    </form>
+
+                    {/* Privacy Note */}
+                    <p className="text-xs text-gray-400 text-center">
+                      <Shield className="inline w-3 h-3 mr-1" />
+                      We respect your privacy. Unsubscribe anytime.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
