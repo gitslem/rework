@@ -4,7 +4,9 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones, Layers, DollarSign
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader,
+  Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones, Layers, DollarSign,
+  Laptop, Globe, Code, Lightbulb, Database, Server, Smartphone
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -17,44 +19,16 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % 4);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   const stats = [
-    {
-      number: "20+",
-      label: "Platforms Supported",
-      description: "We help you get approved on all major remote gig platforms",
-      icon: <Layers className="w-6 h-6" />
-    },
-    {
-      number: "98%",
-      label: "Success Rate",
-      description: "Our agents have a proven track record of successful approvals",
-      icon: <Star className="w-6 h-6" />
-    },
-    {
-      number: "24hr",
-      label: "Response Time",
-      description: "Get matched with an agent and start within 24 hours",
-      icon: <Zap className="w-6 h-6" />
-    },
-    {
-      number: "$3k+",
-      label: "Avg. Monthly Income",
-      description: "Candidates earn on average across multiple platforms",
-      icon: <DollarSign className="w-6 h-6" />
-    }
+    { number: "50K+", label: "Active Candidates", icon: <Users className="w-5 h-5" /> },
+    { number: "2.5K+", label: "Verified Agents", icon: <BadgeCheck className="w-5 h-5" /> },
+    { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
+    { number: "24/7", label: "Support", icon: <Clock className="w-5 h-5" /> }
   ];
 
   const platforms = [
@@ -114,8 +88,8 @@ export default function Home() {
     },
     {
       step: "03",
-      title: "AI Matches Agents",
-      description: "Our AI intelligently assigns the best verified agents tailored to your needs."
+      title: "Browse Agents",
+      description: "Find verified agents specializing in your platforms of interest."
     },
     {
       step: "04",
@@ -139,11 +113,6 @@ export default function Home() {
       quote: "My agent knew exactly what platforms look for. Got approved on 3 services in 2 weeks.",
       author: "Priya S.",
       role: "AI Trainer"
-    },
-    {
-      quote: "The platform made everything so simple. Within days I was connected with the perfect agent who helped me navigate the entire process.",
-      author: "James K.",
-      role: "Content Moderator"
     }
   ];
 
@@ -262,48 +231,19 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="relative pt-24 pb-32 px-6 lg:px-8 overflow-hidden">
-          {/* Animated Background with Work From Home Elements */}
+          {/* Animated Background */}
           <div className="absolute inset-0 -z-10">
-            {/* Gradient Blobs */}
             <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
             <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
             <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
-
-            {/* Work From Home Illustration Elements - Floating Icons */}
-            <div className="absolute top-32 left-[5%] opacity-10 animate-float" style={{ animationDelay: '0s', animationDuration: '6s' }}>
-              <Monitor className="w-20 h-20 text-gray-800" />
-            </div>
-            <div className="absolute top-48 right-[8%] opacity-10 animate-float" style={{ animationDelay: '1s', animationDuration: '7s' }}>
-              <Coffee className="w-16 h-16 text-gray-800" />
-            </div>
-            <div className="absolute bottom-48 left-[12%] opacity-10 animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}>
-              <Wifi className="w-14 h-14 text-gray-800" />
-            </div>
-            <div className="absolute top-56 right-[15%] opacity-10 animate-float" style={{ animationDelay: '3s', animationDuration: '6.5s' }}>
-              <HomeIcon className="w-18 h-18 text-gray-800" />
-            </div>
-            <div className="absolute bottom-32 right-[10%] opacity-10 animate-float" style={{ animationDelay: '1.5s', animationDuration: '7.5s' }}>
-              <Bot className="w-16 h-16 text-gray-800" />
-            </div>
-
-            {/* Decorative Dots Pattern */}
-            <div className="absolute inset-0 opacity-[0.03]" style={{
-              backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
-              backgroundSize: '40px 40px'
-            }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-8">
-              {/* Sliding Badge */}
-              <div className="relative w-full overflow-hidden h-12 flex items-center">
-                <div className="absolute animate-slide whitespace-nowrap">
-                  <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg">
-                    <Headphones className="w-4 h-4" />
-                    <span className="font-semibold text-sm">Personalized Support + AI Powered</span>
-                    <Bot className="w-4 h-4" />
-                  </div>
-                </div>
+              {/* Badge */}
+              <div className={`inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <Sparkles className="w-4 h-4 animate-pulse-custom" />
+                <span className="font-semibold text-sm">Trusted by 50,000+ Worldwide</span>
               </div>
 
               {/* Main Headline */}
@@ -409,92 +349,124 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section - Redesigned with Work From Home Theme */}
-        <section className="relative py-32 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800">
-          {/* Work From Home Background Elements */}
-          <div className="absolute inset-0 -z-10">
-            {/* Animated gradient blobs */}
-            <div className="absolute top-20 left-10 w-96 h-96 bg-purple-900 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-900 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-900 rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '4s' }}></div>
-
-            {/* Floating work-from-home icons in background */}
-            <div className="absolute top-20 left-[8%] opacity-5 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
-              <Monitor className="w-24 h-24 text-white" />
+        {/* Stats Section with Animated Remote Work Icons */}
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-hidden">
+          {/* Animated Background - Remote Work Icons */}
+          <div className="absolute inset-0 overflow-hidden opacity-10">
+            {/* Floating Icons Row 1 */}
+            <div className="absolute top-10 left-10 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
+              <Laptop className="w-16 h-16 text-white" />
             </div>
-            <div className="absolute bottom-24 right-[12%] opacity-5 animate-float" style={{ animationDelay: '2s', animationDuration: '9s' }}>
-              <Coffee className="w-20 h-20 text-white" />
+            <div className="absolute top-20 right-20 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
+              <Coffee className="w-14 h-14 text-white" />
             </div>
-            <div className="absolute top-40 right-[15%] opacity-5 animate-float" style={{ animationDelay: '3s', animationDuration: '7s' }}>
-              <Wifi className="w-20 h-20 text-white" />
-            </div>
-            <div className="absolute bottom-40 left-[10%] opacity-5 animate-float" style={{ animationDelay: '1s', animationDuration: '8.5s' }}>
-              <HomeIcon className="w-24 h-24 text-white" />
+            <div className="absolute top-32 left-1/4 animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}>
+              <Wifi className="w-12 h-12 text-white" />
             </div>
 
-            {/* Grid pattern overlay */}
-            <div className="absolute inset-0 opacity-[0.03]" style={{
-              backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
-              backgroundSize: '60px 60px'
-            }}></div>
+            {/* Floating Icons Row 2 */}
+            <div className="absolute top-48 right-1/3 animate-float" style={{ animationDelay: '0.5s', animationDuration: '9s' }}>
+              <Monitor className="w-18 h-18 text-white" />
+            </div>
+            <div className="absolute top-56 left-16 animate-float" style={{ animationDelay: '1.5s', animationDuration: '11s' }}>
+              <Headphones className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute top-64 right-1/4 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
+              <Globe className="w-16 h-16 text-white" />
+            </div>
+
+            {/* Floating Icons Row 3 - Middle */}
+            <div className="absolute top-1/2 left-12 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
+              <Code className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute top-1/2 right-16 animate-float" style={{ animationDelay: '2s', animationDuration: '14s' }}>
+              <Lightbulb className="w-12 h-12 text-white" />
+            </div>
+            <div className="absolute top-1/3 left-1/2 animate-float" style={{ animationDelay: '3s', animationDuration: '11s' }}>
+              <HomeIcon className="w-20 h-20 text-white" />
+            </div>
+
+            {/* Floating Icons Row 4 - Bottom */}
+            <div className="absolute bottom-20 left-1/4 animate-float" style={{ animationDelay: '0.5s', animationDuration: '12s' }}>
+              <Database className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute bottom-32 right-1/3 animate-float" style={{ animationDelay: '1.5s', animationDuration: '9s' }}>
+              <Server className="w-16 h-16 text-white" />
+            </div>
+            <div className="absolute bottom-16 left-20 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
+              <Smartphone className="w-12 h-12 text-white" />
+            </div>
+            <div className="absolute bottom-24 right-20 animate-float" style={{ animationDelay: '3.5s', animationDuration: '10s' }}>
+              <Rocket className="w-18 h-18 text-white" />
+            </div>
+
+            {/* Additional Smaller Icons for Depth */}
+            <div className="absolute top-1/4 right-1/2 animate-float" style={{ animationDelay: '4s', animationDuration: '15s' }}>
+              <Zap className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute bottom-1/3 left-1/3 animate-float" style={{ animationDelay: '0.8s', animationDuration: '8s' }}>
+              <Star className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute top-3/4 right-1/4 animate-float" style={{ animationDelay: '1.8s', animationDuration: '11s' }}>
+              <Target className="w-10 h-10 text-white" />
+            </div>
           </div>
 
-          <div className="max-w-7xl mx-auto relative z-10">
+          {/* Stats Content */}
+          <div className="max-w-6xl mx-auto relative z-10">
             {/* Section Header */}
-            <div className="text-center mb-16 animate-fade-in-up">
+            <div className="text-center mb-16">
               <div className="inline-flex items-center space-x-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-white border-opacity-20 mb-6">
-                <Sparkles className="w-5 h-5 text-white" />
-                <span className="text-white text-sm font-semibold">Why Choose Us</span>
+                <TrendingUp className="w-5 h-5 text-white" />
+                <span className="text-white text-sm font-semibold">Our Impact</span>
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight">
-                Why Remote-Works is #1 for
-                <span className="block mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                  Remote Gigs
-                </span>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+                Trusted by Remote Workers Worldwide
               </h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                The most efficient way to maximize your remote earning potential
+                Join thousands of successful remote workers who found their dream opportunities through our platform
               </p>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
               {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className={`group relative bg-white bg-opacity-5 backdrop-filter backdrop-blur-xl rounded-2xl p-8 border border-white border-opacity-10 hover:border-opacity-30 transition-all duration-500 hover-lift animate-fade-in-scale stagger-${index + 1}`}
-                >
-                  {/* Glow effect on hover */}
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-500"></div>
+                <div key={index} className={`text-center group animate-fade-in-up stagger-${index + 1}`}>
+                  {/* Icon Container with Glow Effect */}
+                  <div className="relative inline-flex items-center justify-center mb-6">
+                    {/* Glow Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
 
-                  {/* Content */}
-                  <div className="relative">
                     {/* Icon */}
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl mb-6 shadow-xl animate-float group-hover:scale-110 transition-transform duration-300" style={{ animationDelay: `${index * 0.3}s` }}>
+                    <div className="relative w-20 h-20 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-2 border-white border-opacity-30 rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float transform group-hover:scale-110 transition-transform" style={{ animationDelay: `${index * 0.5}s` }}>
                       <div className="text-white">
                         {stat.icon}
                       </div>
                     </div>
-
-                    {/* Number */}
-                    <div className="text-5xl md:text-6xl font-extrabold text-white mb-3 group-hover:scale-105 transition-transform duration-300">
-                      {stat.number}
-                    </div>
-
-                    {/* Label */}
-                    <div className="text-lg font-bold text-gray-200 mb-3">
-                      {stat.label}
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-sm text-gray-400 leading-relaxed">
-                      {stat.description}
-                    </p>
                   </div>
+
+                  {/* Number with Gradient */}
+                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent">
+                    {stat.number}
+                  </div>
+
+                  {/* Label */}
+                  <div className="text-sm md:text-base text-gray-300 font-semibold tracking-wide uppercase">
+                    {stat.label}
+                  </div>
+
+                  {/* Decorative Line */}
+                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Decorative Grid Pattern Overlay */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+            backgroundSize: '50px 50px'
+          }}></div>
         </section>
 
         {/* How It Works Section */}
@@ -567,7 +539,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonials Section - Slider */}
+        {/* Testimonials Section */}
         <section className="py-24 px-6 lg:px-8 bg-black text-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -579,69 +551,76 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Testimonial Slider */}
-            <div className="relative">
-              <div className="overflow-hidden">
-                <div
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
-                >
-                  {testimonials.map((testimonial, index) => (
-                    <div key={index} className="w-full flex-shrink-0 px-4">
-                      <div className="max-w-3xl mx-auto bg-gray-900 rounded-2xl p-12 border border-gray-800">
-                        <div className="flex gap-1 mb-6 justify-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-5 h-5 text-white fill-white" />
-                          ))}
-                        </div>
-                        <p className="text-white text-xl leading-relaxed mb-8 text-center italic">"{testimonial.quote}"</p>
-                        <div className="flex items-center justify-center">
-                          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center font-bold text-lg border-2 border-gray-700">
-                            {testimonial.author[0]}
-                          </div>
-                          <div className="ml-4">
-                            <div className="font-bold text-base">{testimonial.author}</div>
-                            <div className="text-sm text-gray-400">{testimonial.role}</div>
-                          </div>
-                        </div>
-                      </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {testimonials.map((testimonial, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 hover:border-gray-700 transition-all">
+                  <div className="flex gap-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-white fill-white" />
+                    ))}
+                  </div>
+                  <p className="text-white leading-relaxed mb-6">{testimonial.quote}</p>
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center font-bold text-sm border border-gray-700">
+                      {testimonial.author[0]}
                     </div>
-                  ))}
+                    <div className="ml-4">
+                      <div className="font-bold text-sm">{testimonial.author}</div>
+                      <div className="text-xs text-gray-400">{testimonial.role}</div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-              {/* Navigation Dots */}
-              <div className="flex justify-center gap-3 mt-8">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      currentTestimonial === index
-                        ? 'bg-white w-8'
-                        : 'bg-gray-600 hover:bg-gray-500'
-                    }`}
-                    aria-label={`Go to testimonial ${index + 1}`}
-                  />
-                ))}
-              </div>
+        {/* Final CTA Section */}
+        <section className="relative py-32 px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-black text-white overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-10 left-10 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float"></div>
+            <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '3s' }}></div>
+          </div>
 
-              {/* Navigation Arrows */}
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <div className="mb-6 animate-fade-in">
+              <span className="inline-block bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg px-6 py-2 rounded-full text-sm font-semibold border border-white border-opacity-30">
+                Start Your Journey Today
+              </span>
+            </div>
+
+            <h2 className="text-5xl md:text-7xl font-extrabold mb-6 animate-fade-in-up stagger-1">
+              Ready to Get
+              <span className="block mt-2">Approved?</span>
+            </h2>
+
+            <p className="text-xl md:text-2xl text-white text-opacity-90 mb-12 animate-fade-in-up stagger-2">
+              Join 50,000+ candidates who found success with our verified agents.
+            </p>
+
+            <div className="flex justify-center mb-10 animate-fade-in-scale stagger-3">
               <button
-                onClick={() => setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors"
-                aria-label="Previous testimonial"
+                onClick={() => router.push('/register?type=candidate')}
+                className="group bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-smooth hover-lift shadow-2xl"
               >
-                <ArrowRight className="w-6 h-6 rotate-180" />
-              </button>
-              <button
-                onClick={() => setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors"
-                aria-label="Next testimonial"
-              >
-                <ArrowRight className="w-6 h-6" />
+                <span className="flex items-center justify-center">
+                  Get Started Now
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </span>
               </button>
             </div>
+
+            <p className="text-sm text-white text-opacity-80 animate-fade-in stagger-4">
+              <CheckCircle className="inline w-4 h-4 mr-1" />
+              No credit card required
+              <span className="mx-3">•</span>
+              <Shield className="inline w-4 h-4 mr-1" />
+              100% Free to use
+              <span className="mx-3">•</span>
+              <Clock className="inline w-4 h-4 mr-1" />
+              24/7 support
+            </p>
           </div>
         </section>
 
