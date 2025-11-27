@@ -129,7 +129,9 @@ export default function Footer() {
               <div className="space-y-3">
                 {/* Blog */}
                 <a
-                  href="/blog"
+                  href="https://ai.remote-works.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
                 >
                   <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">

@@ -242,11 +242,35 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="relative pt-24 pb-32 px-6 lg:px-8 overflow-hidden">
-          {/* Animated Background */}
+          {/* Animated Background with Work From Home Elements */}
           <div className="absolute inset-0 -z-10">
+            {/* Gradient Blobs */}
             <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
             <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
             <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
+
+            {/* Work From Home Illustration Elements - Floating Icons */}
+            <div className="absolute top-32 left-[5%] opacity-10 animate-float" style={{ animationDelay: '0s', animationDuration: '6s' }}>
+              <Monitor className="w-20 h-20 text-gray-800" />
+            </div>
+            <div className="absolute top-48 right-[8%] opacity-10 animate-float" style={{ animationDelay: '1s', animationDuration: '7s' }}>
+              <Coffee className="w-16 h-16 text-gray-800" />
+            </div>
+            <div className="absolute bottom-48 left-[12%] opacity-10 animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}>
+              <Wifi className="w-14 h-14 text-gray-800" />
+            </div>
+            <div className="absolute top-56 right-[15%] opacity-10 animate-float" style={{ animationDelay: '3s', animationDuration: '6.5s' }}>
+              <HomeIcon className="w-18 h-18 text-gray-800" />
+            </div>
+            <div className="absolute bottom-32 right-[10%] opacity-10 animate-float" style={{ animationDelay: '1.5s', animationDuration: '7.5s' }}>
+              <Bot className="w-16 h-16 text-gray-800" />
+            </div>
+
+            {/* Decorative Dots Pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
+              backgroundSize: '40px 40px'
+            }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto">
