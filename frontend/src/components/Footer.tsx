@@ -1,83 +1,9 @@
-import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Phone, Send, Linkedin, Star, CheckCircle, Loader } from 'lucide-react';
-import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { Mail, MapPin, Phone, Send, Star } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage('');
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      setErrorMessage('Please enter a valid email address');
-      setSubscriptionStatus('error');
-      setTimeout(() => {
-        setSubscriptionStatus('idle');
-        setErrorMessage('');
-      }, 3000);
-      return;
-    }
-
-    // Check Firebase configuration
-    if (!isFirebaseConfigured) {
-      setErrorMessage('Service temporarily unavailable. Please try again later.');
-      setSubscriptionStatus('error');
-      setTimeout(() => {
-        setSubscriptionStatus('idle');
-        setErrorMessage('');
-      }, 3000);
-      return;
-    }
-
-    setSubscriptionStatus('loading');
-
-    try {
-      const db = getFirebaseFirestore();
-      const emailLower = email.toLowerCase().trim();
-
-      // Add new subscription (removed duplicate check as it requires read permission)
-      await addDoc(collection(db, 'newsletter_subscriptions'), {
-        email: emailLower,
-        subscribedAt: Timestamp.now(),
-        source: 'footer',
-        status: 'active'
-      });
-
-      setSubscriptionStatus('success');
-      setEmail('');
-      setTimeout(() => setSubscriptionStatus('idle'), 5000);
-    } catch (error: any) {
-      console.error('Subscription error:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-
-      // Provide specific error messages
-      if (error.code === 'permission-denied') {
-        setErrorMessage('Please check Firebase rules. See browser console for details.');
-      } else if (error.code === 'unavailable') {
-        setErrorMessage('Service temporarily unavailable. Please try again later.');
-      } else if (error.code === 'already-exists') {
-        setErrorMessage('This email is already subscribed');
-      } else {
-        setErrorMessage(`Error: ${error.message || 'Failed to subscribe. Please try again.'}`);
-      }
-
-      setSubscriptionStatus('error');
-      setTimeout(() => {
-        setSubscriptionStatus('idle');
-        setErrorMessage('');
-      }, 5000);
-    }
-  };
 
   return (
     <footer className="bg-black text-gray-400">
@@ -228,13 +154,13 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Social Links & Newsletter */}
+            {/* Social Links */}
             <div>
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                Connect With Us
+                Online
               </h4>
               <p className="text-sm text-gray-500 mb-4">
-                Follow us on social media and subscribe to our newsletter.
+                reach out to us.
               </p>
               <div className="space-y-3">
                 {/* Telegram */}
@@ -262,51 +188,6 @@ export default function Footer() {
                   </div>
                   <span className="text-sm font-medium">Trustpilot</span>
                 </a>
-              </div>
-
-              {/* Newsletter Subscription */}
-              <div className="mt-6 pt-6 border-t border-gray-800">
-                <h5 className="font-semibold text-white mb-3 text-sm">Stay Updated</h5>
-                <p className="text-xs text-gray-500 mb-3">
-                  Subscribe to our newsletter for updates.
-                </p>
-                <form onSubmit={handleSubscribe} className="space-y-2">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                    className="w-full bg-black hover:bg-gray-800 text-white px-3 py-2 rounded-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 border border-gray-700"
-                  >
-                    {subscriptionStatus === 'loading' ? (
-                      <>
-                        <Loader className="w-4 h-4 animate-spin" />
-                        <span>Subscribing...</span>
-                      </>
-                    ) : subscriptionStatus === 'success' ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        <span>Subscribed!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="w-4 h-4" />
-                        <span>Subscribe</span>
-                      </>
-                    )}
-                  </button>
-                  {errorMessage && (
-                    <p className="text-red-400 text-xs mt-2">{errorMessage}</p>
-                  )}
-                </form>
               </div>
             </div>
           </div>
