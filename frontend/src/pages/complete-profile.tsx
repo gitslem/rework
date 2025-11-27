@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { User, MapPin, Globe, FileText, Check, Loader, Linkedin, Twitter, Facebook, Instagram, CreditCard, Upload, Link as LinkIcon } from 'lucide-react';
+import { User, MapPin, Globe, FileText, Check, Loader, Upload, MessageCircle } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -22,13 +22,9 @@ export default function CompleteProfile() {
     lastName: '',
     country: '',
     city: '',
-    phone: '',
     bio: '',
-    linkedinUrl: '',
-    twitterUrl: '',
-    facebookUrl: '',
-    instagramUrl: '',
-    paypalEmail: '',
+    contactMethodType: 'telegram' as 'telegram' | 'whatsapp',
+    contactMethodValue: '',
   });
 
   const [idCardFile, setIdCardFile] = useState<File | null>(null);
@@ -128,23 +124,9 @@ export default function CompleteProfile() {
       return;
     }
 
-    // Validate at least one social link
-    const hasSocialLink = formData.linkedinUrl || formData.twitterUrl || formData.facebookUrl || formData.instagramUrl;
-    if (!hasSocialLink) {
-      setError('Please provide at least one social media profile for verification');
-      return;
-    }
-
-    // Validate PayPal email
-    if (!formData.paypalEmail) {
-      setError('PayPal email is required for payments');
-      return;
-    }
-
-    // Validate PayPal email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.paypalEmail)) {
-      setError('Please enter a valid PayPal email address');
+    // Validate contact method
+    if (!formData.contactMethodValue.trim()) {
+      setError('Please provide your Telegram or WhatsApp contact for verification');
       return;
     }
 
@@ -176,19 +158,12 @@ export default function CompleteProfile() {
         lastName: formData.lastName,
         country: formData.country,
         city: formData.city,
-        phone: formData.phone || '',
         bio: formData.bio || '',
         location: `${formData.city}, ${formData.country}`,
         avatarURL: user.photoURL || '',
-        // Social links for verification
-        socialLinks: {
-          linkedin: formData.linkedinUrl || '',
-          twitter: formData.twitterUrl || '',
-          facebook: formData.facebookUrl || '',
-          instagram: formData.instagramUrl || '',
-        },
-        // PayPal info
-        paypalEmail: formData.paypalEmail,
+        // Contact method for verification (Telegram or WhatsApp)
+        contactMethodType: formData.contactMethodType,
+        contactMethodValue: formData.contactMethodValue,
         // ID card URL (required)
         idCardUrl: idCardUrl,
         // Verification status
@@ -370,19 +345,54 @@ export default function CompleteProfile() {
                 </div>
               </div>
 
-              {/* Phone */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number (Optional)
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="+1 (234) 567-8900"
-                />
+              {/* Contact Method for Verification */}
+              <div className="border-t border-gray-200 pt-6">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <MessageCircle className="w-5 h-5 mr-2" />
+                    Contact Method for Verification
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    <span className="text-red-500 font-semibold">* Required:</span> Our support team will contact you via your chosen method for verification
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Platform <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="contactMethodType"
+                      value={formData.contactMethodType}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white"
+                      required
+                    >
+                      <option value="telegram">Telegram</option>
+                      <option value="whatsapp">WhatsApp</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Username or Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="contactMethodValue"
+                      value={formData.contactMethodValue}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder={formData.contactMethodType === 'telegram' ? '@username or +1234567890' : '+1234567890'}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  <strong>Note:</strong> Support will reach out to verify your identity. Make sure you provide accurate contact information.
+                </p>
               </div>
 
               {/* Bio */}
@@ -402,116 +412,6 @@ export default function CompleteProfile() {
                 <p className="text-xs text-gray-500 mt-1">
                   This helps agents understand your background and goals
                 </p>
-              </div>
-
-              {/* Social Media Links - At least one required */}
-              <div className="border-t border-gray-200 pt-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                    <LinkIcon className="w-5 h-5 mr-2" />
-                    Social Media Profiles
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    <span className="text-red-500 font-semibold">* Required:</span> Add at least one social media profile for verification
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  {/* LinkedIn */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Linkedin className="w-4 h-4 inline mr-1 text-blue-600" />
-                      LinkedIn Profile
-                    </label>
-                    <input
-                      type="url"
-                      name="linkedinUrl"
-                      value={formData.linkedinUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="https://linkedin.com/in/yourprofile"
-                    />
-                  </div>
-
-                  {/* Twitter */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Twitter className="w-4 h-4 inline mr-1 text-blue-400" />
-                      Twitter/X Profile
-                    </label>
-                    <input
-                      type="url"
-                      name="twitterUrl"
-                      value={formData.twitterUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="https://twitter.com/yourhandle"
-                    />
-                  </div>
-
-                  {/* Facebook */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Facebook className="w-4 h-4 inline mr-1 text-blue-700" />
-                      Facebook Profile
-                    </label>
-                    <input
-                      type="url"
-                      name="facebookUrl"
-                      value={formData.facebookUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="https://facebook.com/yourprofile"
-                    />
-                  </div>
-
-                  {/* Instagram */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      <Instagram className="w-4 h-4 inline mr-1 text-pink-600" />
-                      Instagram Profile
-                    </label>
-                    <input
-                      type="url"
-                      name="instagramUrl"
-                      value={formData.instagramUrl}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="https://instagram.com/yourhandle"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* PayPal Information */}
-              <div className="border-t border-gray-200 pt-6">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                    <CreditCard className="w-5 h-5 mr-2" />
-                    Payment Information
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Required for receiving payments from agents
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    PayPal Email or Username <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    name="paypalEmail"
-                    value={formData.paypalEmail}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="your-paypal@email.com"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    <strong>Important:</strong> Your name on PayPal must match your name on Remote-Works and your social media profiles for verification purposes.
-                  </p>
-                </div>
               </div>
 
               {/* ID Card Upload */}

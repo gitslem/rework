@@ -1,92 +1,18 @@
-import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Phone, Send, Linkedin, Star, CheckCircle, Loader } from 'lucide-react';
-import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { Mail, MapPin, Phone, Send, Star, BookOpen } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage('');
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      setErrorMessage('Please enter a valid email address');
-      setSubscriptionStatus('error');
-      setTimeout(() => {
-        setSubscriptionStatus('idle');
-        setErrorMessage('');
-      }, 3000);
-      return;
-    }
-
-    // Check Firebase configuration
-    if (!isFirebaseConfigured) {
-      setErrorMessage('Service temporarily unavailable. Please try again later.');
-      setSubscriptionStatus('error');
-      setTimeout(() => {
-        setSubscriptionStatus('idle');
-        setErrorMessage('');
-      }, 3000);
-      return;
-    }
-
-    setSubscriptionStatus('loading');
-
-    try {
-      const db = getFirebaseFirestore();
-      const emailLower = email.toLowerCase().trim();
-
-      // Add new subscription (removed duplicate check as it requires read permission)
-      await addDoc(collection(db, 'newsletter_subscriptions'), {
-        email: emailLower,
-        subscribedAt: Timestamp.now(),
-        source: 'footer',
-        status: 'active'
-      });
-
-      setSubscriptionStatus('success');
-      setEmail('');
-      setTimeout(() => setSubscriptionStatus('idle'), 5000);
-    } catch (error: any) {
-      console.error('Subscription error:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-
-      // Provide specific error messages
-      if (error.code === 'permission-denied') {
-        setErrorMessage('Please check Firebase rules. See browser console for details.');
-      } else if (error.code === 'unavailable') {
-        setErrorMessage('Service temporarily unavailable. Please try again later.');
-      } else if (error.code === 'already-exists') {
-        setErrorMessage('This email is already subscribed');
-      } else {
-        setErrorMessage(`Error: ${error.message || 'Failed to subscribe. Please try again.'}`);
-      }
-
-      setSubscriptionStatus('error');
-      setTimeout(() => {
-        setSubscriptionStatus('idle');
-        setErrorMessage('');
-      }, 5000);
-    }
-  };
 
   return (
     <footer className="bg-black text-gray-400">
       {/* Main Footer Content */}
       <div className="py-12 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {/* Brand Section */}
-            <div className="lg:col-span-2">
+            <div>
               <div className="flex items-start mb-4">
                 <Logo textClassName="text-white" showText={true} size="sm" />
               </div>
@@ -108,7 +34,7 @@ export default function Footer() {
                 </div>
                 <div className="flex items-start space-x-2">
                   <MapPin className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <span>5 Buttermill Avenue, Concord, ON L4K 3X2, Canada</span>
+                  <span>5 buttermill ave L4K 0J5, CA</span>
                 </div>
               </div>
             </div>
@@ -137,51 +63,18 @@ export default function Footer() {
                 </li>
                 <li>
                   <button
-                    onClick={() => router.push('/agents')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Browse Agents
-                  </button>
-                </li>
-                <li>
-                  <button
                     onClick={() => router.push('/faq')}
                     className="hover:text-white transition-colors inline-block"
                   >
                     FAQ
                   </button>
                 </li>
-              </ul>
-            </div>
-
-            {/* For Agents */}
-            <div>
-              <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                For Agents
-              </h4>
-              <ul className="space-y-3 text-sm">
                 <li>
                   <button
                     onClick={() => router.push('/agent-signup')}
                     className="hover:text-white transition-colors inline-block"
                   >
                     Become an Agent
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push('/agent-signup#how-it-works')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Agent Benefits
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push('/support')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Get Support
                   </button>
                 </li>
               </ul>
@@ -228,15 +121,25 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Social Links & Newsletter */}
+            {/* Social Links */}
             <div>
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                Connect With Us
+                Online
               </h4>
-              <p className="text-sm text-gray-500 mb-4">
-                Follow us on social media and subscribe to our newsletter.
-              </p>
               <div className="space-y-3">
+                {/* Blog */}
+                <a
+                  href="https://ai.remote-works.io/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-medium">Blog</span>
+                </a>
+
                 {/* Telegram */}
                 <a
                   href="https://t.me/remote_worksio"
@@ -262,51 +165,6 @@ export default function Footer() {
                   </div>
                   <span className="text-sm font-medium">Trustpilot</span>
                 </a>
-              </div>
-
-              {/* Newsletter Subscription */}
-              <div className="mt-6 pt-6 border-t border-gray-800">
-                <h5 className="font-semibold text-white mb-3 text-sm">Stay Updated</h5>
-                <p className="text-xs text-gray-500 mb-3">
-                  Subscribe to our newsletter for updates.
-                </p>
-                <form onSubmit={handleSubscribe} className="space-y-2">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                      className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-gray-500 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={subscriptionStatus === 'loading' || subscriptionStatus === 'success'}
-                    className="w-full bg-black hover:bg-gray-800 text-white px-3 py-2 rounded-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 border border-gray-700"
-                  >
-                    {subscriptionStatus === 'loading' ? (
-                      <>
-                        <Loader className="w-4 h-4 animate-spin" />
-                        <span>Subscribing...</span>
-                      </>
-                    ) : subscriptionStatus === 'success' ? (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        <span>Subscribed!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="w-4 h-4" />
-                        <span>Subscribe</span>
-                      </>
-                    )}
-                  </button>
-                  {errorMessage && (
-                    <p className="text-red-400 text-xs mt-2">{errorMessage}</p>
-                  )}
-                </form>
               </div>
             </div>
           </div>

@@ -678,7 +678,7 @@ export default function AgentDashboard() {
 
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <User className="w-6 h-6 text-blue-600" />
+                <User className="w-6 h-6 text-black" />
                 Your Profile
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -754,7 +754,7 @@ export default function AgentDashboard() {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Profile"
                 >
                   <User className="w-5 h-5" />
@@ -770,7 +770,7 @@ export default function AgentDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab('messages')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Messages"
                 >
                   <MessageSquare className="w-5 h-5" />
@@ -804,9 +804,9 @@ export default function AgentDashboard() {
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Welcome Section */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 mb-8 text-white">
+          <div className="bg-gradient-to-r from-black to-gray-800 rounded-2xl p-6 md:p-8 mb-8 text-white">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {profile.firstName}! 👋</h1>
-            <p className="text-lg md:text-xl text-blue-100">Your agent account is active and ready to help candidates</p>
+            <p className="text-lg md:text-xl text-gray-200">Your agent account is active and ready to help candidates</p>
           </div>
 
           {/* Tab Navigation */}
@@ -815,7 +815,7 @@ export default function AgentDashboard() {
               onClick={() => setActiveTab('overview')}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
                 activeTab === 'overview'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-black text-white shadow-md'
                   : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -826,7 +826,7 @@ export default function AgentDashboard() {
               onClick={() => setActiveTab('messages')}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all relative ${
                 activeTab === 'messages'
-                  ? 'bg-blue-600 text-white shadow-md'
+                  ? 'bg-black text-white shadow-md'
                   : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -862,7 +862,7 @@ export default function AgentDashboard() {
               <h2 className="text-2xl font-bold text-gray-900">Agent Profile</h2>
               <button
                 onClick={() => router.push('/profile-settings')}
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+                className="flex items-center gap-2 text-black hover:text-gray-900 font-semibold"
               >
                 <Edit className="w-5 h-5" />
                 Edit Profile
@@ -878,7 +878,7 @@ export default function AgentDashboard() {
                   {profile.agentServices && profile.agentServices.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {profile.agentServices.map((service, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        <span key={idx} className="px-3 py-1 bg-gray-100 text-blue-800 rounded-full text-sm">
                           {service}
                         </span>
                       ))}
@@ -889,7 +889,7 @@ export default function AgentDashboard() {
                 </div>
                 <button
                   onClick={() => setShowServicesModal(true)}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   {profile.agentServices?.length > 0 ? 'Edit' : 'Add'}
@@ -915,7 +915,7 @@ export default function AgentDashboard() {
                 </div>
                 <button
                   onClick={() => setShowRatesModal(true)}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   {Object.keys(profile.agentPricing || {}).length > 0 ? 'Edit' : 'Set'}
@@ -935,7 +935,7 @@ export default function AgentDashboard() {
                 </div>
                 <button
                   onClick={() => setShowCredentialsModal(true)}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2"
                 >
                   <UploadIcon className="w-4 h-4" />
                   Manage
@@ -962,7 +962,7 @@ export default function AgentDashboard() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <MessageSquare className="w-6 h-6 text-blue-600" />
+                  <MessageSquare className="w-6 h-6 text-black" />
                   Inbox
                   {unreadCount > 0 && (
                     <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full">
@@ -977,7 +977,7 @@ export default function AgentDashboard() {
                     onClick={() => setMessageFilter('all')}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                       messageFilter === 'all'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -987,7 +987,7 @@ export default function AgentDashboard() {
                     onClick={() => setMessageFilter('unread')}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                       messageFilter === 'unread'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -997,7 +997,7 @@ export default function AgentDashboard() {
                     onClick={() => setMessageFilter('read')}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                       messageFilter === 'read'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -1039,7 +1039,7 @@ export default function AgentDashboard() {
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className="font-semibold text-gray-900">{message.senderName}</h3>
                               {message.status === 'unread' && (
-                                <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full">New</span>
+                                <span className="bg-black text-white text-xs px-2 py-0.5 rounded-full">New</span>
                               )}
                               {message.status === 'accepted' && (
                                 <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded-full">Accepted</span>
@@ -1099,7 +1099,7 @@ export default function AgentDashboard() {
                                 setSelectedMessage(message);
                                 setShowMessageModal(true);
                               }}
-                              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-semibold"
+                              className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 text-sm font-semibold"
                             >
                               View & Reply
                             </button>
@@ -1187,7 +1187,7 @@ export default function AgentDashboard() {
               <button
                 onClick={handleSendReply}
                 disabled={sendingReply || !replyText.trim()}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {sendingReply ? (
                   <>
@@ -1346,7 +1346,7 @@ export default function AgentDashboard() {
               <button
                 onClick={handleSaveEnhancedSettings}
                 disabled={saving}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50"
+                className="flex-1 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save Settings'}
               </button>
@@ -1395,7 +1395,7 @@ export default function AgentDashboard() {
               <button
                 onClick={handleSaveServices}
                 disabled={saving || selectedServices.length === 0}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
+                className="flex-1 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save Services'}
               </button>
@@ -1461,7 +1461,7 @@ export default function AgentDashboard() {
               <button
                 onClick={handleSaveRates}
                 disabled={saving}
-                className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
+                className="flex-1 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-all disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save Rates'}
               </button>
@@ -1499,7 +1499,7 @@ export default function AgentDashboard() {
                 />
               </label>
               {uploading && (
-                <p className="text-sm text-blue-600 mt-2 text-center">Uploading...</p>
+                <p className="text-sm text-black mt-2 text-center">Uploading...</p>
               )}
             </div>
 
@@ -1517,7 +1517,7 @@ export default function AgentDashboard() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-700 truncate">Document {idx + 1}</p>
-                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">View</a>
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-black hover:underline">View</a>
                           </div>
                         </div>
                       ) : (

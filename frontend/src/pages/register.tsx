@@ -10,23 +10,17 @@ import { isFirebaseConfigured } from '@/lib/firebase/config';
 
 export default function Register() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [role, setRole] = useState<UserRole>('candidate');
+  const [step, setStep] = useState(2); // Skip role selection, go directly to candidate sign up
+  const [role, setRole] = useState<UserRole>('candidate'); // Always candidate
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    // Check if there's a pre-selected role from URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const typeParam = urlParams.get('type');
-    if (typeParam === 'candidate') {
-      setRole('candidate');
-      setStep(2);
-    } else if (typeParam === 'agent') {
-      setRole('agent');
-      setStep(2);
-    }
+    // Always set role as candidate for register page
+    // Agent sign up is only available through footer "Become an Agent" link
+    setRole('candidate');
+    setStep(2);
 
     // Check for redirect result
     checkRedirectResult();

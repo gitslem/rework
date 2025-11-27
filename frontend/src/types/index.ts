@@ -39,6 +39,7 @@ export interface Profile {
   devices?: string[]; // ['Laptop', 'Desktop', 'Tablet']
   internetSpeed?: string; // 'Slow' | 'Medium' | 'Fast' | 'Very Fast'
   workingHours?: string; // 'Full-time' | 'Part-time' | 'Flexible'
+  agentResponseTime?: string; // Response time (e.g., '< 24 hours', '< 12 hours')
 
   // Agent specific - Platforms & Services
   platformsExperience?: string[]; // Platforms they have experience with
@@ -61,11 +62,12 @@ export interface Profile {
   agentServices: string[]; // ['Outlier AI', 'Alignerr', etc.]
   agentSuccessRate: number;
   agentTotalClients: number;
-  agentRating: number; // Average rating (0-5)
+  agentRating: number; // Average rating (0-5) - Deprecated, use averageRating instead
   agentVerificationStatus: 'pending' | 'verified' | 'rejected';
   agentVerifiedAt?: Timestamp;
   agentRejectedReason?: string;
-  agentPricing: Record<string, number>; // { 'Outlier AI': 100, 'Alignerr': 75 }
+  agentPricing?: { basePrice: number; currency: string }; // Pricing structure
+  isFree?: boolean; // Whether the agent offers free service (default: true)
   agentPortfolio: PortfolioItem[];
   agentBio?: string; // Agent bio/description
   paypalEmail?: string;

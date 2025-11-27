@@ -214,11 +214,7 @@ export default function Terms() {
                 If you have questions about these Terms, please contact us at:
               </p>
               <p className="text-gray-700 mt-4">
-                <strong>Email:</strong> support@remote-works.io<br />
-                <strong>Phone:</strong> +1 (647) 982-1234<br />
-                <strong>Mail:</strong> Remote-Works Legal Department<br />
-                5 Buttermill Avenue<br />
-                Concord, ON L4K 3X2, Canada
+                <strong>Email:</strong> support@remote-works.io
               </p>
             </section>
           </div>

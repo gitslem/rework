@@ -349,39 +349,6 @@ export default function Platforms() {
           </div>
         </section>
 
-        {/* Benefits Section */}
-        <section className="py-20 px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
-                Why Use Remote-Works?
-              </h2>
-              <p className="text-xl text-gray-600">
-                The smartest way to access multiple platforms
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {benefits.map((benefit, index) => (
-                <div
-                  key={index}
-                  className="group text-center"
-                >
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-black to-gray-700 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    {benefit.icon}
-                  </div>
-                  <h3 className="text-lg font-bold text-black mb-3">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-black text-white">
           <div className="max-w-4xl mx-auto text-center">
@@ -414,7 +381,7 @@ export default function Platforms() {
               100% Free to use
               <span className="mx-3">•</span>
               <Clock className="inline w-4 h-4 mr-1" />
-              Start earning in 24 hours
+              24/7 support
             </p>
           </div>
         </section>
