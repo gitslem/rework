@@ -19,9 +19,11 @@ interface Agent {
   reviews: number;
   successRate: number;
   price: number;
+  isFree: boolean;
   platforms: string[];
   location: string;
   responseTime: string;
+  bio?: string;
 }
 
 interface UserProfile {
@@ -268,9 +270,11 @@ export default function CandidateDashboard() {
               reviews: profileData.totalReviews || 0,
               successRate: profileData.agentSuccessRate || 95,
               price: profileData.agentPricing?.basePrice || 100,
+              isFree: profileData.isFree !== undefined ? profileData.isFree : true,
               platforms: profileData.agentServices || [],
               location: profileData.location || 'Unknown',
-              responseTime: '< 24 hours'
+              responseTime: '< 24 hours',
+              bio: profileData.bio || ''
             };
             console.log('Added approved agent:', agent.name, 'ID:', agent.id);
             agentsList.push(agent);
@@ -836,6 +840,13 @@ export default function CandidateDashboard() {
                               </div>
                             </div>
 
+                            {agent.bio && (
+                              <div className="mb-3">
+                                <p className="text-sm text-gray-600 mb-1 font-semibold">About:</p>
+                                <p className="text-sm text-gray-700 leading-relaxed">{agent.bio}</p>
+                              </div>
+                            )}
+
                             {agent.platforms.length > 0 && (
                               <div className="mb-3">
                                 <p className="text-sm text-gray-600 mb-2 font-semibold">Specializes in:</p>
@@ -851,10 +862,17 @@ export default function CandidateDashboard() {
                           </div>
 
                           <div className="flex flex-col justify-center items-end min-w-[180px]">
-                            <div className="text-center mb-4 px-4 py-3 bg-green-50 rounded-lg border border-green-200">
-                              <p className="text-2xl font-bold text-green-700">100% Free</p>
-                              <p className="text-xs text-green-600 font-medium">No charges - Complimentary service</p>
-                            </div>
+                            {agent.isFree ? (
+                              <div className="text-center mb-4 px-4 py-3 bg-green-50 rounded-lg border border-green-200">
+                                <p className="text-2xl font-bold text-green-700">100% Free</p>
+                                <p className="text-xs text-green-600 font-medium">No charges - Complimentary service</p>
+                              </div>
+                            ) : (
+                              <div className="text-center mb-4 px-4 py-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <p className="text-2xl font-bold text-blue-700">${agent.price}</p>
+                                <p className="text-xs text-blue-600 font-medium">Per successful placement</p>
+                              </div>
+                            )}
                             <button
                               onClick={() => handleRequestService(agent)}
                               className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
