@@ -25,6 +25,12 @@ interface Agent {
   responseTime: string;
   bio?: string;
   workingHours?: string;
+  agentWorkingHours?: {
+    start: string;
+    end: string;
+    timezone: string;
+    days: string[];
+  };
 }
 
 interface UserProfile {
@@ -276,7 +282,8 @@ export default function CandidateDashboard() {
               location: profileData.location || 'Unknown',
               responseTime: '< 24 hours',
               bio: profileData.bio || '',
-              workingHours: profileData.workingHours || 'Flexible'
+              workingHours: profileData.workingHours || 'Flexible',
+              agentWorkingHours: profileData.agentWorkingHours
             };
             console.log('Added approved agent:', agent.name, 'ID:', agent.id);
             agentsList.push(agent);
@@ -878,13 +885,37 @@ export default function CandidateDashboard() {
                                     <Clock className="w-4 h-4 text-gray-500" />
                                     <span className="font-medium">{agent.responseTime}</span>
                                   </span>
-                                  {agent.workingHours && (
-                                    <span className="flex items-center gap-2 text-gray-700">
-                                      <Briefcase className="w-4 h-4 text-gray-500" />
-                                      <span className="font-medium">{agent.workingHours}</span>
-                                    </span>
-                                  )}
                                 </div>
+                                {/* Detailed Availability Schedule */}
+                                {agent.agentWorkingHours && (
+                                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Briefcase className="w-4 h-4 text-gray-600" />
+                                      <span className="text-sm font-semibold text-gray-800">Availability Schedule</span>
+                                    </div>
+                                    <div className="space-y-1 text-sm text-gray-700">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-medium">Time:</span>
+                                        <span>{agent.agentWorkingHours.start} - {agent.agentWorkingHours.end}</span>
+                                        {agent.agentWorkingHours.timezone && (
+                                          <span className="text-xs text-gray-500">({agent.agentWorkingHours.timezone})</span>
+                                        )}
+                                      </div>
+                                      {agent.agentWorkingHours.days && agent.agentWorkingHours.days.length > 0 && (
+                                        <div className="flex items-start gap-2">
+                                          <span className="font-medium">Days:</span>
+                                          <div className="flex flex-wrap gap-1">
+                                            {agent.agentWorkingHours.days.map((day, idx) => (
+                                              <span key={idx} className="bg-black text-white px-2 py-0.5 rounded text-xs font-medium">
+                                                {day.substring(0, 3)}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                               <div className="text-right ml-4">
                                 <div className="flex items-center gap-1 text-yellow-500 mb-1">

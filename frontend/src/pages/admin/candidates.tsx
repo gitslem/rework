@@ -4,11 +4,11 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Mail, Calendar,
-  Award, Filter, Search, X, Shield, AlertCircle, Users, Star
+  Award, Filter, Search, X, Shield, AlertCircle, Users, Star, Trash2
 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp, setDoc, deleteDoc } from 'firebase/firestore';
 import { User as UserType } from '@/types';
 
 interface CandidateWithProfile extends UserType {
@@ -284,6 +284,44 @@ export default function AdminCandidates() {
     } catch (error: any) {
       console.error('Error unassigning agent:', error);
       alert('Failed to unassign agent: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteCandidate = async (candidateUid: string) => {
+    const confirmText = prompt(
+      'WARNING: This will permanently delete this candidate account. They will need to register again for access.\n\nType "DELETE" to confirm:'
+    );
+
+    if (confirmText !== 'DELETE') return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Delete profile document
+      await deleteDoc(doc(db, 'profiles', candidateUid));
+
+      // Delete user document
+      await deleteDoc(doc(db, 'users', candidateUid));
+
+      // Delete any agent assignments
+      const assignmentsQuery = query(
+        collection(db, 'agentAssignments'),
+        where('candidateId', '==', candidateUid)
+      );
+      const assignmentsSnapshot = await getDocs(assignmentsQuery);
+      for (const assignmentDoc of assignmentsSnapshot.docs) {
+        await deleteDoc(doc(db, 'agentAssignments', assignmentDoc.id));
+      }
+
+      alert('Candidate account deleted successfully. They will need to register again.');
+      setSelectedCandidate(null);
+      fetchCandidates();
+    } catch (error: any) {
+      console.error('Error deleting candidate:', error);
+      alert('Failed to delete candidate: ' + error.message);
     } finally {
       setActionLoading(false);
     }
@@ -691,6 +729,21 @@ export default function AdminCandidates() {
                     </button>
                   </div>
                 )}
+
+                {/* Delete Action - Available for all candidates */}
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <button
+                    onClick={() => handleDeleteCandidate(selectedCandidate.uid)}
+                    disabled={actionLoading}
+                    className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-black transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    <Trash2 className="w-5 h-5 mr-2" />
+                    Delete Candidate Account
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    This will permanently delete the account. They will need to re-register.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -4,10 +4,10 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Briefcase, Monitor,
-  Mail, Phone, Globe, Calendar, Award, Filter, Search, X, ArrowLeft
+  Mail, Phone, Globe, Calendar, Award, Filter, Search, X, ArrowLeft, Trash2
 } from 'lucide-react';
 import { getFirebaseFirestore } from '@/lib/firebase/config';
-import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp, deleteDoc } from 'firebase/firestore';
 import { Profile } from '@/types';
 
 interface AgentApplication extends Profile {
@@ -132,6 +132,44 @@ export default function AdminAgents() {
     } catch (error: any) {
       console.error('Error rejecting agent:', error);
       alert('Failed to reject agent: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteAgent = async (agentUid: string) => {
+    const confirmText = prompt(
+      'WARNING: This will permanently delete this agent account. They will need to register again for access.\n\nType "DELETE" to confirm:'
+    );
+
+    if (confirmText !== 'DELETE') return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Delete profile document
+      await deleteDoc(doc(db, 'profiles', agentUid));
+
+      // Delete user document
+      await deleteDoc(doc(db, 'users', agentUid));
+
+      // Delete any agent assignments
+      const assignmentsQuery = query(
+        collection(db, 'agentAssignments'),
+        where('agentId', '==', agentUid)
+      );
+      const assignmentsSnapshot = await getDocs(assignmentsQuery);
+      for (const assignmentDoc of assignmentsSnapshot.docs) {
+        await deleteDoc(doc(db, 'agentAssignments', assignmentDoc.id));
+      }
+
+      alert('Agent account deleted successfully. They will need to register again.');
+      setSelectedAgent(null);
+      fetchApplications();
+    } catch (error: any) {
+      console.error('Error deleting agent:', error);
+      alert('Failed to delete agent: ' + error.message);
     } finally {
       setActionLoading(false);
     }
@@ -664,6 +702,21 @@ export default function AdminAgents() {
                     <p className="text-sm text-red-700">{selectedAgent.agentRejectedReason}</p>
                   </div>
                 )}
+
+                {/* Delete Action - Available for all agents */}
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <button
+                    onClick={() => handleDeleteAgent(selectedAgent.uid)}
+                    disabled={actionLoading}
+                    className="w-full bg-gray-900 text-white px-6 py-3 rounded-lg font-semibold hover:bg-black transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    <Trash2 className="w-5 h-5 mr-2" />
+                    Delete Agent Account
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    This will permanently delete the account. They will need to re-register.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
