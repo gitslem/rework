@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Logo from './Logo';
 import { Mail, MapPin, Phone, Send, Linkedin, Star, CheckCircle, Loader } from 'lucide-react';
 import { getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
-import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
 
 export default function Footer() {
   const router = useRouter();
@@ -44,31 +44,12 @@ export default function Footer() {
       const db = getFirebaseFirestore();
       const emailLower = email.toLowerCase().trim();
 
-      // Check if email already exists
-      const q = query(
-        collection(db, 'newsletter_subscriptions'),
-        where('email', '==', emailLower)
-      );
-      const existingDocs = await getDocs(q);
-
-      if (!existingDocs.empty) {
-        setErrorMessage('This email is already subscribed');
-        setSubscriptionStatus('error');
-        setTimeout(() => {
-          setSubscriptionStatus('idle');
-          setErrorMessage('');
-        }, 3000);
-        return;
-      }
-
-      // Add new subscription
+      // Add new subscription (removed duplicate check as it requires read permission)
       await addDoc(collection(db, 'newsletter_subscriptions'), {
         email: emailLower,
         subscribedAt: Timestamp.now(),
         source: 'footer',
-        status: 'active',
-        ipAddress: null,
-        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null
+        status: 'active'
       });
 
       setSubscriptionStatus('success');
@@ -76,21 +57,25 @@ export default function Footer() {
       setTimeout(() => setSubscriptionStatus('idle'), 5000);
     } catch (error: any) {
       console.error('Subscription error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
 
       // Provide specific error messages
       if (error.code === 'permission-denied') {
-        setErrorMessage('Unable to subscribe. Please contact support.');
+        setErrorMessage('Please check Firebase rules. See browser console for details.');
       } else if (error.code === 'unavailable') {
         setErrorMessage('Service temporarily unavailable. Please try again later.');
+      } else if (error.code === 'already-exists') {
+        setErrorMessage('This email is already subscribed');
       } else {
-        setErrorMessage('Failed to subscribe. Please try again.');
+        setErrorMessage(`Error: ${error.message || 'Failed to subscribe. Please try again.'}`);
       }
 
       setSubscriptionStatus('error');
       setTimeout(() => {
         setSubscriptionStatus('idle');
         setErrorMessage('');
-      }, 3000);
+      }, 5000);
     }
   };
 
