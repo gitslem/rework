@@ -25,10 +25,10 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { number: "50K+", label: "Active Candidates", icon: <Users className="w-5 h-5" /> },
-    { number: "2.5K+", label: "Verified Agents", icon: <BadgeCheck className="w-5 h-5" /> },
+    { number: "24hr", label: "Response Time", icon: <Clock className="w-5 h-5" /> },
+    { number: "$3k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
     { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
-    { number: "24/7", label: "Support", icon: <Clock className="w-5 h-5" /> }
+    { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
   ];
 
   const platforms = [
@@ -572,55 +572,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Final CTA Section */}
-        <section className="relative py-32 px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-black text-white overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-10 left-10 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float"></div>
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '3s' }}></div>
-          </div>
-
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <div className="mb-6 animate-fade-in">
-              <span className="inline-block bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg px-6 py-2 rounded-full text-sm font-semibold border border-white border-opacity-30">
-                Start Your Journey Today
-              </span>
-            </div>
-
-            <h2 className="text-5xl md:text-7xl font-extrabold mb-6 animate-fade-in-up stagger-1">
-              Ready to Get
-              <span className="block mt-2">Approved?</span>
-            </h2>
-
-            <p className="text-xl md:text-2xl text-white text-opacity-90 mb-12 animate-fade-in-up stagger-2">
-              Join 50,000+ candidates who found success with our verified agents.
-            </p>
-
-            <div className="flex justify-center mb-10 animate-fade-in-scale stagger-3">
-              <button
-                onClick={() => router.push('/register?type=candidate')}
-                className="group bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-smooth hover-lift shadow-2xl"
-              >
-                <span className="flex items-center justify-center">
-                  Get Started Now
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-              </button>
-            </div>
-
-            <p className="text-sm text-white text-opacity-80 animate-fade-in stagger-4">
-              <CheckCircle className="inline w-4 h-4 mr-1" />
-              No credit card required
-              <span className="mx-3">•</span>
-              <Shield className="inline w-4 h-4 mr-1" />
-              100% Free to use
-              <span className="mx-3">•</span>
-              <Clock className="inline w-4 h-4 mr-1" />
-              24/7 support
-            </p>
           </div>
         </section>
 
