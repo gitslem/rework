@@ -57,6 +57,8 @@ class AIService:
     def _build_brief_prompt(self, description: str, project_type: str, reference_context: str = "") -> str:
         """Build the prompt template for brief generation"""
 
+        reference_section = f"REFERENCE CONTEXT:\n{reference_context}\n" if reference_context else ""
+
         return f"""You are an AI project scoping assistant for Relaywork, a platform connecting AI freelancers with companies.
 
 Your task is to transform a vague project description into a clear, structured project brief that freelancers can understand and bid on.
@@ -65,8 +67,7 @@ PROJECT TYPE: {project_type}
 CLIENT DESCRIPTION:
 {description}
 
-{f"REFERENCE CONTEXT:\\n{reference_context}\\n" if reference_context else ""}
-
+{reference_section}
 Generate a comprehensive project brief with the following structure. Return ONLY valid JSON:
 
 {{
