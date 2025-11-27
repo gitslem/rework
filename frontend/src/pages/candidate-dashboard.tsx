@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark, BadgeCheck, Bot
+  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark, BadgeCheck, Bot, Briefcase
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -24,6 +24,7 @@ interface Agent {
   location: string;
   responseTime: string;
   bio?: string;
+  workingHours?: string;
 }
 
 interface UserProfile {
@@ -274,7 +275,8 @@ export default function CandidateDashboard() {
               platforms: profileData.agentServices || [],
               location: profileData.location || 'Unknown',
               responseTime: '< 24 hours',
-              bio: profileData.bio || ''
+              bio: profileData.bio || '',
+              workingHours: profileData.workingHours || 'Flexible'
             };
             console.log('Added approved agent:', agent.name, 'ID:', agent.id);
             agentsList.push(agent);
@@ -818,7 +820,7 @@ export default function CandidateDashboard() {
 
               <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                  <BadgeCheck className="w-6 h-6 text-blue-600" />
+                  <BadgeCheck className="w-6 h-6 text-black" />
                   Agents Assigned to You
                 </h2>
 
@@ -836,7 +838,7 @@ export default function CandidateDashboard() {
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <a
                           href="mailto:support@remote-works.io"
-                          className="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all"
+                          className="inline-flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-all"
                         >
                           <Mail className="w-4 h-4" />
                           Contact Support
@@ -845,7 +847,7 @@ export default function CandidateDashboard() {
                           href="https://t.me/remote_worksio"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-2 bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-900 transition-all"
+                          className="inline-flex items-center justify-center gap-2 bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-900 transition-all"
                         >
                           <Send className="w-4 h-4" />
                           Telegram
@@ -854,53 +856,63 @@ export default function CandidateDashboard() {
                     </div>
                   ) : (
                     filteredAgents.map((agent) => (
-                      <div key={agent.id} className="border-2 border-blue-200 bg-gradient-to-r from-blue-50/50 to-white rounded-xl p-6 hover:shadow-xl transition-all hover:border-blue-400">
-                        <div className="flex flex-col md:flex-row justify-between gap-4">
+                      <div key={agent.id} className="border-2 border-gray-200 bg-white rounded-xl p-6 hover:shadow-2xl transition-all hover:border-gray-400">
+                        <div className="flex flex-col lg:flex-row justify-between gap-6">
                           <div className="flex-1">
-                            <div className="flex items-start justify-between mb-3">
-                              <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <h3 className="text-xl font-bold text-gray-900">{agent.name}</h3>
-                                  <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded-full">
-                                    Admin Verified
+                            {/* Header Section */}
+                            <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <h3 className="text-2xl font-bold text-gray-900">{agent.name}</h3>
+                                  <span className="bg-black text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
+                                    <CheckCircle className="w-3 h-3" />
+                                    Verified
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                                  <span className="flex items-center gap-1">
-                                    <MapPin className="w-4 h-4" />
-                                    {agent.location}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                                  <span className="flex items-center gap-2 text-gray-700">
+                                    <MapPin className="w-4 h-4 text-gray-500" />
+                                    <span className="font-medium">{agent.location}</span>
                                   </span>
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-4 h-4" />
-                                    {agent.responseTime}
+                                  <span className="flex items-center gap-2 text-gray-700">
+                                    <Clock className="w-4 h-4 text-gray-500" />
+                                    <span className="font-medium">{agent.responseTime}</span>
                                   </span>
+                                  {agent.workingHours && (
+                                    <span className="flex items-center gap-2 text-gray-700">
+                                      <Briefcase className="w-4 h-4 text-gray-500" />
+                                      <span className="font-medium">{agent.workingHours}</span>
+                                    </span>
+                                  )}
                                 </div>
                               </div>
-                              <div className="text-right">
+                              <div className="text-right ml-4">
                                 <div className="flex items-center gap-1 text-yellow-500 mb-1">
                                   <Star className="w-5 h-5 fill-current" />
-                                  <span className="font-bold text-gray-900">{agent.rating.toFixed(1)}</span>
+                                  <span className="font-bold text-gray-900 text-lg">{agent.rating.toFixed(1)}</span>
                                   {agent.reviews > 0 && (
                                     <span className="text-gray-500 text-sm">({agent.reviews})</span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600">{agent.successRate}% success rate</p>
+                                <p className="text-sm font-semibold text-gray-700">{agent.successRate}% success</p>
                               </div>
                             </div>
 
+                            {/* Bio Section */}
                             {agent.bio && (
-                              <div className="mb-3">
-                                <p className="text-sm text-gray-600 mb-1 font-semibold">About:</p>
+                              <div className="mb-4 pb-4 border-b border-gray-200">
+                                <p className="text-sm text-gray-600 mb-2 font-semibold uppercase tracking-wide">About</p>
                                 <p className="text-sm text-gray-700 leading-relaxed">{agent.bio}</p>
                               </div>
                             )}
 
+                            {/* Platforms Section */}
                             {agent.platforms.length > 0 && (
-                              <div className="mb-3">
-                                <p className="text-sm text-gray-600 mb-2 font-semibold">Specializes in:</p>
+                              <div>
+                                <p className="text-sm text-gray-600 mb-2 font-semibold uppercase tracking-wide">Specializations</p>
                                 <div className="flex flex-wrap gap-2">
                                   {agent.platforms.map((platform, idx) => (
-                                    <span key={idx} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-200 transition-colors">
                                       {platform}
                                     </span>
                                   ))}
@@ -909,16 +921,17 @@ export default function CandidateDashboard() {
                             )}
                           </div>
 
-                          <div className="flex flex-col justify-center items-end min-w-[180px]">
+                          {/* Right Side - Pricing & Action */}
+                          <div className="flex flex-col justify-between items-center lg:items-end min-w-[200px] space-y-4">
                             {!agent.isFree && (
-                              <div className="text-center mb-4 px-4 py-3 bg-blue-50 rounded-lg border border-blue-200">
-                                <p className="text-2xl font-bold text-blue-700">${agent.price}</p>
-                                <p className="text-xs text-blue-600 font-medium">Per successful placement</p>
+                              <div className="text-center px-5 py-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 shadow-sm">
+                                <p className="text-3xl font-bold text-gray-900">${agent.price}</p>
+                                <p className="text-xs text-gray-600 font-medium mt-1">Per placement</p>
                               </div>
                             )}
                             <button
                               onClick={() => handleRequestService(agent)}
-                              className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                              className="w-full bg-black text-white px-6 py-3.5 rounded-lg font-semibold hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                             >
                               <Send className="w-4 h-4" />
                               Contact Agent
@@ -938,7 +951,7 @@ export default function CandidateDashboard() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <MessageSquare className="w-6 h-6 text-blue-600" />
+                  <MessageSquare className="w-6 h-6 text-black" />
                   Messages
                   {unreadCount > 0 && (
                     <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full">
