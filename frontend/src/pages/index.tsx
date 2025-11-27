@@ -4,7 +4,8 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home, Coffee, Wifi, Monitor
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor,
+  Laptop, Headphones, Globe, Code, Lightbulb, Database, Server, Smartphone
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -347,21 +348,124 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-animated text-white">
-          <div className="max-w-6xl mx-auto">
+        {/* Stats Section with Animated Remote Work Icons */}
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-hidden">
+          {/* Animated Background - Remote Work Icons */}
+          <div className="absolute inset-0 overflow-hidden opacity-10">
+            {/* Floating Icons Row 1 */}
+            <div className="absolute top-10 left-10 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
+              <Laptop className="w-16 h-16 text-white" />
+            </div>
+            <div className="absolute top-20 right-20 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
+              <Coffee className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute top-32 left-1/4 animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}>
+              <Wifi className="w-12 h-12 text-white" />
+            </div>
+
+            {/* Floating Icons Row 2 */}
+            <div className="absolute top-48 right-1/3 animate-float" style={{ animationDelay: '0.5s', animationDuration: '9s' }}>
+              <Monitor className="w-18 h-18 text-white" />
+            </div>
+            <div className="absolute top-56 left-16 animate-float" style={{ animationDelay: '1.5s', animationDuration: '11s' }}>
+              <Headphones className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute top-64 right-1/4 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
+              <Globe className="w-16 h-16 text-white" />
+            </div>
+
+            {/* Floating Icons Row 3 - Middle */}
+            <div className="absolute top-1/2 left-12 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
+              <Code className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute top-1/2 right-16 animate-float" style={{ animationDelay: '2s', animationDuration: '14s' }}>
+              <Lightbulb className="w-12 h-12 text-white" />
+            </div>
+            <div className="absolute top-1/3 left-1/2 animate-float" style={{ animationDelay: '3s', animationDuration: '11s' }}>
+              <HomeIcon className="w-20 h-20 text-white" />
+            </div>
+
+            {/* Floating Icons Row 4 - Bottom */}
+            <div className="absolute bottom-20 left-1/4 animate-float" style={{ animationDelay: '0.5s', animationDuration: '12s' }}>
+              <Database className="w-14 h-14 text-white" />
+            </div>
+            <div className="absolute bottom-32 right-1/3 animate-float" style={{ animationDelay: '1.5s', animationDuration: '9s' }}>
+              <Server className="w-16 h-16 text-white" />
+            </div>
+            <div className="absolute bottom-16 left-20 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
+              <Smartphone className="w-12 h-12 text-white" />
+            </div>
+            <div className="absolute bottom-24 right-20 animate-float" style={{ animationDelay: '3.5s', animationDuration: '10s' }}>
+              <Rocket className="w-18 h-18 text-white" />
+            </div>
+
+            {/* Additional Smaller Icons for Depth */}
+            <div className="absolute top-1/4 right-1/2 animate-float" style={{ animationDelay: '4s', animationDuration: '15s' }}>
+              <Zap className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute bottom-1/3 left-1/3 animate-float" style={{ animationDelay: '0.8s', animationDuration: '8s' }}>
+              <Star className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute top-3/4 right-1/4 animate-float" style={{ animationDelay: '1.8s', animationDuration: '11s' }}>
+              <Target className="w-10 h-10 text-white" />
+            </div>
+          </div>
+
+          {/* Stats Content */}
+          <div className="max-w-6xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-white border-opacity-20 mb-6">
+                <TrendingUp className="w-5 h-5 text-white" />
+                <span className="text-white text-sm font-semibold">Our Impact</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+                Trusted by Remote Workers Worldwide
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Join thousands of successful remote workers who found their dream opportunities through our platform
+              </p>
+            </div>
+
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
               {stats.map((stat, index) => (
-                <div key={index} className={`text-center animate-fade-in-up stagger-${index + 1}`}>
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white text-black rounded-2xl mb-4 shadow-lg hover-lift animate-float" style={{ animationDelay: `${index * 0.5}s` }}>
-                    {stat.icon}
+                <div key={index} className={`text-center group animate-fade-in-up stagger-${index + 1}`}>
+                  {/* Icon Container with Glow Effect */}
+                  <div className="relative inline-flex items-center justify-center mb-6">
+                    {/* Glow Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+
+                    {/* Icon */}
+                    <div className="relative w-20 h-20 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-2 border-white border-opacity-30 rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float transform group-hover:scale-110 transition-transform" style={{ animationDelay: `${index * 0.5}s` }}>
+                      <div className="text-white">
+                        {stat.icon}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-5xl font-extrabold mb-2">{stat.number}</div>
-                  <div className="text-sm text-gray-300 font-semibold tracking-wide">{stat.label}</div>
+
+                  {/* Number with Gradient */}
+                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent">
+                    {stat.number}
+                  </div>
+
+                  {/* Label */}
+                  <div className="text-sm md:text-base text-gray-300 font-semibold tracking-wide uppercase">
+                    {stat.label}
+                  </div>
+
+                  {/* Decorative Line */}
+                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Decorative Grid Pattern Overlay */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+            backgroundSize: '50px 50px'
+          }}></div>
         </section>
 
         {/* How It Works Section */}
@@ -560,7 +664,7 @@ export default function Home() {
                 <div className="grid grid-cols-4 gap-4 pt-4">
                   <div className="flex flex-col items-center space-y-2">
                     <div className="w-12 h-12 bg-white bg-opacity-10 rounded-lg flex items-center justify-center backdrop-filter backdrop-blur-lg border border-white border-opacity-20">
-                      <Home className="w-6 h-6 text-white" />
+                      <HomeIcon className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-xs text-gray-400 text-center">Home Office</span>
                   </div>

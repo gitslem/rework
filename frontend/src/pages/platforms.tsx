@@ -158,8 +158,8 @@ export default function Platforms() {
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: 'Money-Back Guarantee',
-      description: 'Only pay when you get approved - risk-free process'
+      title: '100% Free to Use',
+      description: 'Connect with agents for free - no subscription fees or hidden charges'
     }
   ];
 
@@ -259,7 +259,7 @@ export default function Platforms() {
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
                 <Shield className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-700">Money-Back Guarantee</span>
+                <span className="text-gray-700">100% Free Platform</span>
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
                 <Clock className="w-4 h-4 text-purple-600" />
@@ -411,7 +411,7 @@ export default function Platforms() {
               No credit card required
               <span className="mx-3">•</span>
               <Shield className="inline w-4 h-4 mr-1" />
-              Money-back guarantee
+              100% Free to use
               <span className="mx-3">•</span>
               <Clock className="inline w-4 h-4 mr-1" />
               Start earning in 24 hours
