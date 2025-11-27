@@ -4,8 +4,9 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor,
-  Laptop, Headphones, Globe, Code, Lightbulb, Database, Server, Smartphone, Bot, Layers, DollarSign
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader,
+  Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones, Layers, DollarSign,
+  Laptop, Globe, Code, Lightbulb, Database, Server, Smartphone
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
