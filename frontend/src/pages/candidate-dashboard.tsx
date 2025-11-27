@@ -424,11 +424,11 @@ export default function CandidateDashboard() {
               <div className="flex justify-between items-center h-16 md:h-20">
                 <Logo showText={false} onClick={() => router.push('/')} />
                 <div className="flex items-center space-x-4">
-                  <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                  <button onClick={() => router.push('/candidate-projects')} className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors">
                     <FileText className="w-5 h-5" />
                     <span className="hidden md:inline">Projects</span>
                   </button>
-                  <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                  <button onClick={() => router.push('/profile-settings')} className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors">
                     <Settings className="w-5 h-5" />
                     <span className="hidden md:inline">Settings</span>
                   </button>
@@ -452,7 +452,7 @@ export default function CandidateDashboard() {
             {/* Show user's profile while waiting */}
             <div className="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <User className="w-6 h-6 text-blue-600" />
+                <User className="w-6 h-6 text-black" />
                 Your Profile
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
@@ -530,7 +530,7 @@ export default function CandidateDashboard() {
               <div className="hidden md:flex items-center space-x-4">
                 <button
                   onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Profile"
                 >
                   <User className="w-5 h-5" />
@@ -538,7 +538,7 @@ export default function CandidateDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab('search')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'search' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'search' ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Assigned Agents"
                 >
                   <Search className="w-5 h-5" />
@@ -554,7 +554,7 @@ export default function CandidateDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab('messages')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Messages"
                 >
                   <MessageSquare className="w-5 h-5" />
