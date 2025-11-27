@@ -4,7 +4,7 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -94,8 +94,8 @@ export default function Home() {
     },
     {
       step: "03",
-      title: "Browse Agents",
-      description: "Find verified agents specializing in your platforms of interest."
+      title: "AI Matches Agents",
+      description: "Our AI and admin team assign the best verified agents for your needs."
     },
     {
       step: "04",
@@ -254,9 +254,10 @@ export default function Home() {
               {/* Sliding Badge */}
               <div className="relative w-full overflow-hidden h-12 flex items-center">
                 <div className="absolute animate-slide whitespace-nowrap">
-                  <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg">
-                    <Sparkles className="w-4 h-4 animate-pulse-custom" />
-                    <span className="font-semibold text-sm">Trusted by 50,000+ Worldwide</span>
+                  <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg">
+                    <Bot className="w-4 h-4" />
+                    <span className="font-semibold text-sm">Personalized Support + AI Powered</span>
+                    <Headphones className="w-4 h-4" />
                   </div>
                 </div>
               </div>
