@@ -280,7 +280,7 @@ export default function CandidateDashboard() {
               isFree: profileData.isFree !== undefined ? profileData.isFree : true,
               platforms: profileData.agentServices || [],
               location: profileData.location || 'Unknown',
-              responseTime: '< 24 hours',
+              responseTime: profileData.agentResponseTime || '< 24 hours',
               bio: profileData.bio || '',
               workingHours: profileData.workingHours || 'Flexible',
               agentWorkingHours: profileData.agentWorkingHours
@@ -973,6 +973,30 @@ export default function CandidateDashboard() {
                     ))
                   )}
                 </div>
+
+                {/* Support Contact Section */}
+                {filteredAgents.length > 0 && (
+                  <div className="mt-8 bg-gray-50 border-2 border-gray-200 rounded-xl p-6 text-center">
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      <strong className="text-gray-900">Need more agents?</strong> Contact our support team at{' '}
+                      <a
+                        href="mailto:support@remote-works.io"
+                        className="text-black font-semibold hover:underline"
+                      >
+                        support@remote-works.io
+                      </a>{' '}
+                      or via{' '}
+                      <a
+                        href="https://t.me/remote_worksio"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-black font-semibold hover:underline"
+                      >
+                        Telegram
+                      </a>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

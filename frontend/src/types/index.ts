@@ -39,6 +39,7 @@ export interface Profile {
   devices?: string[]; // ['Laptop', 'Desktop', 'Tablet']
   internetSpeed?: string; // 'Slow' | 'Medium' | 'Fast' | 'Very Fast'
   workingHours?: string; // 'Full-time' | 'Part-time' | 'Flexible'
+  agentResponseTime?: string; // Response time (e.g., '< 24 hours', '< 12 hours')
 
   // Agent specific - Platforms & Services
   platformsExperience?: string[]; // Platforms they have experience with

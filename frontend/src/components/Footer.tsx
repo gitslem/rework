@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Phone, Send, Star } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, Star, BookOpen } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
@@ -126,10 +126,18 @@ export default function Footer() {
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
                 Online
               </h4>
-              <p className="text-sm text-gray-500 mb-4">
-                reach out to us.
-              </p>
               <div className="space-y-3">
+                {/* Blog */}
+                <a
+                  href="/blog"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-medium">Blog</span>
+                </a>
+
                 {/* Telegram */}
                 <a
                   href="https://t.me/remote_worksio"
