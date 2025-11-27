@@ -349,43 +349,6 @@ export default function Platforms() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-black text-white">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-6xl font-extrabold mb-6">
-              Ready to Start Earning on
-              <span className="block mt-2">Multiple Platforms?</span>
-            </h2>
-
-            <p className="text-xl text-white text-opacity-90 mb-12">
-              Sign up on Remote-Works today and get expert help to get approved on all platforms. Maximize your remote earnings and join 50,000+ successful candidates.
-            </p>
-
-            <div className="flex justify-center gap-4 mb-8">
-              <button
-                onClick={() => router.push('/register?type=candidate')}
-                className="group bg-white text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-all hover-lift shadow-2xl"
-              >
-                <span className="flex items-center">
-                  Sign Up Now
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-              </button>
-            </div>
-
-            <p className="text-sm text-white text-opacity-80">
-              <CheckCircle className="inline w-4 h-4 mr-1" />
-              No credit card required
-              <span className="mx-3">•</span>
-              <Shield className="inline w-4 h-4 mr-1" />
-              100% Free to use
-              <span className="mx-3">•</span>
-              <Clock className="inline w-4 h-4 mr-1" />
-              24/7 support
-            </p>
-          </div>
-        </section>
-
         <Footer />
       </div>
     </>
