@@ -6,7 +6,7 @@ import {
   BadgeCheck, UserCheck, Building2, Sparkles,
   Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader,
   Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones, Layers, DollarSign,
-  Laptop, Globe, Code, Lightbulb, Database, Server, Smartphone
+  Laptop, Globe, Code, Lightbulb, Database, Server, Smartphone, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -19,6 +19,7 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
@@ -88,8 +89,8 @@ export default function Home() {
     },
     {
       step: "03",
-      title: "Browse Agents",
-      description: "Find verified agents specializing in your platforms of interest."
+      title: "Browse AI Assistants",
+      description: "Find AI-powered assistants specializing in your platforms of interest."
     },
     {
       step: "04",
@@ -113,6 +114,11 @@ export default function Home() {
       quote: "My agent knew exactly what platforms look for. Got approved on 3 services in 2 weeks.",
       author: "Priya S.",
       role: "AI Trainer"
+    },
+    {
+      quote: "The AI-powered assistance made the application process so smooth. Started earning within days!",
+      author: "David L.",
+      role: "Content Moderator"
     }
   ];
 
@@ -242,8 +248,8 @@ export default function Home() {
             <div className="text-center space-y-8">
               {/* Badge */}
               <div className={`inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
-                <Sparkles className="w-4 h-4 animate-pulse-custom" />
-                <span className="font-semibold text-sm">Trusted by 50,000+ Worldwide</span>
+                <Bot className="w-4 h-4 animate-pulse-custom" />
+                <span className="font-semibold text-sm">Personalized Support + AI Powered</span>
               </div>
 
               {/* Main Headline */}
@@ -539,7 +545,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Testimonials Section - Slider */}
         <section className="py-24 px-6 lg:px-8 bg-black text-white">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -547,30 +553,67 @@ export default function Home() {
                 Success Stories
               </h2>
               <p className="text-xl text-gray-400">
-                Join thousands who found success with our verified agents
+                Join thousands who found success with our AI-powered platform
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="bg-gray-900 rounded-2xl p-8 border border-gray-800 hover:border-gray-700 transition-all">
-                  <div className="flex gap-1 mb-6">
+            {/* Slider Container */}
+            <div className="relative">
+              {/* Testimonial Card */}
+              <div className="max-w-4xl mx-auto">
+                <div className="bg-gray-900 rounded-2xl p-12 border border-gray-800 transition-all">
+                  <div className="flex gap-1 mb-8 justify-center">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-white fill-white" />
+                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                     ))}
                   </div>
-                  <p className="text-white leading-relaxed mb-6">{testimonial.quote}</p>
-                  <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center font-bold text-sm border border-gray-700">
-                      {testimonial.author[0]}
+                  <p className="text-white text-xl leading-relaxed mb-8 text-center">
+                    "{testimonials[currentTestimonial].quote}"
+                  </p>
+                  <div className="flex items-center justify-center">
+                    <div className="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center font-bold text-lg border-2 border-gray-700">
+                      {testimonials[currentTestimonial].author[0]}
                     </div>
-                    <div className="ml-4">
-                      <div className="font-bold text-sm">{testimonial.author}</div>
-                      <div className="text-xs text-gray-400">{testimonial.role}</div>
+                    <div className="ml-4 text-left">
+                      <div className="font-bold text-base">{testimonials[currentTestimonial].author}</div>
+                      <div className="text-sm text-gray-400">{testimonials[currentTestimonial].role}</div>
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Navigation Buttons */}
+              <div className="flex items-center justify-center gap-4 mt-8">
+                <button
+                  onClick={() => setCurrentTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center"
+                  aria-label="Previous testimonial"
+                >
+                  <ChevronLeft className="w-6 h-6 text-white" />
+                </button>
+
+                {/* Dots Indicator */}
+                <div className="flex gap-2">
+                  {testimonials.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentTestimonial(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        currentTestimonial === index ? 'bg-white w-8' : 'bg-gray-600'
+                      }`}
+                      aria-label={`Go to testimonial ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center"
+                  aria-label="Next testimonial"
+                >
+                  <ChevronRight className="w-6 h-6 text-white" />
+                </button>
+              </div>
             </div>
           </div>
         </section>
