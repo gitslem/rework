@@ -25,10 +25,10 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { number: "50K+", label: "Active Candidates", icon: <Users className="w-5 h-5" /> },
-    { number: "2.5K+", label: "Verified Agents", icon: <BadgeCheck className="w-5 h-5" /> },
+    { number: "24hr", label: "Response Time", icon: <Clock className="w-5 h-5" /> },
+    { number: "$3k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
     { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
-    { number: "24/7", label: "Support", icon: <Clock className="w-5 h-5" /> }
+    { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
   ];
 
   const platforms = [
