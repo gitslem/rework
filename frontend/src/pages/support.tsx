@@ -47,7 +47,7 @@ export default function Support() {
     {
       icon: <MessageSquare className="w-8 h-8" />,
       title: "Location",
-      description: "5 Buttermill Avenue, Concord, ON L4K 3X2",
+      description: "5 buttermill ave L4K 0J5, CA",
       detail: "Canada Office",
       color: "bg-gray-700"
     }
@@ -271,7 +271,7 @@ export default function Support() {
                     <p><span className="font-semibold">Email Support:</span> 24/7 (Response within 24 hours)</p>
                     <p><span className="font-semibold">Phone Support:</span> +1 (647) 982-1234</p>
                     <p><span className="font-semibold">Phone Hours:</span> Monday - Friday, 9 AM - 6 PM EST</p>
-                    <p><span className="font-semibold">Address:</span> 5 Buttermill Avenue, Concord, ON L4K 3X2, Canada</p>
+                    <p><span className="font-semibold">Address:</span> 5 buttermill ave L4K 0J5, CA</p>
                     <p className="text-sm text-gray-600 mt-4">We're here to help! Reach out anytime for support.</p>
                   </div>
                 </div>

@@ -10,7 +10,7 @@ export default function Footer() {
       {/* Main Footer Content */}
       <div className="py-12 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {/* Brand Section */}
             <div className="lg:col-span-2">
               <div className="flex items-start mb-4">
@@ -34,7 +34,7 @@ export default function Footer() {
                 </div>
                 <div className="flex items-start space-x-2">
                   <MapPin className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <span>5 Buttermill Avenue, Concord, ON L4K 3X2, Canada</span>
+                  <span>5 buttermill ave L4K 0J5, CA</span>
                 </div>
               </div>
             </div>
@@ -63,51 +63,10 @@ export default function Footer() {
                 </li>
                 <li>
                   <button
-                    onClick={() => router.push('/agents')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Browse Agents
-                  </button>
-                </li>
-                <li>
-                  <button
                     onClick={() => router.push('/faq')}
                     className="hover:text-white transition-colors inline-block"
                   >
                     FAQ
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* For Agents */}
-            <div>
-              <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                For Agents
-              </h4>
-              <ul className="space-y-3 text-sm">
-                <li>
-                  <button
-                    onClick={() => router.push('/agent-signup')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Become an Agent
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push('/agent-signup#how-it-works')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Agent Benefits
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push('/support')}
-                    className="hover:text-white transition-colors inline-block"
-                  >
-                    Get Support
                   </button>
                 </li>
               </ul>
