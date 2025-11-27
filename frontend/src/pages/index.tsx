@@ -4,7 +4,7 @@ import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
   BadgeCheck, UserCheck, Building2, Sparkles,
-  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones
+  Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader, Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones, Layers, DollarSign
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -31,10 +31,30 @@ export default function Home() {
   }, []);
 
   const stats = [
-    { number: "50K+", label: "Active Candidates", icon: <Users className="w-5 h-5" /> },
-    { number: "2.5K+", label: "Verified Agents", icon: <BadgeCheck className="w-5 h-5" /> },
-    { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
-    { number: "24/7", label: "Support", icon: <Clock className="w-5 h-5" /> }
+    {
+      number: "20+",
+      label: "Platforms Supported",
+      description: "We help you get approved on all major remote gig platforms",
+      icon: <Layers className="w-6 h-6" />
+    },
+    {
+      number: "98%",
+      label: "Success Rate",
+      description: "Our agents have a proven track record of successful approvals",
+      icon: <Star className="w-6 h-6" />
+    },
+    {
+      number: "24hr",
+      label: "Response Time",
+      description: "Get matched with an agent and start within 24 hours",
+      icon: <Zap className="w-6 h-6" />
+    },
+    {
+      number: "$3k+",
+      label: "Avg. Monthly Income",
+      description: "Candidates earn on average across multiple platforms",
+      icon: <DollarSign className="w-6 h-6" />
+    }
   ];
 
   const platforms = [
@@ -389,17 +409,88 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-animated text-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+        {/* Stats Section - Redesigned with Work From Home Theme */}
+        <section className="relative py-32 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-800">
+          {/* Work From Home Background Elements */}
+          <div className="absolute inset-0 -z-10">
+            {/* Animated gradient blobs */}
+            <div className="absolute top-20 left-10 w-96 h-96 bg-purple-900 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-900 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-900 rounded-full mix-blend-overlay filter blur-3xl opacity-10 animate-float" style={{ animationDelay: '4s' }}></div>
+
+            {/* Floating work-from-home icons in background */}
+            <div className="absolute top-20 left-[8%] opacity-5 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
+              <Monitor className="w-24 h-24 text-white" />
+            </div>
+            <div className="absolute bottom-24 right-[12%] opacity-5 animate-float" style={{ animationDelay: '2s', animationDuration: '9s' }}>
+              <Coffee className="w-20 h-20 text-white" />
+            </div>
+            <div className="absolute top-40 right-[15%] opacity-5 animate-float" style={{ animationDelay: '3s', animationDuration: '7s' }}>
+              <Wifi className="w-20 h-20 text-white" />
+            </div>
+            <div className="absolute bottom-40 left-[10%] opacity-5 animate-float" style={{ animationDelay: '1s', animationDuration: '8.5s' }}>
+              <HomeIcon className="w-24 h-24 text-white" />
+            </div>
+
+            {/* Grid pattern overlay */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+              backgroundSize: '60px 60px'
+            }}></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="text-center mb-16 animate-fade-in-up">
+              <div className="inline-flex items-center space-x-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-white border-opacity-20 mb-6">
+                <Sparkles className="w-5 h-5 text-white" />
+                <span className="text-white text-sm font-semibold">Why Choose Us</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight">
+                Why Remote-Works is #1 for
+                <span className="block mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  Remote Gigs
+                </span>
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                The most efficient way to maximize your remote earning potential
+              </p>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
               {stats.map((stat, index) => (
-                <div key={index} className={`text-center animate-fade-in-up stagger-${index + 1}`}>
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white text-black rounded-2xl mb-4 shadow-lg hover-lift animate-float" style={{ animationDelay: `${index * 0.5}s` }}>
-                    {stat.icon}
+                <div
+                  key={index}
+                  className={`group relative bg-white bg-opacity-5 backdrop-filter backdrop-blur-xl rounded-2xl p-8 border border-white border-opacity-10 hover:border-opacity-30 transition-all duration-500 hover-lift animate-fade-in-scale stagger-${index + 1}`}
+                >
+                  {/* Glow effect on hover */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-500"></div>
+
+                  {/* Content */}
+                  <div className="relative">
+                    {/* Icon */}
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl mb-6 shadow-xl animate-float group-hover:scale-110 transition-transform duration-300" style={{ animationDelay: `${index * 0.3}s` }}>
+                      <div className="text-white">
+                        {stat.icon}
+                      </div>
+                    </div>
+
+                    {/* Number */}
+                    <div className="text-5xl md:text-6xl font-extrabold text-white mb-3 group-hover:scale-105 transition-transform duration-300">
+                      {stat.number}
+                    </div>
+
+                    {/* Label */}
+                    <div className="text-lg font-bold text-gray-200 mb-3">
+                      {stat.label}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      {stat.description}
+                    </p>
                   </div>
-                  <div className="text-5xl font-extrabold mb-2">{stat.number}</div>
-                  <div className="text-sm text-gray-300 font-semibold tracking-wide">{stat.label}</div>
                 </div>
               ))}
             </div>
