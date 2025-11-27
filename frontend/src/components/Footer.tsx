@@ -69,6 +69,14 @@ export default function Footer() {
                     FAQ
                   </button>
                 </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/agent-signup')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Become an Agent
+                  </button>
+                </li>
               </ul>
             </div>
 
