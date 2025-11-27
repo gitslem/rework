@@ -95,7 +95,7 @@ export default function Home() {
     {
       step: "03",
       title: "AI Matches Agents",
-      description: "Our AI and admin team assign the best verified agents for your needs."
+      description: "Our AI intelligently assigns the best verified agents tailored to your needs."
     },
     {
       step: "04",
@@ -254,10 +254,10 @@ export default function Home() {
               {/* Sliding Badge */}
               <div className="relative w-full overflow-hidden h-12 flex items-center">
                 <div className="absolute animate-slide whitespace-nowrap">
-                  <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg">
-                    <Bot className="w-4 h-4" />
-                    <span className="font-semibold text-sm">Personalized Support + AI Powered</span>
+                  <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-black to-gray-800 text-white px-6 py-3 rounded-full shadow-lg">
                     <Headphones className="w-4 h-4" />
+                    <span className="font-semibold text-sm">Personalized Support + AI Powered</span>
+                    <Bot className="w-4 h-4" />
                   </div>
                 </div>
               </div>
