@@ -58,8 +58,8 @@ export default function AgentSignup() {
   ];
 
   useEffect(() => {
-    // Only check auth if not on type selection step
-    if (step !== 'type-selection') {
+    // Only check auth for google and form steps (not for type-selection or company-form)
+    if (step !== 'type-selection' && step !== 'company-form') {
       checkAuth();
     } else {
       setLoading(false);
