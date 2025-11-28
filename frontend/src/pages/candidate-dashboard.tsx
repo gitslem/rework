@@ -807,19 +807,9 @@ export default function CandidateDashboard() {
                         AI Powered
                       </span>
                     </h3>
-                    <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                    <p className="text-gray-700 text-sm leading-relaxed">
                       Our advanced AI has intelligently matched you with verified agents based on your profile, goals, and platform preferences.
                       These carefully selected agents have proven track records and will work with you personally to maximize your approval chances.
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      <strong>Need more agents?</strong> Contact our support team at{' '}
-                      <a href="mailto:support@remote-works.io" className="text-blue-600 hover:text-blue-700 font-semibold">
-                        support@remote-works.io
-                      </a>{' '}
-                      or via{' '}
-                      <a href="https://t.me/remote_worksio" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-semibold">
-                        Telegram
-                      </a>
                     </p>
                   </div>
                 </div>
