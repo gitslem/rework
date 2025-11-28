@@ -205,9 +205,10 @@ export default function Platforms() {
                 </button>
                 <button
                   onClick={() => router.push('/register')}
-                  className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-all"
+                  className="relative group bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-all overflow-hidden"
                 >
-                  Get Started
+                  <span className="relative z-10">Get Started</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </button>
               </div>
             </div>
@@ -215,22 +216,23 @@ export default function Platforms() {
         </nav>
 
         {/* Hero Section */}
-        <section className="relative pt-20 pb-16 px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-blue-50 to-white overflow-hidden">
+        <section className="relative pt-20 pb-16 px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-amber-50 to-white overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
-            <div className="absolute bottom-20 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-40 right-20 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute bottom-20 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '3s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto text-center relative z-10">
-            <div className="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full shadow-lg mb-8">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
+              <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
               <span className="font-semibold text-sm">20+ Platforms Available</span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
               Your Gateway to
-              <span className="block mt-2 bg-gradient-to-r from-purple-600 via-blue-600 to-pink-600 bg-clip-text text-transparent">
+              <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
                 All Remote Gigs
               </span>
             </h1>
@@ -242,28 +244,29 @@ export default function Platforms() {
             <div className="flex justify-center gap-4 mb-8">
               <button
                 onClick={() => router.push('/register?type=candidate')}
-                className="group bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl"
+                className="group relative bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl overflow-hidden"
               >
-                <span className="flex items-center">
+                <span className="relative z-10 flex items-center">
                   <Rocket className="mr-2 w-5 h-5" />
                   Get Started Now
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </button>
             </div>
 
             <div className="flex items-center justify-center flex-wrap gap-4 text-sm">
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm hover:border-purple-400 transition-colors">
                 <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700">98% Success Rate</span>
+                <span className="text-gray-700 font-semibold">98% Success Rate</span>
               </div>
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
-                <Shield className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-700">100% Free Platform</span>
+              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-amber-200 shadow-sm hover:border-amber-400 transition-colors">
+                <Shield className="w-4 h-4 text-amber-600" />
+                <span className="text-gray-700 font-semibold">100% Free Platform</span>
               </div>
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm hover:border-purple-400 transition-colors">
                 <Clock className="w-4 h-4 text-purple-600" />
-                <span className="text-gray-700">24hr Response</span>
+                <span className="text-gray-700 font-semibold">24hr Response</span>
               </div>
             </div>
           </div>
@@ -288,19 +291,19 @@ export default function Platforms() {
                   className="group relative bg-white rounded-2xl p-6 border-2 border-gray-200 hover:border-purple-500 transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
                 >
                   {platform.popular && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                       POPULAR
                     </div>
                   )}
 
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-xl font-bold text-black mb-1 group-hover:text-purple-600 transition-colors">
+                      <h3 className="text-xl font-bold text-black mb-1 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
                         {platform.name}
                       </h3>
                       <p className="text-xs text-purple-600 font-semibold">{platform.category}</p>
                     </div>
-                    <TrendingUp className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                    <TrendingUp className="w-5 h-5 text-gray-400 group-hover:text-amber-500 transition-colors" />
                   </div>
 
                   <p className="text-gray-600 text-sm leading-relaxed mb-4">
@@ -311,7 +314,7 @@ export default function Platforms() {
                     {platform.features.map((feature, idx) => (
                       <span
                         key={idx}
-                        className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium"
+                        className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium group-hover:bg-amber-50 group-hover:text-amber-700 transition-colors"
                       >
                         {feature}
                       </span>
@@ -324,25 +327,31 @@ export default function Platforms() {
         </section>
 
         {/* Why Remote-Works Stats */}
-        <section className="py-16 px-6 lg:px-8 bg-gradient-to-r from-black via-gray-900 to-black text-white">
-          <div className="max-w-6xl mx-auto">
+        <section className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Why Remote-Works is #1 for Remote Gigs
               </h2>
-              <p className="text-lg text-gray-300">
+              <p className="text-lg text-gray-200">
                 The most efficient way to maximize your remote earning potential
               </p>
             </div>
 
             <div className="grid md:grid-cols-4 gap-8">
               {whyRemoteWorks.map((item, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                <div key={index} className="text-center group hover:scale-105 transition-transform">
+                  <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
                     {item.stat}
                   </div>
                   <div className="text-lg font-bold mb-2">{item.label}</div>
-                  <p className="text-sm text-gray-400">{item.description}</p>
+                  <p className="text-sm text-gray-300">{item.description}</p>
                 </div>
               ))}
             </div>

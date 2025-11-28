@@ -344,7 +344,7 @@ export default function Home() {
               {platforms.map((platform, index) => (
                 <div
                   key={platform}
-                  className={`bg-white px-6 py-5 rounded-xl text-center font-bold text-gray-900 border-2 border-gray-200 hover:border-black hover-lift transition-smooth shadow-sm hover:shadow-xl animate-fade-in-scale stagger-${(index % 6) + 1}`}
+                  className={`bg-white px-6 py-5 rounded-xl text-center font-bold text-gray-900 border-2 border-gray-200 hover:border-purple-500 hover-lift transition-smooth shadow-sm hover:shadow-xl animate-fade-in-scale stagger-${(index % 6) + 1}`}
                 >
                   {platform}
                 </div>
@@ -355,10 +355,13 @@ export default function Home() {
             <div className="flex justify-center mt-8 animate-fade-in">
               <button
                 onClick={() => router.push('/platforms')}
-                className="group flex items-center space-x-2 bg-black text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover-lift shadow-lg"
+                className="group relative bg-black text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover-lift shadow-lg overflow-hidden"
               >
-                <span>View All Platforms</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                <span className="relative z-10 flex items-center space-x-2">
+                  <span>View All Platforms</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </button>
             </div>
           </div>
@@ -450,7 +453,7 @@ export default function Home() {
                   {/* Icon Container with Glow Effect */}
                   <div className="relative inline-flex items-center justify-center mb-6">
                     {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
 
                     {/* Icon */}
                     <div className="relative w-20 h-20 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-2 border-white border-opacity-30 rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float transform group-hover:scale-110 transition-transform" style={{ animationDelay: `${index * 0.5}s` }}>
@@ -471,7 +474,7 @@ export default function Home() {
                   </div>
 
                   {/* Decorative Line */}
-                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </div>
               ))}
             </div>
@@ -502,16 +505,16 @@ export default function Home() {
                   key={index}
                   className={`relative bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-smooth group hover-lift shadow-lg animate-fade-in-scale stagger-${index + 1}`}
                 >
-                  <div className="text-7xl font-extrabold bg-gradient-to-br from-purple-200 to-blue-200 bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform">
+                  <div className="text-7xl font-extrabold bg-gradient-to-br from-purple-200 to-amber-200 bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform">
                     {item.step}
                   </div>
-                  <h3 className="text-xl font-bold text-black mb-3 group-hover:text-purple-600 transition-colors">
+                  <h3 className="text-xl font-bold text-black mb-3 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
                     {item.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed text-sm">{item.description}</p>
                   {index < howItWorks.length - 1 && (
                     <div className="hidden lg:block absolute top-12 -right-3 w-6 h-6">
-                      <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-purple-500 transition-colors animate-bounce-subtle" />
+                      <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-amber-500 transition-colors animate-bounce-subtle" />
                     </div>
                   )}
                 </div>
@@ -539,12 +542,12 @@ export default function Home() {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`group bg-gray-50 p-8 rounded-2xl hover-lift transition-smooth border-2 border-transparent hover:border-black animate-fade-in-scale stagger-${(index % 6) + 1}`}
+                  className={`group bg-gray-50 p-8 rounded-2xl hover-lift transition-smooth border-2 border-transparent hover:border-purple-500 animate-fade-in-scale stagger-${(index % 6) + 1}`}
                 >
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-black to-gray-700 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-600 to-amber-500 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-black mb-3 group-hover:text-purple-600 transition-colors">
+                  <h3 className="text-xl font-bold text-black mb-3 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">{feature.description}</p>
