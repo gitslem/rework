@@ -5,17 +5,19 @@ import Logo from '@/components/Logo';
 import { signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
 import { getFirebaseAuth, getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle, AlertCircle } from 'lucide-react';
+import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle, AlertCircle, Building2, Users, Phone, Mail } from 'lucide-react';
 
 export default function AgentSignup() {
   const router = useRouter();
-  const [step, setStep] = useState<'google' | 'form'>('google');
+  const [step, setStep] = useState<'type-selection' | 'google' | 'form' | 'company-form'>('type-selection');
+  const [accountType, setAccountType] = useState<'individual' | 'company' | null>(null);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showCompanySuccess, setShowCompanySuccess] = useState(false);
   const [showFirebaseWarning, setShowFirebaseWarning] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -28,6 +30,17 @@ export default function AgentSignup() {
     socialAccount: '',
     bio: '',
     whyAgent: '',
+  });
+
+  const [companyFormData, setCompanyFormData] = useState({
+    companyName: '',
+    companySize: '',
+    website: '',
+    contactPerson: '',
+    contactEmail: '',
+    contactPhone: '',
+    requestType: '',
+    additionalDetails: '',
   });
 
   const aiPlatforms = [
@@ -45,8 +58,13 @@ export default function AgentSignup() {
   ];
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // Only check auth if not on type selection step
+    if (step !== 'type-selection') {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
+  }, [step]);
 
   const checkAuth = async () => {
     try {
@@ -155,6 +173,57 @@ export default function AgentSignup() {
     }
   };
 
+  const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setCompanyFormData({
+      ...companyFormData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleCompanySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Validation
+    if (!companyFormData.companyName || !companyFormData.companySize || !companyFormData.contactPerson ||
+        !companyFormData.contactEmail || !companyFormData.requestType) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(companyFormData.contactEmail)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const db = getFirebaseFirestore();
+
+      // Save company inquiry to Firestore
+      await addDoc(collection(db, 'company_inquiries'), {
+        ...companyFormData,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+
+      // Show success popup
+      setShowCompanySuccess(true);
+
+      // Redirect to home after 3 seconds
+      setTimeout(() => {
+        router.push('/');
+      }, 3000);
+    } catch (error: any) {
+      console.error('Error submitting company inquiry:', error);
+      setError(error.message || 'Failed to submit inquiry. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -259,7 +328,30 @@ export default function AgentSignup() {
     );
   }
 
-  // Success Popup
+  // Company Success Popup
+  if (showCompanySuccess) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl max-w-md w-full p-8 text-center animate-fade-in-scale">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-black mb-4">
+            Thank You!
+          </h2>
+          <p className="text-gray-600 mb-6">
+            We've received your inquiry. Our support team will review your request and get back to you shortly.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Redirecting to homepage...
+          </p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Individual Success Popup
   if (showSuccess) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -312,9 +404,296 @@ export default function AgentSignup() {
         </nav>
 
         <div className="max-w-4xl mx-auto px-6 py-12">
+          {/* Type Selection Step */}
+          {step === 'type-selection' && (
+            <div className="max-w-3xl mx-auto text-center space-y-8 animate-fade-in">
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
+                  Join RemoteWorks
+                </h1>
+                <p className="text-xl text-gray-600">
+                  Choose how you'd like to sign up
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mt-12">
+                {/* Individual Option */}
+                <button
+                  onClick={() => {
+                    setAccountType('individual');
+                    setStep('google');
+                  }}
+                  className="group bg-white p-8 rounded-2xl border-2 border-gray-200 hover:border-black transition-all text-left shadow-lg hover:shadow-2xl hover:-translate-y-1"
+                >
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <User className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-black mb-3">Individual Agent</h3>
+                  <p className="text-gray-600 mb-4">
+                    Sign up as an individual agent to help candidates get approved for AI training platforms
+                  </p>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Help candidates 1-on-1</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Set your own rates</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Flexible work schedule</span>
+                    </li>
+                  </ul>
+                  <div className="mt-6 text-black font-semibold flex items-center">
+                    Get Started
+                    <ArrowLeft className="w-5 h-5 ml-2 rotate-180 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </button>
+
+                {/* Company Option */}
+                <button
+                  onClick={() => {
+                    setAccountType('company');
+                    setStep('company-form');
+                  }}
+                  className="group bg-white p-8 rounded-2xl border-2 border-gray-200 hover:border-black transition-all text-left shadow-lg hover:shadow-2xl hover:-translate-y-1"
+                >
+                  <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Building2 className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-black mb-3">Company/Organization</h3>
+                  <p className="text-gray-600 mb-4">
+                    Partner with us as a company to provide bulk services or custom solutions
+                  </p>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Bulk candidate processing</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Custom partnership terms</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Dedicated support</span>
+                    </li>
+                  </ul>
+                  <div className="mt-6 text-black font-semibold flex items-center">
+                    Contact Us
+                    <ArrowLeft className="w-5 h-5 ml-2 rotate-180 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Company Form Step */}
+          {step === 'company-form' && (
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12 animate-fade-in">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building2 className="w-8 h-8 text-white" />
+                </div>
+                <h1 className="text-3xl font-bold text-black mb-2">
+                  Company Partnership Inquiry
+                </h1>
+                <p className="text-gray-600">
+                  Tell us about your company and requirements
+                </p>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleCompanySubmit} className="space-y-6">
+                {/* Company Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <Building2 className="w-4 h-4 inline mr-1" />
+                    Company Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="companyName"
+                    value={companyFormData.companyName}
+                    onChange={handleCompanyChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    required
+                  />
+                </div>
+
+                {/* Company Size */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <Users className="w-4 h-4 inline mr-1" />
+                    Company Size <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="companySize"
+                    value={companyFormData.companySize}
+                    onChange={handleCompanyChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    required
+                  >
+                    <option value="">Select company size</option>
+                    <option value="1-10">1-10 employees</option>
+                    <option value="11-50">11-50 employees</option>
+                    <option value="51-200">51-200 employees</option>
+                    <option value="201-500">201-500 employees</option>
+                    <option value="501+">501+ employees</option>
+                  </select>
+                </div>
+
+                {/* Website */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <Globe className="w-4 h-4 inline mr-1" />
+                    Company Website
+                  </label>
+                  <input
+                    type="url"
+                    name="website"
+                    value={companyFormData.website}
+                    onChange={handleCompanyChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    placeholder="https://yourcompany.com"
+                  />
+                </div>
+
+                {/* Contact Person */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <User className="w-4 h-4 inline mr-1" />
+                    Contact Person <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="contactPerson"
+                    value={companyFormData.contactPerson}
+                    onChange={handleCompanyChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    required
+                  />
+                </div>
+
+                {/* Contact Details */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Mail className="w-4 h-4 inline mr-1" />
+                      Contact Email <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="contactEmail"
+                      value={companyFormData.contactEmail}
+                      onChange={handleCompanyChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Phone className="w-4 h-4 inline mr-1" />
+                      Contact Phone
+                    </label>
+                    <input
+                      type="tel"
+                      name="contactPhone"
+                      value={companyFormData.contactPhone}
+                      onChange={handleCompanyChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      placeholder="+1 (234) 567-8900"
+                    />
+                  </div>
+                </div>
+
+                {/* Request Type */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <Briefcase className="w-4 h-4 inline mr-1" />
+                    Type of Service Needed <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="requestType"
+                    value={companyFormData.requestType}
+                    onChange={handleCompanyChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    required
+                  >
+                    <option value="">Select service type</option>
+                    <option value="bulk-candidate-processing">Bulk Candidate Processing</option>
+                    <option value="white-label-solution">White Label Solution</option>
+                    <option value="custom-integration">Custom Integration</option>
+                    <option value="partnership">Partnership Opportunity</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                {/* Additional Details */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <MessageSquare className="w-4 h-4 inline mr-1" />
+                    Additional Details
+                  </label>
+                  <textarea
+                    name="additionalDetails"
+                    value={companyFormData.additionalDetails}
+                    onChange={handleCompanyChange}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                    placeholder="Tell us more about your requirements, expected volume, timeline, etc."
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setStep('type-selection')}
+                    className="flex-1 bg-gray-200 text-gray-700 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-300 transition-all"
+                  >
+                    <ArrowLeft className="w-5 h-5 inline mr-2" />
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 bg-black text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader className="w-5 h-5 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        Submit Inquiry
+                        <CheckCircle className="w-5 h-5 ml-2" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
           {/* Google Sign In Step */}
           {step === 'google' && (
             <div className="max-w-2xl mx-auto text-center space-y-8 animate-fade-in">
+              <button
+                onClick={() => setStep('type-selection')}
+                className="flex items-center text-gray-600 hover:text-black mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to selection
+              </button>
               <div>
                 <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
                   Become a Verified Agent
