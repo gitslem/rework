@@ -53,12 +53,12 @@ export default function Register() {
     {
       value: 'candidate' as UserRole,
       title: 'Candidate',
-      description: 'Get expert help getting approved for Outlier, Alignerr, OneForma, and more',
+      description: 'Connect with verified professionals who provide expert guidance for remote work platform applications',
       icon: <Users className="w-12 h-12" />,
       features: [
         'Browse verified agents',
         'Direct messaging with agents',
-        'Money-back guarantee',
+        'Flexible pricing options: free, paid, and revenue-share models',
         '98% success rate'
       ],
       color: 'primary'
