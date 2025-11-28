@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Send, Star, BookOpen } from 'lucide-react';
+import { Mail, MapPin, Send, Star, BookOpen, Twitter } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
@@ -90,6 +90,14 @@ export default function Footer() {
                 </li>
                 <li>
                   <button
+                    onClick={() => router.push('/company')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    For Companies
+                  </button>
+                </li>
+                <li>
+                  <button
                     onClick={() => router.push('/support')}
                     className="hover:text-white transition-colors inline-block"
                   >
@@ -128,10 +136,23 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
                 >
-                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                    <BookOpen className="w-5 h-5" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-amber-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <BookOpen className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-sm font-medium">Blog</span>
+                </a>
+
+                {/* Twitter/X */}
+                <a
+                  href="https://x.com/remote_worksio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Twitter className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-medium">Twitter/X</span>
                 </a>
 
                 {/* Telegram */}
@@ -141,8 +162,8 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
                 >
-                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                    <Send className="w-5 h-5" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-amber-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Send className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-sm font-medium">Telegram</span>
                 </a>
@@ -154,8 +175,8 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
                 >
-                  <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center group-hover:bg-gray-800 transition-colors">
-                    <Star className="w-5 h-5 fill-current" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Star className="w-5 h-5 text-white fill-current" />
                   </div>
                   <span className="text-sm font-medium">Trustpilot</span>
                 </a>
