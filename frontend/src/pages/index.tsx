@@ -529,8 +529,8 @@ export default function Home() {
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
                 Why Choose
-                <span className="block mt-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  RemoteWorks
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
+                  Rework
                 </span>
               </h2>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
