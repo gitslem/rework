@@ -47,10 +47,10 @@ export default function About() {
       avatar: "NS"
     },
     {
-      name: "Sen Lin",
+      name: "Mudassir Salisu",
       role: "Chief Technology Officer",
       bio: "Former engineer at a major tech company specializing in marketplace architecture and AI-powered matching systems. Designed our agent verification infrastructure.",
-      avatar: "SL"
+      avatar: "MS"
     },
     {
       name: "Tyagi Harshit",

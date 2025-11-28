@@ -61,7 +61,7 @@ export default function Home() {
     {
       icon: <Shield className="w-6 h-6" />,
       title: "Secure Platform",
-      description: "Enterprise-grade security with escrow payment protection for all transactions."
+      description: "Direct PayPal payments after successful approval, with flexible options including revenue sharing based on agent preference."
     },
     {
       icon: <MessageSquare className="w-6 h-6" />,
@@ -81,7 +81,7 @@ export default function Home() {
     {
       icon: <Award className="w-6 h-6" />,
       title: "100% Free to Use",
-      description: "No subscription fees, no hidden charges. Connect with agents and only pay for services you choose."
+      description: "No subscription fees, no hidden charges. Connect with agents and only pay for services after receiving results or approval."
     }
   ];
 
@@ -249,8 +249,8 @@ export default function Home() {
           {/* Animated Background */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-            <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
+            <div className="absolute top-40 right-10 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto">
@@ -264,7 +264,7 @@ export default function Home() {
               {/* Main Headline */}
               <h1 className={`text-5xl sm:text-6xl lg:text-8xl font-extrabold text-black leading-tight tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
                 Get Approved for
-                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-gradient">
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent animate-gradient">
                   AI Training Projects
                 </span>
               </h1>
@@ -272,10 +272,10 @@ export default function Home() {
               {/* Subheadline */}
               <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                 <div className="relative inline-block">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-lg blur opacity-20 animate-pulse-custom"></div>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 rounded-lg blur opacity-20 animate-pulse-custom"></div>
                   <p className="relative text-xl sm:text-2xl text-gray-700 leading-relaxed px-8 py-4 bg-white rounded-lg border-2 border-gray-100">
                     Connect with verified{' '}
-                    <span className="font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
                       onboarding specialists
                     </span>{' '}
                     who help candidates qualify for{' '}
@@ -286,8 +286,8 @@ export default function Home() {
                         <defs>
                           <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stopColor="#9333ea" />
-                            <stop offset="50%" stopColor="#ec4899" />
-                            <stop offset="100%" stopColor="#2563eb" />
+                            <stop offset="50%" stopColor="#f59e0b" />
+                            <stop offset="100%" stopColor="#eab308" />
                           </linearGradient>
                         </defs>
                       </svg>
@@ -322,7 +322,7 @@ export default function Home() {
                     Find an Agent Now
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </button>
               </div>
 

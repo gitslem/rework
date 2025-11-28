@@ -237,7 +237,7 @@ export default function Privacy() {
                 <li>Right to non-discrimination for exercising privacy rights</li>
               </ul>
               <p className="text-gray-700 leading-relaxed">
-                To exercise these rights, email privacy@remote-works.io or call 1-555-123-4567.
+                To exercise these rights, email privacy@remote-works.io.
               </p>
             </section>
 

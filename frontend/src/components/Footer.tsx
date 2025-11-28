@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Phone, Send, Star, BookOpen } from 'lucide-react';
+import { Mail, MapPin, Send, Star, BookOpen } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
@@ -24,12 +24,6 @@ export default function Footer() {
                   <Mail className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
                   <a href="mailto:support@remote-works.io" className="hover:text-white transition-colors break-all">
                     support@remote-works.io
-                  </a>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Phone className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <a href="tel:+16479821234" className="hover:text-white transition-colors">
-                    +1 (647) 982-1234
                   </a>
                 </div>
                 <div className="flex items-start space-x-2">
