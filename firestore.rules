@@ -160,5 +160,20 @@ service cloud.firestore {
       // Allow delete if user is sender
       allow delete: if isAuthenticated() && resource.data.senderId == request.auth.uid;
     }
+
+    // Company inquiries collection (for partnership/company signup form)
+    match /company_inquiries/{inquiryId} {
+      // Allow read only for admins
+      allow read: if isAdmin();
+
+      // Allow create for anyone (unauthenticated users can submit company inquiries)
+      allow create: if true;
+
+      // Allow update only for admins
+      allow update: if isAdmin();
+
+      // Allow delete only for admins
+      allow delete: if isAdmin();
+    }
   }
 }
