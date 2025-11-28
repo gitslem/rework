@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Target, Users, Shield, Heart, CheckCircle, Menu, X
+  Target, Users, Shield, Heart, CheckCircle, Menu, X,
+  UserPlus, BadgeCheck, TrendingUp, ArrowRight, DollarSign, Briefcase
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -20,8 +21,8 @@ export default function About() {
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Payment Protection",
-      description: "Our escrow system holds payments until candidates confirm approval. Agents only get paid when they deliver results. Zero tolerance for fraud.",
+      title: "Pay Only When Approved",
+      description: "Most agents work on success-based models or offer free services with revenue sharing. Remote-Works doesn't process payments—you pay agents directly only after getting approved.",
       color: "bg-gray-800"
     },
     {
@@ -42,13 +43,13 @@ export default function About() {
     {
       name: "Najim Sulwiman",
       role: "Founder & CEO",
-      bio: "Former AI training specialist with 6+ years at Outlier and Scale AI. Built Remote-Works to solve the platform approval challenges he witnessed firsthand.",
+      bio: "Former AI training specialist with 6+ years at leading remote work platforms. Built Remote-Works to solve the platform approval challenges he witnessed firsthand.",
       avatar: "NS"
     },
     {
       name: "Sen Lin",
       role: "Chief Technology Officer",
-      bio: "Ex-Google engineer specializing in marketplace architecture and AI-powered matching systems. Led the development of our secure payment infrastructure.",
+      bio: "Former engineer at a major tech company specializing in marketplace architecture and AI-powered matching systems. Designed our agent verification infrastructure.",
       avatar: "SL"
     },
     {
@@ -75,8 +76,8 @@ export default function About() {
     { year: "2023", event: "Remote-Works Founded", description: "Launched in March 2023 after 8 months of development. Started with 12 carefully vetted agents and a vision to solve the platform approval crisis." },
     { year: "2023", event: "First 100 Agents Verified", description: "By September 2023, reached 100 verified agents across 15 countries. Implemented our proprietary verification system requiring proof of 10+ successful approvals." },
     { year: "2024", event: "10,000 Successful Approvals", description: "Hit major milestone of 10,000 candidates successfully approved. Achieved 98% success rate through rigorous agent training and quality control." },
-    { year: "2024", event: "Platform Partnerships", description: "Established direct communication channels with compliance teams at Outlier, Alignerr, and OneForma to better understand their evolving requirements." },
-    { year: "2025", event: "400+ Agents, 27K+ Approvals", description: "Network grew to 400+ verified agents across 35 countries. Facilitated 27,000+ successful platform approvals with $2.8M in combined agent earnings." }
+    { year: "2024", event: "Platform Partnerships", description: "Established direct communication channels with compliance teams at major AI training platforms to better understand their evolving requirements." },
+    { year: "2025", event: "400+ Agents, 27K+ Approvals", description: "Network grew to 400+ verified agents across 35 countries. Facilitated 27,000+ successful platform approvals, with candidates now earning $3K+ monthly on average." }
   ];
 
   return (
@@ -137,7 +138,7 @@ export default function About() {
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 Since 2023, we've helped 27,000+ individuals break into remote AI training work by connecting them
-                with 400+ verified agents who understand exactly what platforms like Outlier, Alignerr, and OneForma require.
+                with 400+ verified agents who understand exactly what leading platforms require for approval.
               </p>
             </div>
           </div>
@@ -155,7 +156,7 @@ export default function About() {
                   Solving the Platform Approval Crisis
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  In 2022, our founder Najim Sulwiman was working as an AI trainer for Outlier when he noticed a troubling pattern:
+                  In 2022, our founder Najim Sulwiman was working as an AI trainer for a leading remote work platform when he noticed a troubling pattern:
                   qualified candidates were being rejected at alarming rates—often exceeding 70%—not due to lack of skills, but because
                   they didn't understand the nuances of what platform evaluators were looking for.
                 </p>
@@ -166,7 +167,7 @@ export default function About() {
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
                   <strong>Our mission is simple:</strong> democratize access to remote AI training opportunities by connecting candidates
                   with verified agents who have successfully helped others get approved. We've built a trusted marketplace where expertise
-                  meets opportunity, protected by secure payments and rigorous verification.
+                  meets opportunity, with flexible payment options and rigorous verification.
                 </p>
                 <div className="bg-gray-50 rounded-xl p-6 mb-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-3">Our Vision for 2026</h3>
@@ -186,7 +187,7 @@ export default function About() {
                 </div>
                 <div className="flex items-center gap-4 pt-2">
                   <CheckCircle className="w-6 h-6 text-green-500" />
-                  <span className="text-gray-700 font-medium">$2.8M earned by agents helping others succeed</span>
+                  <span className="text-gray-700 font-medium">$3K+ average monthly income after approval</span>
                 </div>
               </div>
               <div className="relative">
@@ -244,6 +245,111 @@ export default function About() {
           </div>
         </section>
 
+        {/* How It Works Process */}
+        <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Your Journey to Success
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                A simple, proven process from signup to earning on multiple platforms
+              </p>
+            </div>
+
+            <div className="relative">
+              {/* Process Flow */}
+              <div className="grid md:grid-cols-4 gap-8 relative">
+                {/* Step 1: Sign Up */}
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
+                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <UserPlus className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="text-4xl font-bold text-black mb-2">01</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Sign Up</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm">
+                      Create your account and complete your profile. Browse verified agents who specialize in your target platforms.
+                    </p>
+                  </div>
+                  {/* Arrow */}
+                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
+                    <ArrowRight className="w-8 h-8 text-gray-300" />
+                  </div>
+                </div>
+
+                {/* Step 2: Get Approved */}
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
+                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <BadgeCheck className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="text-4xl font-bold text-black mb-2">02</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Get Approved</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm">
+                      Work with your agent to get approved on leading AI training platforms. Most approvals happen within 3-7 days.
+                    </p>
+                  </div>
+                  {/* Arrow */}
+                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
+                    <ArrowRight className="w-8 h-8 text-gray-300" />
+                  </div>
+                </div>
+
+                {/* Step 3: Start Earning */}
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
+                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <DollarSign className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="text-4xl font-bold text-black mb-2">03</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Start Earning</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm">
+                      Begin working on AI training projects. Complete tasks and earn money directly from platforms.
+                    </p>
+                  </div>
+                  {/* Arrow */}
+                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
+                    <ArrowRight className="w-8 h-8 text-gray-300" />
+                  </div>
+                </div>
+
+                {/* Step 4: Scale Income */}
+                <div className="relative">
+                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
+                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <TrendingUp className="w-10 h-10 text-white" />
+                    </div>
+                    <div className="text-4xl font-bold text-black mb-2">04</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Scale Income</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm">
+                      Get approved on multiple platforms, take on diverse projects, and scale to $3K+ monthly income.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Model Info */}
+              <div className="mt-16 bg-gradient-to-r from-gray-900 to-black rounded-3xl p-10 text-white">
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold mb-2">Free to Join</div>
+                    <p className="text-gray-300 text-sm">No subscription fees or hidden charges to use our platform</p>
+                  </div>
+                  <div className="text-center border-l border-r border-gray-700 px-4">
+                    <div className="text-3xl font-bold mb-2">Pay After Approval</div>
+                    <p className="text-gray-300 text-sm">Most agents work on success-based fees or revenue sharing models</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold mb-2">Direct Payments</div>
+                    <p className="text-gray-300 text-sm">Pay agents directly—Remote-Works doesn't process any payments</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Timeline Section */}
         <section className="py-24 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -270,6 +376,91 @@ export default function About() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Earning Potential Section */}
+        <section className="py-24 bg-gradient-to-b from-white to-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Diverse Income Streams
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Get approved on multiple platforms and work on various AI training projects to maximize your earning potential
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              {/* Platform Types */}
+              <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center">
+                    <Briefcase className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900">20+ Platforms Supported</h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">AI Training & Data Annotation</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Content Moderation & Review</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Language & Translation Services</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Coding & Technical Evaluation</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">Creative Writing & Editing</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Earning Breakdown */}
+              <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center">
+                    <DollarSign className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900">Monthly Income Breakdown</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-gray-700 font-semibold">Entry Level (1 Platform)</span>
+                      <span className="text-2xl font-bold text-green-600">$800-1.5K</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Part-time work, 15-20 hours/week</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-gray-700 font-semibold">Intermediate (2-3 Platforms)</span>
+                      <span className="text-2xl font-bold text-blue-600">$2K-3.5K</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Full-time work, 30-40 hours/week</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl border border-purple-200">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-gray-700 font-semibold">Advanced (4+ Platforms)</span>
+                      <span className="text-2xl font-bold text-purple-600">$4K-6K+</span>
+                    </div>
+                    <p className="text-sm text-gray-600">Multiple specializations, high-value projects</p>
+                  </div>
+                </div>
+                <div className="mt-6 p-4 bg-black rounded-xl text-white text-center">
+                  <div className="text-3xl font-bold mb-1">$3K+</div>
+                  <p className="text-gray-300 text-sm">Average monthly income of our successful candidates</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -311,7 +502,7 @@ export default function About() {
               Ready to Break Into AI Training Work?
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join 27,000+ people who got approved with expert agent guidance. No upfront fees—only pay when you get results.
+              Join 27,000+ people who got approved with expert agent guidance. Many agents offer free services with revenue sharing or work on success-based fees—you only pay after getting approved.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
               <div className="bg-gray-900 rounded-xl p-6">
