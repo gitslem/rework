@@ -269,7 +269,7 @@ export default function About() {
                     <div className="text-4xl font-bold text-black mb-2">01</div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3">Sign Up</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Create your account and complete your profile. Browse verified agents who specialize in your target platforms.
+                      Create your account and complete your profile. Our AI matches you with verified agents who specialize in your target platforms.
                     </p>
                   </div>
                   {/* Arrow */}
