@@ -145,7 +145,9 @@ export default function Register() {
 
       await signInWithGoogle(role);
 
-      // Auth state listener above will handle the redirect
+      // Reset loading so the auth state listener can process the user
+      // The listener will set loading back to true while it handles the redirect
+      setLoading(false);
     } catch (err: any) {
       console.error('Registration error:', err);
 
