@@ -150,8 +150,6 @@ export default function CandidateDashboard() {
 
   const loadMessages = async (db: any, candidateId: string) => {
     try {
-      console.log('Loading messages for candidate:', candidateId);
-
       // Query messages - removed orderBy to avoid composite index requirement
       const messagesQuery = query(
         collection(db, 'messages'),
@@ -162,8 +160,6 @@ export default function CandidateDashboard() {
       const messagesSnapshot = await getDocs(messagesQuery);
       const messagesList: any[] = [];
       let unread = 0;
-
-      console.log('Messages found:', messagesSnapshot.size);
 
       // Calculate cutoff date (3 days ago for recent messages)
       const cutoffDate = new Date();
@@ -194,7 +190,6 @@ export default function CandidateDashboard() {
 
       setMessages(messagesList);
       setUnreadCount(unread);
-      console.log('Messages loaded successfully:', messagesList.length, 'unread:', unread);
     } catch (error) {
       console.error('Error loading messages:', error);
       alert('Error loading messages. Please refresh the page.');
@@ -202,8 +197,22 @@ export default function CandidateDashboard() {
   };
 
   const handleSendReply = async () => {
-    if (!replyText.trim() || !selectedMessage || !user) {
+    // Validate reply message
+    const trimmedReply = replyText.trim();
+    if (!trimmedReply || !selectedMessage || !user) {
       alert('Please enter a message');
+      return;
+    }
+
+    // Validate message length (max 5000 characters)
+    if (trimmedReply.length > 5000) {
+      alert('Reply is too long. Please keep it under 5000 characters.');
+      return;
+    }
+
+    // Validate message length (min 10 characters)
+    if (trimmedReply.length < 10) {
+      alert('Reply is too short. Please enter at least 10 characters.');
       return;
     }
 
@@ -220,7 +229,7 @@ export default function CandidateDashboard() {
         senderName: `${profile?.firstName} ${profile?.lastName}`,
         recipientId: selectedMessage.senderId,
         recipientName: selectedMessage.senderName,
-        message: replyText,
+        message: trimmedReply,
         subject: selectedMessage.subject.replace(/^(Re:\s*)+/g, ''), // Remove any existing "Re:" prefixes
         status: 'unread',
         createdAt: Timestamp.now(),
@@ -246,7 +255,7 @@ export default function CandidateDashboard() {
       await loadMessages(db, user.uid);
     } catch (error: any) {
       console.error('Error sending reply:', error);
-      alert('Failed to send reply: ' + error.message);
+      alert('Failed to send reply. Please try again later.');
     } finally {
       setSendingReply(false);
     }
@@ -254,16 +263,12 @@ export default function CandidateDashboard() {
 
   const loadAgents = async (db: any) => {
     try {
-      console.log('Loading agents...');
-
       // Get all users with role 'agent' and approved status
       const usersQuery = query(
         collection(db, 'users'),
         where('role', '==', 'agent')
       );
       const usersSnapshot = await getDocs(usersQuery);
-
-      console.log('Found', usersSnapshot.size, 'agent users');
 
       const agentsList: Agent[] = [];
 
@@ -291,15 +296,11 @@ export default function CandidateDashboard() {
               workingHours: profileData.workingHours || 'Flexible',
               agentWorkingHours: profileData.agentWorkingHours
             };
-            console.log('Added approved agent:', agent.name, 'ID:', agent.id);
             agentsList.push(agent);
-          } else {
-            console.log('Skipping unapproved agent:', profileData.firstName, profileData.lastName);
           }
         }
       }
 
-      console.log('Total approved agents loaded:', agentsList.length);
       setAgents(agentsList);
     } catch (error) {
       console.error('Error loading agents:', error);
@@ -323,8 +324,22 @@ export default function CandidateDashboard() {
   };
 
   const handleSendMessage = async () => {
-    if (!messageText.trim() || !selectedAgent || !user) {
+    // Validate message
+    const trimmedMessage = messageText.trim();
+    if (!trimmedMessage || !selectedAgent || !user) {
       alert('Please enter a message');
+      return;
+    }
+
+    // Validate message length (max 5000 characters)
+    if (trimmedMessage.length > 5000) {
+      alert('Message is too long. Please keep it under 5000 characters.');
+      return;
+    }
+
+    // Validate message length (min 10 characters)
+    if (trimmedMessage.length < 10) {
+      alert('Message is too short. Please enter at least 10 characters.');
       return;
     }
 
@@ -343,7 +358,7 @@ export default function CandidateDashboard() {
         senderEmail: user.email || profile?.email || '',
         recipientId: selectedAgent.id,
         recipientName: selectedAgent.name,
-        message: messageText,
+        message: trimmedMessage,
         subject: 'Service Request',
         status: 'unread',
         createdAt: Timestamp.now(),
@@ -351,12 +366,8 @@ export default function CandidateDashboard() {
         conversationId: conversationId
       };
 
-      console.log('Sending message to agent:', messageData);
-
       // Create a message document
-      const docRef = await addDoc(collection(db, 'messages'), messageData);
-
-      console.log('Message sent successfully with ID:', docRef.id);
+      await addDoc(collection(db, 'messages'), messageData);
 
       alert('Message sent successfully! The agent will contact you soon.');
       setShowMessageModal(false);
@@ -364,7 +375,7 @@ export default function CandidateDashboard() {
       setSelectedAgent(null);
     } catch (error: any) {
       console.error('Error sending message:', error);
-      alert('Failed to send message: ' + error.message);
+      alert('Failed to send message. Please try again later.');
     } finally {
       setSendingMessage(false);
     }

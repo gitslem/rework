@@ -196,7 +196,6 @@ export default function AgentDashboard() {
         }
 
         // Load messages regardless of approval status (so agents can see why they can't get messages)
-        console.log('Agent approval status:', approved);
         await loadMessages(db, firebaseUser.uid);
 
         setLoading(false);
@@ -214,8 +213,6 @@ export default function AgentDashboard() {
 
   const loadMessages = async (db: any, agentId: string) => {
     try {
-      console.log('Loading messages for agent:', agentId);
-
       // Query messages - removed orderBy to avoid composite index requirement
       const messagesQuery = query(
         collection(db, 'messages'),
@@ -226,8 +223,6 @@ export default function AgentDashboard() {
       const messagesSnapshot = await getDocs(messagesQuery);
       const messagesList: Message[] = [];
       let unread = 0;
-
-      console.log('Messages found:', messagesSnapshot.size);
 
       // Calculate cutoff date (3 days ago for recent messages)
       const cutoffDate = new Date();
@@ -258,7 +253,6 @@ export default function AgentDashboard() {
 
       setMessages(messagesList);
       setUnreadCount(unread);
-      console.log('Messages loaded successfully:', messagesList.length, 'unread:', unread);
     } catch (error) {
       console.error('Error loading messages:', error);
       alert('Error loading messages. Please refresh the page.');
