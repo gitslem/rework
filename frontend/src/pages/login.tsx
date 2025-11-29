@@ -1,34 +1,68 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import { ArrowLeft } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { signInWithGoogle } from '@/lib/firebase/auth';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function Login() {
   const router = useRouter();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    // Listen for auth state changes to handle redirect after popup closes
+    const auth = getFirebaseAuth();
+    const db = getFirebaseFirestore();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user && !loading) {
+        setLoading(true);
+
+        try {
+          // Get user data to determine role
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+
+            // Redirect based on role
+            if (userData.role === 'agent') {
+              router.push('/agent-dashboard');
+            } else {
+              router.push('/candidate-dashboard');
+            }
+          }
+        } catch (err) {
+          console.error('Error checking user role:', err);
+          setLoading(false);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
   const handleGoogleSignIn = async () => {
     setError('');
     setLoading(true);
 
     try {
-      // Sign in with Google (no role needed for login, it's already saved)
-      const user = await signInWithGoogle('candidate');
+      // Sign in with Google (popup will open)
+      await signInWithGoogle('candidate');
 
-      // Redirect based on role
-      if (user.role === 'agent') {
-        router.push('/agent-dashboard');
-      } else {
-        router.push('/candidate-dashboard');
-      }
+      // Auth state listener above will handle the redirect
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(err.message || 'Google login failed. Please try again.');
-    } finally {
+
+      // Don't show error if popup was just closed by user
+      if (err.message && !err.message.includes('cancelled') && !err.message.includes('closed')) {
+        setError(err.message || 'Google login failed. Please try again.');
+      }
       setLoading(false);
     }
   };
