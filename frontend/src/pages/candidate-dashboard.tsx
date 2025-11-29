@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { logout } from '@/lib/authStore';
+import { useAuthStore } from '@/lib/authStore';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc, orderBy, limit } from 'firebase/firestore';
@@ -56,6 +56,7 @@ interface UserProfile {
 
 export default function CandidateDashboard() {
   const router = useRouter();
+  const { logout } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'search' | 'messages'>('overview');
