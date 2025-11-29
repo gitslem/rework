@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Globe2, Users, Search, MessageSquare, Settings, LogOut, ArrowRight,
   User, MapPin, Mail, Phone, Calendar, Star, Send, Filter, X, Menu,
-  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark, BadgeCheck, Bot, Briefcase
+  CheckCircle, Clock, DollarSign, Edit, Loader, BookOpen, FileText, Bookmark, BadgeCheck, Bot, Briefcase, Monitor
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -573,6 +573,14 @@ export default function CandidateDashboard() {
                   <BookOpen className="w-5 h-5" />
                   <span>Info</span>
                 </button>
+                <button
+                  onClick={() => router.push('/candidate-screen')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  title="Screen Sharing"
+                >
+                  <Monitor className="w-5 h-5" />
+                  <span>Screen</span>
+                </button>
                 <div className="h-8 w-px bg-gray-300 mx-2"></div>
                 <button
                   onClick={() => router.push('/profile-settings')}
@@ -621,6 +629,10 @@ export default function CandidateDashboard() {
                 <button onClick={() => { router.push('/candidate-info'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                   <BookOpen className="w-5 h-5" />
                   <span>Info</span>
+                </button>
+                <button onClick={() => { router.push('/candidate-screen'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  <Monitor className="w-5 h-5" />
+                  <span>Screen Sharing</span>
                 </button>
                 <div className="border-t border-gray-200 my-2"></div>
                 <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors">
