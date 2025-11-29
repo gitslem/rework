@@ -6,7 +6,9 @@ import { Users, Building, ArrowLeft, Check, AlertCircle } from 'lucide-react';
 import { signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
 import { UserRole } from '@/types';
 import Logo from '@/components/Logo';
-import { isFirebaseConfigured } from '@/lib/firebase/config';
+import { isFirebaseConfigured, getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function Register() {
   const router = useRouter();
@@ -24,7 +26,47 @@ export default function Register() {
 
     // Check for redirect result
     checkRedirectResult();
-  }, []);
+
+    // Listen for auth state changes to handle redirect after popup closes
+    const auth = getFirebaseAuth();
+    const db = getFirebaseFirestore();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user && !loading) {
+        try {
+          // Get user data to determine where to redirect
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+
+            // Check if profile is complete
+            if (profileDoc.exists()) {
+              const profileData = profileDoc.data();
+
+              if (profileData.firstName) {
+                // Profile complete, go to dashboard
+                if (userData.role === 'agent') {
+                  router.push('/agent-dashboard');
+                } else {
+                  router.push('/candidate-dashboard');
+                }
+                return;
+              }
+            }
+
+            // Profile incomplete, go to complete-profile
+            router.push('/complete-profile');
+          }
+        } catch (err) {
+          console.error('Error checking user state:', err);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const checkRedirectResult = async () => {
     try {
@@ -91,23 +133,19 @@ export default function Register() {
 
       await signInWithGoogle(role);
 
-      // Redirect based on selected role
-      if (role === 'agent') {
-        router.push('/agent-signup');
-      } else {
-        // Redirect candidates to complete their profile
-        router.push('/complete-profile');
-      }
+      // Auth state listener above will handle the redirect
     } catch (err: any) {
       console.error('Registration error:', err);
 
-      // Don't show error if redirect is in progress
-      if (err.message === 'REDIRECT_IN_PROGRESS') {
+      // Don't show error if redirect is in progress or popup was closed
+      if (err.message === 'REDIRECT_IN_PROGRESS' ||
+          err.message?.includes('cancelled') ||
+          err.message?.includes('closed')) {
+        setLoading(false);
         return;
       }
 
       setError(err.message || 'Google sign up failed. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
