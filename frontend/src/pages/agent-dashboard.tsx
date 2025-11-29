@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
+import { logout } from '@/lib/authStore';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, updateDoc, Timestamp, collection, query, where, getDocs, orderBy, addDoc, limit } from 'firebase/firestore';
@@ -204,6 +205,11 @@ export default function AgentDashboard() {
       console.error('Error loading profile:', error);
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
   };
 
   const loadMessages = async (db: any, agentId: string) => {
@@ -656,7 +662,7 @@ export default function AgentDashboard() {
                     <Settings className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => router.push('/login')}
+                    onClick={handleLogout}
                     className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-all"
                     title="Logout"
                   >
@@ -790,7 +796,7 @@ export default function AgentDashboard() {
                   <Settings className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => router.push('/login')}
+                  onClick={handleLogout}
                   className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-all"
                   title="Logout"
                 >

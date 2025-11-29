@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
+import { logout } from '@/lib/authStore';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp, updateDoc, orderBy, limit } from 'firebase/firestore';
@@ -140,6 +141,11 @@ export default function CandidateDashboard() {
       console.error('Error loading profile:', error);
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
   };
 
   const loadMessages = async (db: any, candidateId: string) => {
@@ -432,7 +438,7 @@ export default function CandidateDashboard() {
                     <Settings className="w-5 h-5" />
                     <span className="hidden md:inline">Settings</span>
                   </button>
-                  <button onClick={() => router.push('/login')} className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
+                  <button onClick={handleLogout} className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors">
                     <LogOut className="w-5 h-5" />
                     <span className="hidden md:inline">Logout</span>
                   </button>
@@ -590,7 +596,7 @@ export default function CandidateDashboard() {
                   <Settings className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => router.push('/login')}
+                  onClick={handleLogout}
                   className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-all"
                   title="Logout"
                 >
@@ -639,7 +645,7 @@ export default function CandidateDashboard() {
                   <Settings className="w-5 h-5" />
                   <span>Settings</span>
                 </button>
-                <button onClick={() => router.push('/login')} className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
+                <button onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
                   <LogOut className="w-5 h-5" />
                   <span>Logout</span>
                 </button>
