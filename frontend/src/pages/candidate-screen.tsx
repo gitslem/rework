@@ -26,7 +26,7 @@ import {
   Smartphone,
   Laptop
 } from 'lucide-react';
-import { auth } from '../utils/firebase';
+import { getFirebaseAuth } from '@/lib/firebase/config';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 export default function CandidateScreen() {
@@ -36,6 +36,7 @@ export default function CandidateScreen() {
   const [activeTab, setActiveTab] = useState<'overview' | 'how-it-works' | 'security'>('overview');
 
   useEffect(() => {
+    const auth = getFirebaseAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setFirebaseUser(user);
