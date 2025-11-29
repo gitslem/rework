@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Play, BookOpen, Lightbulb, CheckCircle, Users, TrendingUp,
   Award, Target, Zap, Shield, ArrowRight, DollarSign, Briefcase,
-  Globe, Clock, Star, ChevronRight, Home
+  Globe, Clock, Star, ChevronRight, Home, Monitor
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -437,6 +437,32 @@ export default function CandidateInfo() {
                   <span className="bg-blue-600 px-4 py-2 rounded-full text-sm font-bold">
                     +10 More
                   </span>
+                </div>
+              </section>
+
+              {/* Screen Sharing Banner */}
+              <section className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-8 text-white">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  <div className="flex-shrink-0">
+                    <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <Monitor className="w-10 h-10 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2">Secure Screen Sharing Available</h3>
+                    <p className="text-green-100 text-lg mb-4">
+                      Let our trained agents help you manage multiple gigs efficiently with Google Remote Desktop.
+                      You stay in complete control with our zero-tolerance security policies.
+                    </p>
+                    <button
+                      onClick={() => router.push('/candidate-screen')}
+                      className="bg-white text-green-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all inline-flex items-center gap-2"
+                    >
+                      <Shield className="w-5 h-5" />
+                      Learn About Screen Sharing
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
               </section>
             </div>
