@@ -28,18 +28,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     try {
-      console.log('[AuthStore] Starting login for:', email);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AuthStore] Starting login');
+      }
       const response = await authAPI.login({ email, password });
       const { access_token, refresh_token } = response.data;
-      console.log('[AuthStore] Login successful, got tokens');
 
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
 
       // Fetch user data
-      console.log('[AuthStore] Fetching user data from /users/me');
       const userResponse = await usersAPI.getMe();
-      console.log('[AuthStore] User data fetched:', userResponse.data);
 
       set({
         user: userResponse.data,
@@ -47,12 +46,12 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false,
       });
     } catch (error: any) {
-      console.error('[AuthStore] Login failed:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        fullError: error
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[AuthStore] Login failed:', {
+          message: error.message,
+          status: error.response?.status,
+        });
+      }
       set({ isLoading: false });
       throw error;
     }
@@ -60,39 +59,37 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   register: async (email: string, password: string, role: string) => {
     try {
-      console.log('[AuthStore] Starting registration for:', email, 'with role:', role);
-      const registerResponse = await authAPI.register({ email, password, role });
-      console.log('[AuthStore] Registration successful:', registerResponse.data);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AuthStore] Starting registration');
+      }
+      await authAPI.register({ email, password, role });
 
       // After registration, log the user in
-      console.log('[AuthStore] Attempting auto-login after registration');
       await useAuthStore.getState().login(email, password);
-      console.log('[AuthStore] Auto-login successful');
     } catch (error: any) {
-      console.error('[AuthStore] Registration failed:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        fullError: error
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[AuthStore] Registration failed:', {
+          message: error.message,
+          status: error.response?.status,
+        });
+      }
       throw error;
     }
   },
 
   googleAuth: async (token: string, role?: string) => {
     try {
-      console.log('[AuthStore] Starting Google authentication');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[AuthStore] Starting Google authentication');
+      }
       const response = await authAPI.googleAuth({ token, role });
       const { access_token, refresh_token } = response.data;
-      console.log('[AuthStore] Google auth successful, got tokens');
 
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
 
       // Fetch user data
-      console.log('[AuthStore] Fetching user data from /users/me');
       const userResponse = await usersAPI.getMe();
-      console.log('[AuthStore] User data fetched:', userResponse.data);
 
       set({
         user: userResponse.data,
@@ -100,12 +97,12 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false,
       });
     } catch (error: any) {
-      console.error('[AuthStore] Google auth failed:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        fullError: error
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[AuthStore] Google auth failed:', {
+          message: error.message,
+          status: error.response?.status,
+        });
+      }
       set({ isLoading: false });
       throw error;
     }
