@@ -160,8 +160,11 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 
     let firebaseUser: FirebaseUser;
 
-    // Use redirect on mobile devices or when explicitly requested
-    if (useRedirect || isMobileDevice()) {
+    // Check if redirect mode is forced via environment variable
+    const forceRedirect = process.env.NEXT_PUBLIC_USE_AUTH_REDIRECT === 'true';
+
+    // Use redirect on mobile devices, when explicitly requested, or when forced via env
+    if (useRedirect || isMobileDevice() || forceRedirect) {
       // Store the role in session storage for after redirect
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('pendingRole', role);
