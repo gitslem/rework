@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { logout } from '@/lib/authStore';
+import { useAuthStore } from '@/lib/authStore';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, updateDoc, Timestamp, collection, query, where, getDocs, orderBy, addDoc, limit } from 'firebase/firestore';
@@ -76,6 +76,7 @@ interface Message {
 
 export default function AgentDashboard() {
   const router = useRouter();
+  const { logout } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<AgentProfile | null>(null);
