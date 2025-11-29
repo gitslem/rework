@@ -56,7 +56,9 @@ export default function Login() {
       // The auth state listener will determine the actual role from Firestore
       await signInWithGoogle('candidate');
 
-      // Auth state listener above will handle the redirect based on actual user role
+      // Reset loading so the auth state listener can process the user
+      // The listener will set loading back to true while it handles the redirect
+      setLoading(false);
     } catch (err: any) {
       console.error('Login error:', err);
 
