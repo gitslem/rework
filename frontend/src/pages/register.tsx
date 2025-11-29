@@ -24,72 +24,84 @@ export default function Register() {
     setRole('candidate');
     setStep(2);
 
-    // Check for redirect result
-    checkRedirectResult();
+    let hasHandledRedirect = false;
 
-    // Listen for auth state changes to handle redirect after popup closes
-    const auth = getFirebaseAuth();
-    const db = getFirebaseFirestore();
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user && !loading) {
-        try {
-          // Get user data to determine where to redirect
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
-
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-
-            // Check if profile is complete
-            if (profileDoc.exists()) {
-              const profileData = profileDoc.data();
-
-              if (profileData.firstName) {
-                // Profile complete, go to dashboard
-                if (userData.role === 'agent') {
-                  router.push('/agent-dashboard');
-                } else {
-                  router.push('/candidate-dashboard');
-                }
-                return;
-              }
-            }
-
-            // Profile incomplete, go to complete-profile
-            router.push('/complete-profile');
-          }
-        } catch (err) {
-          console.error('Error checking user state:', err);
-        }
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
-
-  const checkRedirectResult = async () => {
-    try {
-      if (!isFirebaseConfigured) {
+    // Check for redirect result first
+    const checkAndHandleRedirect = async () => {
+      const redirectUser = await handleRedirectResult();
+      if (redirectUser && !hasHandledRedirect) {
+        hasHandledRedirect = true;
         setInitializing(false);
-        return;
-      }
 
-      const user = await handleRedirectResult();
-      if (user) {
-        // User signed in via redirect, navigate to appropriate page
-        if (user.role === 'agent') {
-          router.push('/agent-signup');
+        // User signed in via redirect, check profile and redirect
+        const db = getFirebaseFirestore();
+        const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
+
+        if (profileDoc.exists() && profileDoc.data().firstName) {
+          // Profile complete
+          if (redirectUser.role === 'agent') {
+            router.push('/agent-dashboard');
+          } else {
+            router.push('/candidate-dashboard');
+          }
         } else {
+          // Profile incomplete
           router.push('/complete-profile');
         }
+        return true;
       }
-    } catch (error) {
-      console.error('Error checking redirect result:', error);
-    } finally {
+      return false;
+    };
+
+    checkAndHandleRedirect().then(handled => {
+      if (handled) return;
+
+      // Listen for auth state changes to handle redirect after popup closes
+      const auth = getFirebaseAuth();
+      const db = getFirebaseFirestore();
+
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user && !loading && !hasHandledRedirect) {
+          hasHandledRedirect = true;
+          setLoading(true);
+
+          try {
+            // Get user data to determine where to redirect
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+
+              // Check if profile is complete
+              if (profileDoc.exists()) {
+                const profileData = profileDoc.data();
+
+                if (profileData.firstName) {
+                  // Profile complete, go to dashboard
+                  if (userData.role === 'agent') {
+                    router.push('/agent-dashboard');
+                  } else {
+                    router.push('/candidate-dashboard');
+                  }
+                  return;
+                }
+              }
+
+              // Profile incomplete, go to complete-profile
+              router.push('/complete-profile');
+            }
+          } catch (err) {
+            console.error('Error checking user state:', err);
+            setLoading(false);
+          }
+        }
+      });
+
       setInitializing(false);
-    }
-  };
+      return () => unsubscribe();
+    });
+  }, [router]);
 
   const roles = [
     {
@@ -149,6 +161,18 @@ export default function Register() {
       setLoading(false);
     }
   };
+
+  // Show loading state during initialization
+  if (initializing) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mb-4"></div>
+          <p className="text-accent-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

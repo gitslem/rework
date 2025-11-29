@@ -135,19 +135,26 @@ export default function AgentSignup() {
     setSubmitting(true);
 
     try {
-      const firebaseUser = await signInWithGoogle('agent');
-      setUser(firebaseUser);
-      setStep('form');
+      await signInWithGoogle('agent');
+
+      // If we get here, popup succeeded
+      // The onAuthStateChanged listener in checkAuth will handle setting user and showing form
     } catch (err: any) {
       console.error('Google signup error:', err);
 
       // Don't show error if redirect is in progress
       if (err.message === 'REDIRECT_IN_PROGRESS') {
+        // Redirect is happening, page will reload
+        return;
+      }
+
+      // Don't show error if popup was just closed by user
+      if (err.message && (err.message.includes('cancelled') || err.message.includes('closed'))) {
+        setSubmitting(false);
         return;
       }
 
       setError(err.message || 'Failed to sign up with Google');
-    } finally {
       setSubmitting(false);
     }
   };
