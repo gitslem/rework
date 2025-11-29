@@ -187,9 +187,15 @@ export default function CompleteProfile() {
       // Show success message
       setShowSuccess(true);
 
+      // Determine redirect based on user role
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const redirectPath = userDoc.exists() && userDoc.data().role === 'agent'
+        ? '/agent-dashboard'
+        : '/candidate-dashboard';
+
       // Redirect after 2 seconds
       setTimeout(() => {
-        router.push('/candidate-dashboard');
+        router.push(redirectPath);
       }, 2000);
     } catch (error: any) {
       console.error('Error creating profile:', error);

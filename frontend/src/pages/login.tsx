@@ -52,14 +52,19 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Sign in with Google (popup will open)
+      // For login, we check if user exists first, so use candidate as default role
+      // The auth state listener will determine the actual role from Firestore
       await signInWithGoogle('candidate');
 
-      // Auth state listener above will handle the redirect
+      // Auth state listener above will handle the redirect based on actual user role
     } catch (err: any) {
       console.error('Login error:', err);
 
-      // Don't show error if popup was just closed by user
+      // Don't show error if popup was just closed by user or redirect is in progress
+      if (err.message === 'REDIRECT_IN_PROGRESS') {
+        return; // Redirect is happening, don't show error or stop loading
+      }
+
       if (err.message && !err.message.includes('cancelled') && !err.message.includes('closed')) {
         setError(err.message || 'Google login failed. Please try again.');
       }
