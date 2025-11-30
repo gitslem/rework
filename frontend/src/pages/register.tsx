@@ -17,6 +17,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+  const [redirecting, setRedirecting] = useState(false); // Flag to prevent multiple redirects
 
   useEffect(() => {
     // Always set role as candidate for register page
@@ -26,11 +27,12 @@ export default function Register() {
 
     let hasHandledRedirect = false;
 
-    // Check for redirect result first
+    // Check for redirect result first (for mobile/redirect flow)
     const checkAndHandleRedirect = async () => {
       const redirectUser = await handleRedirectResult();
       if (redirectUser && !hasHandledRedirect) {
         hasHandledRedirect = true;
+        setRedirecting(true);
         setInitializing(false);
 
         // User signed in via redirect, check profile and redirect
@@ -45,7 +47,7 @@ export default function Register() {
             router.push('/candidate-dashboard');
           }
         } else {
-          // Profile incomplete
+          // Profile incomplete - redirect to complete-profile
           router.push('/complete-profile');
         }
         return true;
@@ -56,50 +58,8 @@ export default function Register() {
     checkAndHandleRedirect().then(handled => {
       if (handled) return;
 
-      // Listen for auth state changes to handle redirect after popup closes
-      const auth = getFirebaseAuth();
-      const db = getFirebaseFirestore();
-
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (user && !hasHandledRedirect) {
-          hasHandledRedirect = true;
-          setLoading(true);
-
-          try {
-            // Get user data to determine where to redirect
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
-
-            if (userDoc.exists()) {
-              const userData = userDoc.data();
-
-              // Check if profile is complete
-              if (profileDoc.exists()) {
-                const profileData = profileDoc.data();
-
-                if (profileData.firstName) {
-                  // Profile complete, go to dashboard
-                  if (userData.role === 'agent') {
-                    router.push('/agent-dashboard');
-                  } else {
-                    router.push('/candidate-dashboard');
-                  }
-                  return;
-                }
-              }
-
-              // Profile incomplete, go to complete-profile
-              router.push('/complete-profile');
-            }
-          } catch (err) {
-            console.error('Error checking user state:', err);
-            setLoading(false);
-          }
-        }
-      });
-
+      // Only set initializing to false if no redirect happened
       setInitializing(false);
-      return () => unsubscribe();
     });
   }, [router]);
 
@@ -133,6 +93,9 @@ export default function Register() {
   ];
 
   const handleGoogleSignUp = async () => {
+    // Prevent multiple redirects
+    if (redirecting) return;
+
     setError('');
     setLoading(true);
 
@@ -144,6 +107,9 @@ export default function Register() {
       }
 
       const user = await signInWithGoogle(role);
+
+      // Mark that we're redirecting to prevent auth listener from interfering
+      setRedirecting(true);
 
       // After successful sign-up, check profile and redirect immediately
       const db = getFirebaseFirestore();
@@ -161,10 +127,12 @@ export default function Register() {
           }
         } else {
           // Profile incomplete, redirect to complete-profile form
+          console.log('Redirecting to complete-profile - no firstName found');
           router.push('/complete-profile');
         }
       } else {
         // No profile exists, redirect to complete-profile form
+        console.log('Redirecting to complete-profile - no profile exists');
         router.push('/complete-profile');
       }
     } catch (err: any) {
@@ -175,11 +143,13 @@ export default function Register() {
           err.message?.includes('cancelled') ||
           err.message?.includes('closed')) {
         setLoading(false);
+        setRedirecting(false);
         return;
       }
 
       setError(err.message || 'Google sign up failed. Please try again.');
       setLoading(false);
+      setRedirecting(false);
     }
   };
 

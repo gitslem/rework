@@ -19,6 +19,7 @@ export default function AgentSignup() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showCompanySuccess, setShowCompanySuccess] = useState(false);
   const [showFirebaseWarning, setShowFirebaseWarning] = useState(false);
+  const [redirecting, setRedirecting] = useState(false); // Flag to prevent multiple redirects
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -77,14 +78,16 @@ export default function AgentSignup() {
 
       const auth = getFirebaseAuth();
 
-      // First, check for redirect result (for browsers that blocked popup)
+      // Only check for redirect result (for mobile/browsers that use redirect flow)
       const redirectUser = await handleRedirectResult();
       if (redirectUser) {
+        setRedirecting(true);
         const db = getFirebaseFirestore();
         const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
 
         if (profileDoc.exists() && profileDoc.data().firstName) {
           // Profile complete, redirect to dashboard
+          console.log('Redirect: Agent profile complete, going to dashboard');
           router.push('/agent-dashboard');
           return;
         }
@@ -93,50 +96,25 @@ export default function AgentSignup() {
         // For agents, show the signup form
         // For candidates, redirect to complete-profile
         if (redirectUser.role === 'candidate') {
+          console.log('Redirect: Candidate profile incomplete, going to complete-profile');
           router.push('/complete-profile');
           return;
         }
 
+        // Agent with incomplete profile - show form
         const firebaseUser = auth.currentUser;
         if (firebaseUser) {
+          console.log('Redirect: Agent profile incomplete, showing form');
           setUser(firebaseUser);
           setStep('form');
           setLoading(false);
+          setRedirecting(false);
           return;
         }
       }
 
-      // Listen for auth state changes
-      onAuthStateChanged(auth, async (firebaseUser) => {
-        if (firebaseUser) {
-          // User is logged in, check if they already have a profile
-          const db = getFirebaseFirestore();
-          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            // Check if profile is complete
-            const profileDoc = await getDoc(doc(db, 'profiles', firebaseUser.uid));
-            if (profileDoc.exists() && profileDoc.data().firstName) {
-              // Profile complete, redirect to dashboard
-              router.push(userData.role === 'agent' ? '/agent-dashboard' : '/candidate-dashboard');
-              return;
-            }
-
-            // Profile incomplete
-            if (userData.role === 'agent') {
-              // For agents, show form
-              setUser(firebaseUser);
-              setStep('form');
-            } else {
-              // For candidates, redirect to complete-profile
-              router.push('/complete-profile');
-              return;
-            }
-          }
-        }
-        setLoading(false);
-      });
+      // No redirect result, just set loading to false
+      setLoading(false);
     } catch (error: any) {
       console.error('Error checking auth:', error);
       if (error.message?.includes('Firebase is not configured')) {
@@ -147,11 +125,17 @@ export default function AgentSignup() {
   };
 
   const handleGoogleSignup = async () => {
+    // Prevent multiple sign-up attempts
+    if (redirecting || submitting) return;
+
     setError('');
     setSubmitting(true);
 
     try {
       const user = await signInWithGoogle('agent');
+
+      // Mark as redirecting to prevent auth listener interference
+      setRedirecting(true);
 
       // After successful sign-up, check profile and redirect/show form immediately
       const db = getFirebaseFirestore();
@@ -162,25 +146,30 @@ export default function AgentSignup() {
 
         if (profileData.firstName) {
           // Profile complete, redirect to dashboard
+          console.log('Agent profile complete, redirecting to dashboard');
           router.push('/agent-dashboard');
         } else {
           // Profile incomplete - for agents, show the signup form
+          console.log('Agent profile incomplete, showing form');
           const auth = getFirebaseAuth();
           const firebaseUser = auth.currentUser;
           if (firebaseUser) {
             setUser(firebaseUser);
             setStep('form');
             setSubmitting(false);
+            setRedirecting(false);
           }
         }
       } else {
         // No profile exists, show the signup form
+        console.log('No agent profile exists, showing form');
         const auth = getFirebaseAuth();
         const firebaseUser = auth.currentUser;
         if (firebaseUser) {
           setUser(firebaseUser);
           setStep('form');
           setSubmitting(false);
+          setRedirecting(false);
         }
       }
     } catch (err: any) {
@@ -195,11 +184,13 @@ export default function AgentSignup() {
       // Don't show error if popup was just closed by user
       if (err.message && (err.message.includes('cancelled') || err.message.includes('closed'))) {
         setSubmitting(false);
+        setRedirecting(false);
         return;
       }
 
       setError(err.message || 'Failed to sign up with Google');
       setSubmitting(false);
+      setRedirecting(false);
     }
   };
 
