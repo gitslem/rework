@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
-import { Users, Building, ArrowLeft, Check, AlertCircle } from 'lucide-react';
-import { signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
+import { Users, Building, ArrowLeft, Check, AlertCircle, Mail, Lock, User } from 'lucide-react';
+import { signInWithGoogle, handleRedirectResult, registerWithEmail } from '@/lib/firebase/auth';
 import { UserRole } from '@/types';
 import Logo from '@/components/Logo';
 import { isFirebaseConfigured, getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
@@ -17,6 +17,13 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
   useEffect(() => {
     // Always set role as candidate for register page
@@ -131,6 +138,43 @@ export default function Register() {
       color: 'purple'
     }
   ];
+
+  const handleEmailRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await registerWithEmail(
+        formData.email,
+        formData.password,
+        role,
+        formData.firstName,
+        formData.lastName
+      );
+
+      // Redirect based on role
+      if (role === 'agent') {
+        router.push('/agent-dashboard');
+      } else {
+        router.push('/candidate-dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
+      setLoading(false);
+    }
+  };
 
   const handleGoogleSignUp = async () => {
     setError('');
@@ -279,10 +323,6 @@ export default function Register() {
                       Signing up as {roles.find(r => r.value === role)?.title}
                     </span>
                   </div>
-                  <h2 className="text-2xl font-bold text-accent-dark mb-2">
-                    Sign Up with Google
-                  </h2>
-                  <p className="text-accent-gray-600">Quick and secure authentication</p>
                 </div>
 
                 {loading && (
@@ -292,10 +332,121 @@ export default function Register() {
                   </div>
                 )}
 
-                <div className="flex justify-center mb-8">
+                {/* Email Registration Form */}
+                <form onSubmit={handleEmailRegister} className="space-y-4 mb-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-accent-dark mb-2">
+                        First Name *
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-accent-gray-400 w-5 h-5" />
+                        <input
+                          type="text"
+                          required
+                          value={formData.firstName}
+                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                          className="w-full pl-10 pr-4 py-3 rounded-lg border border-accent-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors"
+                          placeholder="John"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-accent-dark mb-2">
+                        Last Name *
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-accent-gray-400 w-5 h-5" />
+                        <input
+                          type="text"
+                          required
+                          value={formData.lastName}
+                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                          className="w-full pl-10 pr-4 py-3 rounded-lg border border-accent-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors"
+                          placeholder="Doe"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-accent-dark mb-2">
+                      Email *
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-accent-gray-400 w-5 h-5" />
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-accent-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-accent-dark mb-2">
+                      Password *
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-accent-gray-400 w-5 h-5" />
+                      <input
+                        type="password"
+                        required
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-accent-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors"
+                        placeholder="••••••••"
+                        minLength={6}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-accent-dark mb-2">
+                      Confirm Password *
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-accent-gray-400 w-5 h-5" />
+                      <input
+                        type="password"
+                        required
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-accent-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-colors"
+                        placeholder="••••••••"
+                        minLength={6}
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  >
+                    Create Account
+                  </button>
+                </form>
+
+                {/* Divider */}
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-accent-gray-300"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-accent-gray-500 font-medium">OR</span>
+                  </div>
+                </div>
+
+                {/* Google Sign-up */}
+                <div className="mb-8">
                   <button
                     onClick={handleGoogleSignUp}
                     disabled={loading}
+                    type="button"
                     className="w-full bg-white border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
