@@ -193,5 +193,175 @@ service cloud.firestore {
       // Allow delete only for admins
       allow delete: if isAdmin();
     }
+
+    // ==================== NEWLY ADDED COLLECTIONS ====================
+
+    // Newsletter subscriptions collection (for homepage email subscription)
+    match /newsletter_subscriptions/{subscriptionId} {
+      // Allow anyone to read their own subscription
+      allow read: if isAdmin();
+
+      // Allow anyone to create subscriptions (unauthenticated users can subscribe)
+      allow create: if true;
+
+      // Only admins can update subscriptions
+      allow update: if isAdmin();
+
+      // Only admins can delete subscriptions
+      allow delete: if isAdmin();
+    }
+
+    // Service requests collection (for agent/candidate service requests)
+    match /serviceRequests/{requestId} {
+      // Allow read if user is involved in the request or is admin
+      allow read: if isAuthenticated() &&
+        (resource.data.requesterId == request.auth.uid ||
+         resource.data.providerId == request.auth.uid ||
+         isAdmin());
+
+      // Allow create if authenticated
+      allow create: if isAuthenticated() &&
+                      request.resource.data.requesterId == request.auth.uid;
+
+      // Allow update if user is involved in the request or is admin
+      allow update: if isAuthenticated() &&
+        (resource.data.requesterId == request.auth.uid ||
+         resource.data.providerId == request.auth.uid ||
+         isAdmin());
+
+      // Allow delete if user is the requester or admin
+      allow delete: if isAuthenticated() &&
+        (resource.data.requesterId == request.auth.uid || isAdmin());
+    }
+
+    // Reviews collection (for agent/candidate reviews)
+    match /reviews/{reviewId} {
+      // Allow read for anyone authenticated
+      allow read: if isAuthenticated();
+
+      // Allow create if authenticated and user is the reviewer
+      allow create: if isAuthenticated() &&
+                      request.resource.data.reviewerId == request.auth.uid;
+
+      // Allow update if user is the reviewer or admin
+      allow update: if isAuthenticated() &&
+        (resource.data.reviewerId == request.auth.uid || isAdmin());
+
+      // Allow delete if user is the reviewer or admin
+      allow delete: if isAuthenticated() &&
+        (resource.data.reviewerId == request.auth.uid || isAdmin());
+    }
+
+    // Payments collection (for payment tracking)
+    match /payments/{paymentId} {
+      // Allow read if user is involved in the payment or is admin
+      allow read: if isAuthenticated() &&
+        (resource.data.payerId == request.auth.uid ||
+         resource.data.recipientId == request.auth.uid ||
+         isAdmin());
+
+      // Allow create if authenticated and user is the payer
+      allow create: if isAuthenticated() &&
+                      request.resource.data.payerId == request.auth.uid;
+
+      // Only admins can update payments (for security)
+      allow update: if isAdmin();
+
+      // Only admins can delete payments
+      allow delete: if isAdmin();
+    }
+
+    // Transactions collection (for transaction history)
+    match /transactions/{transactionId} {
+      // Allow read if user is involved in the transaction or is admin
+      allow read: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Allow create if authenticated and user is creating their own transaction
+      allow create: if isAuthenticated() &&
+                      request.resource.data.userId == request.auth.uid;
+
+      // Only admins can update transactions
+      allow update: if isAdmin();
+
+      // Only admins can delete transactions
+      allow delete: if isAdmin();
+    }
+
+    // Platform credentials collection (for storing user platform credentials)
+    match /platform_credentials/{credentialId} {
+      // Allow read only if it's the user's own credentials
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Allow create if authenticated and user is creating their own credentials
+      allow create: if isAuthenticated() &&
+                      request.resource.data.userId == request.auth.uid;
+
+      // Allow update only if it's the user's own credentials
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Allow delete only if it's the user's own credentials
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Analytics/Stats collection (read-only for users, write for admins)
+    match /analytics/{docId} {
+      // Allow read for authenticated users
+      allow read: if isAuthenticated();
+
+      // Only admins can create/update/delete analytics
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Settings collection (app-wide settings)
+    match /settings/{settingId} {
+      // Allow read for authenticated users
+      allow read: if isAuthenticated();
+
+      // Only admins can create/update/delete settings
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Contact/Support requests collection
+    match /support_requests/{requestId} {
+      // Allow read if user is the requester or admin
+      allow read: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Allow create for anyone (authenticated or not)
+      allow create: if true;
+
+      // Allow update if user is the requester or admin
+      allow update: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Only admins can delete support requests
+      allow delete: if isAdmin();
+    }
+
+    // FAQs collection (read-only for users)
+    match /faqs/{faqId} {
+      // Allow read for everyone
+      allow read: if true;
+
+      // Only admins can create/update/delete FAQs
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Testimonials collection
+    match /testimonials/{testimonialId} {
+      // Allow read for everyone
+      allow read: if true;
+
+      // Allow create if authenticated
+      allow create: if isAuthenticated();
+
+      // Allow update only if user created it or is admin
+      allow update: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+
+      // Only admins can delete testimonials
+      allow delete: if isAdmin();
+    }
   }
 }
