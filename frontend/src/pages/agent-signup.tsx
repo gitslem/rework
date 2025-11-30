@@ -126,31 +126,44 @@ export default function AgentSignup() {
 
   const handleGoogleSignup = async () => {
     // Prevent multiple sign-up attempts
-    if (redirecting || submitting) return;
+    if (redirecting || submitting) {
+      console.log('Already processing, blocking duplicate request');
+      return;
+    }
 
     setError('');
     setSubmitting(true);
+    console.log('=== AGENT GOOGLE SIGN-UP STARTED ===');
 
     try {
+      console.log('Calling signInWithGoogle for agent...');
       const user = await signInWithGoogle('agent');
+      console.log('signInWithGoogle completed, user:', user);
 
       // Mark as redirecting to prevent auth listener interference
       setRedirecting(true);
 
+      // Small delay to ensure Firestore has replicated the data
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       // After successful sign-up, check profile and redirect/show form immediately
       const db = getFirebaseFirestore();
+      console.log('Fetching profile for agent:', user.uid);
       const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+      console.log('Profile exists:', profileDoc.exists());
 
       if (profileDoc.exists()) {
         const profileData = profileDoc.data();
+        console.log('Profile data:', profileData);
+        console.log('firstName:', profileData.firstName);
 
-        if (profileData.firstName) {
+        if (profileData.firstName && profileData.firstName.trim() !== '') {
           // Profile complete, redirect to dashboard
-          console.log('Agent profile complete, redirecting to dashboard');
+          console.log('Agent profile COMPLETE - redirecting to /agent-dashboard');
           router.push('/agent-dashboard');
         } else {
           // Profile incomplete - for agents, show the signup form
-          console.log('Agent profile incomplete, showing form');
+          console.log('Agent profile INCOMPLETE - showing signup form');
           const auth = getFirebaseAuth();
           const firebaseUser = auth.currentUser;
           if (firebaseUser) {
@@ -158,11 +171,16 @@ export default function AgentSignup() {
             setStep('form');
             setSubmitting(false);
             setRedirecting(false);
+          } else {
+            console.error('No current user found after sign-in');
+            setError('Authentication error. Please try again.');
+            setSubmitting(false);
+            setRedirecting(false);
           }
         }
       } else {
         // No profile exists, show the signup form
-        console.log('No agent profile exists, showing form');
+        console.log('NO PROFILE EXISTS - showing signup form');
         const auth = getFirebaseAuth();
         const firebaseUser = auth.currentUser;
         if (firebaseUser) {
@@ -170,19 +188,26 @@ export default function AgentSignup() {
           setStep('form');
           setSubmitting(false);
           setRedirecting(false);
+        } else {
+          console.error('No current user found after sign-in');
+          setError('Authentication error. Please try again.');
+          setSubmitting(false);
+          setRedirecting(false);
         }
       }
     } catch (err: any) {
-      console.error('Google signup error:', err);
+      console.error('=== AGENT SIGN-UP ERROR ===', err);
 
       // Don't show error if redirect is in progress
       if (err.message === 'REDIRECT_IN_PROGRESS') {
+        console.log('Redirect in progress, page will reload');
         // Redirect is happening, page will reload
         return;
       }
 
       // Don't show error if popup was just closed by user
       if (err.message && (err.message.includes('cancelled') || err.message.includes('closed'))) {
+        console.log('Popup closed by user');
         setSubmitting(false);
         setRedirecting(false);
         return;
