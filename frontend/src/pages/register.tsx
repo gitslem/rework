@@ -26,7 +26,8 @@ export default function Register() {
     setStep(2);
 
     console.log('=== REGISTER PAGE LOADED ===');
-    console.log('Checking for redirect result...');
+    console.log('Current URL:', window.location.href);
+    console.log('SessionStorage pendingRole:', sessionStorage.getItem('pendingRole'));
 
     let hasHandledRedirect = false;
 
@@ -36,6 +37,50 @@ export default function Register() {
         console.log('Calling handleRedirectResult...');
         const redirectUser = await handleRedirectResult();
         console.log('handleRedirectResult returned:', redirectUser);
+
+        // If no redirect result but user is signed in, check current auth state
+        if (!redirectUser && isFirebaseConfigured) {
+          const auth = getFirebaseAuth();
+          if (auth.currentUser && !hasHandledRedirect) {
+            console.log('No redirect result but user is signed in:', auth.currentUser.email);
+            console.log('Checking if this user needs to complete profile...');
+
+            hasHandledRedirect = true;
+            setRedirecting(true);
+            setInitializing(false);
+
+            const db = getFirebaseFirestore();
+            const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              console.log('User data found, role:', userData.role);
+
+              const profileDoc = await getDoc(doc(db, 'profiles', auth.currentUser.uid));
+
+              if (profileDoc.exists()) {
+                const profileData = profileDoc.data();
+                console.log('Profile data:', profileData);
+
+                if (profileData.firstName && profileData.firstName.trim() !== '') {
+                  console.log('Profile complete, redirecting to dashboard');
+                  if (userData.role === 'agent') {
+                    router.push('/agent-dashboard');
+                  } else {
+                    router.push('/candidate-dashboard');
+                  }
+                } else {
+                  console.log('Profile incomplete, redirecting to complete-profile');
+                  router.push('/complete-profile');
+                }
+              } else {
+                console.log('No profile found, redirecting to complete-profile');
+                router.push('/complete-profile');
+              }
+              return true;
+            }
+          }
+        }
 
         if (redirectUser && !hasHandledRedirect) {
           hasHandledRedirect = true;
@@ -55,6 +100,7 @@ export default function Register() {
 
           if (profileDoc.exists()) {
             const profileData = profileDoc.data();
+            console.log('Profile data:', profileData);
             console.log('Profile firstName:', profileData.firstName);
 
             if (profileData.firstName && profileData.firstName.trim() !== '') {
@@ -78,7 +124,7 @@ export default function Register() {
             router.push('/complete-profile');
           }
           return true;
-        } else {
+        } else if (!redirectUser) {
           console.log('No redirect user found');
         }
         return false;
