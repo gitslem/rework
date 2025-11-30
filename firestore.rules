@@ -175,5 +175,23 @@ service cloud.firestore {
       // Allow delete only for admins
       allow delete: if isAdmin();
     }
+
+    // Agent assignments collection (for admin to assign agents to candidates)
+    match /agentAssignments/{assignmentId} {
+      // Allow read if user is admin, the assigned agent, or the candidate
+      allow read: if isAuthenticated() &&
+                    (isAdmin() ||
+                     resource.data.agentId == request.auth.uid ||
+                     resource.data.candidateId == request.auth.uid);
+
+      // Allow create only for admins
+      allow create: if isAdmin();
+
+      // Allow update only for admins
+      allow update: if isAdmin();
+
+      // Allow delete only for admins
+      allow delete: if isAdmin();
+    }
   }
 }
