@@ -70,6 +70,7 @@ export default function AgentSignup() {
   const checkAuth = async () => {
     try {
       console.log('=== AGENT-SIGNUP: Checking auth ===');
+      console.log('Current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
 
       // Check if Firebase is configured
       if (!isFirebaseConfigured) {
@@ -79,11 +80,73 @@ export default function AgentSignup() {
       }
 
       const auth = getFirebaseAuth();
+      const db = getFirebaseFirestore();
 
       // Only check for redirect result (for mobile/browsers that use redirect flow)
       console.log('Calling handleRedirectResult for agent signup...');
       const redirectUser = await handleRedirectResult();
       console.log('Agent redirect user:', redirectUser);
+
+      // If no redirect result but user is signed in, check current auth state
+      if (!redirectUser && auth.currentUser) {
+        console.log('No redirect result but user is signed in:', auth.currentUser.email);
+        console.log('Checking agent profile status...');
+
+        setRedirecting(true);
+
+        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('User data found, role:', userData.role);
+
+          const profileDoc = await getDoc(doc(db, 'profiles', auth.currentUser.uid));
+
+          if (profileDoc.exists()) {
+            const profileData = profileDoc.data();
+            console.log('Profile data:', profileData);
+
+            if (profileData.firstName && profileData.firstName.trim() !== '') {
+              console.log('Profile complete, redirecting to dashboard');
+              if (userData.role === 'agent') {
+                router.push('/agent-dashboard');
+              } else {
+                router.push('/candidate-dashboard');
+              }
+              return;
+            } else {
+              // Profile incomplete
+              if (userData.role === 'candidate') {
+                console.log('Candidate with incomplete profile, redirecting to complete-profile');
+                router.push('/complete-profile');
+                return;
+              } else {
+                // Agent with incomplete profile - show form
+                console.log('Agent with incomplete profile, showing signup form');
+                setUser(auth.currentUser);
+                setStep('form');
+                setLoading(false);
+                setRedirecting(false);
+                return;
+              }
+            }
+          } else {
+            // No profile found
+            if (userData.role === 'candidate') {
+              console.log('Candidate with no profile, redirecting to complete-profile');
+              router.push('/complete-profile');
+              return;
+            } else {
+              console.log('Agent with no profile, showing signup form');
+              setUser(auth.currentUser);
+              setStep('form');
+              setLoading(false);
+              setRedirecting(false);
+              return;
+            }
+          }
+        }
+      }
 
       if (redirectUser) {
         setRedirecting(true);
@@ -91,7 +154,6 @@ export default function AgentSignup() {
         // Small delay to ensure Firestore replication
         await new Promise(resolve => setTimeout(resolve, 500));
 
-        const db = getFirebaseFirestore();
         console.log('Fetching profile for agent redirect:', redirectUser.uid);
         const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
         console.log('Agent profile exists:', profileDoc.exists());

@@ -160,11 +160,29 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 
     let firebaseUser: FirebaseUser;
 
-    // Use redirect on mobile devices or when explicitly requested
-    if (useRedirect || isMobileDevice()) {
+    // Check environment variable for redirect mode
+    const envUseRedirect = typeof window !== 'undefined' &&
+      process.env.NEXT_PUBLIC_USE_AUTH_REDIRECT === 'true';
+
+    console.log('OAuth Config:', {
+      useRedirect,
+      envUseRedirect,
+      isMobile: isMobileDevice(),
+      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    });
+
+    // Use redirect mode if:
+    // 1. Environment variable is set to true (for custom domain)
+    // 2. OR explicitly requested via parameter
+    // 3. OR on mobile device
+    const shouldUseRedirect = envUseRedirect || useRedirect || isMobileDevice();
+
+    if (shouldUseRedirect) {
+      console.log('Using REDIRECT mode for OAuth');
       // Store the role in session storage for after redirect
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('pendingRole', role);
+        console.log('Stored pendingRole in sessionStorage:', role);
       }
       await signInWithRedirect(auth, provider);
       // The page will reload, so we throw to prevent further execution
@@ -275,6 +293,8 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 export const handleRedirectResult = async (): Promise<User | null> => {
   try {
     console.log('=== handleRedirectResult called ===');
+    console.log('Current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+    console.log('Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN);
 
     if (!isFirebaseConfigured) {
       console.log('Firebase not configured, returning null');
@@ -285,20 +305,40 @@ export const handleRedirectResult = async (): Promise<User | null> => {
     const db = getFirebaseFirestore();
 
     console.log('Getting redirect result from Firebase...');
+    console.log('Current auth state before getRedirectResult:', auth.currentUser?.email || 'No user');
+
     const result = await getRedirectResult(auth);
     console.log('Redirect result:', result ? 'Found' : 'None');
 
+    if (result) {
+      console.log('Result details:', {
+        hasUser: !!result.user,
+        userEmail: result.user?.email,
+        providerId: result.providerId,
+        operationType: result.operationType
+      });
+    }
+
     if (!result || !result.user) {
       console.log('No redirect result or user');
+      // Check if user is already signed in (might have completed redirect earlier)
+      if (auth.currentUser) {
+        console.log('But auth.currentUser exists:', auth.currentUser.email);
+        console.log('This might be a page reload after successful sign-in');
+      }
       return null;
     }
 
     const firebaseUser = result.user;
-    console.log('Redirect user found:', firebaseUser.email);
+    console.log('Redirect user found:', firebaseUser.email, 'UID:', firebaseUser.uid);
 
     // Get the pending role from session storage
     const pendingRole = (typeof window !== 'undefined' ? sessionStorage.getItem('pendingRole') : null) as UserRole || 'candidate';
     console.log('Pending role from sessionStorage:', pendingRole);
+
+    if (!pendingRole && typeof window !== 'undefined') {
+      console.warn('WARNING: No pending role found in sessionStorage, defaulting to candidate');
+    }
 
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('pendingRole');
