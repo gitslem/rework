@@ -274,35 +274,49 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 // Handle redirect result after OAuth redirect
 export const handleRedirectResult = async (): Promise<User | null> => {
   try {
+    console.log('=== handleRedirectResult called ===');
+
     if (!isFirebaseConfigured) {
+      console.log('Firebase not configured, returning null');
       return null;
     }
 
     const auth = getFirebaseAuth();
     const db = getFirebaseFirestore();
 
+    console.log('Getting redirect result from Firebase...');
     const result = await getRedirectResult(auth);
+    console.log('Redirect result:', result ? 'Found' : 'None');
 
     if (!result || !result.user) {
+      console.log('No redirect result or user');
       return null;
     }
 
     const firebaseUser = result.user;
+    console.log('Redirect user found:', firebaseUser.email);
 
     // Get the pending role from session storage
     const pendingRole = (typeof window !== 'undefined' ? sessionStorage.getItem('pendingRole') : null) as UserRole || 'candidate';
+    console.log('Pending role from sessionStorage:', pendingRole);
+
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('pendingRole');
     }
 
     // Check if user already exists
+    console.log('Checking if user exists in Firestore...');
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+    console.log('User exists:', userDoc.exists());
 
     if (userDoc.exists()) {
-      return userDoc.data() as User;
+      const userData = userDoc.data() as User;
+      console.log('Returning existing user:', userData.email, 'Role:', userData.role);
+      return userData;
     }
 
     // Create new user (same logic as signInWithGoogle)
+    console.log('Creating new user in Firestore...');
     const userData: User = {
       uid: firebaseUser.uid,
       email: firebaseUser.email!,
@@ -311,12 +325,13 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       photoURL: firebaseUser.photoURL || undefined,
       isActive: true,
       isVerified: firebaseUser.emailVerified,
-      isCandidateApproved: pendingRole === 'agent',
+      isCandidateApproved: false, // Changed: All new users need approval
       createdAt: serverTimestamp() as any,
       updatedAt: serverTimestamp() as any,
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+    console.log('User created in users collection');
 
     const profileData = {
       uid: firebaseUser.uid,
@@ -344,10 +359,12 @@ export const handleRedirectResult = async (): Promise<User | null> => {
     };
 
     await setDoc(doc(db, 'profiles', firebaseUser.uid), profileData);
+    console.log('Profile created with empty firstName/lastName');
+    console.log('Returning new user:', userData.email, 'Role:', userData.role);
 
     return userData;
   } catch (error: any) {
-    console.error('Redirect result error:', error);
+    console.error('=== Redirect result error ===', error);
     return null;
   }
 };

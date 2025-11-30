@@ -25,39 +25,76 @@ export default function Register() {
     setRole('candidate');
     setStep(2);
 
+    console.log('=== REGISTER PAGE LOADED ===');
+    console.log('Checking for redirect result...');
+
     let hasHandledRedirect = false;
 
     // Check for redirect result first (for mobile/redirect flow)
     const checkAndHandleRedirect = async () => {
-      const redirectUser = await handleRedirectResult();
-      if (redirectUser && !hasHandledRedirect) {
-        hasHandledRedirect = true;
-        setRedirecting(true);
-        setInitializing(false);
+      try {
+        console.log('Calling handleRedirectResult...');
+        const redirectUser = await handleRedirectResult();
+        console.log('handleRedirectResult returned:', redirectUser);
 
-        // User signed in via redirect, check profile and redirect
-        const db = getFirebaseFirestore();
-        const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
+        if (redirectUser && !hasHandledRedirect) {
+          hasHandledRedirect = true;
+          setRedirecting(true);
+          setInitializing(false);
 
-        if (profileDoc.exists() && profileDoc.data().firstName) {
-          // Profile complete
-          if (redirectUser.role === 'agent') {
-            router.push('/agent-dashboard');
+          console.log('Redirect user found:', redirectUser.email, 'Role:', redirectUser.role);
+
+          // Small delay to ensure Firestore has replicated
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          // User signed in via redirect, check profile and redirect
+          const db = getFirebaseFirestore();
+          console.log('Fetching profile for redirect user:', redirectUser.uid);
+          const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
+          console.log('Profile exists:', profileDoc.exists());
+
+          if (profileDoc.exists()) {
+            const profileData = profileDoc.data();
+            console.log('Profile firstName:', profileData.firstName);
+
+            if (profileData.firstName && profileData.firstName.trim() !== '') {
+              // Profile complete
+              console.log('REDIRECT: Profile complete, going to dashboard');
+              if (redirectUser.role === 'agent') {
+                console.log('Redirecting to /agent-dashboard');
+                router.push('/agent-dashboard');
+              } else {
+                console.log('Redirecting to /candidate-dashboard');
+                router.push('/candidate-dashboard');
+              }
+            } else {
+              // Profile incomplete - redirect to complete-profile
+              console.log('REDIRECT: Profile incomplete, going to /complete-profile');
+              router.push('/complete-profile');
+            }
           } else {
-            router.push('/candidate-dashboard');
+            // No profile found
+            console.log('REDIRECT: No profile found, going to /complete-profile');
+            router.push('/complete-profile');
           }
+          return true;
         } else {
-          // Profile incomplete - redirect to complete-profile
-          router.push('/complete-profile');
+          console.log('No redirect user found');
         }
-        return true;
+        return false;
+      } catch (err) {
+        console.error('Error in checkAndHandleRedirect:', err);
+        return false;
       }
-      return false;
     };
 
     checkAndHandleRedirect().then(handled => {
-      if (handled) return;
+      if (handled) {
+        console.log('Redirect handled successfully');
+        return;
+      }
 
+      console.log('No redirect to handle, showing sign-up page');
       // Only set initializing to false if no redirect happened
       setInitializing(false);
     });
