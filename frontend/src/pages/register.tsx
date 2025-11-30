@@ -94,10 +94,15 @@ export default function Register() {
 
   const handleGoogleSignUp = async () => {
     // Prevent multiple redirects
-    if (redirecting) return;
+    if (redirecting) {
+      console.log('Already redirecting, blocking duplicate request');
+      return;
+    }
 
     setError('');
     setLoading(true);
+    console.log('=== GOOGLE SIGN-UP STARTED ===');
+    console.log('Role:', role);
 
     try {
       if (!isFirebaseConfigured) {
@@ -106,42 +111,56 @@ export default function Register() {
         return;
       }
 
+      console.log('Calling signInWithGoogle...');
       const user = await signInWithGoogle(role);
+      console.log('signInWithGoogle completed, user:', user);
 
       // Mark that we're redirecting to prevent auth listener from interfering
       setRedirecting(true);
 
+      // Small delay to ensure Firestore has replicated the data
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       // After successful sign-up, check profile and redirect immediately
       const db = getFirebaseFirestore();
+      console.log('Fetching profile for user:', user.uid);
       const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+      console.log('Profile exists:', profileDoc.exists());
 
       if (profileDoc.exists()) {
         const profileData = profileDoc.data();
+        console.log('Profile data:', profileData);
+        console.log('firstName:', profileData.firstName);
+        console.log('isEmpty:', !profileData.firstName || profileData.firstName === '');
 
-        if (profileData.firstName) {
+        if (profileData.firstName && profileData.firstName.trim() !== '') {
           // Profile complete, redirect to dashboard
+          console.log('Profile COMPLETE - redirecting to dashboard');
           if (user.role === 'agent') {
+            console.log('Redirecting to /agent-dashboard');
             router.push('/agent-dashboard');
           } else {
+            console.log('Redirecting to /candidate-dashboard');
             router.push('/candidate-dashboard');
           }
         } else {
           // Profile incomplete, redirect to complete-profile form
-          console.log('Redirecting to complete-profile - no firstName found');
+          console.log('Profile INCOMPLETE - redirecting to /complete-profile');
           router.push('/complete-profile');
         }
       } else {
         // No profile exists, redirect to complete-profile form
-        console.log('Redirecting to complete-profile - no profile exists');
+        console.log('NO PROFILE EXISTS - redirecting to /complete-profile');
         router.push('/complete-profile');
       }
     } catch (err: any) {
-      console.error('Registration error:', err);
+      console.error('=== REGISTRATION ERROR ===', err);
 
       // Don't show error if redirect is in progress or popup was closed
       if (err.message === 'REDIRECT_IN_PROGRESS' ||
           err.message?.includes('cancelled') ||
           err.message?.includes('closed')) {
+        console.log('Redirect in progress or popup closed, resetting state');
         setLoading(false);
         setRedirecting(false);
         return;
