@@ -143,11 +143,30 @@ export default function Register() {
         return;
       }
 
-      await signInWithGoogle(role);
+      const user = await signInWithGoogle(role);
 
-      // Reset loading so the auth state listener can process the user
-      // The listener will set loading back to true while it handles the redirect
-      setLoading(false);
+      // After successful sign-up, check profile and redirect immediately
+      const db = getFirebaseFirestore();
+      const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+
+      if (profileDoc.exists()) {
+        const profileData = profileDoc.data();
+
+        if (profileData.firstName) {
+          // Profile complete, redirect to dashboard
+          if (user.role === 'agent') {
+            router.push('/agent-dashboard');
+          } else {
+            router.push('/candidate-dashboard');
+          }
+        } else {
+          // Profile incomplete, redirect to complete-profile form
+          router.push('/complete-profile');
+        }
+      } else {
+        // No profile exists, redirect to complete-profile form
+        router.push('/complete-profile');
+      }
     } catch (err: any) {
       console.error('Registration error:', err);
 
