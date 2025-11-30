@@ -5,7 +5,8 @@ import Head from 'next/head';
 import { Users, Building, Globe2, ArrowLeft, Check, Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { registerWithEmail, signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
 import { UserRole } from '@/types';
-import { isFirebaseConfigured } from '@/lib/firebase/config';
+import { isFirebaseConfigured, getFirebaseFirestore } from '@/lib/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function RegisterNew() {
   const router = useRouter();
@@ -43,11 +44,20 @@ export default function RegisterNew() {
 
       const user = await handleRedirectResult();
       if (user) {
-        // User signed in via redirect, navigate to appropriate page
-        if (user.role === 'agent') {
-          router.push('/agent-dashboard');
+        // Check if profile is complete
+        const db = getFirebaseFirestore();
+        const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+
+        if (profileDoc.exists() && profileDoc.data().firstName) {
+          // Profile complete, navigate to dashboard
+          if (user.role === 'agent') {
+            router.push('/agent-dashboard');
+          } else {
+            router.push('/candidate-dashboard');
+          }
         } else {
-          router.push('/candidate-dashboard');
+          // Profile incomplete, navigate to complete-profile
+          router.push('/complete-profile');
         }
       }
     } catch (error) {

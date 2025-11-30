@@ -89,7 +89,14 @@ export default function AgentSignup() {
           return;
         }
 
-        // User signed in via redirect, show form
+        // User signed in via redirect but profile incomplete
+        // For agents, show the signup form
+        // For candidates, redirect to complete-profile
+        if (redirectUser.role === 'candidate') {
+          router.push('/complete-profile');
+          return;
+        }
+
         const firebaseUser = auth.currentUser;
         if (firebaseUser) {
           setUser(firebaseUser);
@@ -106,17 +113,26 @@ export default function AgentSignup() {
           const db = getFirebaseFirestore();
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
-          if (userDoc.exists() && userDoc.data().role === 'agent') {
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
             // Check if profile is complete
             const profileDoc = await getDoc(doc(db, 'profiles', firebaseUser.uid));
             if (profileDoc.exists() && profileDoc.data().firstName) {
               // Profile complete, redirect to dashboard
-              router.push('/agent-dashboard');
+              router.push(userData.role === 'agent' ? '/agent-dashboard' : '/candidate-dashboard');
               return;
             }
-            // User exists but profile incomplete, show form
-            setUser(firebaseUser);
-            setStep('form');
+
+            // Profile incomplete
+            if (userData.role === 'agent') {
+              // For agents, show form
+              setUser(firebaseUser);
+              setStep('form');
+            } else {
+              // For candidates, redirect to complete-profile
+              router.push('/complete-profile');
+              return;
+            }
           }
         }
         setLoading(false);
