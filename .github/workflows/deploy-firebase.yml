@@ -39,6 +39,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
           NEXT_PUBLIC_PAYPAL_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_PAYPAL_CLIENT_ID }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_USE_AUTH_REDIRECT: ${{ secrets.NEXT_PUBLIC_USE_AUTH_REDIRECT }}
         run: npm run build
 
       - name: Authenticate to Google Cloud
