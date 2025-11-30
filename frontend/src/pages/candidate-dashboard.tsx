@@ -779,41 +779,95 @@ export default function CandidateDashboard() {
           {/* Assigned Agents Tab */}
           {activeTab === 'search' && (
             <div className="space-y-6">
-              {/* Info Banner */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
+              {/* Info Banner with Enhanced AI Animation */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200 overflow-hidden relative">
                 <div className="flex flex-col lg:flex-row items-start gap-6">
                   {/* AI Flow Illustration */}
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 relative">
                     <svg width="240" height="120" viewBox="0 0 240 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="hidden lg:block">
                       {/* Candidate Circle */}
-                      <circle cx="30" cy="60" r="20" fill="#3B82F6" opacity="0.2"/>
-                      <circle cx="30" cy="60" r="15" fill="#3B82F6"/>
+                      <circle cx="30" cy="60" r="20" fill="#3B82F6" opacity="0.2">
+                        <animate attributeName="r" values="20;22;20" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="30" cy="60" r="15" fill="#3B82F6">
+                        <animate attributeName="opacity" values="1;0.8;1" dur="2s" repeatCount="indefinite"/>
+                      </circle>
                       <path d="M30 55 L30 60 L35 65" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <circle cx="30" cy="52" r="4" stroke="white" strokeWidth="2" fill="none"/>
                       <text x="30" y="95" textAnchor="middle" fontSize="11" fill="#1F2937" fontWeight="600">You</text>
 
-                      {/* AI Brain Center */}
-                      <circle cx="120" cy="60" r="25" fill="url(#gradient1)"/>
-                      <path d="M115 55 Q120 50 125 55 M115 65 Q120 70 125 65 M110 60 L115 60 M125 60 L130 60" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                      <circle cx="117" cy="58" r="2" fill="white"/>
-                      <circle cx="123" cy="58" r="2" fill="white"/>
+                      {/* AI Brain Center with Pulsing Animation */}
+                      <circle cx="120" cy="60" r="25" fill="url(#gradient1)" opacity="0.3">
+                        <animate attributeName="r" values="25;30;25" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="120" cy="60" r="25" fill="url(#gradient1)">
+                        <animate attributeName="opacity" values="1;0.7;1" dur="1.5s" repeatCount="indefinite"/>
+                      </circle>
+                      <path d="M115 55 Q120 50 125 55 M115 65 Q120 70 125 65 M110 60 L115 60 M125 60 L130 60" stroke="white" strokeWidth="2" strokeLinecap="round">
+                        <animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite"/>
+                      </path>
+                      <circle cx="117" cy="58" r="2" fill="white">
+                        <animate attributeName="opacity" values="1;0.3;1" dur="0.8s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="123" cy="58" r="2" fill="white">
+                        <animate attributeName="opacity" values="1;0.3;1" dur="0.8s" begin="0.4s" repeatCount="indefinite"/>
+                      </circle>
                       <text x="120" y="95" textAnchor="middle" fontSize="11" fill="#1F2937" fontWeight="600">AI Match</text>
 
                       {/* Agent Circle */}
-                      <circle cx="210" cy="60" r="20" fill="#10B981" opacity="0.2"/>
-                      <circle cx="210" cy="60" r="15" fill="#10B981"/>
+                      <circle cx="210" cy="60" r="20" fill="#10B981" opacity="0.2">
+                        <animate attributeName="r" values="20;22;20" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="210" cy="60" r="15" fill="#10B981">
+                        <animate attributeName="opacity" values="1;0.8;1" dur="2s" repeatCount="indefinite"/>
+                      </circle>
                       <path d="M210 55 L210 60 L205 65" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <circle cx="210" cy="52" r="4" stroke="white" strokeWidth="2" fill="none"/>
                       <path d="M206 67 L214 67" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                       <text x="210" y="95" textAnchor="middle" fontSize="11" fill="#1F2937" fontWeight="600">Agent</text>
 
+                      {/* Animated Data Particles flowing from You to AI */}
+                      <circle cx="50" cy="60" r="3" fill="#3B82F6">
+                        <animate attributeName="cx" values="50;95;50" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="70" cy="58" r="2" fill="#3B82F6">
+                        <animate attributeName="cx" values="70;95;70" dur="2.5s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite"/>
+                      </circle>
+
+                      {/* Animated Data Particles flowing from AI to Agent */}
+                      <circle cx="145" cy="60" r="3" fill="#10B981">
+                        <animate attributeName="cx" values="145;190;145" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="165" cy="62" r="2" fill="#10B981">
+                        <animate attributeName="cx" values="165;190;165" dur="2.5s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite"/>
+                      </circle>
+
                       {/* Connecting Lines with Animation Effect */}
                       <path d="M50 60 L95 60" stroke="#3B82F6" strokeWidth="2" strokeDasharray="4 4" opacity="0.6">
-                        <animate attributeName="stroke-dashoffset" from="8" to="0" dur="1s" repeatCount="indefinite"/>
+                        <animate attributeName="stroke-dashoffset" from="8" to="0" dur="0.8s" repeatCount="indefinite"/>
                       </path>
                       <path d="M145 60 L190 60" stroke="#10B981" strokeWidth="2" strokeDasharray="4 4" opacity="0.6">
-                        <animate attributeName="stroke-dashoffset" from="8" to="0" dur="1s" repeatCount="indefinite"/>
+                        <animate attributeName="stroke-dashoffset" from="8" to="0" dur="0.8s" repeatCount="indefinite"/>
                       </path>
+
+                      {/* Sparkle effects around AI brain */}
+                      <circle cx="105" cy="45" r="1.5" fill="#8B5CF6">
+                        <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+                        <animate attributeName="r" values="1.5;2;1.5" dur="1.5s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="135" cy="48" r="1.5" fill="#3B82F6">
+                        <animate attributeName="opacity" values="0;1;0" dur="1.8s" begin="0.3s" repeatCount="indefinite"/>
+                        <animate attributeName="r" values="1.5;2;1.5" dur="1.8s" begin="0.3s" repeatCount="indefinite"/>
+                      </circle>
+                      <circle cx="108" cy="75" r="1.5" fill="#3B82F6">
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+                        <animate attributeName="r" values="1.5;2;1.5" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+                      </circle>
 
                       {/* Gradient Definition */}
                       <defs>
@@ -824,9 +878,10 @@ export default function CandidateDashboard() {
                       </defs>
                     </svg>
 
-                    {/* Mobile Version - Simpler Icon */}
-                    <div className="lg:hidden w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center">
-                      <Bot className="w-8 h-8 text-white" />
+                    {/* Mobile Version - Animated Icon */}
+                    <div className="lg:hidden w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                      <Bot className="w-8 h-8 text-white relative z-10" />
                     </div>
                   </div>
 
@@ -834,6 +889,7 @@ export default function CandidateDashboard() {
                     <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
                       Your Assigned Agents
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                        <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-1.5 animate-pulse"></span>
                         AI Powered
                       </span>
                     </h3>
@@ -887,8 +943,8 @@ export default function CandidateDashboard() {
                         <div className="flex flex-col lg:flex-row justify-between gap-6">
                           <div className="flex-1">
                             {/* Header Section */}
-                            <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200">
-                              <div className="flex-1">
+                            <div className="flex flex-col sm:flex-row items-start sm:justify-between mb-4 pb-4 border-b border-gray-200 gap-3">
+                              <div className="flex-1 w-full">
                                 <div className="flex items-center gap-2 mb-3">
                                   <h3 className="text-2xl font-bold text-gray-900">{agent.name}</h3>
                                   <span className="bg-black text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
@@ -937,15 +993,15 @@ export default function CandidateDashboard() {
                                   </div>
                                 )}
                               </div>
-                              <div className="text-right ml-4">
-                                <div className="flex items-center gap-1 text-yellow-500 mb-1">
+                              <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:ml-4 shrink-0">
+                                <div className="flex items-center gap-1 text-yellow-500">
                                   <Star className="w-5 h-5 fill-current" />
                                   <span className="font-bold text-gray-900 text-lg">{agent.rating.toFixed(1)}</span>
                                   {agent.reviews > 0 && (
                                     <span className="text-gray-500 text-sm">({agent.reviews})</span>
                                   )}
                                 </div>
-                                <p className="text-sm font-semibold text-gray-700">{agent.successRate}% success</p>
+                                <p className="text-sm font-semibold text-gray-700 whitespace-nowrap">{agent.successRate}% success</p>
                               </div>
                             </div>
 
@@ -973,9 +1029,9 @@ export default function CandidateDashboard() {
                           </div>
 
                           {/* Right Side - Pricing & Action */}
-                          <div className="flex flex-col justify-between items-center lg:items-end min-w-[200px] space-y-4">
+                          <div className="flex flex-col justify-between items-center lg:items-end w-full lg:w-auto lg:min-w-[180px] space-y-4">
                             {!agent.isFree && (
-                              <div className="text-center px-5 py-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 shadow-sm">
+                              <div className="text-center px-5 py-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-300 shadow-sm w-full lg:w-auto">
                                 <p className="text-3xl font-bold text-gray-900">${agent.price}</p>
                                 <p className="text-xs text-gray-600 font-medium mt-1">Per placement</p>
                               </div>

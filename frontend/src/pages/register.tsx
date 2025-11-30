@@ -61,7 +61,7 @@ export default function Register() {
       const db = getFirebaseFirestore();
 
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (user && !loading && !hasHandledRedirect) {
+        if (user && !hasHandledRedirect) {
           hasHandledRedirect = true;
           setLoading(true);
 
