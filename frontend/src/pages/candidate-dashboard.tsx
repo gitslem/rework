@@ -264,26 +264,37 @@ export default function CandidateDashboard() {
 
   const loadAgents = async (db: any) => {
     try {
-      // Get all users with role 'agent' and approved status
-      const usersQuery = query(
-        collection(db, 'users'),
-        where('role', '==', 'agent')
-      );
-      const usersSnapshot = await getDocs(usersQuery);
+      // Get the current user's assigned agents
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userData = userDoc.data();
+      const assignedAgentIds = userData?.assignedAgents || [];
+
+      console.log('Candidate assigned agents:', assignedAgentIds);
+
+      // If no agents are assigned, show empty list
+      if (assignedAgentIds.length === 0) {
+        console.log('No agents assigned to this candidate');
+        setAgents([]);
+        return;
+      }
 
       const agentsList: Agent[] = [];
 
-      for (const userDoc of usersSnapshot.docs) {
-        // Get the agent's profile
-        const profileDoc = await getDoc(doc(db, 'profiles', userDoc.id));
+      // Fetch only the assigned agents
+      for (const agentId of assignedAgentIds) {
+        try {
+          const agentUserDoc = await getDoc(doc(db, 'users', agentId));
+          if (!agentUserDoc.exists()) continue;
 
-        if (profileDoc.exists()) {
+          const profileDoc = await getDoc(doc(db, 'profiles', agentId));
+          if (!profileDoc.exists()) continue;
+
           const profileData = profileDoc.data();
 
           // Only show approved agents
           if (profileData.isAgentApproved === true || profileData.agentVerificationStatus === 'approved') {
             const agent = {
-              id: userDoc.id,
+              id: agentId,
               name: `${profileData.firstName} ${profileData.lastName}`,
               rating: profileData.averageRating || 4.5,
               reviews: profileData.totalReviews || 0,
@@ -298,10 +309,14 @@ export default function CandidateDashboard() {
               agentWorkingHours: profileData.agentWorkingHours
             };
             agentsList.push(agent);
+            console.log('Added assigned agent:', agent.name);
           }
+        } catch (err) {
+          console.error('Error loading agent:', agentId, err);
         }
       }
 
+      console.log('Total assigned agents loaded:', agentsList.length);
       setAgents(agentsList);
     } catch (error) {
       console.error('Error loading agents:', error);
