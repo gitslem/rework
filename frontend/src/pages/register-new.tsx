@@ -143,12 +143,29 @@ export default function RegisterNew() {
         return;
       }
 
-      await signInWithGoogle(role);
+      const user = await signInWithGoogle(role);
 
-      if (role === 'agent') {
-        router.push('/agent-dashboard');
+      // After successful sign-up, check profile and redirect immediately
+      const db = getFirebaseFirestore();
+      const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+
+      if (profileDoc.exists()) {
+        const profileData = profileDoc.data();
+
+        if (profileData.firstName) {
+          // Profile complete, redirect to dashboard
+          if (user.role === 'agent') {
+            router.push('/agent-dashboard');
+          } else {
+            router.push('/candidate-dashboard');
+          }
+        } else {
+          // Profile incomplete, redirect to complete-profile form
+          router.push('/complete-profile');
+        }
       } else {
-        router.push('/candidate-dashboard');
+        // No profile exists, redirect to complete-profile form
+        router.push('/complete-profile');
       }
     } catch (err: any) {
       // Don't show error if redirect is in progress
@@ -157,7 +174,6 @@ export default function RegisterNew() {
       }
 
       setError(err.message || 'Google sign up failed. Please try again.');
-    } finally {
       setLoading(false);
     }
   };

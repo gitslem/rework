@@ -151,10 +151,38 @@ export default function AgentSignup() {
     setSubmitting(true);
 
     try {
-      await signInWithGoogle('agent');
+      const user = await signInWithGoogle('agent');
 
-      // If we get here, popup succeeded
-      // The onAuthStateChanged listener in checkAuth will handle setting user and showing form
+      // After successful sign-up, check profile and redirect/show form immediately
+      const db = getFirebaseFirestore();
+      const profileDoc = await getDoc(doc(db, 'profiles', user.uid));
+
+      if (profileDoc.exists()) {
+        const profileData = profileDoc.data();
+
+        if (profileData.firstName) {
+          // Profile complete, redirect to dashboard
+          router.push('/agent-dashboard');
+        } else {
+          // Profile incomplete - for agents, show the signup form
+          const auth = getFirebaseAuth();
+          const firebaseUser = auth.currentUser;
+          if (firebaseUser) {
+            setUser(firebaseUser);
+            setStep('form');
+            setSubmitting(false);
+          }
+        }
+      } else {
+        // No profile exists, show the signup form
+        const auth = getFirebaseAuth();
+        const firebaseUser = auth.currentUser;
+        if (firebaseUser) {
+          setUser(firebaseUser);
+          setStep('form');
+          setSubmitting(false);
+        }
+      }
     } catch (err: any) {
       console.error('Google signup error:', err);
 
