@@ -123,16 +123,16 @@ export default function AgentSignup() {
             if (profileData.firstName && profileData.firstName.trim() !== '') {
               console.log('Profile complete, redirecting to dashboard');
               if (userData.role === 'agent') {
-                router.push('/agent-dashboard');
+                await router.push('/agent-dashboard');
               } else {
-                router.push('/candidate-dashboard');
+                await router.push('/candidate-dashboard');
               }
               return;
             } else {
               // Profile incomplete
               if (userData.role === 'candidate') {
                 console.log('Candidate with incomplete profile, redirecting to complete-profile');
-                router.push('/complete-profile');
+                await router.push('/complete-profile');
                 return;
               } else {
                 // Agent with incomplete profile - show form
@@ -148,7 +148,7 @@ export default function AgentSignup() {
             // No profile found
             if (userData.role === 'candidate') {
               console.log('Candidate with no profile, redirecting to complete-profile');
-              router.push('/complete-profile');
+              await router.push('/complete-profile');
               return;
             } else {
               console.log('Agent with no profile, showing signup form');
@@ -179,7 +179,7 @@ export default function AgentSignup() {
           if (profileData.firstName && profileData.firstName.trim() !== '') {
             // Profile complete, redirect to dashboard
             console.log('REDIRECT: Agent profile complete, going to dashboard');
-            router.push('/agent-dashboard');
+            await router.push('/agent-dashboard');
             return;
           }
         }
@@ -189,7 +189,7 @@ export default function AgentSignup() {
         // For candidates, redirect to complete-profile
         if (redirectUser.role === 'candidate') {
           console.log('REDIRECT: Candidate going to complete-profile');
-          router.push('/complete-profile');
+          await router.push('/complete-profile');
           return;
         }
 
@@ -254,7 +254,7 @@ export default function AgentSignup() {
         if (profileData.firstName && profileData.firstName.trim() !== '') {
           // Profile complete, redirect to dashboard
           console.log('Agent profile COMPLETE - redirecting to /agent-dashboard');
-          router.push('/agent-dashboard');
+          await router.push('/agent-dashboard');
         } else {
           // Profile incomplete - for agents, show the signup form
           console.log('Agent profile INCOMPLETE - showing signup form');
