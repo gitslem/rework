@@ -179,10 +179,12 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 
     if (shouldUseRedirect) {
       console.log('Using REDIRECT mode for OAuth');
-      // Store the role in session storage for after redirect
+      // Store the role in session storage AND localStorage for after redirect
+      // localStorage is needed for Chrome on iOS which clears sessionStorage
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('pendingRole', role);
-        console.log('Stored pendingRole in sessionStorage:', role);
+        localStorage.setItem('pendingRole', role);
+        console.log('Stored pendingRole in sessionStorage and localStorage:', role);
       }
       await signInWithRedirect(auth, provider);
       // The page will reload, so we throw to prevent further execution
@@ -203,6 +205,7 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
         // Store the role and try redirect instead
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('pendingRole', role);
+          localStorage.setItem('pendingRole', role);
         }
         await signInWithRedirect(auth, provider);
         throw new Error('REDIRECT_IN_PROGRESS');
@@ -332,16 +335,19 @@ export const handleRedirectResult = async (): Promise<User | null> => {
     const firebaseUser = result.user;
     console.log('Redirect user found:', firebaseUser.email, 'UID:', firebaseUser.uid);
 
-    // Get the pending role from session storage
-    const pendingRole = (typeof window !== 'undefined' ? sessionStorage.getItem('pendingRole') : null) as UserRole || 'candidate';
-    console.log('Pending role from sessionStorage:', pendingRole);
+    // Get the pending role from session storage or localStorage (fallback for Chrome iOS)
+    const pendingRole = (typeof window !== 'undefined'
+      ? (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole'))
+      : null) as UserRole || 'candidate';
+    console.log('Pending role from storage:', pendingRole);
 
     if (!pendingRole && typeof window !== 'undefined') {
-      console.warn('WARNING: No pending role found in sessionStorage, defaulting to candidate');
+      console.warn('WARNING: No pending role found in storage, defaulting to candidate');
     }
 
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('pendingRole');
+      localStorage.removeItem('pendingRole');
     }
 
     // Check if user already exists
