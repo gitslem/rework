@@ -827,7 +827,6 @@ export default function ProfileSettingsPage() {
                       <ArrowRight className="w-5 h-5" />
                     </button>
                   </div>
-                </div>
               ) : (
                 /* Candidate Info Tab Content */
                 <div className="space-y-8">
@@ -857,267 +856,268 @@ export default function ProfileSettingsPage() {
                     </button>
                   </div>
 
-              {/* Learn Content */}
-              {infoSubTab === 'learn' && (
-                <div className="space-y-12">
-                  {/* What is Remote-Works */}
-                  <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                    <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
-                      <Globe className="w-8 h-8 text-amber-600" />
-                      What is Remote-Works?
-                    </h2>
-                    <div className="prose prose-lg max-w-none">
-                      <p className="text-gray-800 leading-relaxed mb-4">
-                        Remote-Works is a <strong className="text-amber-600">marketplace platform</strong> that connects talented individuals
-                        with expert agents who specialize in remote work opportunities. We bridge the gap between candidates seeking
-                        flexible work and the growing demand for AI projects, translation, transcription, data labeling, evaluation,
-                        research, and more.
-                      </p>
-                      <p className="text-gray-800 leading-relaxed">
-                        Our platform features <strong className="text-black">vetted, authenticated agents</strong> who have proven
-                        expertise in getting candidates approved on 20+ remote work platforms including industry leaders like
-                        TELUS Digital, OneForma, Outlier, RWS, and many others.
-                      </p>
-                    </div>
-                  </section>
+                  {/* Learn Content */}
+                  {infoSubTab === 'learn' && (
+                    <div className="space-y-12">
+                      {/* What is Remote-Works */}
+                      <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                        <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
+                          <Globe className="w-8 h-8 text-amber-600" />
+                          What is Remote-Works?
+                        </h2>
+                        <div className="prose prose-lg max-w-none">
+                          <p className="text-gray-800 leading-relaxed mb-4">
+                            Remote-Works is a <strong className="text-amber-600">marketplace platform</strong> that connects talented individuals
+                            with expert agents who specialize in remote work opportunities. We bridge the gap between candidates seeking
+                            flexible work and the growing demand for AI projects, translation, transcription, data labeling, evaluation,
+                            research, and more.
+                          </p>
+                          <p className="text-gray-800 leading-relaxed">
+                            Our platform features <strong className="text-black">vetted, authenticated agents</strong> who have proven
+                            expertise in getting candidates approved on 20+ remote work platforms including industry leaders like
+                            TELUS Digital, OneForma, Outlier, RWS, and many others.
+                          </p>
+                        </div>
+                      </section>
 
-                  {/* Key Features Grid */}
-                  <section>
-                    <h2 className="text-3xl font-bold text-black mb-8 text-center">
-                      Why Choose Remote-Works?
-                    </h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      {features.map((feature, index) => (
-                        <div
-                          key={index}
-                          className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border-2 border-gray-200 hover:border-amber-400 hover:scale-105 transform duration-300"
-                        >
-                          <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl text-white mb-4`}>
-                            {feature.icon}
+                    {/* Key Features Grid */}
+                    <section>
+                      <h2 className="text-3xl font-bold text-black mb-8 text-center">
+                        Why Choose Remote-Works?
+                      </h2>
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {features.map((feature, index) => (
+                          <div
+                            key={index}
+                            className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border-2 border-gray-200 hover:border-amber-400 hover:scale-105 transform duration-300"
+                          >
+                            <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl text-white mb-4`}>
+                              {feature.icon}
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-2">{feature.title}</h3>
+                            <p className="text-gray-700">{feature.description}</p>
                           </div>
-                          <h3 className="text-xl font-bold text-black mb-2">{feature.title}</h3>
-                          <p className="text-gray-700">{feature.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* How It Works */}
-                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                    <h2 className="text-3xl font-bold text-black mb-8 flex items-center gap-3">
-                      <Target className="w-8 h-8 text-amber-600" />
-                      How It Works
-                    </h2>
-                    <div className="space-y-6">
-                      {[
-                        {
-                          step: "1",
-                          title: "Sign Up & Get Verified",
-                          description: "Create your account, complete your profile, and upload verification documents. Our admin team reviews applications within 24-48 hours.",
-                          color: "amber"
-                        },
-                        {
-                          step: "2",
-                          title: "Browse Vetted Agents",
-                          description: "Once approved, explore our marketplace of authenticated agents. View their expertise, success rates, pricing, and reviews from other candidates.",
-                          color: "yellow"
-                        },
-                        {
-                          step: "3",
-                          title: "Request Services",
-                          description: "Send a service request to an agent explaining which platforms you're interested in and your goals. Agents respond with their terms and availability.",
-                          color: "amber"
-                        },
-                        {
-                          step: "4",
-                          title: "Choose Your Payment Model",
-                          description: "Select between one-time payment or revenue sharing based on what works best for you.",
-                          color: "yellow"
-                        },
-                        {
-                          step: "5",
-                          title: "Get Approved & Start Earning",
-                          description: "Follow your agent's guidance to get approved on platforms. Once approved, start working on projects and earning income!",
-                          color: "amber"
-                        }
-                      ].map((item, index) => (
-                        <div key={index} className="flex gap-6 items-start">
-                          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg">
-                            <span className="text-xl font-bold text-white">{item.step}</span>
-                          </div>
-                          <div className="flex-1 bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
-                            <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
-                            <p className="text-gray-700 leading-relaxed">{item.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Payment Models */}
-                  <section className="grid md:grid-cols-2 gap-8">
-                    {/* One-Time Payment */}
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-300">
-                      <div className="flex items-center gap-3 mb-4">
-                        <DollarSign className="w-8 h-8 text-green-600" />
-                        <h3 className="text-2xl font-bold text-black">One-Time Payment</h3>
+                        ))}
                       </div>
-                      <p className="text-gray-800 mb-6">
-                        Pay a specific fee for approval assistance. Perfect for those who want a straightforward transaction.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Fixed fee per project (e.g., $100 per platform)</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Package deals available (e.g., $150 for 4 approvals)</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">No ongoing obligations</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">You keep 100% of earnings</p>
-                        </div>
-                      </div>
-                    </div>
+                    </section>
 
-                    {/* Revenue Share */}
-                    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
-                      <div className="flex items-center gap-3 mb-4">
-                        <TrendingUp className="w-8 h-8 text-amber-600" />
-                        <h3 className="text-2xl font-bold text-black">Revenue Share</h3>
-                      </div>
-                      <p className="text-gray-800 mb-6">
-                        Share earnings with your agent. Ideal for ongoing support and task management.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">No upfront payment required</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">50/50 split or as agreed with agent</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Agent can work on projects on your behalf (if authorized)</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Ongoing agent support included</p>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Work Types */}
-                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                    <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
-                      <Briefcase className="w-8 h-8 text-amber-600" />
-                      Types of Remote Work Available
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                      {workTypes.map((work, index) => (
-                        <div key={index} className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 text-center hover:shadow-md transition-all border-2 border-amber-200">
-                          <div className="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
-                            <div className="text-amber-600">
-                              {work.icon}
+                    {/* How It Works */}
+                    <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+                      <h2 className="text-3xl font-bold text-black mb-8 flex items-center gap-3">
+                        <Target className="w-8 h-8 text-amber-600" />
+                        How It Works
+                      </h2>
+                      <div className="space-y-6">
+                        {[
+                          {
+                            step: "1",
+                            title: "Sign Up & Get Verified",
+                            description: "Create your account, complete your profile, and upload verification documents. Our admin team reviews applications within 24-48 hours.",
+                            color: "amber"
+                          },
+                          {
+                            step: "2",
+                            title: "Browse Vetted Agents",
+                            description: "Once approved, explore our marketplace of authenticated agents. View their expertise, success rates, pricing, and reviews from other candidates.",
+                            color: "yellow"
+                          },
+                          {
+                            step: "3",
+                            title: "Request Services",
+                            description: "Send a service request to an agent explaining which platforms you're interested in and your goals. Agents respond with their terms and availability.",
+                            color: "amber"
+                          },
+                          {
+                            step: "4",
+                            title: "Choose Your Payment Model",
+                            description: "Select between one-time payment or revenue sharing based on what works best for you.",
+                            color: "yellow"
+                          },
+                          {
+                            step: "5",
+                            title: "Get Approved & Start Earning",
+                            description: "Follow your agent's guidance to get approved on platforms. Once approved, start working on projects and earning income!",
+                            color: "amber"
+                          }
+                        ].map((item, index) => (
+                          <div key={index} className="flex gap-6 items-start">
+                            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg">
+                              <span className="text-xl font-bold text-white">{item.step}</span>
+                            </div>
+                            <div className="flex-1 bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                              <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
+                              <p className="text-gray-700 leading-relaxed">{item.description}</p>
                             </div>
                           </div>
-                          <p className="font-semibold text-black text-sm">{work.name}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Supported Platforms */}
-                  <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
-                    <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                      <Shield className="w-8 h-8 text-amber-500" />
-                      20+ Supported Platforms
-                    </h2>
-                    <p className="text-gray-300 mb-6">
-                      Our agents have expertise across industry-leading platforms. No limit to the number of gigs you can pursue!
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {platforms.map((platform, index) => (
-                        <span
-                          key={index}
-                          className="bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium hover:bg-opacity-20 transition-all border border-amber-500"
-                        >
-                          {platform}
-                        </span>
-                      ))}
-                      <span className="bg-gradient-to-r from-amber-500 to-yellow-500 px-4 py-2 rounded-full text-sm font-bold">
-                        +10 More
-                      </span>
-                    </div>
-                  </section>
-                </div>
-              )}
-
-              {/* Tips Content */}
-              {infoSubTab === 'tips' && (
-                <div className="space-y-8">
-                  {/* Header */}
-                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-amber-500 p-3 rounded-xl">
-                        <Lightbulb className="w-8 h-8 text-white" />
+                        ))}
                       </div>
-                      <h2 className="text-3xl font-bold text-black">7 Tips to Succeed with Remote-Works</h2>
-                    </div>
-                    <p className="text-gray-800 text-lg">
-                      Follow these proven strategies to maximize your success and earnings on our platform.
-                      These tips come from our most successful candidates and experienced agents.
-                    </p>
-                  </div>
+                    </section>
 
-                  {/* Tips List */}
-                  {successTips.map((tip, index) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-amber-400 transition-all"
-                    >
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="bg-amber-100 rounded-full p-3 flex-shrink-0">
-                          <Star className="w-6 h-6 text-amber-600" />
+                    {/* Payment Models */}
+                    <section className="grid md:grid-cols-2 gap-8">
+                      {/* One-Time Payment */}
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-300">
+                        <div className="flex items-center gap-3 mb-4">
+                          <DollarSign className="w-8 h-8 text-green-600" />
+                          <h3 className="text-2xl font-bold text-black">One-Time Payment</h3>
                         </div>
-                        <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-black mb-2">{tip.title}</h3>
-                          <p className="text-gray-700 text-lg leading-relaxed mb-4">{tip.description}</p>
-                          <div className="space-y-2">
-                            {tip.tips.map((item, idx) => (
-                              <div key={idx} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <ChevronRight className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                                <p className="text-gray-800">{item}</p>
-                              </div>
-                            ))}
+                        <p className="text-gray-800 mb-6">
+                          Pay a specific fee for approval assistance. Perfect for those who want a straightforward transaction.
+                        </p>
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">Fixed fee per project (e.g., $100 per platform)</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">Package deals available (e.g., $150 for 4 approvals)</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">No ongoing obligations</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">You keep 100% of earnings</p>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
 
-                  {/* Call to Action */}
-                  <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
-                    <h3 className="text-3xl font-bold mb-4">Ready to Start Your Remote Work Journey?</h3>
-                    <p className="text-xl text-gray-300 mb-6">
-                      Join thousands of candidates who are already earning with Remote-Works
-                    </p>
-                    <button
-                      onClick={() => router.push('/candidate-dashboard')}
-                      className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-amber-600 hover:to-yellow-600 transition-all inline-flex items-center gap-2 shadow-lg"
-                    >
-                      Go to Dashboard
-                      <ArrowRight className="w-5 h-5" />
-                    </button>
-                  </div>
+                      {/* Revenue Share */}
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
+                        <div className="flex items-center gap-3 mb-4">
+                          <TrendingUp className="w-8 h-8 text-amber-600" />
+                          <h3 className="text-2xl font-bold text-black">Revenue Share</h3>
+                        </div>
+                        <p className="text-gray-800 mb-6">
+                          Share earnings with your agent. Ideal for ongoing support and task management.
+                        </p>
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">No upfront payment required</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">50/50 split or as agreed with agent</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">Agent can work on projects on your behalf (if authorized)</p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                            <p className="text-gray-800">Ongoing agent support included</p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Work Types */}
+                    <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+                      <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
+                        <Briefcase className="w-8 h-8 text-amber-600" />
+                        Types of Remote Work Available
+                      </h2>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {workTypes.map((work, index) => (
+                          <div key={index} className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 text-center hover:shadow-md transition-all border-2 border-amber-200">
+                            <div className="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
+                              <div className="text-amber-600">
+                                {work.icon}
+                              </div>
+                            </div>
+                            <p className="font-semibold text-black text-sm">{work.name}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+
+                    {/* Supported Platforms */}
+                    <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
+                      <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+                        <Shield className="w-8 h-8 text-amber-500" />
+                        20+ Supported Platforms
+                      </h2>
+                      <p className="text-gray-300 mb-6">
+                        Our agents have expertise across industry-leading platforms. No limit to the number of gigs you can pursue!
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        {platforms.map((platform, index) => (
+                          <span
+                            key={index}
+                            className="bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium hover:bg-opacity-20 transition-all border border-amber-500"
+                          >
+                            {platform}
+                          </span>
+                        ))}
+                        <span className="bg-gradient-to-r from-amber-500 to-yellow-500 px-4 py-2 rounded-full text-sm font-bold">
+                          +10 More
+                        </span>
+                      </div>
+                    </section>
+                    </div>
+                  )}
+
+                  {/* Tips Content */}
+                  {infoSubTab === 'tips' && (
+                    <div className="space-y-8">
+                      {/* Header */}
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="bg-amber-500 p-3 rounded-xl">
+                            <Lightbulb className="w-8 h-8 text-white" />
+                          </div>
+                          <h2 className="text-3xl font-bold text-black">7 Tips to Succeed with Remote-Works</h2>
+                        </div>
+                        <p className="text-gray-800 text-lg">
+                          Follow these proven strategies to maximize your success and earnings on our platform.
+                          These tips come from our most successful candidates and experienced agents.
+                        </p>
+                      </div>
+
+                      {/* Tips List */}
+                      {successTips.map((tip, index) => (
+                      <div
+                        key={index}
+                        className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-amber-400 transition-all"
+                      >
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="bg-amber-100 rounded-full p-3 flex-shrink-0">
+                            <Star className="w-6 h-6 text-amber-600" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-2xl font-bold text-black mb-2">{tip.title}</h3>
+                            <p className="text-gray-700 text-lg leading-relaxed mb-4">{tip.description}</p>
+                            <div className="space-y-2">
+                              {tip.tips.map((item, idx) => (
+                                <div key={idx} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                  <ChevronRight className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                                  <p className="text-gray-800">{item}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      ))}
+
+                      {/* Call to Action */}
+                      <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
+                        <h3 className="text-3xl font-bold mb-4">Ready to Start Your Remote Work Journey?</h3>
+                        <p className="text-xl text-gray-300 mb-6">
+                          Join thousands of candidates who are already earning with Remote-Works
+                        </p>
+                        <button
+                          onClick={() => router.push('/candidate-dashboard')}
+                          className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-amber-600 hover:to-yellow-600 transition-all inline-flex items-center gap-2 shadow-lg"
+                        >
+                          Go to Dashboard
+                          <ArrowRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                  )}
                 </div>
               )}
             </div>
