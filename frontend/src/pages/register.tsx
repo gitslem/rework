@@ -19,6 +19,16 @@ export default function Register() {
   const [initializing, setInitializing] = useState(true);
   const [redirecting, setRedirecting] = useState(false); // Flag to prevent multiple redirects
 
+  // CRITICAL FOR iOS: Detect OAuth redirect IMMEDIATELY on page load
+  // This prevents showing wrong UI while processing redirect
+  const isOAuthRedirect = typeof window !== 'undefined' &&
+    (window.location.href.includes('?code=') ||
+     window.location.href.includes('&code=') ||
+     window.location.href.includes('?state=') ||
+     window.location.href.includes('&state=') ||
+     sessionStorage.getItem('pendingRole') !== null ||
+     localStorage.getItem('pendingRole') !== null);
+
   useEffect(() => {
     // Always set role as candidate for register page
     // Agent sign up is only available through footer "Become an Agent" link
@@ -27,7 +37,9 @@ export default function Register() {
 
     console.log('=== REGISTER PAGE LOADED ===');
     console.log('Current URL:', window.location.href);
+    console.log('Is OAuth redirect:', isOAuthRedirect);
     console.log('SessionStorage pendingRole:', sessionStorage.getItem('pendingRole'));
+    console.log('LocalStorage pendingRole:', localStorage.getItem('pendingRole'));
 
     let hasHandledRedirect = false;
 
@@ -49,9 +61,13 @@ export default function Register() {
 
           // CRITICAL FOR iOS: Add delay after auth state changes
           // getRedirectResult() needs a moment to process even after auth state is ready
-          // iOS Safari requires MUCH longer delay for reliable redirect processing
+          // Chrome iOS requires EVEN LONGER delay than Safari iOS
           console.log('Waiting for redirect result to be ready...');
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          console.log('User agent:', navigator.userAgent);
+          const isChromeiOS = /CriOS/.test(navigator.userAgent);
+          const delay = isChromeiOS ? 4000 : 2500;  // Chrome iOS needs 4s, Safari iOS needs 2.5s
+          console.log(`Using ${delay}ms delay for ${isChromeiOS ? 'Chrome' : 'Safari'} iOS`);
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
 
         console.log('Calling handleRedirectResult...');
@@ -67,25 +83,47 @@ export default function Register() {
 
           console.log('=== iOS FALLBACK FOR REGISTER: No redirect result but pendingRole exists ===');
           console.log('Checking auth.currentUser directly...');
+          console.log('Initial auth.currentUser:', auth.currentUser?.email || 'null');
 
-          if (auth.currentUser && !hasHandledRedirect) {
+          // CRITICAL: On Chrome iOS, auth.currentUser might be null initially
+          // Poll for up to 10 seconds to wait for auth state to populate
+          let currentUser = auth.currentUser;
+          if (!currentUser) {
+            console.log('auth.currentUser is null, polling for up to 10 seconds...');
+            const maxAttempts = 20;  // 20 attempts * 500ms = 10 seconds
+            for (let attempt = 1; attempt <= maxAttempts && !currentUser; attempt++) {
+              console.log(`Polling attempt ${attempt}/${maxAttempts}...`);
+              await new Promise(resolve => setTimeout(resolve, 500));
+              currentUser = auth.currentUser;
+              if (currentUser) {
+                console.log(`✅ auth.currentUser found on attempt ${attempt}:`, currentUser.email);
+                break;
+              }
+            }
+            if (!currentUser) {
+              console.error('❌ auth.currentUser still null after 10 seconds of polling');
+              console.error('This means the OAuth redirect failed or auth state was cleared');
+            }
+          }
+
+          if (currentUser && !hasHandledRedirect) {
             hasHandledRedirect = true;
             setRedirecting(true);
 
-            console.log('auth.currentUser found:', auth.currentUser.email);
+            console.log('auth.currentUser found:', currentUser.email);
             const pendingRole = (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole')) as 'agent' | 'candidate';
             sessionStorage.removeItem('pendingRole');
             localStorage.removeItem('pendingRole');
 
             // Check if this user already exists in Firestore
-            const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
 
             if (userDoc.exists()) {
               // Existing user - use their role from Firestore
               const userData = userDoc.data();
               console.log('iOS FALLBACK: Existing user found with role:', userData.role);
 
-              const profileDoc = await getDoc(doc(db, 'profiles', auth.currentUser.uid));
+              const profileDoc = await getDoc(doc(db, 'profiles', currentUser.uid));
               if (profileDoc.exists()) {
                 const profileData = profileDoc.data();
                 if (profileData.firstName && profileData.firstName.trim() !== '') {
@@ -111,27 +149,27 @@ export default function Register() {
               // New user - create user with pendingRole
               console.log('iOS FALLBACK: Creating new user with role:', pendingRole);
               const userData = {
-                uid: auth.currentUser.uid,
-                email: auth.currentUser.email!,
+                uid: currentUser.uid,
+                email: currentUser.email!,
                 role: pendingRole,
-                displayName: auth.currentUser.displayName || undefined,
-                photoURL: auth.currentUser.photoURL || undefined,
+                displayName: currentUser.displayName || undefined,
+                photoURL: currentUser.photoURL || undefined,
                 isActive: true,
-                isVerified: auth.currentUser.emailVerified,
+                isVerified: currentUser.emailVerified,
                 isCandidateApproved: false,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
               };
 
-              await setDoc(doc(db, 'users', auth.currentUser.uid), userData);
+              await setDoc(doc(db, 'users', currentUser.uid), userData);
 
               // Create empty profile
               const profileData = {
-                uid: auth.currentUser.uid,
+                uid: currentUser.uid,
                 firstName: '',
                 lastName: '',
                 bio: '',
-                avatarURL: auth.currentUser.photoURL || '',
+                avatarURL: currentUser.photoURL || '',
                 location: '',
                 phone: '',
                 website: '',
@@ -151,7 +189,7 @@ export default function Register() {
                 updatedAt: serverTimestamp(),
               };
 
-              await setDoc(doc(db, 'profiles', auth.currentUser.uid), profileData);
+              await setDoc(doc(db, 'profiles', currentUser.uid), profileData);
 
               console.log('iOS FALLBACK: Redirecting to complete-profile');
               await router.push('/complete-profile');
@@ -378,12 +416,19 @@ export default function Register() {
   };
 
   // Show loading state during initialization
-  if (initializing) {
+  if (initializing || redirecting) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mb-4"></div>
-          <p className="text-accent-gray-600">Checking authentication...</p>
+          <p className="text-accent-gray-600">
+            {isOAuthRedirect || redirecting
+              ? 'Completing sign-up...'
+              : 'Checking authentication...'}
+          </p>
+          {(isOAuthRedirect || redirecting) && (
+            <p className="text-accent-gray-500 text-sm mt-2">Please wait, this may take a moment on mobile devices</p>
+          )}
         </div>
       </div>
     );
