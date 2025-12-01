@@ -80,6 +80,17 @@ export default function AgentSignup() {
       const auth = getFirebaseAuth();
       const db = getFirebaseFirestore();
 
+      // CRITICAL FOR iOS: Wait for auth state to be initialized
+      // iOS Safari has timing issues where auth.currentUser might be null immediately after redirect
+      console.log('Waiting for auth state to initialize...');
+      await new Promise<void>((resolve) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          console.log('Auth state changed:', user?.email || 'No user');
+          unsubscribe();
+          resolve();
+        });
+      });
+
       // Check for redirect result first (critical for iOS)
       console.log('Calling handleRedirectResult for agent signup...');
       const redirectUser = await handleRedirectResult();
