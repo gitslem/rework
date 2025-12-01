@@ -47,7 +47,7 @@ export default function Register() {
 
             hasHandledRedirect = true;
             setRedirecting(true);
-            setInitializing(false);
+            // Keep initializing=true to show loading state during redirect
 
             const db = getFirebaseFirestore();
             const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
@@ -65,17 +65,17 @@ export default function Register() {
                 if (profileData.firstName && profileData.firstName.trim() !== '') {
                   console.log('Profile complete, redirecting to dashboard');
                   if (userData.role === 'agent') {
-                    router.push('/agent-dashboard');
+                    await router.push('/agent-dashboard');
                   } else {
-                    router.push('/candidate-dashboard');
+                    await router.push('/candidate-dashboard');
                   }
                 } else {
                   console.log('Profile incomplete, redirecting to complete-profile');
-                  router.push('/complete-profile');
+                  await router.push('/complete-profile');
                 }
               } else {
                 console.log('No profile found, redirecting to complete-profile');
-                router.push('/complete-profile');
+                await router.push('/complete-profile');
               }
               return true;
             }
@@ -85,7 +85,7 @@ export default function Register() {
         if (redirectUser && !hasHandledRedirect) {
           hasHandledRedirect = true;
           setRedirecting(true);
-          setInitializing(false);
+          // Keep initializing=true to show loading state during redirect
 
           console.log('Redirect user found:', redirectUser.email, 'Role:', redirectUser.role);
 
@@ -108,20 +108,20 @@ export default function Register() {
               console.log('REDIRECT: Profile complete, going to dashboard');
               if (redirectUser.role === 'agent') {
                 console.log('Redirecting to /agent-dashboard');
-                router.push('/agent-dashboard');
+                await router.push('/agent-dashboard');
               } else {
                 console.log('Redirecting to /candidate-dashboard');
-                router.push('/candidate-dashboard');
+                await router.push('/candidate-dashboard');
               }
             } else {
               // Profile incomplete - redirect to complete-profile
               console.log('REDIRECT: Profile incomplete, going to /complete-profile');
-              router.push('/complete-profile');
+              await router.push('/complete-profile');
             }
           } else {
             // No profile found
             console.log('REDIRECT: No profile found, going to /complete-profile');
-            router.push('/complete-profile');
+            await router.push('/complete-profile');
           }
           return true;
         } else if (!redirectUser) {
@@ -221,20 +221,20 @@ export default function Register() {
           console.log('Profile COMPLETE - redirecting to dashboard');
           if (user.role === 'agent') {
             console.log('Redirecting to /agent-dashboard');
-            router.push('/agent-dashboard');
+            await router.push('/agent-dashboard');
           } else {
             console.log('Redirecting to /candidate-dashboard');
-            router.push('/candidate-dashboard');
+            await router.push('/candidate-dashboard');
           }
         } else {
           // Profile incomplete, redirect to complete-profile form
           console.log('Profile INCOMPLETE - redirecting to /complete-profile');
-          router.push('/complete-profile');
+          await router.push('/complete-profile');
         }
       } else {
         // No profile exists, redirect to complete-profile form
         console.log('NO PROFILE EXISTS - redirecting to /complete-profile');
-        router.push('/complete-profile');
+        await router.push('/complete-profile');
       }
     } catch (err: any) {
       console.error('=== REGISTRATION ERROR ===', err);
