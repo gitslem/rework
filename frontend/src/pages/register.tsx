@@ -85,36 +85,117 @@ export default function Register() {
           console.log('Checking auth.currentUser directly...');
           console.log('Initial auth.currentUser:', auth.currentUser?.email || 'null');
 
-          // CRITICAL: On Chrome iOS, auth.currentUser might be null initially
-          // Poll for up to 15 seconds to wait for auth state to populate
+          // CRITICAL: On Chrome iOS, auth state might not populate immediately
+          // Use ACTIVE auth state listener instead of passive polling
           let currentUser = auth.currentUser;
+
           if (!currentUser) {
-            console.log('auth.currentUser is null, polling for up to 15 seconds...');
-            const maxAttempts = 30;  // 30 attempts * 500ms = 15 seconds
-            for (let attempt = 1; attempt <= maxAttempts && !currentUser; attempt++) {
-              console.log(`Polling attempt ${attempt}/${maxAttempts}...`);
-              await new Promise(resolve => setTimeout(resolve, 500));
-              currentUser = auth.currentUser;
-              if (currentUser) {
-                console.log(`✅ auth.currentUser found on attempt ${attempt}:`, currentUser.email);
-                break;
+            console.log('auth.currentUser is null, trying ACTIVE auth state listener...');
+
+            // Strategy 1: Wait for auth state change event (up to 10 seconds)
+            try {
+              console.log('Setting up onAuthStateChanged listener...');
+              currentUser = await Promise.race([
+                new Promise<any>((resolve) => {
+                  const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    console.log('Auth state change event fired:', user?.email || 'null');
+                    if (user) {
+                      console.log('✅ Got user from auth state change:', user.email);
+                      unsubscribe();
+                      resolve(user);
+                    }
+                  });
+
+                  // Also check periodically in case event doesn't fire
+                  let attempts = 0;
+                  const maxAttempts = 20; // 20 * 500ms = 10 seconds
+                  const interval = setInterval(() => {
+                    attempts++;
+                    console.log(`Auth check attempt ${attempts}/${maxAttempts}`);
+                    if (auth.currentUser) {
+                      console.log('✅ Found auth.currentUser during periodic check:', auth.currentUser.email);
+                      clearInterval(interval);
+                      unsubscribe();
+                      resolve(auth.currentUser);
+                    } else if (attempts >= maxAttempts) {
+                      clearInterval(interval);
+                      unsubscribe();
+                      resolve(null);
+                    }
+                  }, 500);
+                }),
+                new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000)) // 10 second timeout
+              ]);
+            } catch (authError) {
+              console.error('Error waiting for auth state:', authError);
+            }
+          }
+
+          // Strategy 2: If still no user, try retrying getRedirectResult()
+          if (!currentUser) {
+            console.log('Still no auth.currentUser, retrying getRedirectResult()...');
+            for (let retryAttempt = 1; retryAttempt <= 3; retryAttempt++) {
+              console.log(`getRedirectResult retry attempt ${retryAttempt}/3`);
+              await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s between retries
+
+              try {
+                const retryRedirectUser = await handleRedirectResult();
+                if (retryRedirectUser) {
+                  console.log('✅ getRedirectResult succeeded on retry:', retryRedirectUser.email);
+                  setRedirecting(true);
+
+                  // Small delay to ensure Firestore replication
+                  await new Promise(resolve => setTimeout(resolve, 500));
+
+                  const db = getFirebaseFirestore();
+                  const profileDoc = await getDoc(doc(db, 'profiles', retryRedirectUser.uid));
+                  if (profileDoc.exists()) {
+                    const profileData = profileDoc.data();
+                    if (profileData.firstName && profileData.firstName.trim() !== '') {
+                      console.log('RETRY: Profile complete, going to dashboard');
+                      await router.push(retryRedirectUser.role === 'agent' ? '/agent-dashboard' : '/candidate-dashboard');
+                      return true;
+                    }
+                  }
+
+                  // Profile incomplete
+                  console.log('RETRY: Going to complete-profile');
+                  await router.push('/complete-profile');
+                  return true;
+                }
+
+                // Check if auth.currentUser populated now
+                if (auth.currentUser) {
+                  console.log('✅ auth.currentUser populated after getRedirectResult retry');
+                  currentUser = auth.currentUser;
+                  break;
+                }
+              } catch (retryError) {
+                console.error(`getRedirectResult retry ${retryAttempt} failed:`, retryError);
               }
             }
-            if (!currentUser) {
-              console.error('❌ auth.currentUser still null after 15 seconds of polling');
-              console.error('This means the OAuth redirect failed or auth state was cleared');
-              console.error('localStorage.pendingRole was:', localStorage.getItem('pendingRole'));
-              console.error('URL:', window.location.href);
+          }
 
-              // CRITICAL: Clear the pendingRole and show error to user
-              sessionStorage.removeItem('pendingRole');
-              localStorage.removeItem('pendingRole');
+          if (!currentUser) {
+            console.error('❌ All authentication strategies failed');
+            console.error('1. Initial getRedirectResult: null');
+            console.error('2. Auth state listener: no user');
+            console.error('3. getRedirectResult retries: all failed');
+            console.error('localStorage.pendingRole was:', localStorage.getItem('pendingRole'));
+            console.error('URL:', window.location.href);
+            console.error('Firebase config:', {
+              authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+              projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+            });
 
-              setError('Authentication timeout. Please try signing in again. If the issue persists, try clearing your browser cache or use a different browser.');
-              setInitializing(false);
-              setRedirecting(false);
-              return false; // IMPORTANT: Stop execution here
-            }
+            // CRITICAL: Clear the pendingRole and show error to user
+            sessionStorage.removeItem('pendingRole');
+            localStorage.removeItem('pendingRole');
+
+            setError('Unable to complete sign-in. This appears to be a browser compatibility issue. Please try: (1) Using Safari browser instead of Chrome on iOS, (2) Enabling third-party cookies in browser settings, or (3) Using a desktop browser.');
+            setInitializing(false);
+            setRedirecting(false);
+            return false; // IMPORTANT: Stop execution here
           }
 
           if (currentUser && !hasHandledRedirect) {
