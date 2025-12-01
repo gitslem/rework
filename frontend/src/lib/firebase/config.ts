@@ -1,5 +1,5 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
+import { getAuth, Auth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { getAnalytics, Analytics } from 'firebase/analytics';
@@ -37,6 +37,14 @@ function initializeFirebase() {
     db = getFirestore(app);
     storage = getStorage(app);
     analytics = getAnalytics(app);
+
+    // CRITICAL FOR iOS: Explicitly set auth persistence to local storage
+    // This helps with Chrome iOS which has stricter privacy controls
+    if (auth) {
+      setPersistence(auth, browserLocalPersistence).catch((error) => {
+        console.error('Failed to set auth persistence:', error);
+      });
+    }
   } else {
     app = getApps()[0];
     auth = getAuth(app);
