@@ -290,6 +290,7 @@ export default function AgentSignup() {
               setRedirecting(false);
               return;
             }
+          }
           } catch (firestoreError: any) {
             console.error('❌ iOS FALLBACK: Firestore operation failed:', firestoreError);
             console.error('Error message:', firestoreError.message);
