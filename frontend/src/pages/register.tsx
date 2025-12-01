@@ -58,10 +58,10 @@ export default function Register() {
         const redirectUser = await handleRedirectResult();
         console.log('handleRedirectResult returned:', redirectUser);
 
-        // CRITICAL FOR iOS: If no redirect user but sessionStorage has pendingRole
+        // CRITICAL FOR iOS: If no redirect user but storage has pendingRole
         // This means we're in OAuth flow but getRedirectResult returned null
-        // Check auth.currentUser as fallback
-        if (!redirectUser && isFirebaseConfigured && sessionStorage.getItem('pendingRole')) {
+        // Check auth.currentUser as fallback (Chrome iOS clears sessionStorage, so check localStorage too)
+        if (!redirectUser && isFirebaseConfigured && (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole'))) {
           const auth = getFirebaseAuth();
           const db = getFirebaseFirestore();
 
@@ -73,8 +73,9 @@ export default function Register() {
             setRedirecting(true);
 
             console.log('auth.currentUser found:', auth.currentUser.email);
-            const pendingRole = sessionStorage.getItem('pendingRole') as 'agent' | 'candidate';
+            const pendingRole = (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole')) as 'agent' | 'candidate';
             sessionStorage.removeItem('pendingRole');
+            localStorage.removeItem('pendingRole');
 
             // Check if this user already exists in Firestore
             const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));

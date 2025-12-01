@@ -65,7 +65,8 @@ export default function AgentSignup() {
      window.location.href.includes('&code=') ||
      window.location.href.includes('?state=') ||
      window.location.href.includes('&state=') ||
-     sessionStorage.getItem('pendingRole') !== null);
+     sessionStorage.getItem('pendingRole') !== null ||
+     localStorage.getItem('pendingRole') !== null);
 
   useEffect(() => {
     console.log('=== AGENT-SIGNUP: Page loaded ===');
@@ -120,16 +121,17 @@ export default function AgentSignup() {
         uid: redirectUser.uid
       } : 'null');
 
-      // CRITICAL FOR iOS: If no redirect user but sessionStorage has pendingRole
+      // CRITICAL FOR iOS: If no redirect user but storage has pendingRole
       // This means we're in OAuth flow but getRedirectResult returned null
-      // Check auth.currentUser as fallback
-      if (!redirectUser && sessionStorage.getItem('pendingRole')) {
+      // Check auth.currentUser as fallback (Chrome iOS clears sessionStorage, so check localStorage too)
+      if (!redirectUser && (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole'))) {
         console.log('=== iOS FALLBACK: No redirect result but pendingRole exists ===');
         console.log('Checking auth.currentUser directly...');
         if (auth.currentUser) {
           console.log('auth.currentUser found:', auth.currentUser.email);
-          const pendingRole = sessionStorage.getItem('pendingRole') as 'agent' | 'candidate';
+          const pendingRole = (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole')) as 'agent' | 'candidate';
           sessionStorage.removeItem('pendingRole');
+          localStorage.removeItem('pendingRole');
 
           // Check if this user already exists in Firestore
           const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
