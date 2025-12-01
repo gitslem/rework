@@ -68,6 +68,25 @@ export default function AgentSignup() {
      sessionStorage.getItem('pendingRole') !== null ||
      localStorage.getItem('pendingRole') !== null);
 
+  // Define initializePageState early so it can be called from checkAuthAndRedirect
+  const initializePageState = () => {
+    // Check for query parameters to skip type selection
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+
+    if (typeParam === 'individual') {
+      setAccountType('individual');
+      setStep('google');
+    } else if (typeParam === 'company') {
+      setAccountType('company');
+      setStep('company-form');
+    } else {
+      // No query param, show type selection
+      setStep('type-selection');
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     console.log('=== AGENT-SIGNUP: Page loaded ===');
     console.log('Is OAuth redirect:', isOAuthRedirect);
@@ -414,24 +433,6 @@ export default function AgentSignup() {
       console.log('Falling back to initializePageState due to error');
       initializePageState();
     }
-  };
-
-  const initializePageState = () => {
-    // Check for query parameters to skip type selection
-    const urlParams = new URLSearchParams(window.location.search);
-    const typeParam = urlParams.get('type');
-
-    if (typeParam === 'individual') {
-      setAccountType('individual');
-      setStep('google');
-    } else if (typeParam === 'company') {
-      setAccountType('company');
-      setStep('company-form');
-    } else {
-      // No query param, show type selection
-      setStep('type-selection');
-    }
-    setLoading(false);
   };
 
   const handleGoogleSignup = async () => {
