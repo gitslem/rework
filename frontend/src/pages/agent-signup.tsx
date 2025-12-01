@@ -168,7 +168,7 @@ export default function AgentSignup() {
             const userData = userDoc.data();
             console.log('Existing user found with role:', userData.role);
 
-            const profileDoc = await getDoc(doc(db, 'profiles', auth.currentUser.uid));
+            const profileDoc = await getDoc(doc(db, 'profiles', currentUser.uid));
             if (profileDoc.exists()) {
               const profileData = profileDoc.data();
               if (profileData.firstName && profileData.firstName.trim() !== '') {
