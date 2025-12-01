@@ -106,9 +106,9 @@ export default function AgentSignup() {
 
       // CRITICAL FOR iOS: Add delay after auth state changes
       // getRedirectResult() needs a moment to process even after auth state is ready
-      // iOS Safari requires longer delay for reliable redirect processing
+      // iOS Safari requires MUCH longer delay for reliable redirect processing
       console.log('Waiting for redirect result to be ready...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Check for redirect result first (critical for iOS)
       console.log('Calling handleRedirectResult for agent signup...');
@@ -119,6 +119,118 @@ export default function AgentSignup() {
         role: redirectUser.role,
         uid: redirectUser.uid
       } : 'null');
+
+      // CRITICAL FOR iOS: If no redirect user but sessionStorage has pendingRole
+      // This means we're in OAuth flow but getRedirectResult returned null
+      // Check auth.currentUser as fallback
+      if (!redirectUser && sessionStorage.getItem('pendingRole')) {
+        console.log('=== iOS FALLBACK: No redirect result but pendingRole exists ===');
+        console.log('Checking auth.currentUser directly...');
+        if (auth.currentUser) {
+          console.log('auth.currentUser found:', auth.currentUser.email);
+          const pendingRole = sessionStorage.getItem('pendingRole') as 'agent' | 'candidate';
+          sessionStorage.removeItem('pendingRole');
+
+          // Check if this user already exists in Firestore
+          const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+
+          if (userDoc.exists()) {
+            // Existing user - use their role from Firestore
+            const userData = userDoc.data();
+            console.log('Existing user found with role:', userData.role);
+
+            const profileDoc = await getDoc(doc(db, 'profiles', auth.currentUser.uid));
+            if (profileDoc.exists()) {
+              const profileData = profileDoc.data();
+              if (profileData.firstName && profileData.firstName.trim() !== '') {
+                // Profile complete
+                console.log('iOS FALLBACK: Profile complete, redirecting to dashboard');
+                if (userData.role === 'agent') {
+                  await router.push('/agent-dashboard');
+                } else {
+                  await router.push('/candidate-dashboard');
+                }
+                return;
+              }
+            }
+
+            // Profile incomplete
+            if (userData.role === 'candidate') {
+              console.log('iOS FALLBACK: Candidate going to complete-profile');
+              await router.push('/complete-profile');
+              return;
+            } else {
+              // Agent with incomplete profile - show form
+              console.log('iOS FALLBACK: Agent showing signup form');
+              setUser(auth.currentUser);
+              setStep('form');
+              setLoading(false);
+              setRedirecting(false);
+              return;
+            }
+          } else {
+            // New user - create user with pendingRole
+            console.log('iOS FALLBACK: Creating new user with role:', pendingRole);
+            const userData = {
+              uid: auth.currentUser.uid,
+              email: auth.currentUser.email!,
+              role: pendingRole,
+              displayName: auth.currentUser.displayName || undefined,
+              photoURL: auth.currentUser.photoURL || undefined,
+              isActive: true,
+              isVerified: auth.currentUser.emailVerified,
+              isCandidateApproved: false,
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            };
+
+            await setDoc(doc(db, 'users', auth.currentUser.uid), userData);
+
+            // Create empty profile
+            const profileData = {
+              uid: auth.currentUser.uid,
+              firstName: '',
+              lastName: '',
+              bio: '',
+              avatarURL: auth.currentUser.photoURL || '',
+              location: '',
+              phone: '',
+              website: '',
+              linkedin: '',
+              totalEarnings: 0,
+              completedProjects: 0,
+              averageRating: 0,
+              totalReviews: 0,
+              isAgentApproved: false,
+              agentServices: [],
+              agentSuccessRate: 0,
+              agentTotalClients: 0,
+              agentVerificationStatus: 'pending',
+              agentPricing: {},
+              agentPortfolio: [],
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+            };
+
+            await setDoc(doc(db, 'profiles', auth.currentUser.uid), profileData);
+
+            if (pendingRole === 'candidate') {
+              console.log('iOS FALLBACK: New candidate going to complete-profile');
+              await router.push('/complete-profile');
+              return;
+            } else {
+              console.log('iOS FALLBACK: New agent showing signup form');
+              setUser(auth.currentUser);
+              setStep('form');
+              setLoading(false);
+              setRedirecting(false);
+              return;
+            }
+          }
+        } else {
+          console.error('iOS FALLBACK: No auth.currentUser despite pendingRole existing');
+        }
+      }
 
       // If we have a redirect result, handle it immediately
       if (redirectUser) {
