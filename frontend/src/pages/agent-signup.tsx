@@ -58,7 +58,20 @@ export default function AgentSignup() {
     'Other',
   ];
 
+  // CRITICAL FOR iOS: Detect OAuth redirect IMMEDIATELY on page load
+  // This prevents showing wrong UI while processing redirect
+  const isOAuthRedirect = typeof window !== 'undefined' &&
+    (window.location.href.includes('?code=') ||
+     window.location.href.includes('&code=') ||
+     window.location.href.includes('?state=') ||
+     window.location.href.includes('&state=') ||
+     sessionStorage.getItem('pendingRole') !== null);
+
   useEffect(() => {
+    console.log('=== AGENT-SIGNUP: Page loaded ===');
+    console.log('Is OAuth redirect:', isOAuthRedirect);
+    console.log('Session storage pendingRole:', sessionStorage.getItem('pendingRole'));
+
     // CRITICAL: Always check for OAuth redirect first, before anything else
     // This handles iOS Safari returning from OAuth without query params
     checkAuthAndRedirect();
@@ -93,8 +106,9 @@ export default function AgentSignup() {
 
       // CRITICAL FOR iOS: Add delay after auth state changes
       // getRedirectResult() needs a moment to process even after auth state is ready
+      // iOS Safari requires longer delay for reliable redirect processing
       console.log('Waiting for redirect result to be ready...');
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Check for redirect result first (critical for iOS)
       console.log('Calling handleRedirectResult for agent signup...');
@@ -485,12 +499,19 @@ export default function AgentSignup() {
     }
   };
 
-  if (loading) {
+  if (loading || redirecting) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">
+            {isOAuthRedirect || redirecting
+              ? 'Completing sign-up...'
+              : 'Loading...'}
+          </p>
+          {(isOAuthRedirect || redirecting) && (
+            <p className="text-gray-500 text-sm mt-2">Please wait, this may take a moment on mobile devices</p>
+          )}
         </div>
       </div>
     );
