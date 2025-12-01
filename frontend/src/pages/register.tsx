@@ -34,6 +34,20 @@ export default function Register() {
     // Check for redirect result first (for mobile/redirect flow)
     const checkAndHandleRedirect = async () => {
       try {
+        // CRITICAL FOR iOS: Wait for auth state to be initialized
+        // iOS Safari has timing issues where auth.currentUser might be null immediately after redirect
+        if (isFirebaseConfigured) {
+          const auth = getFirebaseAuth();
+          console.log('Waiting for auth state to initialize...');
+          await new Promise<void>((resolve) => {
+            const unsubscribe = onAuthStateChanged(auth, (user) => {
+              console.log('Auth state changed:', user?.email || 'No user');
+              unsubscribe();
+              resolve();
+            });
+          });
+        }
+
         console.log('Calling handleRedirectResult...');
         const redirectUser = await handleRedirectResult();
         console.log('handleRedirectResult returned:', redirectUser);
