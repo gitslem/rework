@@ -160,57 +160,64 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 
     let firebaseUser: FirebaseUser;
 
-    // Check environment variable for redirect mode
-    const envUseRedirect = typeof window !== 'undefined' &&
-      process.env.NEXT_PUBLIC_USE_AUTH_REDIRECT === 'true';
-
     console.log('OAuth Config:', {
       useRedirect,
-      envUseRedirect,
-      isMobile: isMobileDevice(),
+      role,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
     });
 
-    // Use redirect mode if:
-    // 1. Environment variable is set to true (for custom domain)
-    // 2. OR explicitly requested via parameter
-    // 3. OR on mobile device
-    const shouldUseRedirect = envUseRedirect || useRedirect || isMobileDevice();
+    // IMPROVED APPROACH FOR iOS:
+    // Try popup FIRST (even on mobile) - modern browsers support it better
+    // Only use redirect if popup explicitly fails or is blocked
+    //
+    // Benefits:
+    // - Popup works better on modern iOS (Safari 14+, Chrome 90+)
+    // - Avoids storage/cookie blocking issues
+    // - Faster and more reliable user experience
 
-    if (shouldUseRedirect) {
-      console.log('Using REDIRECT mode for OAuth');
-      // Store the role in session storage AND localStorage for after redirect
-      // localStorage is needed for Chrome on iOS which clears sessionStorage
+    if (!useRedirect) {
+      try {
+        console.log('Attempting popup authentication...');
+        const userCredential = await signInWithPopup(auth, provider);
+        firebaseUser = userCredential.user;
+        console.log('Popup authentication successful:', firebaseUser.email);
+      } catch (popupError: any) {
+        console.log('Popup authentication failed:', popupError.code);
+
+        // If popup was blocked or failed, use redirect mode with URL-based state
+        if (
+          popupError.code === 'auth/popup-blocked' ||
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request' ||
+          popupError.code === 'auth/unauthorized-domain'
+        ) {
+          console.log('Falling back to redirect mode with URL-based state...');
+
+          // Store role in storage as backup (for backward compatibility)
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('pendingRole', role);
+            localStorage.setItem('pendingRole', role);
+          }
+
+          // Redirect to Google with callback to our dedicated auth handler
+          // This passes the role via URL which is more reliable than storage on iOS
+          await signInWithRedirect(auth, provider);
+          throw new Error('REDIRECT_IN_PROGRESS');
+        }
+        throw popupError;
+      }
+    } else {
+      // Explicit redirect mode requested
+      console.log('Using redirect mode (explicitly requested)');
+
+      // Store role in storage AND we'll pass it via URL on callback
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('pendingRole', role);
         localStorage.setItem('pendingRole', role);
-        console.log('Stored pendingRole in sessionStorage and localStorage:', role);
       }
-      await signInWithRedirect(auth, provider);
-      // The page will reload, so we throw to prevent further execution
-      throw new Error('REDIRECT_IN_PROGRESS');
-    }
 
-    // Try popup first for desktop browsers
-    try {
-      const userCredential = await signInWithPopup(auth, provider);
-      firebaseUser = userCredential.user;
-    } catch (popupError: any) {
-      // If popup was blocked or failed, fallback to redirect
-      if (
-        popupError.code === 'auth/popup-blocked' ||
-        popupError.code === 'auth/popup-closed-by-user' ||
-        popupError.code === 'auth/cancelled-popup-request'
-      ) {
-        // Store the role and try redirect instead
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('pendingRole', role);
-          localStorage.setItem('pendingRole', role);
-        }
-        await signInWithRedirect(auth, provider);
-        throw new Error('REDIRECT_IN_PROGRESS');
-      }
-      throw popupError;
+      await signInWithRedirect(auth, provider);
+      throw new Error('REDIRECT_IN_PROGRESS');
     }
 
     // Check if user already exists
@@ -293,11 +300,12 @@ export const signInWithGoogle = async (role: UserRole, useRedirect: boolean = fa
 };
 
 // Handle redirect result after OAuth redirect
+// SIMPLIFIED VERSION: Fail fast instead of complex retry logic
+// The new /auth/callback page handles most of this logic now
 export const handleRedirectResult = async (): Promise<User | null> => {
   try {
     console.log('=== handleRedirectResult called ===');
     console.log('Current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
-    console.log('Auth Domain:', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN);
 
     if (!isFirebaseConfigured) {
       console.log('Firebase not configured, returning null');
@@ -308,61 +316,44 @@ export const handleRedirectResult = async (): Promise<User | null> => {
     const db = getFirebaseFirestore();
 
     console.log('Getting redirect result from Firebase...');
-    console.log('Current auth state before getRedirectResult:', auth.currentUser?.email || 'No user');
+    console.log('Current auth state:', auth.currentUser?.email || 'No user');
 
+    // Simple approach: Try once, fail fast
+    // No complex retries - the /auth/callback page handles that
     const result = await getRedirectResult(auth);
     console.log('Redirect result:', result ? 'Found' : 'None');
 
-    if (result) {
-      console.log('Result details:', {
-        hasUser: !!result.user,
-        userEmail: result.user?.email,
-        providerId: result.providerId,
-        operationType: result.operationType
-      });
-    }
-
     if (!result || !result.user) {
-      console.log('No redirect result or user');
-      // Check if user is already signed in (might have completed redirect earlier)
-      if (auth.currentUser) {
-        console.log('But auth.currentUser exists:', auth.currentUser.email);
-        console.log('This might be a page reload after successful sign-in');
-      }
+      console.log('No redirect result');
       return null;
     }
 
     const firebaseUser = result.user;
-    console.log('Redirect user found:', firebaseUser.email, 'UID:', firebaseUser.uid);
+    console.log('Redirect user found:', firebaseUser.email);
 
-    // Get the pending role from session storage or localStorage (fallback for Chrome iOS)
+    // Get pending role from storage
     const pendingRole = (typeof window !== 'undefined'
       ? (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole'))
       : null) as UserRole || 'candidate';
     console.log('Pending role from storage:', pendingRole);
 
-    if (!pendingRole && typeof window !== 'undefined') {
-      console.warn('WARNING: No pending role found in storage, defaulting to candidate');
-    }
-
+    // Clear storage
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('pendingRole');
       localStorage.removeItem('pendingRole');
     }
 
     // Check if user already exists
-    console.log('Checking if user exists in Firestore...');
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-    console.log('User exists:', userDoc.exists());
 
     if (userDoc.exists()) {
       const userData = userDoc.data() as User;
-      console.log('Returning existing user:', userData.email, 'Role:', userData.role);
+      console.log('Returning existing user:', userData.email);
       return userData;
     }
 
-    // Create new user (same logic as signInWithGoogle)
-    console.log('Creating new user in Firestore...');
+    // Create new user
+    console.log('Creating new user...');
     const userData: User = {
       uid: firebaseUser.uid,
       email: firebaseUser.email!,
@@ -371,13 +362,12 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       photoURL: firebaseUser.photoURL || undefined,
       isActive: true,
       isVerified: firebaseUser.emailVerified,
-      isCandidateApproved: false, // Changed: All new users need approval
+      isCandidateApproved: false,
       createdAt: serverTimestamp() as any,
       updatedAt: serverTimestamp() as any,
     };
 
     await setDoc(doc(db, 'users', firebaseUser.uid), userData);
-    console.log('User created in users collection');
 
     const profileData = {
       uid: firebaseUser.uid,
@@ -405,8 +395,7 @@ export const handleRedirectResult = async (): Promise<User | null> => {
     };
 
     await setDoc(doc(db, 'profiles', firebaseUser.uid), profileData);
-    console.log('Profile created with empty firstName/lastName');
-    console.log('Returning new user:', userData.email, 'Role:', userData.role);
+    console.log('New user created:', userData.email);
 
     return userData;
   } catch (error: any) {

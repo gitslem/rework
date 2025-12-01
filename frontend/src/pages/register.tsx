@@ -19,16 +19,6 @@ export default function Register() {
   const [initializing, setInitializing] = useState(true);
   const [redirecting, setRedirecting] = useState(false); // Flag to prevent multiple redirects
 
-  // CRITICAL FOR iOS: Detect OAuth redirect IMMEDIATELY on page load
-  // This prevents showing wrong UI while processing redirect
-  const isOAuthRedirect = typeof window !== 'undefined' &&
-    (window.location.href.includes('?code=') ||
-     window.location.href.includes('&code=') ||
-     window.location.href.includes('?state=') ||
-     window.location.href.includes('&state=') ||
-     sessionStorage.getItem('pendingRole') !== null ||
-     localStorage.getItem('pendingRole') !== null);
-
   useEffect(() => {
     // Always set role as candidate for register page
     // Agent sign up is only available through footer "Become an Agent" link
@@ -37,383 +27,68 @@ export default function Register() {
 
     console.log('=== REGISTER PAGE LOADED ===');
     console.log('Current URL:', window.location.href);
-    console.log('Is OAuth redirect:', isOAuthRedirect);
-    console.log('SessionStorage pendingRole:', sessionStorage.getItem('pendingRole'));
-    console.log('LocalStorage pendingRole:', localStorage.getItem('pendingRole'));
 
-    let hasHandledRedirect = false;
-
-    // Check for redirect result first (for mobile/redirect flow)
-    const checkAndHandleRedirect = async () => {
+    // SIMPLIFIED APPROACH: Check if this is an OAuth redirect
+    // If yes, immediately redirect to dedicated /auth/callback page
+    // This avoids complex retry logic and storage issues
+    const checkForOAuthRedirect = async () => {
       try {
-        // CRITICAL FOR iOS: Wait for auth state to be initialized
-        // iOS Safari has timing issues where auth.currentUser might be null immediately after redirect
+        // Check if we have pendingRole in storage (indicates OAuth redirect)
+        const hasPendingRole = sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole');
+
+        if (hasPendingRole) {
+          console.log('OAuth redirect detected, redirecting to /auth/callback...');
+          setInitializing(true);
+          // Redirect to dedicated callback page with role parameter
+          router.push(`/auth/callback?role=candidate`);
+          return true;
+        }
+
+        // Check if user is already signed in
         if (isFirebaseConfigured) {
           const auth = getFirebaseAuth();
-          console.log('Waiting for auth state to initialize...');
-          await new Promise<void>((resolve) => {
-            const unsubscribe = onAuthStateChanged(auth, (user) => {
-              console.log('Auth state changed:', user?.email || 'No user');
-              unsubscribe();
-              resolve();
-            });
-          });
-
-          // CRITICAL FOR iOS: Add delay after auth state changes
-          // getRedirectResult() needs a moment to process even after auth state is ready
-          // Chrome iOS requires EVEN LONGER delay than Safari iOS due to stricter privacy controls
-          console.log('Waiting for redirect result to be ready...');
-          console.log('User agent:', navigator.userAgent);
-          const isChromeiOS = /CriOS/.test(navigator.userAgent);
-          const delay = isChromeiOS ? 6000 : 2500;  // Chrome iOS needs 6s (increased from 4s), Safari iOS needs 2.5s
-          console.log(`Using ${delay}ms delay for ${isChromeiOS ? 'Chrome' : 'Safari'} iOS`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-        }
-
-        console.log('Calling handleRedirectResult...');
-        const redirectUser = await handleRedirectResult();
-        console.log('handleRedirectResult returned:', redirectUser);
-
-        // CRITICAL FOR iOS: If no redirect user but storage has pendingRole
-        // This means we're in OAuth flow but getRedirectResult returned null
-        // Check auth.currentUser as fallback (Chrome iOS clears sessionStorage, so check localStorage too)
-        if (!redirectUser && isFirebaseConfigured && (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole'))) {
-          const auth = getFirebaseAuth();
-          const db = getFirebaseFirestore();
-
-          console.log('=== iOS FALLBACK FOR REGISTER: No redirect result but pendingRole exists ===');
-          console.log('Checking auth.currentUser directly...');
-          console.log('Initial auth.currentUser:', auth.currentUser?.email || 'null');
-
-          // CRITICAL: On Chrome iOS, auth state might not populate immediately
-          // Use ACTIVE auth state listener instead of passive polling
-          let currentUser = auth.currentUser;
-
-          if (!currentUser) {
-            console.log('auth.currentUser is null, trying ACTIVE auth state listener...');
-
-            // Strategy 1: Wait for auth state change event (up to 15 seconds for Chrome iOS)
-            try {
-              console.log('Setting up onAuthStateChanged listener...');
-              const timeoutMs = 15000; // Increased from 10s to 15s for Chrome iOS
-              const maxAttempts = 30; // 30 * 500ms = 15 seconds
-              currentUser = await Promise.race([
-                new Promise<any>((resolve) => {
-                  const unsubscribe = onAuthStateChanged(auth, (user) => {
-                    console.log('Auth state change event fired:', user?.email || 'null');
-                    if (user) {
-                      console.log('✅ Got user from auth state change:', user.email);
-                      unsubscribe();
-                      resolve(user);
-                    }
-                  });
-
-                  // Also check periodically in case event doesn't fire
-                  let attempts = 0;
-                  const interval = setInterval(() => {
-                    attempts++;
-                    console.log(`Auth check attempt ${attempts}/${maxAttempts}`);
-                    if (auth.currentUser) {
-                      console.log('✅ Found auth.currentUser during periodic check:', auth.currentUser.email);
-                      clearInterval(interval);
-                      unsubscribe();
-                      resolve(auth.currentUser);
-                    } else if (attempts >= maxAttempts) {
-                      clearInterval(interval);
-                      unsubscribe();
-                      resolve(null);
-                    }
-                  }, 500);
-                }),
-                new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs))
-              ]);
-            } catch (authError) {
-              console.error('Error waiting for auth state:', authError);
-            }
-          }
-
-          // Strategy 2: If still no user, try retrying getRedirectResult()
-          if (!currentUser) {
-            console.log('Still no auth.currentUser, retrying getRedirectResult()...');
-            for (let retryAttempt = 1; retryAttempt <= 5; retryAttempt++) {
-              console.log(`getRedirectResult retry attempt ${retryAttempt}/5`);
-              await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s between retries
-
-              try {
-                const retryRedirectUser = await handleRedirectResult();
-                if (retryRedirectUser) {
-                  console.log('✅ getRedirectResult succeeded on retry:', retryRedirectUser.email);
-                  setRedirecting(true);
-
-                  // Small delay to ensure Firestore replication
-                  await new Promise(resolve => setTimeout(resolve, 500));
-
-                  const db = getFirebaseFirestore();
-                  const profileDoc = await getDoc(doc(db, 'profiles', retryRedirectUser.uid));
-                  if (profileDoc.exists()) {
-                    const profileData = profileDoc.data();
-                    if (profileData.firstName && profileData.firstName.trim() !== '') {
-                      console.log('RETRY: Profile complete, going to dashboard');
-                      await router.push(retryRedirectUser.role === 'agent' ? '/agent-dashboard' : '/candidate-dashboard');
-                      return true;
-                    }
-                  }
-
-                  // Profile incomplete
-                  console.log('RETRY: Going to complete-profile');
-                  await router.push('/complete-profile');
-                  return true;
-                }
-
-                // Check if auth.currentUser populated now
-                if (auth.currentUser) {
-                  console.log('✅ auth.currentUser populated after getRedirectResult retry');
-                  currentUser = auth.currentUser;
-                  break;
-                }
-              } catch (retryError) {
-                console.error(`getRedirectResult retry ${retryAttempt} failed:`, retryError);
-              }
-            }
-          }
-
-          if (!currentUser) {
-            console.error('❌ All authentication strategies failed');
-            console.error('1. Initial getRedirectResult: null');
-            console.error('2. Auth state listener: no user');
-            console.error('3. getRedirectResult retries: all failed');
-            console.error('localStorage.pendingRole was:', localStorage.getItem('pendingRole'));
-            console.error('URL:', window.location.href);
-            console.error('Firebase config:', {
-              authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-              projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
-            });
-
-            // CRITICAL: Clear the pendingRole and show error to user
-            sessionStorage.removeItem('pendingRole');
-            localStorage.removeItem('pendingRole');
-
-            setError('Unable to complete sign-in. This appears to be a browser compatibility issue. Please try: (1) Using Safari browser instead of Chrome on iOS, (2) Enabling third-party cookies in browser settings, or (3) Using a desktop browser.');
-            setInitializing(false);
-            setRedirecting(false);
-            return false; // IMPORTANT: Stop execution here
-          }
-
-          if (currentUser && !hasHandledRedirect) {
-            hasHandledRedirect = true;
-            setRedirecting(true);
-
-            console.log('auth.currentUser found:', currentUser.email);
-            const pendingRole = (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole')) as 'agent' | 'candidate';
-            console.log('pendingRole from storage:', pendingRole);
-            sessionStorage.removeItem('pendingRole');
-            localStorage.removeItem('pendingRole');
-
-            try {
-              // Check if this user already exists in Firestore
-              console.log('Fetching user document from Firestore...');
-              const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-              console.log('User document exists:', userDoc.exists());
-
-            if (userDoc.exists()) {
-              // Existing user - use their role from Firestore
-              const userData = userDoc.data();
-              console.log('iOS FALLBACK: Existing user found with role:', userData.role);
-
-              const profileDoc = await getDoc(doc(db, 'profiles', currentUser.uid));
-              if (profileDoc.exists()) {
-                const profileData = profileDoc.data();
-                if (profileData.firstName && profileData.firstName.trim() !== '') {
-                  // Profile complete
-                  console.log('iOS FALLBACK: Profile complete, redirecting to dashboard');
-                  if (userData.role === 'agent') {
-                    await router.push('/agent-dashboard');
-                  } else {
-                    await router.push('/candidate-dashboard');
-                  }
-                  return true;
-                } else {
-                  console.log('iOS FALLBACK: Profile incomplete, going to complete-profile');
-                  await router.push('/complete-profile');
-                  return true;
-                }
-              } else {
-                console.log('iOS FALLBACK: No profile found, going to complete-profile');
-                await router.push('/complete-profile');
-                return true;
-              }
-            } else {
-              // New user - create user with pendingRole
-              console.log('iOS FALLBACK: Creating new user with role:', pendingRole);
-              const userData = {
-                uid: currentUser.uid,
-                email: currentUser.email!,
-                role: pendingRole,
-                displayName: currentUser.displayName || undefined,
-                photoURL: currentUser.photoURL || undefined,
-                isActive: true,
-                isVerified: currentUser.emailVerified,
-                isCandidateApproved: false,
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-              };
-
-              await setDoc(doc(db, 'users', currentUser.uid), userData);
-
-              // Create empty profile
-              const profileData = {
-                uid: currentUser.uid,
-                firstName: '',
-                lastName: '',
-                bio: '',
-                avatarURL: currentUser.photoURL || '',
-                location: '',
-                phone: '',
-                website: '',
-                linkedin: '',
-                totalEarnings: 0,
-                completedProjects: 0,
-                averageRating: 0,
-                totalReviews: 0,
-                isAgentApproved: false,
-                agentServices: [],
-                agentSuccessRate: 0,
-                agentTotalClients: 0,
-                agentVerificationStatus: 'pending',
-                agentPricing: {},
-                agentPortfolio: [],
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-              };
-
-              await setDoc(doc(db, 'profiles', currentUser.uid), profileData);
-
-              console.log('iOS FALLBACK: Redirecting to complete-profile');
-              await router.push('/complete-profile');
-              return true;
-            }
-            } catch (firestoreError: any) {
-              console.error('❌ iOS FALLBACK: Firestore operation failed:', firestoreError);
-              console.error('Error message:', firestoreError.message);
-              console.error('Error code:', firestoreError.code);
-
-              // Clear storage and show error
-              sessionStorage.removeItem('pendingRole');
-              localStorage.removeItem('pendingRole');
-
-              setError(`Authentication failed: ${firestoreError.message}. Please try again.`);
-              setInitializing(false);
-              setRedirecting(false);
-              return false;
-            }
-          }
-        }
-
-        // If no redirect result but user is signed in, check current auth state
-        if (!redirectUser && isFirebaseConfigured) {
-          const auth = getFirebaseAuth();
-          if (auth.currentUser && !hasHandledRedirect) {
-            console.log('No redirect result but user is signed in:', auth.currentUser.email);
-            console.log('Checking if this user needs to complete profile...');
-
-            hasHandledRedirect = true;
-            setRedirecting(true);
-            // Keep initializing=true to show loading state during redirect
-
+          if (auth.currentUser) {
+            console.log('User already signed in:', auth.currentUser.email);
             const db = getFirebaseFirestore();
             const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
 
             if (userDoc.exists()) {
               const userData = userDoc.data();
-              console.log('User data found, role:', userData.role);
-
               const profileDoc = await getDoc(doc(db, 'profiles', auth.currentUser.uid));
 
               if (profileDoc.exists()) {
                 const profileData = profileDoc.data();
-                console.log('Profile data:', profileData);
 
                 if (profileData.firstName && profileData.firstName.trim() !== '') {
-                  console.log('Profile complete, redirecting to dashboard');
+                  // Profile complete - redirect to dashboard
                   if (userData.role === 'agent') {
-                    await router.push('/agent-dashboard');
+                    router.push('/agent-dashboard');
                   } else {
-                    await router.push('/candidate-dashboard');
+                    router.push('/candidate-dashboard');
                   }
+                  return true;
                 } else {
-                  console.log('Profile incomplete, redirecting to complete-profile');
-                  await router.push('/complete-profile');
+                  // Profile incomplete
+                  router.push('/complete-profile');
+                  return true;
                 }
-              } else {
-                console.log('No profile found, redirecting to complete-profile');
-                await router.push('/complete-profile');
               }
-              return true;
             }
           }
         }
 
-        if (redirectUser && !hasHandledRedirect) {
-          hasHandledRedirect = true;
-          setRedirecting(true);
-          // Keep initializing=true to show loading state during redirect
-
-          console.log('Redirect user found:', redirectUser.email, 'Role:', redirectUser.role);
-
-          // Small delay to ensure Firestore has replicated
-          await new Promise(resolve => setTimeout(resolve, 500));
-
-          // User signed in via redirect, check profile and redirect
-          const db = getFirebaseFirestore();
-          console.log('Fetching profile for redirect user:', redirectUser.uid);
-          const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
-          console.log('Profile exists:', profileDoc.exists());
-
-          if (profileDoc.exists()) {
-            const profileData = profileDoc.data();
-            console.log('Profile data:', profileData);
-            console.log('Profile firstName:', profileData.firstName);
-
-            if (profileData.firstName && profileData.firstName.trim() !== '') {
-              // Profile complete
-              console.log('REDIRECT: Profile complete, going to dashboard');
-              if (redirectUser.role === 'agent') {
-                console.log('Redirecting to /agent-dashboard');
-                await router.push('/agent-dashboard');
-              } else {
-                console.log('Redirecting to /candidate-dashboard');
-                await router.push('/candidate-dashboard');
-              }
-            } else {
-              // Profile incomplete - redirect to complete-profile
-              console.log('REDIRECT: Profile incomplete, going to /complete-profile');
-              await router.push('/complete-profile');
-            }
-          } else {
-            // No profile found
-            console.log('REDIRECT: No profile found, going to /complete-profile');
-            await router.push('/complete-profile');
-          }
-          return true;
-        } else if (!redirectUser) {
-          console.log('No redirect user found');
-        }
         return false;
       } catch (err) {
-        console.error('Error in checkAndHandleRedirect:', err);
+        console.error('Error checking OAuth redirect:', err);
         return false;
       }
     };
 
-    checkAndHandleRedirect().then(handled => {
-      if (handled) {
-        console.log('Redirect handled successfully');
-        return;
+    checkForOAuthRedirect().then(redirected => {
+      if (!redirected) {
+        console.log('No redirect needed, showing register page');
+        setInitializing(false);
       }
-
-      console.log('No redirect to handle, showing sign-up page');
-      // Only set initializing to false if no redirect happened
-      setInitializing(false);
     });
   }, [router]);
 
@@ -533,11 +208,11 @@ export default function Register() {
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mb-4"></div>
           <p className="text-accent-gray-600">
-            {isOAuthRedirect || redirecting
+            {redirecting
               ? 'Completing sign-up...'
               : 'Checking authentication...'}
           </p>
-          {(isOAuthRedirect || redirecting) && (
+          {redirecting && (
             <p className="text-accent-gray-500 text-sm mt-2">Please wait, this may take a moment on mobile devices</p>
           )}
         </div>
