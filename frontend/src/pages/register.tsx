@@ -382,17 +382,6 @@ export default function Register() {
                   </button>
                 </div>
 
-                <div className="flex justify-center mb-6">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="btn-outline inline-flex items-center"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Change Role
-                  </button>
-                </div>
-
                 <div className="text-center text-xs text-accent-gray-500">
                   <p>By signing up, you agree to our <Link href="/terms" className="text-primary-500 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary-500 hover:underline">Privacy Policy</Link></p>
                 </div>

@@ -59,6 +59,20 @@ export default function AgentSignup() {
   ];
 
   useEffect(() => {
+    // Check for query parameters to skip type selection
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+
+    if (typeParam === 'individual') {
+      setAccountType('individual');
+      setStep('google');
+    } else if (typeParam === 'company') {
+      setAccountType('company');
+      setStep('company-form');
+    }
+  }, []);
+
+  useEffect(() => {
     // Only check auth for google and form steps (not for type-selection or company-form)
     if (step !== 'type-selection' && step !== 'company-form') {
       checkAuth();
