@@ -61,11 +61,11 @@ export default function Register() {
 
           // CRITICAL FOR iOS: Add delay after auth state changes
           // getRedirectResult() needs a moment to process even after auth state is ready
-          // Chrome iOS requires EVEN LONGER delay than Safari iOS
+          // Chrome iOS requires EVEN LONGER delay than Safari iOS due to stricter privacy controls
           console.log('Waiting for redirect result to be ready...');
           console.log('User agent:', navigator.userAgent);
           const isChromeiOS = /CriOS/.test(navigator.userAgent);
-          const delay = isChromeiOS ? 4000 : 2500;  // Chrome iOS needs 4s, Safari iOS needs 2.5s
+          const delay = isChromeiOS ? 6000 : 2500;  // Chrome iOS needs 6s (increased from 4s), Safari iOS needs 2.5s
           console.log(`Using ${delay}ms delay for ${isChromeiOS ? 'Chrome' : 'Safari'} iOS`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -92,9 +92,11 @@ export default function Register() {
           if (!currentUser) {
             console.log('auth.currentUser is null, trying ACTIVE auth state listener...');
 
-            // Strategy 1: Wait for auth state change event (up to 10 seconds)
+            // Strategy 1: Wait for auth state change event (up to 15 seconds for Chrome iOS)
             try {
               console.log('Setting up onAuthStateChanged listener...');
+              const timeoutMs = 15000; // Increased from 10s to 15s for Chrome iOS
+              const maxAttempts = 30; // 30 * 500ms = 15 seconds
               currentUser = await Promise.race([
                 new Promise<any>((resolve) => {
                   const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -108,7 +110,6 @@ export default function Register() {
 
                   // Also check periodically in case event doesn't fire
                   let attempts = 0;
-                  const maxAttempts = 20; // 20 * 500ms = 10 seconds
                   const interval = setInterval(() => {
                     attempts++;
                     console.log(`Auth check attempt ${attempts}/${maxAttempts}`);
@@ -124,7 +125,7 @@ export default function Register() {
                     }
                   }, 500);
                 }),
-                new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000)) // 10 second timeout
+                new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs))
               ]);
             } catch (authError) {
               console.error('Error waiting for auth state:', authError);
@@ -134,8 +135,8 @@ export default function Register() {
           // Strategy 2: If still no user, try retrying getRedirectResult()
           if (!currentUser) {
             console.log('Still no auth.currentUser, retrying getRedirectResult()...');
-            for (let retryAttempt = 1; retryAttempt <= 3; retryAttempt++) {
-              console.log(`getRedirectResult retry attempt ${retryAttempt}/3`);
+            for (let retryAttempt = 1; retryAttempt <= 5; retryAttempt++) {
+              console.log(`getRedirectResult retry attempt ${retryAttempt}/5`);
               await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s between retries
 
               try {
