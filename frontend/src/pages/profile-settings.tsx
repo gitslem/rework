@@ -369,7 +369,7 @@ export default function ProfileSettingsPage() {
                 }`}
               >
                 <BookOpen className="w-5 h-5" />
-                Learn Center
+                {userRole === 'agent' ? 'Agent Guide' : 'Learn Center'}
               </button>
               <button
                 onClick={() => setActiveTab('screen')}
@@ -614,71 +614,252 @@ export default function ProfileSettingsPage() {
           {/* Info Tab */}
           {activeTab === 'info' && (
             <div className="space-y-8">
-              {/* Info Sub-tabs */}
-              <div className="flex gap-4 border-b-2 border-gray-200">
-                <button
-                  onClick={() => setInfoSubTab('learn')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all ${
-                    infoSubTab === 'learn'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <BookOpen className="w-5 h-5" />
-                  Learn
-                </button>
-                <button
-                  onClick={() => setInfoSubTab('tips')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all ${
-                    infoSubTab === 'tips'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <Lightbulb className="w-5 h-5" />
-                  Tips for Success
-                </button>
-              </div>
+              {/* Agent-specific Info Tab Content */}
+              {userRole === 'agent' ? (
+                <div className="space-y-8">
+                  {/* Agent Welcome */}
+                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-amber-500 p-3 rounded-xl">
+                        <Award className="w-8 h-8 text-white" />
+                      </div>
+                      <h2 className="text-3xl font-bold text-black">Welcome, Agent!</h2>
+                    </div>
+                    <p className="text-gray-800 text-lg leading-relaxed">
+                      As a verified agent on Remote-Works, you have the opportunity to help candidates get approved on remote work platforms
+                      and earn income through flexible payment models. This guide will help you maximize your success on the platform.
+                    </p>
+                  </div>
+
+                  {/* What You Do as an Agent */}
+                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+                    <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
+                      <Users className="w-8 h-8 text-amber-600" />
+                      Your Role as an Agent
+                    </h2>
+                    <div className="prose prose-lg max-w-none">
+                      <p className="text-gray-800 leading-relaxed mb-4">
+                        As an <strong className="text-amber-600">agent</strong>, your primary responsibility is to help candidates get approved
+                        on various remote work platforms like Outlier AI, TELUS Digital, OneForma, RWS, Appen, and 20+ others. You leverage your
+                        expertise and experience to guide candidates through approval processes, handle tasks on their behalf (if authorized),
+                        and ensure they can start earning income.
+                      </p>
+                      <p className="text-gray-800 leading-relaxed">
+                        Agents earn through two flexible models: <strong className="text-black">One-Time Fees</strong> for specific approval services,
+                        or <strong className="text-black">Revenue Sharing</strong> arrangements where you split earnings with candidates while providing
+                        ongoing support and task management.
+                      </p>
+                    </div>
+                  </section>
+
+                  {/* How to Succeed as an Agent */}
+                  <section>
+                    <h2 className="text-3xl font-bold text-black mb-8 text-center">
+                      Keys to Success as an Agent
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {[
+                        {
+                          icon: <Target className="w-8 h-8" />,
+                          title: "Specialize in Platforms",
+                          description: "Focus on 3-5 platforms you know extremely well. Deep expertise beats broad knowledge.",
+                          color: "from-amber-500 to-yellow-500"
+                        },
+                        {
+                          icon: <Users className="w-8 h-8" />,
+                          title: "Build Trust",
+                          description: "Communicate clearly, meet deadlines, and deliver on your promises. Your reputation is everything.",
+                          color: "from-gray-800 to-black"
+                        },
+                        {
+                          icon: <TrendingUp className="w-8 h-8" />,
+                          title: "Set Fair Rates",
+                          description: "Price competitively based on your experience and the platforms you service.",
+                          color: "from-amber-600 to-yellow-600"
+                        },
+                        {
+                          icon: <Calendar className="w-8 h-8" />,
+                          title: "Maintain Availability",
+                          description: "Keep your working hours updated and respond to candidate requests within 24 hours.",
+                          color: "from-gray-700 to-gray-900"
+                        },
+                        {
+                          icon: <Shield className="w-8 h-8" />,
+                          title: "Follow Platform Rules",
+                          description: "Strictly adhere to Remote-Works policies and candidate authorization boundaries.",
+                          color: "from-amber-500 to-yellow-500"
+                        },
+                        {
+                          icon: <Star className="w-8 h-8" />,
+                          title: "Earn Great Reviews",
+                          description: "Provide excellent service to earn 5-star reviews and build your reputation.",
+                          color: "from-gray-800 to-black"
+                        }
+                      ].map((item, index) => (
+                        <div
+                          key={index}
+                          className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border-2 border-gray-200 hover:border-amber-400 hover:scale-105 transform duration-300"
+                        >
+                          <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${item.color} rounded-xl text-white mb-4`}>
+                            {item.icon}
+                          </div>
+                          <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
+                          <p className="text-gray-700">{item.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Agent Payment Models */}
+                  <section className="grid md:grid-cols-2 gap-8">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-300">
+                      <div className="flex items-center gap-3 mb-4">
+                        <DollarSign className="w-8 h-8 text-green-600" />
+                        <h3 className="text-2xl font-bold text-black">One-Time Fees</h3>
+                      </div>
+                      <p className="text-gray-800 mb-6">
+                        Charge a fixed fee for approval services. Clear, straightforward transactions.
+                      </p>
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Typical range: $100-$150 per platform approval</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Offer package deals (e.g., $400 for 4 platform approvals)</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Get paid upfront or upon successful approval</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">No ongoing obligations after approval</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
+                      <div className="flex items-center gap-3 mb-4">
+                        <TrendingUp className="w-8 h-8 text-amber-600" />
+                        <h3 className="text-2xl font-bold text-black">Revenue Share</h3>
+                      </div>
+                      <p className="text-gray-800 mb-6">
+                        Partner with candidates for ongoing earnings. Higher long-term income potential.
+                      </p>
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Typical split: 50/50 or negotiated percentage</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Can work on candidate's behalf (with authorization)</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Ongoing support and task management included</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
+                          <p className="text-gray-800">Passive income potential as candidates scale</p>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Best Practices */}
+                  <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
+                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                      <Award className="w-7 h-7 text-amber-500" />
+                      Agent Best Practices
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {[
+                        {
+                          title: "Always Get Written Authorization",
+                          description: "Before accessing any candidate account or platform, ensure you have clear written authorization"
+                        },
+                        {
+                          title: "Document Everything",
+                          description: "Keep records of all communications, agreements, and work completed for each candidate"
+                        },
+                        {
+                          title: "Honor Your Commitments",
+                          description: "If you promise approval within a timeframe, deliver on that promise or communicate delays early"
+                        },
+                        {
+                          title: "Stay Within Scope",
+                          description: "Only access platforms and perform tasks explicitly authorized by the candidate"
+                        },
+                        {
+                          title: "Maintain Confidentiality",
+                          description: "Protect candidate personal information and account credentials at all times"
+                        },
+                        {
+                          title: "Update Your Profile",
+                          description: "Keep your services, rates, and availability current to attract the right candidates"
+                        }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-start gap-3">
+                          <CheckCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
+                          <div>
+                            <h4 className="font-bold mb-1">{item.title}</h4>
+                            <p className="text-gray-300 text-sm">{item.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Call to Action */}
+                  <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
+                    <h3 className="text-3xl font-bold mb-4">Ready to Help Candidates Succeed?</h3>
+                    <p className="text-xl text-gray-300 mb-6">
+                      Start browsing candidate service requests and build your reputation on Remote-Works
+                    </p>
+                    <button
+                      onClick={() => router.push('/agent-dashboard')}
+                      className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-amber-600 hover:to-yellow-600 transition-all inline-flex items-center gap-2 shadow-lg"
+                    >
+                      Go to Dashboard
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Candidate Info Tab Content */
+                <div className="space-y-8">
+                  {/* Info Sub-tabs */}
+                  <div className="flex gap-4 border-b-2 border-gray-200">
+                    <button
+                      onClick={() => setInfoSubTab('learn')}
+                      className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all ${
+                        infoSubTab === 'learn'
+                          ? 'border-amber-500 text-black'
+                          : 'border-transparent text-gray-600 hover:text-black'
+                      }`}
+                    >
+                      <BookOpen className="w-5 h-5" />
+                      Learn
+                    </button>
+                    <button
+                      onClick={() => setInfoSubTab('tips')}
+                      className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all ${
+                        infoSubTab === 'tips'
+                          ? 'border-amber-500 text-black'
+                          : 'border-transparent text-gray-600 hover:text-black'
+                      }`}
+                    >
+                      <Lightbulb className="w-5 h-5" />
+                      Tips for Success
+                    </button>
+                  </div>
 
               {/* Learn Content */}
               {infoSubTab === 'learn' && (
                 <div className="space-y-12">
-                  {/* Video Section */}
-                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="bg-amber-100 p-3 rounded-xl">
-                        <Play className="w-6 h-6 text-amber-600" />
-                      </div>
-                      <h2 className="text-3xl font-bold text-black">Introduction Video</h2>
-                    </div>
-                    <p className="text-gray-700 mb-6">
-                      Watch this quick introduction to understand how Remote-Works connects you with vetted agents
-                      and remote work opportunities.
-                    </p>
-                    <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
-                      <video
-                        ref={videoRef}
-                        controls
-                        className="w-full h-full"
-                        onPlay={() => setIsPlaying(true)}
-                        onPause={() => setIsPlaying(false)}
-                      >
-                        <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                      {!isPlaying && (
-                        <div
-                          className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 cursor-pointer"
-                          onClick={handlePlayVideo}
-                        >
-                          <div className="bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full p-6 shadow-2xl hover:scale-110 transition-transform">
-                            <Play className="w-12 h-12 text-white" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </section>
-
                   {/* What is Remote-Works */}
                   <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
                     <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
@@ -945,27 +1126,291 @@ export default function ProfileSettingsPage() {
           {/* Screen Sharing Tab */}
           {activeTab === 'screen' && (
             <div className="space-y-8">
-              {/* Screen Sub-tabs */}
-              <div className="flex gap-4 border-b-2 border-gray-200 overflow-x-auto">
-                <button
-                  onClick={() => setScreenSubTab('overview')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                    screenSubTab === 'overview'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <TrendingUp className="w-5 h-5" />
-                  Why Screen Sharing
-                </button>
-                <button
-                  onClick={() => setScreenSubTab('how-it-works')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                    screenSubTab === 'how-it-works'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
+              {/* Agent-specific Screen Tab Content */}
+              {userRole === 'agent' ? (
+                <div className="space-y-12">
+                  {/* Agent Screen Sharing Welcome */}
+                  <div className="bg-gradient-to-r from-gray-900 to-black text-white py-12 px-8 rounded-2xl border-2 border-amber-500">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                      <div className="flex-1">
+                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+                          <Monitor className="w-5 h-5" />
+                          <span className="font-semibold">Powered by Google Remote Desktop</span>
+                        </div>
+                        <h1 className="text-4xl font-bold mb-4">
+                          Screen Sharing: Your Tool for Helping Candidates
+                        </h1>
+                        <p className="text-lg text-gray-300">
+                          Use secure screen sharing to assist candidates with approvals, testing, and project execution
+                          while maintaining complete transparency and security.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Why Agents Use Screen Sharing */}
+                  <section>
+                    <h2 className="text-3xl font-bold text-black mb-6">Why Use Screen Sharing as an Agent</h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                        <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                          <Users className="w-7 h-7 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-black mb-3">Help Multiple Candidates</h3>
+                        <p className="text-gray-800 leading-relaxed">
+                          Manage multiple candidate accounts simultaneously, helping them complete platform registrations,
+                          testing, and project submissions efficiently.
+                        </p>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
+                        <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
+                          <Target className="w-7 h-7 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-black mb-3">Efficient Task Execution</h3>
+                        <p className="text-gray-800 leading-relaxed">
+                          Complete platform approvals, qualification tests, and routine tasks on behalf of authorized
+                          candidates, maximizing your efficiency and earnings.
+                        </p>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                        <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                          <Shield className="w-7 h-7 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-black mb-3">Maintain Trust & Transparency</h3>
+                        <p className="text-gray-800 leading-relaxed">
+                          Candidates can monitor your work in real-time and record sessions. This transparency builds
+                          trust and protects both parties.
+                        </p>
+                      </div>
+
+                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
+                        <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
+                          <Calendar className="w-7 h-7 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-black mb-3">Flexible Scheduling</h3>
+                        <p className="text-gray-800 leading-relaxed">
+                          Coordinate screen sharing sessions with candidates through the project page. Work at times
+                          that suit both your schedule and theirs.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* How Agents Use Screen Sharing */}
+                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+                    <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3">
+                      <Monitor className="w-7 h-7 text-amber-600" />
+                      Common Use Cases for Agents
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {[
+                        {
+                          icon: <CheckCircle className="w-6 h-6 text-amber-600" />,
+                          title: "Platform Registration & Setup",
+                          description: "Help candidates create accounts, complete profiles, upload verification documents, and navigate approval processes on 20+ platforms."
+                        },
+                        {
+                          icon: <FileCheck className="w-6 h-6 text-amber-600" />,
+                          title: "Skills Testing & Exams",
+                          description: "Assist with or complete platform qualification tests, skills assessments, and certification exams to improve candidate rankings."
+                        },
+                        {
+                          icon: <Award className="w-6 h-6 text-amber-600" />,
+                          title: "Project Execution",
+                          description: "Work on authorized candidate accounts to deliver projects, especially for revenue-share arrangements where you handle ongoing tasks."
+                        },
+                        {
+                          icon: <SettingsIcon className="w-6 h-6 text-amber-600" />,
+                          title: "Account Management",
+                          description: "Handle routine tasks like responding to platform messages, submitting deliverables, updating statuses, and managing deadlines."
+                        }
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex gap-4">
+                          <div className="flex-shrink-0">
+                            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                              {item.icon}
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-black mb-2">{item.title}</h4>
+                            <p className="text-gray-700 text-sm">{item.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Critical Agent Responsibilities */}
+                  <section className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 border-2 border-red-300">
+                    <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3">
+                      <AlertTriangle className="w-7 h-7 text-red-600" />
+                      Critical Agent Responsibilities
+                    </h2>
+                    <div className="space-y-4">
+                      {[
+                        {
+                          title: "Only Access Authorized Platforms",
+                          description: "Work ONLY on platforms and tasks explicitly authorized by the candidate. Unauthorized access is strictly prohibited and will result in permanent ban.",
+                          severity: "high"
+                        },
+                        {
+                          title: "Respect Candidate Privacy",
+                          description: "Never access personal files, emails, banking information, or any data outside the authorized work scope. Violations are taken extremely seriously.",
+                          severity: "high"
+                        },
+                        {
+                          title: "Maintain Session Records",
+                          description: "Keep detailed records of all screen sharing sessions, tasks completed, and candidate authorizations for transparency and dispute resolution.",
+                          severity: "medium"
+                        },
+                        {
+                          title: "End Sessions Immediately on Request",
+                          description: "If a candidate asks to end a session for any reason, terminate access immediately without question or argument.",
+                          severity: "high"
+                        }
+                      ].map((item, idx) => (
+                        <div key={idx} className={`flex items-start gap-4 bg-white rounded-xl p-6 border-2 ${item.severity === 'high' ? 'border-red-300' : 'border-orange-300'}`}>
+                          <div className={`w-10 h-10 ${item.severity === 'high' ? 'bg-red-100' : 'bg-orange-100'} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                            <AlertTriangle className={`w-6 h-6 ${item.severity === 'high' ? 'text-red-600' : 'text-orange-600'}`} />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-black mb-2">{item.title}</h4>
+                            <p className="text-gray-700 text-sm">{item.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Setup Instructions for Agents */}
+                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+                    <h2 className="text-2xl font-bold text-black mb-6">Getting Started with Screen Sharing</h2>
+                    <div className="space-y-6">
+                      {[
+                        {
+                          step: "1",
+                          title: "Install Google Remote Desktop",
+                          description: "Download Chrome Remote Desktop extension or desktop app from remotedesktop.google.com. It's free and works across all devices.",
+                          color: "amber"
+                        },
+                        {
+                          step: "2",
+                          title: "Get Candidate Authorization",
+                          description: "Before any session, obtain clear written authorization from the candidate specifying which platforms and tasks you can access.",
+                          color: "yellow"
+                        },
+                        {
+                          step: "3",
+                          title: "Schedule Sessions",
+                          description: "Coordinate session timing through the candidate's project page. Schedule sessions at mutually convenient times.",
+                          color: "amber"
+                        },
+                        {
+                          step: "4",
+                          title: "Access & Complete Work",
+                          description: "Candidate provides computer name and PIN. Request access, they approve it, and you can begin authorized tasks. Stay within the agreed scope.",
+                          color: "yellow"
+                        }
+                      ].map((item, index) => (
+                        <div key={index} className="flex gap-6">
+                          <div className="flex-shrink-0">
+                            <div className={`w-12 h-12 bg-gradient-to-br from-${item.color}-500 to-${item.color}-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
+                              {item.step}
+                            </div>
+                          </div>
+                          <div className="flex-1 bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
+                            <h4 className="text-xl font-bold text-black mb-2">{item.title}</h4>
+                            <p className="text-gray-700">{item.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  {/* Violation Consequences */}
+                  <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-red-500">
+                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                      <X className="w-7 h-7 text-red-500" />
+                      Consequences of Policy Violations
+                    </h2>
+                    <div className="space-y-4">
+                      <p className="text-lg text-gray-300 leading-relaxed">
+                        Remote-Works enforces a <strong className="text-red-400">zero-tolerance policy</strong> for unauthorized
+                        access or misuse of screen sharing privileges. Violations result in:
+                      </p>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {[
+                          {
+                            title: "Immediate Account Termination",
+                            description: "Permanent ban from the platform with no appeal process"
+                          },
+                          {
+                            title: "Loss of All Earnings",
+                            description: "Forfeiture of pending payments and revenue share agreements"
+                          },
+                          {
+                            title: "Public Record",
+                            description: "Violation noted in your permanent agent record"
+                          },
+                          {
+                            title: "Legal Action",
+                            description: "Potential prosecution for unauthorized access to computer systems"
+                          }
+                        ].map((item, idx) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <X className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
+                            <div>
+                              <h4 className="font-bold mb-1 text-red-400">{item.title}</h4>
+                              <p className="text-gray-300 text-sm">{item.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Call to Action */}
+                  <section className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 md:p-12 text-white text-center border-2 border-amber-500">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Help Candidates Succeed?</h2>
+                    <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                      Use screen sharing responsibly to help candidates achieve their goals while maintaining
+                      the highest standards of professionalism and security.
+                    </p>
+                    <button
+                      onClick={() => router.push('/agent-dashboard')}
+                      className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg text-lg"
+                    >
+                      <Calendar className="w-6 h-6" />
+                      Go to Dashboard
+                    </button>
+                  </section>
+                </div>
+              ) : (
+                /* Candidate Screen Tab Content */
+                <div className="space-y-8">
+                  {/* Screen Sub-tabs */}
+                  <div className="flex gap-4 border-b-2 border-gray-200 overflow-x-auto">
+                    <button
+                      onClick={() => setScreenSubTab('overview')}
+                      className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
+                        screenSubTab === 'overview'
+                          ? 'border-amber-500 text-black'
+                          : 'border-transparent text-gray-600 hover:text-black'
+                      }`}
+                    >
+                      <TrendingUp className="w-5 h-5" />
+                      Why Screen Sharing
+                    </button>
+                    <button
+                      onClick={() => setScreenSubTab('how-it-works')}
+                      className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
+                        screenSubTab === 'how-it-works'
+                          ? 'border-amber-500 text-black'
+                          : 'border-transparent text-gray-600 hover:text-black'
+                      }`}
+                    >
                   <Play className="w-5 h-5" />
                   How It Works
                 </button>
