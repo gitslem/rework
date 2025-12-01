@@ -46,6 +46,11 @@ export default function Register() {
               resolve();
             });
           });
+
+          // CRITICAL FOR iOS: Add delay after auth state changes
+          // getRedirectResult() needs a moment to process even after auth state is ready
+          console.log('Waiting for redirect result to be ready...');
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         console.log('Calling handleRedirectResult...');

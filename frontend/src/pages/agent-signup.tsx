@@ -91,10 +91,20 @@ export default function AgentSignup() {
         });
       });
 
+      // CRITICAL FOR iOS: Add delay after auth state changes
+      // getRedirectResult() needs a moment to process even after auth state is ready
+      console.log('Waiting for redirect result to be ready...');
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       // Check for redirect result first (critical for iOS)
       console.log('Calling handleRedirectResult for agent signup...');
       const redirectUser = await handleRedirectResult();
       console.log('Agent redirect user:', redirectUser);
+      console.log('Redirect user details:', redirectUser ? {
+        email: redirectUser.email,
+        role: redirectUser.role,
+        uid: redirectUser.uid
+      } : 'null');
 
       // If we have a redirect result, handle it immediately
       if (redirectUser) {
@@ -204,13 +214,19 @@ export default function AgentSignup() {
 
       // No redirect and no existing user - initialize page normally
       console.log('No OAuth redirect or existing user, initializing page state');
+      console.log('Current state - redirectUser:', !!redirectUser, 'auth.currentUser:', !!auth.currentUser);
       initializePageState();
     } catch (error: any) {
-      console.error('Error checking auth and redirect:', error);
+      console.error('=== ERROR in checkAuthAndRedirect ===');
+      console.error('Error details:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       if (error.message?.includes('Firebase is not configured')) {
         setShowFirebaseWarning(true);
       }
       setLoading(false);
+      // On error, fall back to initializing page state
+      console.log('Falling back to initializePageState due to error');
       initializePageState();
     }
   };
