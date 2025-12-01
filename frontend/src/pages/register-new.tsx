@@ -398,17 +398,6 @@ export default function RegisterNew() {
                   Sign up with Google
                 </button>
 
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Change Role
-                  </button>
-                </div>
-
                 <div className="text-center text-xs text-gray-500 mt-6">
                   <p>By signing up, you agree to our <button onClick={() => router.push('/terms')} className="text-blue-600 hover:underline">Terms of Service</button> and <button onClick={() => router.push('/privacy')} className="text-blue-600 hover:underline">Privacy Policy</button></p>
                 </div>
