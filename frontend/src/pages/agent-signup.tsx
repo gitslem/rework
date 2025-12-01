@@ -107,9 +107,13 @@ export default function AgentSignup() {
 
       // CRITICAL FOR iOS: Add delay after auth state changes
       // getRedirectResult() needs a moment to process even after auth state is ready
-      // iOS Safari requires MUCH longer delay for reliable redirect processing
+      // Chrome iOS requires EVEN LONGER delay than Safari iOS
       console.log('Waiting for redirect result to be ready...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('User agent:', typeof window !== 'undefined' ? navigator.userAgent : 'N/A');
+      const isChromeiOS = typeof window !== 'undefined' && /CriOS/.test(navigator.userAgent);
+      const delay = isChromeiOS ? 4000 : 2500;  // Chrome iOS needs 4s, Safari iOS needs 2.5s
+      console.log(`Using ${delay}ms delay for ${isChromeiOS ? 'Chrome' : 'Safari'} iOS`);
+      await new Promise(resolve => setTimeout(resolve, delay));
 
       // Check for redirect result first (critical for iOS)
       console.log('Calling handleRedirectResult for agent signup...');
@@ -127,14 +131,37 @@ export default function AgentSignup() {
       if (!redirectUser && (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole'))) {
         console.log('=== iOS FALLBACK: No redirect result but pendingRole exists ===');
         console.log('Checking auth.currentUser directly...');
-        if (auth.currentUser) {
-          console.log('auth.currentUser found:', auth.currentUser.email);
+        console.log('Initial auth.currentUser:', auth.currentUser?.email || 'null');
+
+        // CRITICAL: On Chrome iOS, auth.currentUser might be null initially
+        // Poll for up to 10 seconds to wait for auth state to populate
+        let currentUser = auth.currentUser;
+        if (!currentUser) {
+          console.log('auth.currentUser is null, polling for up to 10 seconds...');
+          const maxAttempts = 20;  // 20 attempts * 500ms = 10 seconds
+          for (let attempt = 1; attempt <= maxAttempts && !currentUser; attempt++) {
+            console.log(`Polling attempt ${attempt}/${maxAttempts}...`);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            currentUser = auth.currentUser;
+            if (currentUser) {
+              console.log(`✅ auth.currentUser found on attempt ${attempt}:`, currentUser.email);
+              break;
+            }
+          }
+          if (!currentUser) {
+            console.error('❌ auth.currentUser still null after 10 seconds of polling');
+            console.error('This means the OAuth redirect failed or auth state was cleared');
+          }
+        }
+
+        if (currentUser) {
+          console.log('auth.currentUser found:', currentUser.email);
           const pendingRole = (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole')) as 'agent' | 'candidate';
           sessionStorage.removeItem('pendingRole');
           localStorage.removeItem('pendingRole');
 
           // Check if this user already exists in Firestore
-          const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
 
           if (userDoc.exists()) {
             // Existing user - use their role from Firestore
@@ -164,7 +191,7 @@ export default function AgentSignup() {
             } else {
               // Agent with incomplete profile - show form
               console.log('iOS FALLBACK: Agent showing signup form');
-              setUser(auth.currentUser);
+              setUser(currentUser);
               setStep('form');
               setLoading(false);
               setRedirecting(false);
@@ -174,27 +201,27 @@ export default function AgentSignup() {
             // New user - create user with pendingRole
             console.log('iOS FALLBACK: Creating new user with role:', pendingRole);
             const userData = {
-              uid: auth.currentUser.uid,
-              email: auth.currentUser.email!,
+              uid: currentUser.uid,
+              email: currentUser.email!,
               role: pendingRole,
-              displayName: auth.currentUser.displayName || undefined,
-              photoURL: auth.currentUser.photoURL || undefined,
+              displayName: currentUser.displayName || undefined,
+              photoURL: currentUser.photoURL || undefined,
               isActive: true,
-              isVerified: auth.currentUser.emailVerified,
+              isVerified: currentUser.emailVerified,
               isCandidateApproved: false,
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
             };
 
-            await setDoc(doc(db, 'users', auth.currentUser.uid), userData);
+            await setDoc(doc(db, 'users', currentUser.uid), userData);
 
             // Create empty profile
             const profileData = {
-              uid: auth.currentUser.uid,
+              uid: currentUser.uid,
               firstName: '',
               lastName: '',
               bio: '',
-              avatarURL: auth.currentUser.photoURL || '',
+              avatarURL: currentUser.photoURL || '',
               location: '',
               phone: '',
               website: '',
@@ -214,7 +241,7 @@ export default function AgentSignup() {
               updatedAt: serverTimestamp(),
             };
 
-            await setDoc(doc(db, 'profiles', auth.currentUser.uid), profileData);
+            await setDoc(doc(db, 'profiles', currentUser.uid), profileData);
 
             if (pendingRole === 'candidate') {
               console.log('iOS FALLBACK: New candidate going to complete-profile');
@@ -222,7 +249,7 @@ export default function AgentSignup() {
               return;
             } else {
               console.log('iOS FALLBACK: New agent showing signup form');
-              setUser(auth.currentUser);
+              setUser(currentUser);
               setStep('form');
               setLoading(false);
               setRedirecting(false);
