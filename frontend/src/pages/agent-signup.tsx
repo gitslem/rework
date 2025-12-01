@@ -273,7 +273,6 @@ export default function AgentSignup() {
             initializePageState();
             return; // IMPORTANT: Stop execution here
           }
-        }
 
         if (currentUser) {
           console.log('auth.currentUser found:', currentUser.email);
