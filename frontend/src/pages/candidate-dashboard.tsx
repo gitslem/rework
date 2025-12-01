@@ -320,7 +320,8 @@ export default function CandidateDashboard() {
       setAgents(agentsList);
     } catch (error) {
       console.error('Error loading agents:', error);
-      alert('Error loading agents. Please refresh the page.');
+      // Silently fail - this is expected for candidates and should not show an alert
+      setAgents([]);
     }
   };
 
@@ -598,22 +599,6 @@ export default function CandidateDashboard() {
                     </span>
                   )}
                 </button>
-                <button
-                  onClick={() => router.push('/candidate-info')}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
-                  title="Info"
-                >
-                  <BookOpen className="w-5 h-5" />
-                  <span>Info</span>
-                </button>
-                <button
-                  onClick={() => router.push('/candidate-screen')}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
-                  title="Screen Sharing"
-                >
-                  <Monitor className="w-5 h-5" />
-                  <span>Screen</span>
-                </button>
                 <div className="h-8 w-px bg-gray-300 mx-2"></div>
                 <button
                   onClick={() => router.push('/profile-settings')}
@@ -658,14 +643,6 @@ export default function CandidateDashboard() {
                 <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                   <MessageSquare className="w-5 h-5" />
                   <span>Messages {unreadCount > 0 && `(${unreadCount})`}</span>
-                </button>
-                <button onClick={() => { router.push('/candidate-info'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                  <BookOpen className="w-5 h-5" />
-                  <span>Info</span>
-                </button>
-                <button onClick={() => { router.push('/candidate-screen'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                  <Monitor className="w-5 h-5" />
-                  <span>Screen Sharing</span>
                 </button>
                 <div className="border-t border-gray-200 my-2"></div>
                 <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors">
