@@ -49,8 +49,9 @@ export default function Register() {
 
           // CRITICAL FOR iOS: Add delay after auth state changes
           // getRedirectResult() needs a moment to process even after auth state is ready
+          // iOS Safari requires longer delay for reliable redirect processing
           console.log('Waiting for redirect result to be ready...');
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
 
         console.log('Calling handleRedirectResult...');
