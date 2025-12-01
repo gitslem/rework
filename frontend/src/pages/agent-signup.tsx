@@ -59,50 +59,79 @@ export default function AgentSignup() {
   ];
 
   useEffect(() => {
-    // Check for query parameters to skip type selection
-    const urlParams = new URLSearchParams(window.location.search);
-    const typeParam = urlParams.get('type');
-
-    if (typeParam === 'individual') {
-      setAccountType('individual');
-      setStep('google');
-    } else if (typeParam === 'company') {
-      setAccountType('company');
-      setStep('company-form');
-    }
+    // CRITICAL: Always check for OAuth redirect first, before anything else
+    // This handles iOS Safari returning from OAuth without query params
+    checkAuthAndRedirect();
   }, []);
 
-  useEffect(() => {
-    // Only check auth for google and form steps (not for type-selection or company-form)
-    if (step !== 'type-selection' && step !== 'company-form') {
-      checkAuth();
-    } else {
-      setLoading(false);
-    }
-  }, [step]);
-
-  const checkAuth = async () => {
+  const checkAuthAndRedirect = async () => {
     try {
-      console.log('=== AGENT-SIGNUP: Checking auth ===');
+      console.log('=== AGENT-SIGNUP: Checking for OAuth redirect ===');
       console.log('Current URL:', typeof window !== 'undefined' ? window.location.href : 'N/A');
 
       // Check if Firebase is configured
       if (!isFirebaseConfigured) {
         setShowFirebaseWarning(true);
         setLoading(false);
+        initializePageState();
         return;
       }
 
       const auth = getFirebaseAuth();
       const db = getFirebaseFirestore();
 
-      // Only check for redirect result (for mobile/browsers that use redirect flow)
+      // Check for redirect result first (critical for iOS)
       console.log('Calling handleRedirectResult for agent signup...');
       const redirectUser = await handleRedirectResult();
       console.log('Agent redirect user:', redirectUser);
 
-      // If no redirect result but user is signed in, check current auth state
-      if (!redirectUser && auth.currentUser) {
+      // If we have a redirect result, handle it immediately
+      if (redirectUser) {
+        console.log('Found OAuth redirect user:', redirectUser.email, 'Role:', redirectUser.role);
+        setRedirecting(true);
+
+        // Small delay to ensure Firestore replication
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        console.log('Fetching profile for agent redirect:', redirectUser.uid);
+        const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
+        console.log('Agent profile exists:', profileDoc.exists());
+
+        if (profileDoc.exists()) {
+          const profileData = profileDoc.data();
+          console.log('Agent profile firstName:', profileData.firstName);
+
+          if (profileData.firstName && profileData.firstName.trim() !== '') {
+            // Profile complete, redirect to dashboard
+            console.log('REDIRECT: Agent profile complete, going to dashboard');
+            await router.push('/agent-dashboard');
+            return;
+          }
+        }
+
+        // User signed in via redirect but profile incomplete
+        // For agents, show the signup form
+        // For candidates, redirect to complete-profile
+        if (redirectUser.role === 'candidate') {
+          console.log('REDIRECT: Candidate going to complete-profile');
+          await router.push('/complete-profile');
+          return;
+        }
+
+        // Agent with incomplete profile - show form
+        const firebaseUser = auth.currentUser;
+        if (firebaseUser) {
+          console.log('REDIRECT: Agent profile incomplete, showing form');
+          setUser(firebaseUser);
+          setStep('form');
+          setLoading(false);
+          setRedirecting(false);
+          return;
+        }
+      }
+
+      // No redirect result, check if user is already signed in
+      if (auth.currentUser) {
         console.log('No redirect result but user is signed in:', auth.currentUser.email);
         console.log('Checking agent profile status...');
 
@@ -162,60 +191,35 @@ export default function AgentSignup() {
         }
       }
 
-      if (redirectUser) {
-        setRedirecting(true);
-
-        // Small delay to ensure Firestore replication
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        console.log('Fetching profile for agent redirect:', redirectUser.uid);
-        const profileDoc = await getDoc(doc(db, 'profiles', redirectUser.uid));
-        console.log('Agent profile exists:', profileDoc.exists());
-
-        if (profileDoc.exists()) {
-          const profileData = profileDoc.data();
-          console.log('Agent profile firstName:', profileData.firstName);
-
-          if (profileData.firstName && profileData.firstName.trim() !== '') {
-            // Profile complete, redirect to dashboard
-            console.log('REDIRECT: Agent profile complete, going to dashboard');
-            await router.push('/agent-dashboard');
-            return;
-          }
-        }
-
-        // User signed in via redirect but profile incomplete
-        // For agents, show the signup form
-        // For candidates, redirect to complete-profile
-        if (redirectUser.role === 'candidate') {
-          console.log('REDIRECT: Candidate going to complete-profile');
-          await router.push('/complete-profile');
-          return;
-        }
-
-        // Agent with incomplete profile - show form
-        const firebaseUser = auth.currentUser;
-        if (firebaseUser) {
-          console.log('REDIRECT: Agent profile incomplete, showing form');
-          setUser(firebaseUser);
-          setStep('form');
-          setLoading(false);
-          setRedirecting(false);
-          return;
-        }
-      } else {
-        console.log('No redirect result for agent signup');
-      }
-
-      // No redirect result, just set loading to false
-      setLoading(false);
+      // No redirect and no existing user - initialize page normally
+      console.log('No OAuth redirect or existing user, initializing page state');
+      initializePageState();
     } catch (error: any) {
-      console.error('Error checking auth:', error);
+      console.error('Error checking auth and redirect:', error);
       if (error.message?.includes('Firebase is not configured')) {
         setShowFirebaseWarning(true);
       }
       setLoading(false);
+      initializePageState();
     }
+  };
+
+  const initializePageState = () => {
+    // Check for query parameters to skip type selection
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+
+    if (typeParam === 'individual') {
+      setAccountType('individual');
+      setStep('google');
+    } else if (typeParam === 'company') {
+      setAccountType('company');
+      setStep('company-form');
+    } else {
+      // No query param, show type selection
+      setStep('type-selection');
+    }
+    setLoading(false);
   };
 
   const handleGoogleSignup = async () => {
