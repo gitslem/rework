@@ -86,11 +86,11 @@ export default function Register() {
           console.log('Initial auth.currentUser:', auth.currentUser?.email || 'null');
 
           // CRITICAL: On Chrome iOS, auth.currentUser might be null initially
-          // Poll for up to 10 seconds to wait for auth state to populate
+          // Poll for up to 15 seconds to wait for auth state to populate
           let currentUser = auth.currentUser;
           if (!currentUser) {
-            console.log('auth.currentUser is null, polling for up to 10 seconds...');
-            const maxAttempts = 20;  // 20 attempts * 500ms = 10 seconds
+            console.log('auth.currentUser is null, polling for up to 15 seconds...');
+            const maxAttempts = 30;  // 30 attempts * 500ms = 15 seconds
             for (let attempt = 1; attempt <= maxAttempts && !currentUser; attempt++) {
               console.log(`Polling attempt ${attempt}/${maxAttempts}...`);
               await new Promise(resolve => setTimeout(resolve, 500));
@@ -101,8 +101,19 @@ export default function Register() {
               }
             }
             if (!currentUser) {
-              console.error('❌ auth.currentUser still null after 10 seconds of polling');
+              console.error('❌ auth.currentUser still null after 15 seconds of polling');
               console.error('This means the OAuth redirect failed or auth state was cleared');
+              console.error('localStorage.pendingRole was:', localStorage.getItem('pendingRole'));
+              console.error('URL:', window.location.href);
+
+              // CRITICAL: Clear the pendingRole and show error to user
+              sessionStorage.removeItem('pendingRole');
+              localStorage.removeItem('pendingRole');
+
+              setError('Authentication timeout. Please try signing in again. If the issue persists, try clearing your browser cache or use a different browser.');
+              setInitializing(false);
+              setRedirecting(false);
+              return false; // IMPORTANT: Stop execution here
             }
           }
 
@@ -112,11 +123,15 @@ export default function Register() {
 
             console.log('auth.currentUser found:', currentUser.email);
             const pendingRole = (sessionStorage.getItem('pendingRole') || localStorage.getItem('pendingRole')) as 'agent' | 'candidate';
+            console.log('pendingRole from storage:', pendingRole);
             sessionStorage.removeItem('pendingRole');
             localStorage.removeItem('pendingRole');
 
-            // Check if this user already exists in Firestore
-            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+            try {
+              // Check if this user already exists in Firestore
+              console.log('Fetching user document from Firestore...');
+              const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+              console.log('User document exists:', userDoc.exists());
 
             if (userDoc.exists()) {
               // Existing user - use their role from Firestore
@@ -194,6 +209,20 @@ export default function Register() {
               console.log('iOS FALLBACK: Redirecting to complete-profile');
               await router.push('/complete-profile');
               return true;
+            }
+            } catch (firestoreError: any) {
+              console.error('❌ iOS FALLBACK: Firestore operation failed:', firestoreError);
+              console.error('Error message:', firestoreError.message);
+              console.error('Error code:', firestoreError.code);
+
+              // Clear storage and show error
+              sessionStorage.removeItem('pendingRole');
+              localStorage.removeItem('pendingRole');
+
+              setError(`Authentication failed: ${firestoreError.message}. Please try again.`);
+              setInitializing(false);
+              setRedirecting(false);
+              return false;
             }
           }
         }
