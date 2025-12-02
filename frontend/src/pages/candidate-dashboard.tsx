@@ -553,9 +553,9 @@ export default function CandidateDashboard() {
         <title>Candidate Dashboard | Remote-Works</title>
       </Head>
 
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gray-50">
         {/* Navigation */}
-        <nav className="bg-gradient-to-r from-gray-900 via-black to-gray-900 border-b-4 border-amber-500 shadow-xl sticky top-0 z-50">
+        <nav className="bg-white border-b-2 border-gradient shadow-lg sticky top-0 z-50" style={{borderImage: 'linear-gradient(to right, #2563eb, #9333ea) 1'}}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16 md:h-20">
               <Logo showText={false} onClick={() => router.push('/')} size="sm" />
@@ -564,7 +564,7 @@ export default function CandidateDashboard() {
               <div className="hidden md:flex items-center space-x-4">
                 <button
                   onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-semibold ${activeTab === 'overview' ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gray-800'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Profile"
                 >
                   <User className="w-5 h-5" />
@@ -572,7 +572,7 @@ export default function CandidateDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab('search')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all font-semibold ${activeTab === 'search' ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gray-800'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'search' ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Assigned Agents"
                 >
                   <Search className="w-5 h-5" />
@@ -580,7 +580,7 @@ export default function CandidateDashboard() {
                 </button>
                 <button
                   onClick={() => router.push('/candidate-projects')}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-all font-semibold"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
                   title="Projects"
                 >
                   <FileText className="w-5 h-5" />
@@ -588,7 +588,7 @@ export default function CandidateDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab('messages')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all relative font-semibold ${activeTab === 'messages' ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-lg' : 'text-gray-300 hover:text-white hover:bg-gray-800'}`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
                   title="Messages"
                 >
                   <MessageSquare className="w-5 h-5" />
@@ -599,17 +599,17 @@ export default function CandidateDashboard() {
                     </span>
                   )}
                 </button>
-                <div className="h-8 w-px bg-amber-500 mx-2"></div>
+                <div className="h-8 w-px bg-gray-300 mx-2"></div>
                 <button
                   onClick={() => router.push('/profile-settings')}
-                  className="p-2 rounded-lg text-gray-300 hover:text-amber-500 transition-all"
+                  className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
                   title="Settings"
                 >
                   <Settings className="w-5 h-5" />
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-500 transition-all"
+                  className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-all"
                   title="Logout"
                 >
                   <LogOut className="w-5 h-5" />
@@ -619,7 +619,7 @@ export default function CandidateDashboard() {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-gray-300 hover:text-amber-500 transition-colors"
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -627,29 +627,29 @@ export default function CandidateDashboard() {
 
             {/* Mobile Menu */}
             {mobileMenuOpen && (
-              <div className="md:hidden py-4 space-y-2 border-t border-amber-500">
-                <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-amber-500 transition-colors font-semibold">
+              <div className="md:hidden py-4 space-y-2 border-t border-gray-200">
+                <button onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                   <User className="w-5 h-5" />
                   <span>Profile</span>
                 </button>
-                <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-amber-500 transition-colors font-semibold">
+                <button onClick={() => { setActiveTab('search'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                   <Search className="w-5 h-5" />
                   <span>Assigned Agents</span>
                 </button>
-                <button onClick={() => { router.push('/candidate-projects'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-amber-500 transition-colors font-semibold">
+                <button onClick={() => { router.push('/candidate-projects'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                   <FileText className="w-5 h-5" />
                   <span>Projects</span>
                 </button>
-                <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-amber-500 transition-colors font-semibold">
+                <button onClick={() => { setActiveTab('messages'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                   <MessageSquare className="w-5 h-5" />
                   <span>Messages {unreadCount > 0 && `(${unreadCount})`}</span>
                 </button>
-                <div className="border-t border-amber-500 my-2"></div>
-                <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-amber-500 transition-colors font-semibold">
+                <div className="border-t border-gray-200 my-2"></div>
+                <button onClick={() => { router.push('/profile-settings'); setMobileMenuOpen(false); }} className="flex items-center gap-3 w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors">
                   <Settings className="w-5 h-5" />
                   <span>Settings</span>
                 </button>
-                <button onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-400 hover:bg-red-900 hover:bg-opacity-20 transition-colors font-semibold">
+                <button onClick={handleLogout} className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
                   <LogOut className="w-5 h-5" />
                   <span>Logout</span>
                 </button>
@@ -664,21 +664,21 @@ export default function CandidateDashboard() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Welcome Banner */}
-              <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 rounded-2xl p-6 md:p-8 text-white border-2 border-amber-500 shadow-2xl">
-                <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">Welcome back, {profile.firstName}! 👋</h1>
-                <p className="text-lg md:text-xl text-gray-300">Your account is approved. Start searching for agents to help you succeed.</p>
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 text-white">
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {profile.firstName}! 👋</h1>
+                <p className="text-lg md:text-xl text-blue-100">Your account is approved. Start searching for agents to help you succeed.</p>
               </div>
 
               {/* Profile Information */}
-              <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl border-2 border-gray-200">
+              <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md border border-gray-200">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-black flex items-center gap-2">
-                    <User className="w-6 h-6 text-amber-500" />
+                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <User className="w-6 h-6 text-blue-600" />
                     Your Profile
                   </h2>
                   <button
                     onClick={() => router.push('/profile-settings')}
-                    className="flex items-center gap-2 text-amber-600 hover:text-amber-700 font-semibold transition-all"
+                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
                   >
                     <Edit className="w-5 h-5" />
                     Edit Profile
