@@ -15,26 +15,26 @@ export default function AgentInfo() {
   const features = [
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Connect with Candidates",
-      description: "Build your client base with motivated candidates seeking approval",
+      title: "Build Your Client Base",
+      description: "Access a steady stream of qualified candidates actively seeking your expertise",
       color: "from-amber-500 to-yellow-500"
     },
     {
       icon: <Target className="w-8 h-8" />,
-      title: "Showcase Your Expertise",
-      description: "Display your success rate and platform specializations",
+      title: "Establish Your Brand",
+      description: "Create a professional profile showcasing your success metrics and platform mastery",
       color: "from-gray-800 to-black"
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
-      title: "Flexible Earnings",
-      description: "Choose your pricing model: one-time fees or revenue sharing",
+      title: "Control Your Revenue",
+      description: "Set your rates and choose between upfront payments or recurring revenue share",
       color: "from-amber-600 to-yellow-600"
     },
     {
       icon: <Briefcase className="w-8 h-8" />,
-      title: "Manage Multiple Projects",
-      description: "Handle multiple candidates and platforms simultaneously",
+      title: "Scale Your Business",
+      description: "Serve multiple clients across various platforms using efficient workflow tools",
       color: "from-gray-700 to-gray-900"
     }
   ];
@@ -55,73 +55,73 @@ export default function AgentInfo() {
 
   const successTips = [
     {
-      title: "1. Build a Strong Profile",
-      description: "A comprehensive agent profile attracts more candidates and builds trust.",
+      title: "1. Craft a Compelling Professional Profile",
+      description: "Your profile is your business card. A well-optimized agent profile differentiates you in a competitive marketplace and commands higher rates.",
       tips: [
-        "Highlight your platform expertise and success rate",
-        "List all platforms you specialize in",
-        "Upload verification documents and certifications",
-        "Add testimonials from satisfied candidates"
+        "Showcase quantifiable success metrics (approval rates, platforms mastered, clients served)",
+        "Detail your specialized platform expertise with specific examples",
+        "Display professional credentials, certifications, and verification badges",
+        "Feature authentic client testimonials that highlight measurable results"
       ]
     },
     {
-      title: "2. Set Clear Terms",
-      description: "Transparency about pricing and services helps candidates make informed decisions.",
+      title: "2. Establish Clear Service Agreements",
+      description: "Professional service terms protect your business and set proper client expectations from the start.",
       tips: [
-        "Clearly define your pricing structure",
-        "Specify what services you provide",
-        "Outline expected timelines for approvals",
-        "Be upfront about revenue sharing terms"
+        "Document detailed pricing structures with clear payment terms",
+        "Define specific deliverables, timelines, and success criteria",
+        "Clarify service boundaries and scope limitations",
+        "Use written agreements for revenue share arrangements"
       ]
     },
     {
-      title: "3. Communicate Professionally",
-      description: "Clear communication is key to successful agent-candidate relationships.",
+      title: "3. Master Client Communication",
+      description: "Professional communication differentiates top-tier agents and drives client retention.",
       tips: [
-        "Respond to inquiries within 24 hours",
-        "Set realistic expectations",
-        "Keep candidates updated on progress",
-        "Be available for questions and support"
+        "Maintain 24-hour response time to all client inquiries",
+        "Set realistic expectations based on platform requirements",
+        "Provide regular progress updates with actionable insights",
+        "Establish preferred communication channels and availability hours"
       ]
     },
     {
-      title: "4. Deliver Quality Service",
-      description: "Your reputation depends on successfully getting candidates approved.",
+      title: "4. Deliver Exceptional Results",
+      description: "Your approval success rate directly impacts your earning potential and business growth.",
       tips: [
-        "Provide detailed guidance through each step",
-        "Help with profile optimization and test preparation",
-        "Follow up after approval to ensure success",
-        "Build long-term relationships for repeat business"
+        "Develop systematic processes for each platform's approval workflow",
+        "Provide comprehensive preparation materials for platform assessments",
+        "Implement post-approval check-ins to ensure client success",
+        "Convert satisfied clients into recurring business and referrals"
       ]
     },
     {
-      title: "5. Maintain Security Standards",
-      description: "Follow all platform security policies when using screen sharing.",
+      title: "5. Adhere to Security Protocols",
+      description: "Platform security compliance is non-negotiable. Violations result in immediate account termination.",
       tips: [
-        "Only access authorized platforms",
-        "Never view or access personal files",
-        "Respect candidate privacy at all times",
-        "Follow Remote-Works security protocols strictly"
+        "Restrict screen sharing access to explicitly authorized platforms only",
+        "Never access, view, or store client personal files or credentials",
+        "Respect client privacy boundaries and confidentiality agreements",
+        "Follow all Remote-Works security policies without exception"
       ]
     },
     {
-      title: "6. Maximize Your Earnings",
-      description: "Grow your agent business by expanding your services and client base.",
+      title: "6. Scale Your Consulting Business",
+      description: "Strategic business development transforms your agent practice into a sustainable income source.",
       tips: [
-        "Offer package deals for multiple platform approvals",
-        "Specialize in high-demand platforms",
-        "Provide ongoing support for revenue share opportunities",
-        "Build a portfolio of successful case studies"
+        "Create tiered service packages targeting different client segments",
+        "Develop platform specializations in high-demand, high-value niches",
+        "Build revenue share client portfolios for passive recurring income",
+        "Document case studies and success stories for marketing purposes"
       ]
     },
     {
-      title: "7. Stay Compliant and Professional",
-      description: "Adherence to platform rules ensures long-term success.",
+      title: "7. Maintain Professional Standards",
+      description: "Long-term business success requires strict adherence to ethical practices and platform policies.",
       tips: [
-        "Follow all Remote-Works agent policies",
-        "Maintain confidentiality agreements",
-        "Keep detailed records of all work",
-        "Report any issues or violations immediately"
+        "Comply with all Remote-Works agent terms of service",
+        "Honor confidentiality obligations with every client",
+        "Maintain detailed project records for quality assurance",
+        "Report policy violations or security concerns immediately"
       ]
     }
   ];
@@ -153,10 +153,10 @@ export default function AgentInfo() {
         <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-16 border-b-4 border-amber-500">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Agent Info Center
+              Professional Agent Resource Center
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-              Learn how to succeed as an agent and discover tips to maximize your earnings helping candidates
+              Master the business of platform approval consulting. Build your client base, scale your practice, and maximize your professional earnings.
             </p>
           </div>
         </div>
@@ -204,14 +204,15 @@ export default function AgentInfo() {
                 </h2>
                 <div className="prose prose-lg max-w-none">
                   <p className="text-gray-800 leading-relaxed mb-4">
-                    Remote-Works is a <strong className="text-amber-600">marketplace platform</strong> that connects expert agents
-                    with candidates seeking approval on remote work platforms. As an agent, you leverage your expertise to help
-                    candidates get approved and succeed on platforms like TELUS Digital, OneForma, Outlier, and 20+ others.
+                    Remote-Works is a <strong className="text-amber-600">professional marketplace</strong> designed specifically for
+                    experienced agents who specialize in remote work platform approvals. As a verified agent, you'll leverage this
+                    platform to monetize your expertise in navigating complex approval processes across 20+ platforms including
+                    TELUS Digital, OneForma, Outlier AI, Appen, DataAnnotation, and many others.
                   </p>
                   <p className="text-gray-800 leading-relaxed">
-                    Our platform provides <strong className="text-black">verified agents</strong> with the tools to showcase their
-                    expertise, connect with motivated candidates, and build a sustainable business helping others succeed in
-                    remote work opportunities.
+                    This is your opportunity to build a <strong className="text-black">scalable consulting business</strong>. Connect
+                    with candidates who need your specialized knowledge, set your own pricing structure, choose your service delivery
+                    model, and grow a sustainable income stream by helping others succeed in the remote work economy.
                   </p>
                 </div>
               </section>
@@ -241,38 +242,38 @@ export default function AgentInfo() {
               <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
                 <h2 className="text-3xl font-bold text-black mb-8 flex items-center gap-3">
                   <Target className="w-8 h-8 text-amber-600" />
-                  How It Works for Agents
+                  Your Path to Professional Success
                 </h2>
                 <div className="space-y-6">
                   {[
                     {
                       step: "1",
-                      title: "Create Your Agent Profile",
-                      description: "Sign up as an agent, complete verification, and showcase your expertise, success rate, and platform specializations.",
+                      title: "Establish Your Professional Presence",
+                      description: "Complete the agent verification process and build a compelling profile that highlights your platform expertise, approval success rates, specialized services, and professional credentials.",
                       color: "amber"
                     },
                     {
                       step: "2",
-                      title: "Set Your Services & Pricing",
-                      description: "Define your service offerings, pricing structure (one-time fees or revenue share), and terms for working with candidates.",
+                      title: "Configure Your Service Offerings",
+                      description: "Define your consulting packages, set competitive rates, choose between one-time fee or revenue share models, and establish clear terms of service that protect both you and your clients.",
                       color: "yellow"
                     },
                     {
                       step: "3",
-                      title: "Receive Service Requests",
-                      description: "Candidates browse agent profiles and send service requests. Review requests and respond with your availability and terms.",
+                      title: "Evaluate Client Requests",
+                      description: "Receive inquiries from candidates who have reviewed your profile. Screen potential clients, assess their needs, and respond with customized proposals that match their platform goals.",
                       color: "amber"
                     },
                     {
                       step: "4",
-                      title: "Help Candidates Succeed",
-                      description: "Guide candidates through registration, testing, and approval processes. Use screen sharing for hands-on support when needed.",
+                      title: "Deliver Expert Consulting Services",
+                      description: "Provide professional guidance through platform registrations, qualification assessments, and approval workflows. Leverage secure screen sharing tools for efficient, hands-on client support when appropriate.",
                       color: "yellow"
                     },
                     {
                       step: "5",
-                      title: "Build Your Reputation",
-                      description: "Successful approvals earn you ratings and reviews, helping you attract more candidates and grow your agent business.",
+                      title: "Build Your Professional Reputation",
+                      description: "Each successful approval enhances your track record. Client ratings and testimonials strengthen your profile, leading to increased visibility, premium pricing opportunities, and sustainable business growth.",
                       color: "amber"
                     }
                   ].map((item, index) => (
@@ -295,27 +296,27 @@ export default function AgentInfo() {
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-300">
                   <div className="flex items-center gap-3 mb-4">
                     <DollarSign className="w-8 h-8 text-green-600" />
-                    <h3 className="text-2xl font-bold text-black">One-Time Fee Model</h3>
+                    <h3 className="text-2xl font-bold text-black">Project-Based Fee Structure</h3>
                   </div>
                   <p className="text-gray-800 mb-6">
-                    Charge candidates a fixed fee for approval assistance. Simple and straightforward.
+                    Charge fixed consulting fees per platform approval. Ideal for transactional client relationships with clear deliverables.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Set your own pricing per platform ($100-$200 typical)</p>
+                      <p className="text-gray-800">Set competitive rates based on platform complexity ($100-$200 per approval)</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Offer package deals for multiple platforms</p>
+                      <p className="text-gray-800">Create premium packages for multi-platform approvals</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Payment upfront before service delivery</p>
+                      <p className="text-gray-800">Receive upfront payment ensuring immediate cash flow</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Clear scope with defined deliverables</p>
+                      <p className="text-gray-800">Define clear project scope and success metrics</p>
                     </div>
                   </div>
                 </div>
@@ -324,27 +325,27 @@ export default function AgentInfo() {
                 <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
                   <div className="flex items-center gap-3 mb-4">
                     <TrendingUp className="w-8 h-8 text-amber-600" />
-                    <h3 className="text-2xl font-bold text-black">Revenue Share Model</h3>
+                    <h3 className="text-2xl font-bold text-black">Revenue Share Partnership</h3>
                   </div>
                   <p className="text-gray-800 mb-6">
-                    Share in candidate earnings. Build long-term relationships and recurring income.
+                    Build long-term client partnerships with ongoing passive income streams. Perfect for scaling your consulting practice.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">No upfront fee from candidates</p>
+                      <p className="text-gray-800">No upfront cost reduces client acquisition barriers</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Earn 50% or negotiated split of candidate earnings</p>
+                      <p className="text-gray-800">Negotiate 50/50 split or custom percentage based on involvement</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Can manage projects on candidate's behalf if authorized</p>
+                      <p className="text-gray-800">Option to manage client projects for complete service delivery</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Ongoing income as long as candidate works</p>
+                      <p className="text-gray-800">Generate recurring monthly income from active client portfolios</p>
                     </div>
                   </div>
                 </div>
@@ -374,10 +375,10 @@ export default function AgentInfo() {
               <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
                 <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                   <Shield className="w-8 h-8 text-amber-500" />
-                  20+ Platforms to Specialize In
+                  Monetize Your Platform Expertise
                 </h2>
                 <p className="text-gray-300 mb-6">
-                  Help candidates get approved on industry-leading platforms. Build expertise in your chosen specialties!
+                  Leverage your knowledge across 20+ industry-leading remote work platforms. Specialize in high-demand platforms to command premium rates and establish yourself as the go-to expert in your niche.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {platforms.map((platform, index) => (
@@ -405,11 +406,11 @@ export default function AgentInfo() {
                   <div className="bg-amber-500 p-3 rounded-xl">
                     <Lightbulb className="w-8 h-8 text-white" />
                   </div>
-                  <h2 className="text-3xl font-bold text-black">7 Tips to Succeed as an Agent</h2>
+                  <h2 className="text-3xl font-bold text-black">7 Essential Strategies for Professional Success</h2>
                 </div>
                 <p className="text-gray-800 text-lg">
-                  Follow these proven strategies to build a successful agent business and maximize your earnings
-                  while helping candidates succeed.
+                  These proven methodologies will help you establish a thriving consulting practice, differentiate your services,
+                  and build a sustainable business in the platform approval industry.
                 </p>
               </div>
 
@@ -441,9 +442,9 @@ export default function AgentInfo() {
 
               {/* Call to Action */}
               <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
-                <h3 className="text-3xl font-bold mb-4">Ready to Start Your Agent Business?</h3>
+                <h3 className="text-3xl font-bold mb-4">Ready to Launch Your Consulting Practice?</h3>
                 <p className="text-xl text-gray-300 mb-6">
-                  Join successful agents who are helping candidates achieve their remote work goals
+                  Join elite agents who have built profitable businesses helping clients succeed on remote work platforms
                 </p>
                 <button
                   onClick={() => router.push('/agent-dashboard')}

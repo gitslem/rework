@@ -131,10 +131,10 @@ export default function AgentScreen() {
                   <span className="font-semibold">Powered by Google Remote Desktop</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-bold mb-4">
-                  Screen Sharing Guide for Agents
+                  Professional Screen Sharing Protocol
                 </h1>
                 <p className="text-lg md:text-xl text-gray-300 max-w-2xl">
-                  Learn how to securely assist candidates and follow best practices for professional service delivery
+                  Master secure remote access tools to deliver efficient, compliant client services while maintaining the highest professional standards
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -206,16 +206,16 @@ export default function AgentScreen() {
             <div className="space-y-12">
               {/* Why Screen Sharing as an Agent */}
               <section>
-                <h2 className="text-3xl font-bold text-black mb-6">Why Use Screen Sharing as an Agent</h2>
+                <h2 className="text-3xl font-bold text-black mb-6">Strategic Benefits of Remote Access Tools</h2>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
                     <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
                       <TrendingUp className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-black mb-3">Deliver Better Results</h3>
+                    <h3 className="text-xl font-bold text-black mb-3">Maximize Approval Success Rates</h3>
                     <p className="text-gray-800 leading-relaxed">
-                      Provide hands-on guidance through registration, testing, and platform approval processes.
-                      Screen sharing allows you to help candidates in real-time, increasing success rates.
+                      Direct platform access enables real-time intervention during critical registration and testing phases.
+                      Higher client success rates translate directly to stronger testimonials, repeat business, and premium pricing power.
                     </p>
                   </div>
 
@@ -223,10 +223,10 @@ export default function AgentScreen() {
                     <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
                       <Zap className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-black mb-3">Efficient Service Delivery</h3>
+                    <h3 className="text-xl font-bold text-black mb-3">Deliver High-Value Services Efficiently</h3>
                     <p className="text-gray-800 leading-relaxed">
-                      Complete tasks faster by directly accessing platforms instead of giving step-by-step
-                      instructions. Save time for both you and your candidates.
+                      Transform lengthy back-and-forth guidance into streamlined direct execution. Reduce project completion
+                      time by 60-70%, allowing you to serve more clients and increase your hourly effective rate.
                     </p>
                   </div>
 
@@ -234,10 +234,10 @@ export default function AgentScreen() {
                     <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
                       <Users className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-black mb-3">Scale Your Business</h3>
+                    <h3 className="text-xl font-bold text-black mb-3">Scale Your Client Portfolio</h3>
                     <p className="text-gray-800 leading-relaxed">
-                      Manage multiple candidates and platforms simultaneously. Screen sharing enables you to
-                      handle more projects and increase your agent earnings.
+                      Professional screen sharing workflows enable concurrent client management across multiple platforms.
+                      Systematically grow from 2-3 clients to 10+ active engagements without sacrificing service quality.
                     </p>
                   </div>
 
@@ -245,10 +245,10 @@ export default function AgentScreen() {
                     <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
                       <Award className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold text-black mb-3">Build Trust & Reputation</h3>
+                    <h3 className="text-xl font-bold text-black mb-3">Differentiate Your Professional Brand</h3>
                     <p className="text-gray-800 leading-relaxed">
-                      Provide professional, hands-on service that candidates value. Build a strong reputation
-                      with successful approvals and satisfied clients.
+                      White-glove, hands-on service delivery sets premium agents apart from basic consultants.
+                      Build an elite reputation through measurable results and exceptional client experiences.
                     </p>
                   </div>
                 </div>
@@ -258,29 +258,29 @@ export default function AgentScreen() {
               <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
                 <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3">
                   <FileCheck className="w-7 h-7 text-amber-600" />
-                  When to Use Screen Sharing
+                  Professional Service Scenarios
                 </h2>
                 <div className="grid md:grid-cols-2 gap-6">
                   {[
                     {
                       icon: <CheckCircle className="w-6 h-6 text-amber-600" />,
-                      title: "Platform Registration",
-                      description: "Guide candidates through account creation, profile setup, and initial verification on new platforms."
+                      title: "Platform Onboarding Services",
+                      description: "Execute complete account setup, profile optimization, and identity verification workflows. Navigate complex registration processes that candidates struggle with independently."
                     },
                     {
                       icon: <FileCheck className="w-6 h-6 text-amber-600" />,
-                      title: "Skills Testing & Exams",
-                      description: "Assist with qualification tests, skills assessments, and platform-specific exams that candidates need to pass."
+                      title: "Assessment & Certification Support",
+                      description: "Provide real-time expertise during platform qualification tests, skills evaluations, and certification exams. Your specialized knowledge significantly improves client pass rates."
                     },
                     {
                       icon: <Award className="w-6 h-6 text-amber-600" />,
-                      title: "Project Execution",
-                      description: "Work on authorized platforms for revenue share arrangements, completing projects on the candidate's behalf."
+                      title: "Revenue Share Project Management",
+                      description: "For partnership arrangements, handle authorized project execution, deliverable submissions, and quality assurance. This model creates passive income streams for both parties."
                     },
                     {
                       icon: <Settings className="w-6 h-6 text-amber-600" />,
-                      title: "Account Management",
-                      description: "Handle routine tasks like responding to messages, submitting work, and managing project statuses."
+                      title: "Ongoing Account Administration",
+                      description: "Manage client communications, project coordination, status updates, and routine platform interactions. Provide comprehensive account management as a premium service offering."
                     }
                   ].map((item, idx) => (
                     <div key={idx} className="flex gap-4">
@@ -305,7 +305,7 @@ export default function AgentScreen() {
             <div className="space-y-12">
               {/* Getting Candidate Set Up */}
               <section>
-                <h2 className="text-3xl font-bold text-black mb-6">How to Set Up Screen Sharing with Candidates</h2>
+                <h2 className="text-3xl font-bold text-black mb-6">Client Onboarding & Remote Access Setup</h2>
 
                 <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white mb-8 border-2 border-amber-500">
                   <div className="flex items-center gap-4 mb-4">
@@ -314,7 +314,7 @@ export default function AgentScreen() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Google Remote Desktop</h3>
-                      <p className="text-gray-300">Secure, encrypted remote access for professional service delivery</p>
+                      <p className="text-gray-300">Enterprise-grade encrypted remote access for professional consulting services</p>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-3 gap-4 mt-6">
@@ -344,35 +344,35 @@ export default function AgentScreen() {
 
                 {/* Setup Process for Agents */}
                 <div className="space-y-6">
-                  <h3 className="text-2xl font-bold text-black">Setup Process</h3>
+                  <h3 className="text-2xl font-bold text-black">Professional Onboarding Workflow</h3>
 
                   {[
                     {
                       step: "1",
-                      title: "Guide Candidate Setup",
+                      title: "Client System Preparation",
                       icon: <Download className="w-6 h-6 text-amber-600" />,
-                      description: "Instruct candidates to visit remotedesktop.google.com and install Google Remote Desktop on their computer. Ensure they complete the installation successfully.",
+                      description: "Provide clear documentation instructing clients to install Google Remote Desktop from remotedesktop.google.com. Verify successful installation before proceeding to next phase.",
                       color: "amber"
                     },
                     {
                       step: "2",
-                      title: "Candidate Configures Access",
+                      title: "Client Access Configuration",
                       icon: <Settings className="w-6 h-6 text-yellow-600" />,
-                      description: "Candidate sets up remote access with their Google account, names their computer, and creates a secure PIN. Remind them never to share this PIN publicly.",
+                      description: "Guide client through remote access setup: Google account authentication, device naming conventions, and secure PIN creation. Emphasize PIN confidentiality as part of security protocols.",
                       color: "yellow"
                     },
                     {
                       step: "3",
-                      title: "Schedule Session Together",
+                      title: "Session Scheduling & Coordination",
                       icon: <Calendar className="w-6 h-6 text-amber-600" />,
-                      description: "Coordinate a screen sharing session through the Remote-Works project page. Agree on a time that works for both parties.",
+                      description: "Utilize Remote-Works project management tools to schedule consulting sessions. Coordinate timing that optimizes both your workflow efficiency and client availability.",
                       color: "amber"
                     },
                     {
                       step: "4",
-                      title: "Connect and Assist",
+                      title: "Session Initiation & Service Delivery",
                       icon: <Video className="w-6 h-6 text-yellow-600" />,
-                      description: "At the scheduled time, candidate shares their computer name. Request access and candidate approves by entering their PIN. You can now provide hands-on assistance.",
+                      description: "At scheduled time, client shares device identifier. Submit access request and await client PIN authorization. Once connected, execute agreed-upon services within authorized scope.",
                       color: "yellow"
                     }
                   ].map((item, index) => (
@@ -398,16 +398,16 @@ export default function AgentScreen() {
               <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
                 <h2 className="text-2xl font-bold text-black mb-4 flex items-center gap-3">
                   <Award className="w-7 h-7 text-amber-600" />
-                  Best Practices for Agents
+                  Professional Standards & Best Practices
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {[
-                    "Always work within authorized platforms only",
-                    "Communicate your actions to candidates in real-time",
-                    "Be respectful and professional at all times",
-                    "Never access personal files or unauthorized applications",
-                    "Document your work and keep records of sessions",
-                    "Follow all Remote-Works security policies strictly"
+                    "Maintain strict adherence to authorized platform scope boundaries",
+                    "Provide transparent real-time commentary during all client sessions",
+                    "Uphold professional conduct standards in every client interaction",
+                    "Enforce zero-tolerance policy on personal file or data access",
+                    "Maintain comprehensive session logs and service documentation",
+                    "Implement full compliance with Remote-Works security protocols"
                   ].map((practice, idx) => (
                     <div key={idx} className="flex items-start gap-3 bg-white rounded-lg p-4 border border-amber-200">
                       <CheckCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -429,14 +429,15 @@ export default function AgentScreen() {
                     <Shield className="w-9 h-9 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold">Critical Security Requirements</h2>
-                    <p className="text-red-100 text-lg">Strict compliance mandatory for all agents</p>
+                    <h2 className="text-3xl font-bold">Non-Negotiable Security Compliance</h2>
+                    <p className="text-red-100 text-lg">Zero-tolerance enforcement for all consulting professionals</p>
                   </div>
                 </div>
                 <p className="text-lg text-red-50 leading-relaxed">
-                  As an agent, you must follow all security protocols without exception. Violations result
-                  in immediate termination, permanent ban, and potential legal action. Candidate trust and
-                  data protection are paramount.
+                  Professional agents must demonstrate absolute adherence to security protocols. Any violation—regardless
+                  of intent or severity—triggers immediate account termination, permanent platform ban, and legal prosecution
+                  where applicable. Client data protection and privacy compliance form the foundation of our professional
+                  consulting marketplace.
                 </p>
               </section>
 
@@ -444,34 +445,34 @@ export default function AgentScreen() {
               <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
                 <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3">
                   <FileCheck className="w-7 h-7 text-amber-600" />
-                  Mandatory Agent Policies
+                  Binding Professional Conduct Policies
                 </h2>
                 <div className="space-y-4">
                   {[
                     {
                       number: "1",
-                      title: "Authorized Platforms Only",
-                      description: "Work exclusively on platforms explicitly authorized by the candidate. Never access unauthorized websites, applications, or personal files."
+                      title: "Strict Scope Limitation",
+                      description: "Service delivery is limited exclusively to platforms and tasks explicitly defined in client agreements. Accessing unauthorized systems, websites, or applications constitutes breach of contract and immediate cause for termination."
                     },
                     {
                       number: "2",
-                      title: "Zero Personal Data Access",
-                      description: "You are strictly prohibited from viewing, accessing, copying, or sharing any personal files, photos, documents, emails, or financial information."
+                      title: "Absolute Data Privacy Protection",
+                      description: "Agents are permanently prohibited from viewing, accessing, copying, storing, or transmitting any client personal data including files, photos, documents, communications, or financial information outside authorized work scope."
                     },
                     {
                       number: "3",
-                      title: "Session Transparency",
-                      description: "Candidates can record all sessions. All your activities are logged and monitored. Random audits ensure compliance with security protocols."
+                      title: "Comprehensive Activity Monitoring",
+                      description: "All agent activities during remote sessions are subject to client recording, automated logging, and random compliance audits. Session data is retained for quality assurance and legal protection purposes."
                     },
                     {
                       number: "4",
-                      title: "Confidentiality Agreement",
-                      description: "All agents sign strict confidentiality agreements. Sharing or disclosing any candidate information results in immediate termination and legal consequences."
+                      title: "Binding Confidentiality Obligations",
+                      description: "All agents execute legally binding confidentiality agreements prohibiting disclosure of any client information, business arrangements, or platform strategies. Violations trigger immediate termination plus legal liability."
                     },
                     {
                       number: "5",
-                      title: "Professional Conduct",
-                      description: "Maintain professional behavior at all times. Harassment, inappropriate communication, or unprofessional conduct leads to immediate removal from the platform."
+                      title: "Professional Conduct Standards",
+                      description: "Agents must maintain exemplary professional behavior in all client interactions. Harassment, inappropriate communications, discriminatory conduct, or unprofessional behavior results in immediate platform removal and reputation damage."
                     }
                   ].map((policy, idx) => (
                     <div key={idx} className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
@@ -530,33 +531,33 @@ export default function AgentScreen() {
               <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
                   <UserCheck className="w-7 h-7 text-amber-500" />
-                  Your Responsibilities as an Agent
+                  Core Professional Obligations
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {[
                     {
-                      title: "Respect Candidate Control",
-                      description: "Candidates can terminate sessions instantly at any time"
+                      title: "Honor Client Session Control",
+                      description: "Clients retain absolute authority to terminate remote sessions immediately without explanation or justification"
                     },
                     {
-                      title: "Accept Session Recording",
-                      description: "Candidates have the right to record all sessions for their protection"
+                      title: "Accept Activity Documentation",
+                      description: "Clients have unrestricted rights to record all sessions. Recorded evidence may be used for dispute resolution"
                     },
                     {
-                      title: "Maintain Transparency",
-                      description: "Provide your agent ID and credentials when requested"
+                      title: "Provide Identity Verification",
+                      description: "Supply agent credentials, identification, and verification documentation upon client request for transparency"
                     },
                     {
-                      title: "Work Within Scope",
-                      description: "Only access platforms and perform tasks explicitly authorized"
+                      title: "Enforce Scope Boundaries",
+                      description: "Restrict all activities exclusively to platforms and tasks defined in written service agreements"
                     },
                     {
-                      title: "Protect Privacy",
-                      description: "Never share candidate information with anyone"
+                      title: "Maintain Confidentiality",
+                      description: "Protect all client information under binding non-disclosure obligations with legal penalties for violations"
                     },
                     {
-                      title: "Report Issues",
-                      description: "Immediately report any technical or security concerns"
+                      title: "Escalate Concerns Immediately",
+                      description: "Report technical malfunctions, security incidents, or policy violations to platform administrators without delay"
                     }
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-start gap-3">
@@ -574,10 +575,10 @@ export default function AgentScreen() {
 
           {/* Call to Action */}
           <section className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 md:p-12 text-white text-center border-2 border-amber-500">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Help Candidates Succeed?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Deliver Premium Consulting Services?</h2>
             <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Use screen sharing responsibly to deliver professional service while maintaining the highest
-              security standards. Build your reputation as a trusted agent.
+              Master professional remote access tools to provide high-value client services efficiently. Build your
+              reputation as an elite platform approval consultant through compliant, results-driven service delivery.
             </p>
             <button
               onClick={() => router.push('/agent-dashboard')}
