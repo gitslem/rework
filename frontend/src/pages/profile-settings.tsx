@@ -183,7 +183,7 @@ export default function ProfileSettingsPage() {
   };
 
   // Info tab data
-  const features = [
+  const candidateFeatures = [
     {
       icon: <Users className="w-8 h-8" />,
       title: "Vetted Expert Agents",
@@ -209,6 +209,35 @@ export default function ProfileSettingsPage() {
       color: "from-gray-700 to-gray-900"
     }
   ];
+
+  const agentFeatures = [
+    {
+      icon: <Users className="w-8 h-8" />,
+      title: "Build Your Client Base",
+      description: "Access a steady stream of qualified candidates actively seeking your expertise",
+      color: "from-amber-500 to-yellow-500"
+    },
+    {
+      icon: <Target className="w-8 h-8" />,
+      title: "Establish Your Brand",
+      description: "Create a professional profile showcasing your success metrics and platform mastery",
+      color: "from-gray-800 to-black"
+    },
+    {
+      icon: <DollarSign className="w-8 h-8" />,
+      title: "Control Your Revenue",
+      description: "Set your rates and choose between upfront payments or recurring revenue share",
+      color: "from-amber-600 to-yellow-600"
+    },
+    {
+      icon: <Briefcase className="w-8 h-8" />,
+      title: "Scale Your Business",
+      description: "Serve multiple clients across various platforms using efficient workflow tools",
+      color: "from-gray-700 to-gray-900"
+    }
+  ];
+
+  const features = userRole === 'agent' ? agentFeatures : candidateFeatures;
 
   const platforms = [
     "Outlier AI", "TELUS Digital", "OneForma", "RWS", "Appen",
@@ -647,27 +676,45 @@ export default function ProfileSettingsPage() {
                   <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
                     <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
                       <Globe className="w-8 h-8 text-amber-600" />
-                      What is Remote-Works?
+                      {userRole === 'agent' ? 'What is Remote-Works for Agents?' : 'What is Remote-Works?'}
                     </h2>
                     <div className="prose prose-lg max-w-none">
-                      <p className="text-gray-800 leading-relaxed mb-4">
-                        Remote-Works is a <strong className="text-amber-600">marketplace platform</strong> that connects talented individuals
-                        with expert agents who specialize in remote work opportunities. We bridge the gap between candidates seeking
-                        flexible work and the growing demand for AI projects, translation, transcription, data labeling, evaluation,
-                        research, and more.
-                      </p>
-                      <p className="text-gray-800 leading-relaxed">
-                        Our platform features <strong className="text-black">vetted, authenticated agents</strong> who have proven
-                        expertise in getting candidates approved on 20+ remote work platforms including industry leaders like
-                        TELUS Digital, OneForma, Outlier, RWS, and many others.
-                      </p>
+                      {userRole === 'agent' ? (
+                        <>
+                          <p className="text-gray-800 leading-relaxed mb-4">
+                            Remote-Works is a <strong className="text-amber-600">professional marketplace</strong> designed specifically for
+                            experienced agents who specialize in remote work platform approvals. As a verified agent, you'll leverage this
+                            platform to monetize your expertise in navigating complex approval processes across 20+ platforms including
+                            TELUS Digital, OneForma, Outlier AI, Appen, DataAnnotation, and many others.
+                          </p>
+                          <p className="text-gray-800 leading-relaxed">
+                            This is your opportunity to build a <strong className="text-black">scalable consulting business</strong>. Connect
+                            with candidates who need your specialized knowledge, set your own pricing structure, choose your service delivery
+                            model, and grow a sustainable income stream by helping others succeed in the remote work economy.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-gray-800 leading-relaxed mb-4">
+                            Remote-Works is a <strong className="text-amber-600">marketplace platform</strong> that connects talented individuals
+                            with expert agents who specialize in remote work opportunities. We bridge the gap between candidates seeking
+                            flexible work and the growing demand for AI projects, translation, transcription, data labeling, evaluation,
+                            research, and more.
+                          </p>
+                          <p className="text-gray-800 leading-relaxed">
+                            Our platform features <strong className="text-black">vetted, authenticated agents</strong> who have proven
+                            expertise in getting candidates approved on 20+ remote work platforms including industry leaders like
+                            TELUS Digital, OneForma, Outlier, RWS, and many others.
+                          </p>
+                        </>
+                      )}
                     </div>
                   </section>
 
                   {/* Key Features Grid */}
                   <section>
                     <h2 className="text-3xl font-bold text-black mb-8 text-center">
-                      Why Choose Remote-Works?
+                      {userRole === 'agent' ? 'Why Be an Agent on Remote-Works?' : 'Why Choose Remote-Works?'}
                     </h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                       {features.map((feature, index) => (
@@ -889,12 +936,17 @@ export default function ProfileSettingsPage() {
 
                   {/* Call to Action */}
                   <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
-                    <h3 className="text-3xl font-bold mb-4">Ready to Start Your Remote Work Journey?</h3>
+                    <h3 className="text-3xl font-bold mb-4">
+                      {userRole === 'agent' ? 'Ready to Launch Your Consulting Practice?' : 'Ready to Start Your Remote Work Journey?'}
+                    </h3>
                     <p className="text-xl text-gray-300 mb-6">
-                      Join thousands of candidates who are already earning with Remote-Works
+                      {userRole === 'agent'
+                        ? 'Join elite agents who have built profitable businesses helping clients succeed on remote work platforms'
+                        : 'Join thousands of candidates who are already earning with Remote-Works'
+                      }
                     </p>
                     <button
-                      onClick={() => router.push('/candidate-dashboard')}
+                      onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-dashboard')}
                       className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-amber-600 hover:to-yellow-600 transition-all inline-flex items-center gap-2 shadow-lg"
                     >
                       Go to Dashboard
@@ -958,11 +1010,13 @@ export default function ProfileSettingsPage() {
                           <span className="font-semibold">Powered by Google Remote Desktop</span>
                         </div>
                         <h1 className="text-4xl font-bold mb-4">
-                          Secure Screen Sharing for Maximum Earnings
+                          {userRole === 'agent' ? 'Professional Screen Sharing Protocol' : 'Secure Screen Sharing for Maximum Earnings'}
                         </h1>
                         <p className="text-lg text-gray-300">
-                          Let our trained agents help you manage multiple gigs while you stay in complete control
-                          and security.
+                          {userRole === 'agent'
+                            ? 'Master secure remote access tools to deliver efficient, compliant client services while maintaining the highest professional standards'
+                            : 'Let our trained agents help you manage multiple gigs while you stay in complete control and security'
+                          }
                         </p>
                       </div>
                       <div className="flex-shrink-0">
@@ -987,51 +1041,103 @@ export default function ProfileSettingsPage() {
 
                   {/* Why Screen Sharing Matters */}
                   <section>
-                    <h2 className="text-3xl font-bold text-black mb-6">Why Screen Sharing Matters</h2>
+                    <h2 className="text-3xl font-bold text-black mb-6">
+                      {userRole === 'agent' ? 'Strategic Benefits of Remote Access Tools' : 'Why Screen Sharing Matters'}
+                    </h2>
                     <div className="grid md:grid-cols-2 gap-6">
-                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                        <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                          <TrendingUp className="w-7 h-7 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-black mb-3">Maximize Your Earnings</h3>
-                        <p className="text-gray-800 leading-relaxed">
-                          Can't handle all your approved gigs alone? Our trained agents help you manage multiple projects
-                          simultaneously from different platforms, ensuring you never miss earning opportunities.
-                        </p>
-                      </div>
+                      {userRole === 'agent' ? (
+                        <>
+                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                              <TrendingUp className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Maximize Approval Success Rates</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Direct platform access enables real-time intervention during critical registration and testing phases.
+                              Higher client success rates translate directly to stronger testimonials, repeat business, and premium pricing power.
+                            </p>
+                          </div>
 
-                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
-                        <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
-                          <Zap className="w-7 h-7 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-black mb-3">Efficient Task Management</h3>
-                        <p className="text-gray-800 leading-relaxed">
-                          Our professional team handles routine tasks on platforms you authorize, freeing you to focus on
-                          high-value work while we ensure deadlines are met across all your gigs.
-                        </p>
-                      </div>
+                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
+                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
+                              <Zap className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Deliver High-Value Services Efficiently</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Transform lengthy back-and-forth guidance into streamlined direct execution. Reduce project completion
+                              time by 60-70%, allowing you to serve more clients and increase your hourly effective rate.
+                            </p>
+                          </div>
 
-                      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                        <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                          <Users className="w-7 h-7 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-black mb-3">Expert Support Team</h3>
-                        <p className="text-gray-800 leading-relaxed">
-                          Access a trained team of professionals who specialize in managing gigs across multiple platforms.
-                          They know the ins and outs of registration, testing, exams, and project execution.
-                        </p>
-                      </div>
+                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                              <Users className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Scale Your Client Portfolio</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Professional screen sharing workflows enable concurrent client management across multiple platforms.
+                              Systematically grow from 2-3 clients to 10+ active engagements without sacrificing service quality.
+                            </p>
+                          </div>
 
-                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
-                        <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
-                          <Calendar className="w-7 h-7 text-white" />
-                        </div>
-                        <h3 className="text-xl font-bold text-black mb-3">Flexible Scheduling</h3>
-                        <p className="text-gray-800 leading-relaxed">
-                          Schedule screen sharing sessions at your convenience. Both you and assigned agents can coordinate
-                          timing through the project page to ensure optimal workflow.
-                        </p>
-                      </div>
+                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
+                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
+                              <Award className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Differentiate Your Professional Brand</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              White-glove, hands-on service delivery sets premium agents apart from basic consultants.
+                              Build an elite reputation through measurable results and exceptional client experiences.
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                              <TrendingUp className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Maximize Your Earnings</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Can't handle all your approved gigs alone? Our trained agents help you manage multiple projects
+                              simultaneously from different platforms, ensuring you never miss earning opportunities.
+                            </p>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
+                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
+                              <Zap className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Efficient Task Management</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Our professional team handles routine tasks on platforms you authorize, freeing you to focus on
+                              high-value work while we ensure deadlines are met across all your gigs.
+                            </p>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
+                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
+                              <Users className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Expert Support Team</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Access a trained team of professionals who specialize in managing gigs across multiple platforms.
+                              They know the ins and outs of registration, testing, exams, and project execution.
+                            </p>
+                          </div>
+
+                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
+                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
+                              <Calendar className="w-7 h-7 text-white" />
+                            </div>
+                            <h3 className="text-xl font-bold text-black mb-3">Flexible Scheduling</h3>
+                            <p className="text-gray-800 leading-relaxed">
+                              Schedule screen sharing sessions at your convenience. Both you and assigned agents can coordinate
+                              timing through the project page to ensure optimal workflow.
+                            </p>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </section>
 
@@ -1039,7 +1145,7 @@ export default function ProfileSettingsPage() {
                   <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
                     <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3">
                       <FileCheck className="w-7 h-7 text-amber-600" />
-                      When Screen Sharing is Essential
+                      {userRole === 'agent' ? 'Professional Service Scenarios' : 'When Screen Sharing is Essential'}
                     </h2>
                     <div className="grid md:grid-cols-2 gap-6">
                       {[
@@ -1298,18 +1404,31 @@ export default function ProfileSettingsPage() {
 
               {/* Call to Action */}
               <section className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 md:p-12 text-white text-center border-2 border-amber-500">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Maximize Your Earnings?</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  {userRole === 'agent' ? 'Ready to Deliver Premium Consulting Services?' : 'Ready to Maximize Your Earnings?'}
+                </h2>
                 <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                  Let our trained agents help you manage multiple gigs while you maintain complete control
-                  and security. Start with a scheduled session today.
+                  {userRole === 'agent'
+                    ? 'Master professional remote access tools to provide high-value client services efficiently. Build your reputation as an elite platform approval consultant through compliant, results-driven service delivery.'
+                    : 'Let our trained agents help you manage multiple gigs while you maintain complete control and security. Start with a scheduled session today.'
+                  }
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
-                    onClick={() => router.push('/candidate-projects')}
+                    onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-projects')}
                     className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg text-lg"
                   >
-                    <Calendar className="w-6 h-6" />
-                    Schedule a Session
+                    {userRole === 'agent' ? (
+                      <>
+                        <FileCheck className="w-6 h-6" />
+                        Go to Dashboard
+                      </>
+                    ) : (
+                      <>
+                        <Calendar className="w-6 h-6" />
+                        Schedule a Session
+                      </>
+                    )}
                   </button>
                   <button
                     onClick={() => setActiveTab('info')}
