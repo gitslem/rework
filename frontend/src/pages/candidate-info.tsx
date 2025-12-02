@@ -205,42 +205,6 @@ export default function CandidateInfo() {
           {/* Learn Tab */}
           {activeTab === 'learn' && (
             <div className="space-y-12">
-              {/* Video Section */}
-              <section className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-blue-100 p-3 rounded-xl">
-                    <Play className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h2 className="text-3xl font-bold text-gray-900">Introduction Video</h2>
-                </div>
-                <p className="text-gray-600 mb-6">
-                  Watch this quick introduction to understand how Remote-Works connects you with vetted agents
-                  and remote work opportunities.
-                </p>
-                <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video">
-                  <video
-                    ref={videoRef}
-                    controls
-                    className="w-full h-full"
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                  >
-                    <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  {!isPlaying && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 cursor-pointer"
-                      onClick={handlePlayVideo}
-                    >
-                      <div className="bg-white rounded-full p-6 shadow-2xl hover:scale-110 transition-transform">
-                        <Play className="w-12 h-12 text-blue-600" />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </section>
-
               {/* What is Remote-Works */}
               <section className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200">
                 <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
