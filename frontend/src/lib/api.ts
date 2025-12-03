@@ -9,6 +9,14 @@ const api = axios.create({
   },
 });
 
+// Public API client without authentication (for email notifications from Firebase)
+const publicApi = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
@@ -174,6 +182,7 @@ export const reviewsAPI = {
 };
 
 // Candidate Projects API (Email notifications for Firebase projects)
+// Using publicApi since these endpoints don't require authentication
 export const candidateProjectsAPI = {
   sendCreationEmail: (data: {
     candidate_email: string;
@@ -183,7 +192,7 @@ export const candidateProjectsAPI = {
     project_description: string;
     project_id: string;
     platform?: string;
-  }) => api.post('/candidate-projects/send-creation-email', data),
+  }) => publicApi.post('/candidate-projects/send-creation-email', data),
 
   sendUpdateEmail: (data: {
     candidate_email: string;
@@ -192,7 +201,7 @@ export const candidateProjectsAPI = {
     project_title: string;
     project_id: string;
     update_summary?: string;
-  }) => api.post('/candidate-projects/send-update-email', data),
+  }) => publicApi.post('/candidate-projects/send-update-email', data),
 };
 
 export default api;
