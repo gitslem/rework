@@ -25,6 +25,11 @@ from app.schemas.schemas import (
     ProjectActionResponse
 )
 from app.api.dependencies import get_current_user
+from app.tasks.email_tasks import (
+    send_project_created_email,
+    send_project_updated_email,
+    send_project_status_changed_email
+)
 
 router = APIRouter(prefix="/candidate-projects", tags=["candidate-projects"])
 
@@ -72,6 +77,15 @@ def create_candidate_project(
     db.add(new_project)
     db.commit()
     db.refresh(new_project)
+
+    # Send email notification to candidate (async)
+    try:
+        send_project_created_email.delay(new_project.id)
+    except Exception as e:
+        # Log error but don't fail the request
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to queue project created email: {str(e)}")
 
     return new_project
 
@@ -230,20 +244,44 @@ def update_candidate_project(
             detail="Not authorized to update this project"
         )
 
+    # Track old status for email notification
+    old_status = project.status.value if project.status else None
+    status_changed = 'status' in update_data and update_data['status'] != old_status
+
     # Update fields
-    update_data = project_data.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
+    update_data_dict = project_data.model_dump(exclude_unset=True)
+    for field, value in update_data_dict.items():
         setattr(project, field, value)
 
     # Update timestamps based on status changes
-    if 'status' in update_data:
-        if update_data['status'] == CandidateProjectStatus.ACTIVE and not project.started_at:
+    if 'status' in update_data_dict:
+        if update_data_dict['status'] == CandidateProjectStatus.ACTIVE and not project.started_at:
             project.started_at = datetime.utcnow()
-        elif update_data['status'] == CandidateProjectStatus.COMPLETED and not project.completed_at:
+        elif update_data_dict['status'] == CandidateProjectStatus.COMPLETED and not project.completed_at:
             project.completed_at = datetime.utcnow()
 
     db.commit()
     db.refresh(project)
+
+    # Send email notifications (async)
+    try:
+        if status_changed:
+            # Send status change email
+            new_status = update_data_dict['status'].value if hasattr(update_data_dict['status'], 'value') else str(update_data_dict['status'])
+            send_project_status_changed_email.delay(
+                project.id,
+                old_status,
+                new_status
+            )
+        else:
+            # Send general update email
+            update_summary = ", ".join([f"{k}: {v}" for k, v in update_data_dict.items()])
+            send_project_updated_email.delay(project.id, update_summary)
+    except Exception as e:
+        # Log error but don't fail the request
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to queue project update email: {str(e)}")
 
     return project
 
@@ -319,6 +357,19 @@ def create_project_update(
     db.add(new_update)
     db.commit()
     db.refresh(new_update)
+
+    # Send email notification about project update (async)
+    try:
+        update_text = new_update.update_text or "New progress update added"
+        send_project_updated_email.delay(
+            project.id,
+            f"New update: {update_text[:100]}..."  # Send first 100 chars
+        )
+    except Exception as e:
+        # Log error but don't fail the request
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to queue project update email: {str(e)}")
 
     return new_update
 

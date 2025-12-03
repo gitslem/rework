@@ -14,7 +14,7 @@ celery_app = Celery(
     "remote_works",
     broker=REDIS_URL,
     backend=REDIS_URL,
-    include=["app.tasks.ai_tasks"]
+    include=["app.tasks.ai_tasks", "app.tasks.email_tasks"]
 )
 
 # Configure Celery
