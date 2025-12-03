@@ -9,7 +9,6 @@ This is a simplified checklist to get your backend deployed quickly. For detaile
 Visit Google Cloud Console and enable these APIs for your project:
 
 - [ ] Cloud Run API: https://console.cloud.google.com/apis/library/run.googleapis.com
-- [ ] Container Registry API: https://console.cloud.google.com/apis/library/containerregistry.googleapis.com
 - [ ] Cloud Build API: https://console.cloud.google.com/apis/library/cloudbuild.googleapis.com
 
 ### 2. Add GitHub Secrets (10 minutes)
@@ -27,7 +26,7 @@ Add these new secrets:
 
 ### 3. Grant Service Account Permissions (5 minutes)
 
-Your Firebase service account needs Cloud Run permissions.
+Your Firebase service account needs Cloud Run and Cloud Build permissions.
 
 **Option A: Via Cloud Console**
 1. Go to: https://console.cloud.google.com/iam-admin/iam
@@ -35,9 +34,8 @@ Your Firebase service account needs Cloud Run permissions.
 3. Click Edit (pencil icon)
 4. Add these roles:
    - Cloud Run Admin
+   - Cloud Build Editor
    - Service Account User
-   - Storage Admin
-   - Container Registry Service Agent
 5. Save
 
 **Option B: Via Command Line**
@@ -52,15 +50,11 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:$SA_EMAIL" \
+  --role="roles/cloudbuild.builds.editor"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:$SA_EMAIL" \
   --role="roles/iam.serviceAccountUser"
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="serviceAccount:$SA_EMAIL" \
-  --role="roles/storage.admin"
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="serviceAccount:$SA_EMAIL" \
-  --role="roles/containerregistry.ServiceAgent"
 ```
 
 ## 🚀 Deploy
