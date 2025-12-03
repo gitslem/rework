@@ -181,8 +181,8 @@ export default function FAQ() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16 md:h-20">
-              <Logo onClick={() => router.push('/')} showText={false} />
+            <div className="flex justify-between items-center h-20 md:h-24 py-3">
+              <Logo onClick={() => router.push('/')} showText={false} size="lg" />
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">

@@ -154,8 +154,8 @@ export default function About() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16 md:h-20">
-              <Logo onClick={() => router.push('/')} showText={false} />
+            <div className="flex justify-between items-center h-20 md:h-24 py-3">
+              <Logo onClick={() => router.push('/')} showText={false} size="lg" />
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
@@ -386,15 +386,7 @@ export default function About() {
                 </div>
                 <span className="text-2xl font-bold text-gray-900">4.9 out of 5</span>
               </div>
-              <p className="text-lg text-gray-600">Based on 1,200+ reviews on Trustpilot</p>
-              <a
-                href="https://ca.trustpilot.com/review/remote-works.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 text-green-600 hover:text-green-700 font-semibold underline"
-              >
-                View all reviews on Trustpilot →
-              </a>
+              <p className="text-lg text-gray-600">Verified customer reviews from our community</p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -419,19 +411,6 @@ export default function About() {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* View More Reviews CTA */}
-            <div className="text-center mt-12">
-              <a
-                href="https://ca.trustpilot.com/review/remote-works.io"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-green-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-green-700 transition-all shadow-lg hover:shadow-xl"
-              >
-                Read More Reviews on Trustpilot
-                <ArrowRight className="w-5 h-5" />
-              </a>
             </div>
           </div>
         </section>

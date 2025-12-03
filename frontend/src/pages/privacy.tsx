@@ -20,8 +20,8 @@ export default function Privacy() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16 md:h-20">
-              <Logo size="md" showText={false} onClick={() => router.push('/')} />
+            <div className="flex justify-between items-center h-20 md:h-24 py-3">
+              <Logo size="lg" showText={false} onClick={() => router.push('/')} />
 
               {/* Desktop Navigation */}
               <button onClick={() => router.push('/')} className="hidden md:block text-gray-600 hover:text-blue-600 transition-colors font-medium">
