@@ -43,6 +43,12 @@ export default function CandidateProjectsPage() {
   const [error, setError] = useState<string | null>(null);
   const [connectedCandidates, setConnectedCandidates] = useState<any[]>([]);
 
+  // Sorting and filtering states
+  const [sortBy, setSortBy] = useState<'date' | 'budget' | 'deadline' | 'platform'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [platformFilter, setPlatformFilter] = useState<string>('all');
+
   // Modal states
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showActionModal, setShowActionModal] = useState(false);
@@ -341,6 +347,47 @@ export default function CandidateProjectsPage() {
     }
   };
 
+  const deleteProject = async (projectId: string) => {
+    if (!user || userRole !== 'agent') {
+      setError('Only agents can delete projects');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      // Delete project document
+      await deleteDoc(doc(getDb(), PROJECTS_COLLECTION, projectId));
+
+      // Delete associated updates
+      const updatesQuery = query(
+        collection(getDb(), UPDATES_COLLECTION),
+        where('project_id', '==', projectId)
+      );
+      const updatesSnapshot = await getDocs(updatesQuery);
+      const updateDeletePromises = updatesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(updateDeletePromises);
+
+      // Delete associated actions
+      const actionsQuery = query(
+        collection(getDb(), ACTIONS_COLLECTION),
+        where('project_id', '==', projectId)
+      );
+      const actionsSnapshot = await getDocs(actionsQuery);
+      const actionDeletePromises = actionsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(actionDeletePromises);
+
+      setSelectedProject(null);
+      alert('Project deleted successfully');
+    } catch (err: any) {
+      console.error('Error deleting project:', err);
+      setError(err.message || 'Failed to delete project');
+      alert('Failed to delete project: ' + (err.message || 'Unknown error'));
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const colors: any = {
       active: 'bg-green-600',
@@ -367,6 +414,57 @@ export default function CandidateProjectsPage() {
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleDateString();
   };
+
+  // Get unique platforms for filter
+  const uniquePlatforms = Array.from(new Set(projects.map(p => p.platform).filter(Boolean)));
+
+  // Sort and filter projects
+  const getSortedAndFilteredProjects = () => {
+    let filtered = [...projects];
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(p =>
+        p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply platform filter
+    if (platformFilter !== 'all') {
+      filtered = filtered.filter(p => p.platform === platformFilter);
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let compareValue = 0;
+
+      switch (sortBy) {
+        case 'date':
+          const aTime = a.created_at?.toMillis?.() || 0;
+          const bTime = b.created_at?.toMillis?.() || 0;
+          compareValue = aTime - bTime;
+          break;
+        case 'budget':
+          compareValue = (a.budget || 0) - (b.budget || 0);
+          break;
+        case 'deadline':
+          const aDeadline = a.deadline?.toMillis?.() || 0;
+          const bDeadline = b.deadline?.toMillis?.() || 0;
+          compareValue = aDeadline - bDeadline;
+          break;
+        case 'platform':
+          compareValue = (a.platform || '').localeCompare(b.platform || '');
+          break;
+      }
+
+      return sortOrder === 'asc' ? compareValue : -compareValue;
+    });
+
+    return filtered;
+  };
+
+  const sortedAndFilteredProjects = getSortedAndFilteredProjects();
 
   if (!user) {
     return null; // Will redirect to login
@@ -435,6 +533,79 @@ export default function CandidateProjectsPage() {
           </div>
         )}
 
+        {/* Sorting and Filtering Controls */}
+        <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Search */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Search Projects
+              </label>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by title or description..."
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+              />
+            </div>
+
+            {/* Platform Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Platform
+              </label>
+              <select
+                value={platformFilter}
+                onChange={(e) => setPlatformFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+              >
+                <option value="all">All Platforms</option>
+                {uniquePlatforms.map(platform => (
+                  <option key={platform} value={platform}>{platform}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sort By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Sort By
+              </label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+              >
+                <option value="date">Date Created</option>
+                <option value="budget">Budget</option>
+                <option value="deadline">Deadline</option>
+                <option value="platform">Platform</option>
+              </select>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Sort Order
+              </label>
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value as any)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Results Count */}
+          <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+            Showing {sortedAndFilteredProjects.length} of {projects.length} projects
+          </div>
+        </div>
+
         {/* Error Display */}
         {error && (
           <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -447,15 +618,15 @@ export default function CandidateProjectsPage() {
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           </div>
-        ) : projects.length === 0 ? (
+        ) : sortedAndFilteredProjects.length === 0 ? (
           <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
             <p className="text-gray-500 dark:text-gray-400">
-              No {activeTab} projects found
+              {projects.length === 0 ? `No ${activeTab} projects found` : 'No projects match your filters'}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
+            {sortedAndFilteredProjects.map((project) => (
               <div
                 key={project.id}
                 onClick={() => fetchProjectDetails(project.id)}
@@ -527,6 +698,7 @@ export default function CandidateProjectsPage() {
             onAddUpdate={() => setShowUpdateModal(true)}
             onAddAction={() => setShowActionModal(true)}
             onUpdateActionStatus={updateActionStatus}
+            onDeleteProject={deleteProject}
             getStatusColor={getStatusColor}
             getPriorityColor={getPriorityColor}
             formatDate={formatDate}
@@ -561,7 +733,7 @@ export default function CandidateProjectsPage() {
 }
 
 // ProjectDetailModal component (extracted for clarity)
-function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAddUpdate, onAddAction, onUpdateActionStatus, getStatusColor, getPriorityColor, formatDate }: any) {
+function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAddUpdate, onAddAction, onUpdateActionStatus, onDeleteProject, getStatusColor, getPriorityColor, formatDate }: any) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
@@ -594,7 +766,7 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
 
           {/* Action Buttons for Agents */}
           {userRole === 'agent' && (
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 flex-wrap">
               <button
                 onClick={onAddUpdate}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -606,6 +778,12 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 Add Action
+              </button>
+              <button
+                onClick={() => onDeleteProject(project.id)}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                Delete Project
               </button>
             </div>
           )}
