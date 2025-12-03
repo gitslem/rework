@@ -274,6 +274,8 @@ export default function CandidateProjectsPage() {
 
       // Send email notification
       try {
+        console.log('📧 Preparing to send email notification...');
+
         // Get agent profile
         const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
         const agentProfile = agentProfileDoc.data();
@@ -281,13 +283,17 @@ export default function CandidateProjectsPage() {
           ? `${agentProfile.firstName} ${agentProfile.lastName}`
           : user.email?.split('@')[0] || 'Your Agent';
 
+        console.log('Agent name:', agentName);
+
         // Get candidate profile
         const candidateDoc = await getDoc(doc(getDb(), 'users', projectData.candidate_id));
         const candidateData = candidateDoc.data();
         const candidateEmail = candidateData?.email || projectData.candidate_email;
 
+        console.log('Candidate email:', candidateEmail);
+
         if (candidateEmail) {
-          await candidateProjectsAPI.sendCreationEmail({
+          const emailData = {
             candidate_email: candidateEmail,
             candidate_name: projectData.candidate_name || 'Candidate',
             agent_name: agentName,
@@ -295,11 +301,29 @@ export default function CandidateProjectsPage() {
             project_description: projectData.description || '',
             project_id: projectRef.id,
             platform: projectData.platform
-          });
-          console.log('Email notification sent successfully');
+          };
+
+          console.log('📤 Sending email with data:', emailData);
+
+          const response = await candidateProjectsAPI.sendCreationEmail(emailData);
+
+          console.log('📬 Email API response:', response.data);
+
+          if (response.data.success) {
+            console.log('✅ Email sent successfully!');
+          } else {
+            console.warn('⚠️ Email API returned success=false:', response.data.message);
+          }
+        } else {
+          console.warn('⚠️ No candidate email found, skipping email notification');
         }
-      } catch (emailErr) {
-        console.error('Failed to send email notification:', emailErr);
+      } catch (emailErr: any) {
+        console.error('❌ Failed to send email notification:', emailErr);
+        console.error('Error details:', {
+          message: emailErr.message,
+          response: emailErr.response?.data,
+          status: emailErr.response?.status
+        });
         // Don't fail the project creation if email fails
       }
 
@@ -324,12 +348,16 @@ export default function CandidateProjectsPage() {
 
       // Send email notification
       try {
+        console.log('📧 Preparing to send update email notification...');
+
         // Get agent profile
         const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
         const agentProfile = agentProfileDoc.data();
         const agentName = agentProfile?.firstName && agentProfile?.lastName
           ? `${agentProfile.firstName} ${agentProfile.lastName}`
           : user.email?.split('@')[0] || 'Your Agent';
+
+        console.log('Agent name:', agentName);
 
         // Get candidate info from selected project
         const candidateDoc = await getDoc(doc(getDb(), 'users', selectedProject.candidate_id));
@@ -340,21 +368,41 @@ export default function CandidateProjectsPage() {
         const candidateProfile = candidateProfileDoc.data();
         const candidateName = candidateProfile?.firstName || candidateData?.email?.split('@')[0] || 'Candidate';
 
+        console.log('Candidate email:', candidateEmail);
+
         if (candidateEmail) {
           const updateSummary = updateData.update_title || updateData.update_content?.substring(0, 100) || 'New progress update';
 
-          await candidateProjectsAPI.sendUpdateEmail({
+          const emailData = {
             candidate_email: candidateEmail,
             candidate_name: candidateName,
             agent_name: agentName,
             project_title: selectedProject.title,
             project_id: selectedProject.id,
             update_summary: updateSummary
-          });
-          console.log('Update email notification sent successfully');
+          };
+
+          console.log('📤 Sending update email with data:', emailData);
+
+          const response = await candidateProjectsAPI.sendUpdateEmail(emailData);
+
+          console.log('📬 Update email API response:', response.data);
+
+          if (response.data.success) {
+            console.log('✅ Update email sent successfully!');
+          } else {
+            console.warn('⚠️ Update email API returned success=false:', response.data.message);
+          }
+        } else {
+          console.warn('⚠️ No candidate email found, skipping update email notification');
         }
-      } catch (emailErr) {
-        console.error('Failed to send update email notification:', emailErr);
+      } catch (emailErr: any) {
+        console.error('❌ Failed to send update email notification:', emailErr);
+        console.error('Error details:', {
+          message: emailErr.message,
+          response: emailErr.response?.data,
+          status: emailErr.response?.status
+        });
         // Don't fail the update creation if email fails
       }
 

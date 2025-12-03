@@ -68,8 +68,16 @@ def send_project_creation_email(
     Send email notification for project created in Firebase
     (No authentication required - called from Firebase frontend)
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"📧 Email creation request received for: {email_data.candidate_email}")
+    logger.info(f"   Project: {email_data.project_title}")
+    logger.info(f"   Agent: {email_data.agent_name}")
+
     # Validate required fields
     if not email_data.candidate_email or not email_data.project_title:
+        logger.error("❌ Missing required fields")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing required fields: candidate_email and project_title are required"
@@ -78,6 +86,7 @@ def send_project_creation_email(
     try:
         from app.services.email_service import email_service
 
+        logger.info("Calling email service...")
         success = email_service.send_project_created_notification(
             candidate_email=email_data.candidate_email,
             candidate_name=email_data.candidate_name,
@@ -89,14 +98,15 @@ def send_project_creation_email(
         )
 
         if success:
+            logger.info(f"✅ Email sent successfully to {email_data.candidate_email}")
             return {"message": "Email sent successfully", "success": True}
         else:
-            return {"message": "Failed to send email", "success": False}
+            logger.error(f"❌ Email sending failed for {email_data.candidate_email}")
+            return {"message": "Failed to send email - check backend logs", "success": False}
 
     except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Error sending project creation email: {str(e)}")
+        logger.error(f"❌ Error sending project creation email: {str(e)}")
+        logger.exception("Full traceback:")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to send email: {str(e)}"
@@ -111,8 +121,16 @@ def send_project_update_email_endpoint(
     Send email notification for project updated in Firebase
     (No authentication required - called from Firebase frontend)
     """
+    import logging
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"📧 Email update request received for: {email_data.candidate_email}")
+    logger.info(f"   Project: {email_data.project_title}")
+    logger.info(f"   Update: {email_data.update_summary}")
+
     # Validate required fields
     if not email_data.candidate_email or not email_data.project_title:
+        logger.error("❌ Missing required fields")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing required fields: candidate_email and project_title are required"
@@ -121,6 +139,7 @@ def send_project_update_email_endpoint(
     try:
         from app.services.email_service import email_service
 
+        logger.info("Calling email service...")
         success = email_service.send_project_updated_notification(
             candidate_email=email_data.candidate_email,
             candidate_name=email_data.candidate_name,
@@ -131,14 +150,15 @@ def send_project_update_email_endpoint(
         )
 
         if success:
+            logger.info(f"✅ Email sent successfully to {email_data.candidate_email}")
             return {"message": "Email sent successfully", "success": True}
         else:
-            return {"message": "Failed to send email", "success": False}
+            logger.error(f"❌ Email sending failed for {email_data.candidate_email}")
+            return {"message": "Failed to send email - check backend logs", "success": False}
 
     except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Error sending project update email: {str(e)}")
+        logger.error(f"❌ Error sending project update email: {str(e)}")
+        logger.exception("Full traceback:")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to send email: {str(e)}"
