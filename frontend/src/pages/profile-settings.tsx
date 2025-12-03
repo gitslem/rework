@@ -5,7 +5,12 @@ import {
   Play, BookOpen, Lightbulb, Target, Zap, Shield, ArrowRight, DollarSign,
   Award, TrendingUp, Clock, Star, ChevronRight, Monitor, Video, Lock,
   UserCheck, Calendar, FileCheck, Eye, Users, Settings as SettingsIcon,
-  AlertTriangle, X, Download, Smartphone, Laptop, Home
+  AlertTriangle, X, Download, Smartphone, Laptop, Home, Bell, Mail,
+  Facebook, Twitter, Linkedin, Instagram, Phone, MapPin, CreditCard,
+  Key, Palette, Moon, Sun, Languages, HelpCircle, LogOut, Camera,
+  Edit3, Trash2, Upload, Check, AlertCircle, Info, ChevronDown,
+  Activity, BarChart3, Folder, Link as LinkIcon, Code, Rocket,
+  Building, Heart, Sparkles, Gift, Crown, Radio, Film, Image
 } from 'lucide-react';
 import Head from 'next/head';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
@@ -40,11 +45,9 @@ export default function ProfileSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'profile' | 'info' | 'screen'>('profile');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [infoSubTab, setInfoSubTab] = useState<'learn' | 'tips'>('learn');
-  const [screenSubTab, setScreenSubTab] = useState<'overview' | 'how-it-works' | 'security'>('overview');
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [activeSection, setActiveSection] = useState<'profile' | 'account' | 'learn' | 'screen' | 'security' | 'notifications'>('profile');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Form state
   const [firstName, setFirstName] = useState('');
@@ -146,17 +149,12 @@ export default function ProfileSettingsPage() {
       await updateDoc(doc(db, 'profiles', user.uid), updateData);
 
       setSuccess(true);
+      setShowSuccessModal(true);
 
-      // Redirect back to appropriate dashboard after 1.5 seconds
+      // Hide success modal after 3 seconds
       setTimeout(() => {
-        if (userRole === 'agent') {
-          router.push('/agent-dashboard');
-        } else if (userRole === 'candidate') {
-          router.push('/candidate-dashboard');
-        } else {
-          router.push('/dashboard');
-        }
-      }, 1500);
+        setShowSuccessModal(false);
+      }, 3000);
     } catch (err: any) {
       console.error('Error updating profile:', err);
       setError(err.message || 'Failed to update profile');
@@ -175,38 +173,45 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  const handlePlayVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
-  };
+  // Navigation items
+  const navigationItems = [
+    { id: 'profile', label: 'Profile', icon: <User className="w-5 h-5" />, description: 'Personal information' },
+    { id: 'account', label: 'Account', icon: <SettingsIcon className="w-5 h-5" />, description: 'Account settings' },
+    { id: 'learn', label: 'Learn', icon: <BookOpen className="w-5 h-5" />, description: 'Platform guide' },
+    { id: 'screen', label: 'Screen Sharing', icon: <Monitor className="w-5 h-5" />, description: 'Remote access' },
+    { id: 'security', label: 'Security', icon: <Shield className="w-5 h-5" />, description: 'Privacy & security' },
+    { id: 'notifications', label: 'Notifications', icon: <Bell className="w-5 h-5" />, description: 'Alerts & updates' },
+  ];
 
-  // Info tab data
+  // Features data based on role
   const candidateFeatures = [
     {
       icon: <Users className="w-8 h-8" />,
       title: "Vetted Expert Agents",
-      description: "Access to authenticated agents experienced in 20+ platforms",
-      color: "from-amber-500 to-yellow-500"
+      description: "Access to authenticated agents experienced in 20+ platforms including Outlier, TELUS, OneForma, and more",
+      color: "from-blue-500 to-cyan-500",
+      badge: "Verified"
     },
     {
       icon: <Target className="w-8 h-8" />,
       title: "Get Approved Faster",
-      description: "Agents know the ins and outs of approval processes",
-      color: "from-gray-800 to-black"
+      description: "Our agents know exactly what platforms look for and can guide you through the approval process efficiently",
+      color: "from-purple-500 to-pink-500",
+      badge: "98% Success"
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: "Flexible Payment Options",
-      description: "Choose between one-time fees or revenue sharing",
-      color: "from-amber-600 to-yellow-600"
+      description: "Choose between one-time fees or revenue sharing based on what works best for you",
+      color: "from-green-500 to-emerald-500",
+      badge: "Flexible"
     },
     {
       icon: <Briefcase className="w-8 h-8" />,
       title: "Multiple Income Streams",
-      description: "Access to various remote work opportunities",
-      color: "from-gray-700 to-gray-900"
+      description: "Access various remote work opportunities across AI training, translation, transcription, and more",
+      color: "from-orange-500 to-red-500",
+      badge: "20+ Platforms"
     }
   ];
 
@@ -214,138 +219,66 @@ export default function ProfileSettingsPage() {
     {
       icon: <Users className="w-8 h-8" />,
       title: "Build Your Client Base",
-      description: "Access a steady stream of qualified candidates actively seeking your expertise",
-      color: "from-amber-500 to-yellow-500"
+      description: "Access a steady stream of qualified candidates actively seeking expertise in remote platform approvals",
+      color: "from-blue-500 to-cyan-500",
+      badge: "Growing"
     },
     {
       icon: <Target className="w-8 h-8" />,
       title: "Establish Your Brand",
-      description: "Create a professional profile showcasing your success metrics and platform mastery",
-      color: "from-gray-800 to-black"
+      description: "Create a professional profile showcasing your success metrics, platform expertise, and client testimonials",
+      color: "from-purple-500 to-pink-500",
+      badge: "Professional"
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: "Control Your Revenue",
-      description: "Set your rates and choose between upfront payments or recurring revenue share",
-      color: "from-amber-600 to-yellow-600"
+      description: "Set competitive rates and choose between upfront project fees or recurring revenue share models",
+      color: "from-green-500 to-emerald-500",
+      badge: "Profitable"
     },
     {
       icon: <Briefcase className="w-8 h-8" />,
       title: "Scale Your Business",
-      description: "Serve multiple clients across various platforms using efficient workflow tools",
-      color: "from-gray-700 to-gray-900"
+      description: "Serve multiple clients simultaneously using our efficient workflow and communication tools",
+      color: "from-orange-500 to-red-500",
+      badge: "Scalable"
     }
   ];
 
   const features = userRole === 'agent' ? agentFeatures : candidateFeatures;
 
   const platforms = [
-    "Outlier AI", "TELUS Digital", "OneForma", "RWS", "Appen",
-    "Alignerr", "Mindrift AI", "DataAnnotation", "Lionbridge", "Clickworker"
+    { name: "Outlier AI", logo: "🤖", category: "AI Training" },
+    { name: "TELUS Digital", logo: "📱", category: "Data Annotation" },
+    { name: "OneForma", logo: "🌐", category: "Translation" },
+    { name: "RWS", logo: "🗣️", category: "Localization" },
+    { name: "Appen", logo: "🎯", category: "Data Collection" },
+    { name: "Alignerr", logo: "⚡", category: "AI Training" },
+    { name: "Mindrift AI", logo: "🧠", category: "AI Projects" },
+    { name: "DataAnnotation", logo: "📊", category: "Labeling" },
+    { name: "Lionbridge", logo: "🦁", category: "Translation" },
+    { name: "Clickworker", logo: "👆", category: "Microtasks" },
+    { name: "Scale AI", logo: "📈", category: "ML Training" },
+    { name: "Remotasks", logo: "💼", category: "Data Tasks" }
   ];
 
   const workTypes = [
-    { name: "AI Training", icon: <Zap className="w-5 h-5" /> },
-    { name: "Translation", icon: <Globe className="w-5 h-5" /> },
-    { name: "Transcription", icon: <BookOpen className="w-5 h-5" /> },
-    { name: "Data Labeling", icon: <Target className="w-5 h-5" /> },
-    { name: "Evaluation", icon: <CheckCircle className="w-5 h-5" /> },
-    { name: "Research", icon: <Award className="w-5 h-5" /> }
+    { name: "AI Training", icon: <Zap className="w-5 h-5" />, color: "from-yellow-400 to-orange-500" },
+    { name: "Translation", icon: <Globe className="w-5 h-5" />, color: "from-blue-400 to-cyan-500" },
+    { name: "Transcription", icon: <BookOpen className="w-5 h-5" />, color: "from-green-400 to-emerald-500" },
+    { name: "Data Labeling", icon: <Target className="w-5 h-5" />, color: "from-purple-400 to-pink-500" },
+    { name: "Evaluation", icon: <CheckCircle className="w-5 h-5" />, color: "from-red-400 to-rose-500" },
+    { name: "Research", icon: <Award className="w-5 h-5" />, color: "from-indigo-400 to-blue-500" }
   ];
-
-  const successTips = [
-    {
-      title: "1. Complete Your Profile Thoroughly",
-      description: "A complete profile increases your credibility and helps agents understand your background better. Include all relevant skills, experience, and certifications.",
-      tips: [
-        "Add a professional bio",
-        "List all relevant skills",
-        "Upload ID verification documents",
-        "Connect social media profiles"
-      ]
-    },
-    {
-      title: "2. Choose the Right Agent",
-      description: "Review agent profiles carefully. Look for specialists in the platforms you're interested in.",
-      tips: [
-        "Check agent ratings and reviews",
-        "Review their success rate",
-        "Read their terms carefully",
-        "Ask questions before committing"
-      ]
-    },
-    {
-      title: "3. Understand Payment Options",
-      description: "Remote-Works offers two flexible payment models to suit your needs.",
-      tips: [
-        "One-Time Fee: Pay upfront for approval assistance (e.g., $100-150 per project)",
-        "Revenue Share: Split earnings 50/50 or as agreed with your agent",
-        "Agents can handle tasks on your behalf if authorized",
-        "All terms are clearly defined before you start"
-      ]
-    },
-    {
-      title: "4. Follow Agent Guidelines",
-      description: "Your success depends on following the guidance provided by your agent.",
-      tips: [
-        "Read all instructions carefully",
-        "Meet deadlines for document submissions",
-        "Be responsive to agent messages",
-        "Ask questions if anything is unclear"
-      ]
-    },
-    {
-      title: "5. Maintain Professional Communication",
-      description: "Clear and professional communication ensures smooth collaboration.",
-      tips: [
-        "Respond to messages within 24 hours",
-        "Be honest about your availability",
-        "Keep agents updated on your progress",
-        "Report any issues immediately"
-      ]
-    },
-    {
-      title: "6. Maximize Your Earnings",
-      description: "Once approved, you can work on multiple projects simultaneously.",
-      tips: [
-        "Start with one platform and expand gradually",
-        "Meet quality standards to maintain approval",
-        "Track your earnings across platforms",
-        "Request agent assistance for additional platforms"
-      ]
-    },
-    {
-      title: "7. Stay Consistent and Reliable",
-      description: "Building a reputation takes time and consistency.",
-      tips: [
-        "Deliver high-quality work consistently",
-        "Meet project deadlines",
-        "Follow platform guidelines strictly",
-        "Build long-term relationships with agents"
-      ]
-    }
-  ];
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">Please log in to edit your profile</p>
-          <button
-            onClick={() => router.push('/login')}
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-          >
-            Log In
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader className="w-12 h-12 animate-spin text-amber-500" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
+          <p className="text-gray-600 text-lg font-medium">Loading settings...</p>
+        </div>
       </div>
     );
   }
@@ -353,1096 +286,1332 @@ export default function ProfileSettingsPage() {
   return (
     <>
       <Head>
-        <title>Settings - Remote-Works</title>
+        <title>Settings | Remote-Works</title>
       </Head>
 
-      <div className="min-h-screen bg-white">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-8 border-b-4 border-amber-500">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 text-gray-300 hover:text-white mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back to Dashboard
-            </button>
-            <h1 className="text-4xl font-bold">Settings</h1>
-            <p className="mt-2 text-gray-300">
-              Manage your profile, learn about the platform, and explore secure screen sharing
-            </p>
-          </div>
-        </div>
-
-        {/* Tab Navigation */}
-        <div className="bg-white border-b-2 border-gray-200 sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex gap-2 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                  activeTab === 'profile'
-                    ? 'border-amber-500 text-black bg-amber-50'
-                    : 'border-transparent text-gray-600 hover:text-black hover:bg-gray-50'
-                }`}
-              >
-                <User className="w-5 h-5" />
-                Profile Settings
-              </button>
-              <button
-                onClick={() => setActiveTab('info')}
-                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                  activeTab === 'info'
-                    ? 'border-amber-500 text-black bg-amber-50'
-                    : 'border-transparent text-gray-600 hover:text-black hover:bg-gray-50'
-                }`}
-              >
-                <BookOpen className="w-5 h-5" />
-                Learn Center
-              </button>
-              <button
-                onClick={() => setActiveTab('screen')}
-                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                  activeTab === 'screen'
-                    ? 'border-amber-500 text-black bg-amber-50'
-                    : 'border-transparent text-gray-600 hover:text-black hover:bg-gray-50'
-                }`}
-              >
-                <Monitor className="w-5 h-5" />
-                Screen Sharing
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Profile Settings Tab */}
-          {activeTab === 'profile' && (
-            <div className="space-y-6">
-              {/* Success Message */}
-              {success && (
-                <div className="mb-6 bg-green-50 border-2 border-green-500 rounded-lg p-4 flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <p className="text-green-800 font-medium">Profile updated successfully!</p>
-                </div>
-              )}
-
-              {/* Error Message */}
-              {error && (
-                <div className="mb-6 bg-red-50 border-2 border-red-500 rounded-lg p-4">
-                  <p className="text-red-800">{error}</p>
-                </div>
-              )}
-
-              {/* Personal Information */}
-              <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-8">
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-black">
-                  <User className="w-6 h-6 text-amber-500" />
-                  Personal Information
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      Last Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
-                    Bio
-                  </label>
-                  <textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    rows={4}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                    placeholder="Tell us about yourself..."
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      City *
-                    </label>
-                    <input
-                      type="text"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      Country *
-                    </label>
-                    <input
-                      type="text"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-6">
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
-                    Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  />
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-8">
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-black">
-                  <Briefcase className="w-6 h-6 text-amber-500" />
-                  Social Links
-                </h2>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      LinkedIn
-                    </label>
-                    <input
-                      type="url"
-                      value={linkedin}
-                      onChange={(e) => setLinkedin(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      placeholder="https://linkedin.com/in/..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      Twitter
-                    </label>
-                    <input
-                      type="url"
-                      value={twitter}
-                      onChange={(e) => setTwitter(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      placeholder="https://twitter.com/..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      Facebook
-                    </label>
-                    <input
-                      type="url"
-                      value={facebook}
-                      onChange={(e) => setFacebook(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      placeholder="https://facebook.com/..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                      Instagram
-                    </label>
-                    <input
-                      type="url"
-                      value={instagram}
-                      onChange={(e) => setInstagram(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                      placeholder="https://instagram.com/..."
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Information */}
-              <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 p-8">
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-black">
-                  <Globe className="w-6 h-6 text-amber-500" />
-                  Payment Information
-                </h2>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
-                    PayPal Email *
-                  </label>
-                  <input
-                    type="email"
-                    value={paypalEmail}
-                    onChange={(e) => setPaypalEmail(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                    placeholder="your@email.com"
-                    required
-                  />
-                  <p className="mt-2 text-sm text-gray-600">
-                    This email will be used for receiving payments
-                  </p>
-                </div>
-              </div>
-
-              {/* Save Button */}
-              <div className="flex justify-end gap-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+        {/* Top Header */}
+        <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-4">
                 <button
                   onClick={handleBack}
-                  className="px-8 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-all"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors group"
                 >
-                  Cancel
+                  <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
                 </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving || !firstName || !lastName || !city || !country || !paypalEmail}
-                  className="px-8 py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-white rounded-lg font-bold hover:from-amber-600 hover:to-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg transition-all"
-                >
-                  {saving ? (
-                    <>
-                      <Loader className="w-5 h-5 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Save Changes
-                    </>
-                  )}
-                </button>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">Settings</h1>
+                  <p className="text-xs text-gray-500">Manage your account and preferences</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {profile && (
+                  <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                      {firstName[0]}{lastName[0]}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{firstName} {lastName}</p>
+                      <p className="text-xs text-gray-500 capitalize">{userRole}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
+        </header>
 
-          {/* Info Tab */}
-          {activeTab === 'info' && (
-            <div className="space-y-8">
-              {/* Info Sub-tabs */}
-              <div className="flex gap-4 border-b-2 border-gray-200">
-                <button
-                  onClick={() => setInfoSubTab('learn')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all ${
-                    infoSubTab === 'learn'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <BookOpen className="w-5 h-5" />
-                  Learn
-                </button>
-                <button
-                  onClick={() => setInfoSubTab('tips')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all ${
-                    infoSubTab === 'tips'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <Lightbulb className="w-5 h-5" />
-                  Tips for Success
-                </button>
-              </div>
-
-              {/* Learn Content */}
-              {infoSubTab === 'learn' && (
-                <div className="space-y-12">
-                  {/* What is Remote-Works */}
-                  <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                    <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
-                      <Globe className="w-8 h-8 text-amber-600" />
-                      {userRole === 'agent' ? 'What is Remote-Works for Agents?' : 'What is Remote-Works?'}
-                    </h2>
-                    <div className="prose prose-lg max-w-none">
-                      {userRole === 'agent' ? (
-                        <>
-                          <p className="text-gray-800 leading-relaxed mb-4">
-                            Remote-Works is a <strong className="text-amber-600">professional marketplace</strong> designed specifically for
-                            experienced agents who specialize in remote work platform approvals. As a verified agent, you'll leverage this
-                            platform to monetize your expertise in navigating complex approval processes across 20+ platforms including
-                            TELUS Digital, OneForma, Outlier AI, Appen, DataAnnotation, and many others.
-                          </p>
-                          <p className="text-gray-800 leading-relaxed">
-                            This is your opportunity to build a <strong className="text-black">scalable consulting business</strong>. Connect
-                            with candidates who need your specialized knowledge, set your own pricing structure, choose your service delivery
-                            model, and grow a sustainable income stream by helping others succeed in the remote work economy.
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-gray-800 leading-relaxed mb-4">
-                            Remote-Works is a <strong className="text-amber-600">marketplace platform</strong> that connects talented individuals
-                            with expert agents who specialize in remote work opportunities. We bridge the gap between candidates seeking
-                            flexible work and the growing demand for AI projects, translation, transcription, data labeling, evaluation,
-                            research, and more.
-                          </p>
-                          <p className="text-gray-800 leading-relaxed">
-                            Our platform features <strong className="text-black">vetted, authenticated agents</strong> who have proven
-                            expertise in getting candidates approved on 20+ remote work platforms including industry leaders like
-                            TELUS Digital, OneForma, Outlier, RWS, and many others.
-                          </p>
-                        </>
-                      )}
+        <div className="flex">
+          {/* Sidebar Navigation */}
+          <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} hidden lg:block bg-white border-r border-gray-200 min-h-screen transition-all duration-300`}>
+            <div className="p-4">
+              <nav className="space-y-2">
+                {navigationItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveSection(item.id as any)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
+                      activeSection === item.id
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <div className={`${activeSection === item.id ? 'text-white' : 'text-gray-400 group-hover:text-blue-500'} transition-colors`}>
+                      {item.icon}
                     </div>
-                  </section>
-
-                  {/* Key Features Grid */}
-                  <section>
-                    <h2 className="text-3xl font-bold text-black mb-8 text-center">
-                      {userRole === 'agent' ? 'Why Be an Agent on Remote-Works?' : 'Why Choose Remote-Works?'}
-                    </h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                      {features.map((feature, index) => (
-                        <div
-                          key={index}
-                          className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border-2 border-gray-200 hover:border-amber-400 hover:scale-105 transform duration-300"
-                        >
-                          <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl text-white mb-4`}>
-                            {feature.icon}
-                          </div>
-                          <h3 className="text-xl font-bold text-black mb-2">{feature.title}</h3>
-                          <p className="text-gray-700">{feature.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* How It Works */}
-                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                    <h2 className="text-3xl font-bold text-black mb-8 flex items-center gap-3">
-                      <Target className="w-8 h-8 text-amber-600" />
-                      How It Works
-                    </h2>
-                    <div className="space-y-6">
-                      {[
-                        {
-                          step: "1",
-                          title: "Sign Up & Get Verified",
-                          description: "Create your account, complete your profile, and upload verification documents. Our admin team reviews applications within 24-48 hours.",
-                          color: "amber"
-                        },
-                        {
-                          step: "2",
-                          title: "Browse Vetted Agents",
-                          description: "Once approved, explore our marketplace of authenticated agents. View their expertise, success rates, pricing, and reviews from other candidates.",
-                          color: "yellow"
-                        },
-                        {
-                          step: "3",
-                          title: "Request Services",
-                          description: "Send a service request to an agent explaining which platforms you're interested in and your goals. Agents respond with their terms and availability.",
-                          color: "amber"
-                        },
-                        {
-                          step: "4",
-                          title: "Choose Your Payment Model",
-                          description: "Select between one-time payment or revenue sharing based on what works best for you.",
-                          color: "yellow"
-                        },
-                        {
-                          step: "5",
-                          title: "Get Approved & Start Earning",
-                          description: "Follow your agent's guidance to get approved on platforms. Once approved, start working on projects and earning income!",
-                          color: "amber"
-                        }
-                      ].map((item, index) => (
-                        <div key={index} className="flex gap-6 items-start">
-                          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg">
-                            <span className="text-xl font-bold text-white">{item.step}</span>
-                          </div>
-                          <div className="flex-1 bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
-                            <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
-                            <p className="text-gray-700 leading-relaxed">{item.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Payment Models */}
-                  <section className="grid md:grid-cols-2 gap-8">
-                    {/* One-Time Payment */}
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-300">
-                      <div className="flex items-center gap-3 mb-4">
-                        <DollarSign className="w-8 h-8 text-green-600" />
-                        <h3 className="text-2xl font-bold text-black">One-Time Payment</h3>
-                      </div>
-                      <p className="text-gray-800 mb-6">
-                        Pay a specific fee for approval assistance. Perfect for those who want a straightforward transaction.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Fixed fee per project (e.g., $100 per platform)</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Package deals available (e.g., $150 for 4 approvals)</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">No ongoing obligations</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">You keep 100% of earnings</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Revenue Share */}
-                    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
-                      <div className="flex items-center gap-3 mb-4">
-                        <TrendingUp className="w-8 h-8 text-amber-600" />
-                        <h3 className="text-2xl font-bold text-black">Revenue Share</h3>
-                      </div>
-                      <p className="text-gray-800 mb-6">
-                        Share earnings with your agent. Ideal for ongoing support and task management.
-                      </p>
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">No upfront payment required</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">50/50 split or as agreed with agent</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Agent can work on projects on your behalf (if authorized)</p>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                          <p className="text-gray-800">Ongoing agent support included</p>
-                        </div>
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Work Types */}
-                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                    <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
-                      <Briefcase className="w-8 h-8 text-amber-600" />
-                      Types of Remote Work Available
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                      {workTypes.map((work, index) => (
-                        <div key={index} className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 text-center hover:shadow-md transition-all border-2 border-amber-200">
-                          <div className="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
-                            <div className="text-amber-600">
-                              {work.icon}
-                            </div>
-                          </div>
-                          <p className="font-semibold text-black text-sm">{work.name}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Supported Platforms */}
-                  <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
-                    <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
-                      <Shield className="w-8 h-8 text-amber-500" />
-                      20+ Supported Platforms
-                    </h2>
-                    <p className="text-gray-300 mb-6">
-                      Our agents have expertise across industry-leading platforms. No limit to the number of gigs you can pursue!
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {platforms.map((platform, index) => (
-                        <span
-                          key={index}
-                          className="bg-white bg-opacity-10 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium hover:bg-opacity-20 transition-all border border-amber-500"
-                        >
-                          {platform}
-                        </span>
-                      ))}
-                      <span className="bg-gradient-to-r from-amber-500 to-yellow-500 px-4 py-2 rounded-full text-sm font-bold">
-                        +10 More
-                      </span>
-                    </div>
-                  </section>
-                </div>
-              )}
-
-              {/* Tips Content */}
-              {infoSubTab === 'tips' && (
-                <div className="space-y-8">
-                  {/* Header */}
-                  <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-amber-500 p-3 rounded-xl">
-                        <Lightbulb className="w-8 h-8 text-white" />
-                      </div>
-                      <h2 className="text-3xl font-bold text-black">7 Tips to Succeed with Remote-Works</h2>
-                    </div>
-                    <p className="text-gray-800 text-lg">
-                      Follow these proven strategies to maximize your success and earnings on our platform.
-                      These tips come from our most successful candidates and experienced agents.
-                    </p>
-                  </div>
-
-                  {/* Tips List */}
-                  {successTips.map((tip, index) => (
-                    <div
-                      key={index}
-                      className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-amber-400 transition-all"
-                    >
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="bg-amber-100 rounded-full p-3 flex-shrink-0">
-                          <Star className="w-6 h-6 text-amber-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-black mb-2">{tip.title}</h3>
-                          <p className="text-gray-700 text-lg leading-relaxed mb-4">{tip.description}</p>
-                          <div className="space-y-2">
-                            {tip.tips.map((item, idx) => (
-                              <div key={idx} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <ChevronRight className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                                <p className="text-gray-800">{item}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Call to Action */}
-                  <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
-                    <h3 className="text-3xl font-bold mb-4">
-                      {userRole === 'agent' ? 'Ready to Launch Your Consulting Practice?' : 'Ready to Start Your Remote Work Journey?'}
-                    </h3>
-                    <p className="text-xl text-gray-300 mb-6">
-                      {userRole === 'agent'
-                        ? 'Join elite agents who have built profitable businesses helping clients succeed on remote work platforms'
-                        : 'Join thousands of candidates who are already earning with Remote-Works'
-                      }
-                    </p>
-                    <button
-                      onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-dashboard')}
-                      className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-amber-600 hover:to-yellow-600 transition-all inline-flex items-center gap-2 shadow-lg"
-                    >
-                      Go to Dashboard
-                      <ArrowRight className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Screen Sharing Tab */}
-          {activeTab === 'screen' && (
-            <div className="space-y-8">
-              {/* Screen Sub-tabs */}
-              <div className="flex gap-4 border-b-2 border-gray-200 overflow-x-auto">
-                <button
-                  onClick={() => setScreenSubTab('overview')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                    screenSubTab === 'overview'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <TrendingUp className="w-5 h-5" />
-                  Why Screen Sharing
-                </button>
-                <button
-                  onClick={() => setScreenSubTab('how-it-works')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                    screenSubTab === 'how-it-works'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <Play className="w-5 h-5" />
-                  How It Works
-                </button>
-                <button
-                  onClick={() => setScreenSubTab('security')}
-                  className={`flex items-center gap-2 px-6 py-3 font-semibold border-b-4 transition-all whitespace-nowrap ${
-                    screenSubTab === 'security'
-                      ? 'border-amber-500 text-black'
-                      : 'border-transparent text-gray-600 hover:text-black'
-                  }`}
-                >
-                  <Shield className="w-5 h-5" />
-                  Security & Privacy
-                </button>
-              </div>
-
-              {/* Overview Content */}
-              {screenSubTab === 'overview' && (
-                <div className="space-y-12">
-                  {/* Hero */}
-                  <div className="bg-gradient-to-r from-gray-900 to-black text-white py-12 px-8 rounded-2xl border-2 border-amber-500">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                      <div className="flex-1">
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
-                          <Monitor className="w-5 h-5" />
-                          <span className="font-semibold">Powered by Google Remote Desktop</span>
-                        </div>
-                        <h1 className="text-4xl font-bold mb-4">
-                          {userRole === 'agent' ? 'Professional Screen Sharing Protocol' : 'Secure Screen Sharing for Maximum Earnings'}
-                        </h1>
-                        <p className="text-lg text-gray-300">
-                          {userRole === 'agent'
-                            ? 'Master secure remote access tools to deliver efficient, compliant client services while maintaining the highest professional standards'
-                            : 'Let our trained agents help you manage multiple gigs while you stay in complete control and security'
-                          }
+                    {!sidebarCollapsed && (
+                      <div className="flex-1 text-left">
+                        <p className="font-medium text-sm">{item.label}</p>
+                        <p className={`text-xs ${activeSection === item.id ? 'text-blue-100' : 'text-gray-500'}`}>
+                          {item.description}
                         </p>
                       </div>
-                      <div className="flex-shrink-0">
-                        <div className="bg-white rounded-2xl p-6 shadow-2xl">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center">
-                              <Monitor className="w-7 h-7 text-white" />
-                            </div>
-                            <div>
-                              <div className="font-bold text-gray-900 text-lg">Google Remote Desktop</div>
-                              <div className="text-sm text-gray-600">Official Partner</div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-green-600 font-semibold">
-                            <CheckCircle className="w-4 h-4" />
-                            Verified & Trusted
-                          </div>
-                        </div>
+                    )}
+                    {!sidebarCollapsed && activeSection === item.id && (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Quick Stats */}
+              {!sidebarCollapsed && (
+                <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <h3 className="font-semibold text-gray-900 text-sm">Quick Stats</h3>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">Profile Strength</span>
+                      <span className="text-xs font-bold text-green-600">85%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </aside>
+
+          {/* Mobile Navigation */}
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+            <div className="grid grid-cols-6 gap-1 p-2">
+              {navigationItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id as any)}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-all ${
+                    activeSection === item.id
+                      ? 'bg-blue-500 text-white'
+                      : 'text-gray-600'
+                  }`}
+                >
+                  <div className="w-5 h-5">{item.icon}</div>
+                  <span className="text-xs font-medium">{item.label.split(' ')[0]}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <main className="flex-1 p-4 md:p-8 pb-24 lg:pb-8 overflow-y-auto">
+            {/* Profile Section */}
+            {activeSection === 'profile' && (
+              <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">Profile Settings</h2>
+                    <p className="text-gray-600 mt-1">Manage your personal information and public profile</p>
+                  </div>
+                </div>
+
+                {/* Profile Picture */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Camera className="w-5 h-5 text-blue-600" />
+                    Profile Picture
+                  </h3>
+                  <div className="flex items-center gap-6">
+                    <div className="relative group">
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                        {firstName[0]}{lastName[0]}
+                      </div>
+                      <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg border-2 border-blue-500 hover:bg-blue-50 transition-colors">
+                        <Camera className="w-4 h-4 text-blue-600" />
+                      </button>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-1">{firstName} {lastName}</h4>
+                      <p className="text-sm text-gray-500 mb-3">Upload a new profile picture</p>
+                      <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                          <Upload className="w-4 h-4" />
+                          Upload
+                        </button>
+                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                          Remove
+                        </button>
                       </div>
                     </div>
                   </div>
-
-                  {/* Why Screen Sharing Matters */}
-                  <section>
-                    <h2 className="text-3xl font-bold text-black mb-6">
-                      {userRole === 'agent' ? 'Strategic Benefits of Remote Access Tools' : 'Why Screen Sharing Matters'}
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      {userRole === 'agent' ? (
-                        <>
-                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                              <TrendingUp className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Maximize Approval Success Rates</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Direct platform access enables real-time intervention during critical registration and testing phases.
-                              Higher client success rates translate directly to stronger testimonials, repeat business, and premium pricing power.
-                            </p>
-                          </div>
-
-                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
-                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
-                              <Zap className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Deliver High-Value Services Efficiently</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Transform lengthy back-and-forth guidance into streamlined direct execution. Reduce project completion
-                              time by 60-70%, allowing you to serve more clients and increase your hourly effective rate.
-                            </p>
-                          </div>
-
-                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                              <Users className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Scale Your Client Portfolio</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Professional screen sharing workflows enable concurrent client management across multiple platforms.
-                              Systematically grow from 2-3 clients to 10+ active engagements without sacrificing service quality.
-                            </p>
-                          </div>
-
-                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
-                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
-                              <Award className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Differentiate Your Professional Brand</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              White-glove, hands-on service delivery sets premium agents apart from basic consultants.
-                              Build an elite reputation through measurable results and exceptional client experiences.
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                              <TrendingUp className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Maximize Your Earnings</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Can't handle all your approved gigs alone? Our trained agents help you manage multiple projects
-                              simultaneously from different platforms, ensuring you never miss earning opportunities.
-                            </p>
-                          </div>
-
-                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
-                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
-                              <Zap className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Efficient Task Management</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Our professional team handles routine tasks on platforms you authorize, freeing you to focus on
-                              high-value work while we ensure deadlines are met across all your gigs.
-                            </p>
-                          </div>
-
-                          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                            <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center mb-4">
-                              <Users className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Expert Support Team</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Access a trained team of professionals who specialize in managing gigs across multiple platforms.
-                              They know the ins and outs of registration, testing, exams, and project execution.
-                            </p>
-                          </div>
-
-                          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 border-2 border-gray-300">
-                            <div className="w-14 h-14 bg-gradient-to-br from-gray-700 to-black rounded-xl flex items-center justify-center mb-4">
-                              <Calendar className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold text-black mb-3">Flexible Scheduling</h3>
-                            <p className="text-gray-800 leading-relaxed">
-                              Schedule screen sharing sessions at your convenience. Both you and assigned agents can coordinate
-                              timing through the project page to ensure optimal workflow.
-                            </p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </section>
-
-                  {/* When Screen Sharing is Essential */}
-                  <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                    <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3">
-                      <FileCheck className="w-7 h-7 text-amber-600" />
-                      {userRole === 'agent' ? 'Professional Service Scenarios' : 'When Screen Sharing is Essential'}
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      {[
-                        {
-                          icon: <CheckCircle className="w-6 h-6 text-amber-600" />,
-                          title: "Platform Registration",
-                          description: "Agents help you register on multiple freelance platforms simultaneously, completing verification processes and profile optimization."
-                        },
-                        {
-                          icon: <FileCheck className="w-6 h-6 text-amber-600" />,
-                          title: "Skills Testing & Exams",
-                          description: "Get support during platform qualification tests, skills assessments, and certification exams to improve your profile ranking."
-                        },
-                        {
-                          icon: <Award className="w-6 h-6 text-amber-600" />,
-                          title: "Project Execution",
-                          description: "Agents work on authorized platforms to deliver projects when you're managing multiple gigs and need additional hands to meet deadlines."
-                        },
-                        {
-                          icon: <SettingsIcon className="w-6 h-6 text-amber-600" />,
-                          title: "Account Management",
-                          description: "Routine tasks like responding to messages, submitting deliverables, and updating project statuses across your authorized platforms."
-                        }
-                      ].map((item, idx) => (
-                        <div key={idx} className="flex gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                              {item.icon}
-                            </div>
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-black mb-2">{item.title}</h4>
-                            <p className="text-gray-700 text-sm">{item.description}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
                 </div>
-              )}
 
-              {/* How It Works Content */}
-              {screenSubTab === 'how-it-works' && (
-                <div className="space-y-12">
-                  {/* Getting Started */}
-                  <section>
-                    <h2 className="text-3xl font-bold text-black mb-6">Getting Started with Google Remote Desktop</h2>
-
-                    <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white mb-8 border-2 border-amber-500">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center">
-                          <Monitor className="w-9 h-9 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-bold">Google Remote Desktop</h3>
-                          <p className="text-gray-300">Trusted by millions worldwide for secure remote access</p>
-                        </div>
-                      </div>
-                      <div className="grid md:grid-cols-3 gap-4 mt-6">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-amber-500">
-                          <div className="flex items-center gap-2 mb-2">
-                            <CheckCircle className="w-5 h-5" />
-                            <span className="font-semibold">Free to Use</span>
-                          </div>
-                          <p className="text-sm text-gray-300">No cost for personal use</p>
-                        </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-amber-500">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Lock className="w-5 h-5" />
-                            <span className="font-semibold">End-to-End Encrypted</span>
-                          </div>
-                          <p className="text-sm text-gray-300">Military-grade security</p>
-                        </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-amber-500">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Smartphone className="w-5 h-5" />
-                            <span className="font-semibold">Cross-Platform</span>
-                          </div>
-                          <p className="text-sm text-gray-300">Works on all devices</p>
-                        </div>
+                {/* Basic Information */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <User className="w-5 h-5 text-blue-600" />
+                    Basic Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="text"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="Enter first name"
+                        />
                       </div>
                     </div>
-
-                    {/* Setup Instructions */}
-                    <div className="space-y-6">
-                      <h3 className="text-2xl font-bold text-black">Setup Instructions</h3>
-
-                      {[
-                        {
-                          step: "1",
-                          title: "Download & Install",
-                          icon: <Download className="w-6 h-6 text-amber-600" />,
-                          description: "Visit remotedesktop.google.com and download the Chrome Remote Desktop extension or desktop app for your device.",
-                          color: "amber"
-                        },
-                        {
-                          step: "2",
-                          title: "Set Up Remote Access",
-                          icon: <SettingsIcon className="w-6 h-6 text-yellow-600" />,
-                          description: "Sign in with your Google account, then click 'Set up Remote Access' and create a unique name for your computer. Set a PIN (at least 6 digits) for secure access.",
-                          color: "yellow"
-                        },
-                        {
-                          step: "3",
-                          title: "Schedule a Session",
-                          icon: <Calendar className="w-6 h-6 text-amber-600" />,
-                          description: "Go to your Projects page on Remote-Works and schedule a screen sharing session with your assigned agent.",
-                          color: "amber"
-                        },
-                        {
-                          step: "4",
-                          title: "Start Screen Sharing",
-                          icon: <Video className="w-6 h-6 text-yellow-600" />,
-                          description: "At your scheduled time, share your computer name with the agent. They'll request access, and you'll approve it by entering your PIN. You can end the session at any time.",
-                          color: "yellow"
-                        }
-                      ].map((item, index) => (
-                        <div key={index} className="flex gap-6">
-                          <div className="flex-shrink-0">
-                            <div className={`w-12 h-12 bg-gradient-to-br from-${item.color}-500 to-${item.color}-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
-                              {item.step}
-                            </div>
-                          </div>
-                          <div className="flex-1 bg-white rounded-xl p-6 shadow-lg border-2 border-gray-200">
-                            <div className="flex items-start justify-between mb-3">
-                              <h4 className="text-xl font-bold text-black">{item.title}</h4>
-                              {item.icon}
-                            </div>
-                            <p className="text-gray-700">{item.description}</p>
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="text"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="Enter last name"
+                        />
+                      </div>
                     </div>
-                  </section>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                      <textarea
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        rows={4}
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+                        placeholder="Tell us about yourself..."
+                      />
+                      <p className="text-xs text-gray-500 mt-1">{bio.length}/500 characters</p>
+                    </div>
+                  </div>
                 </div>
-              )}
 
-              {/* Security Content */}
-              {screenSubTab === 'security' && (
-                <div className="space-y-12">
-                  {/* Security Guarantee */}
-                  <section className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl p-8 md:p-12 text-white border-2 border-green-700">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                        <Shield className="w-9 h-9 text-white" />
+                {/* Contact Information */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Phone className="w-5 h-5 text-blue-600" />
+                    Contact Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="+1 (555) 000-0000"
+                        />
                       </div>
-                      <div>
-                        <h2 className="text-3xl font-bold">Your Security is Our Priority</h2>
-                        <p className="text-green-100 text-lg">Comprehensive protection at every level</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">PayPal Email</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="email"
+                          value={paypalEmail}
+                          onChange={(e) => setPaypalEmail(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="paypal@example.com"
+                        />
                       </div>
                     </div>
-                    <p className="text-lg text-green-50 leading-relaxed">
-                      We understand that sharing screen access requires trust. That's why we've implemented
-                      industry-leading security measures and strict policies to protect your data, privacy,
-                      and earning potential.
-                    </p>
-                  </section>
-
-                  {/* Security Features */}
-                  <section>
-                    <h2 className="text-2xl font-bold text-black mb-6">Security Measures & Guarantees</h2>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      {[
-                        {
-                          icon: <Video className="w-6 h-6 text-white" />,
-                          title: "Session Recording Rights",
-                          description: "You have the full right to record all screen sharing sessions using any recording software. Keep records for your protection and peace of mind.",
-                          tip: "Recommended: OBS Studio, Screen Recorder, or built-in OS recording tools",
-                          color: "green"
-                        },
-                        {
-                          icon: <Lock className="w-6 h-6 text-white" />,
-                          title: "Restricted Access Scope",
-                          description: "Agents can ONLY operate within the specific platforms and tasks you authorize. They cannot access personal files, emails, or unrelated applications.",
-                          tip: "Unauthorized access outside task scope is strictly prohibited",
-                          color: "amber"
-                        },
-                        {
-                          icon: <UserCheck className="w-6 h-6 text-white" />,
-                          title: "Verified Agent Identities",
-                          description: "All agents are verified with real personal data, background checks, and can be tracked. Request agent ID anytime for additional transparency.",
-                          tip: "Every agent maintains a detailed track record and performance history",
-                          color: "gray"
-                        },
-                        {
-                          icon: <AlertTriangle className="w-6 h-6 text-white" />,
-                          title: "Zero Tolerance Policy",
-                          description: "Remote-Works enforces strict rules with severe penalties for violations. Any unauthorized activity results in immediate termination and legal action.",
-                          tip: "Violations are taken seriously with permanent bans and potential prosecution",
-                          color: "red"
-                        }
-                      ].map((item, idx) => (
-                        <div key={idx} className={`bg-white rounded-xl p-6 shadow-lg border-2 border-${item.color}-200`}>
-                          <div className="flex items-start gap-4 mb-4">
-                            <div className={`w-12 h-12 bg-gradient-to-br from-${item.color}-500 to-${item.color}-600 rounded-xl flex items-center justify-center flex-shrink-0`}>
-                              {item.icon}
-                            </div>
-                            <div>
-                              <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
-                              <p className="text-gray-800">{item.description}</p>
-                            </div>
-                          </div>
-                          <div className={`bg-${item.color}-50 rounded-lg p-4 border border-${item.color}-200`}>
-                            <p className={`text-sm text-${item.color}-900 font-medium`}>{item.tip}</p>
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="text"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="Enter city"
+                        />
+                      </div>
                     </div>
-                  </section>
-
-                  {/* Your Rights */}
-                  <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
-                    <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
-                      <Shield className="w-7 h-7 text-amber-500" />
-                      Your Rights as a Candidate
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {[
-                        {
-                          title: "Right to Terminate",
-                          description: "End any screen sharing session immediately, for any reason, without explanation"
-                        },
-                        {
-                          title: "Right to Record",
-                          description: "Record all sessions for your records and use them as evidence if needed"
-                        },
-                        {
-                          title: "Right to Request Agent Change",
-                          description: "Request a different agent if you're uncomfortable or unsatisfied"
-                        },
-                        {
-                          title: "Right to Full Transparency",
-                          description: "Access complete information about your agent's identity and track record"
-                        },
-                        {
-                          title: "Right to Limit Scope",
-                          description: "Specify exactly which platforms and tasks agents can access and work on"
-                        },
-                        {
-                          title: "Right to Report Violations",
-                          description: "Report any suspicious activity with guaranteed investigation and action"
-                        }
-                      ].map((item, idx) => (
-                        <div key={idx} className="flex items-start gap-3">
-                          <CheckCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
-                          <div>
-                            <h4 className="font-bold mb-1">{item.title}</h4>
-                            <p className="text-gray-300 text-sm">{item.description}</p>
-                          </div>
-                        </div>
-                      ))}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                      <div className="relative">
+                        <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="text"
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="Enter country"
+                        />
+                      </div>
                     </div>
-                  </section>
+                  </div>
                 </div>
-              )}
 
-              {/* Call to Action */}
-              <section className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 md:p-12 text-white text-center border-2 border-amber-500">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  {userRole === 'agent' ? 'Ready to Deliver Premium Consulting Services?' : 'Ready to Maximize Your Earnings?'}
-                </h2>
-                <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                  {userRole === 'agent'
-                    ? 'Master professional remote access tools to provide high-value client services efficiently. Build your reputation as an elite platform approval consultant through compliant, results-driven service delivery.'
-                    : 'Let our trained agents help you manage multiple gigs while you maintain complete control and security. Start with a scheduled session today.'
-                  }
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                {/* Social Links */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <LinkIcon className="w-5 h-5 text-blue-600" />
+                    Social Media Links
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
+                      <div className="relative">
+                        <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-600" />
+                        <input
+                          type="url"
+                          value={linkedin}
+                          onChange={(e) => setLinkedin(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="linkedin.com/in/username"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Twitter</label>
+                      <div className="relative">
+                        <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-400" />
+                        <input
+                          type="url"
+                          value={twitter}
+                          onChange={(e) => setTwitter(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="twitter.com/username"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Facebook</label>
+                      <div className="relative">
+                        <Facebook className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-700" />
+                        <input
+                          type="url"
+                          value={facebook}
+                          onChange={(e) => setFacebook(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="facebook.com/username"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Instagram</label>
+                      <div className="relative">
+                        <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-pink-600" />
+                        <input
+                          type="url"
+                          value={instagram}
+                          onChange={(e) => setInstagram(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                          placeholder="instagram.com/username"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex gap-3 sticky bottom-0 bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-2xl border border-blue-100">
                   <button
-                    onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-projects')}
-                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg text-lg"
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
                   >
-                    {userRole === 'agent' ? (
+                    {saving ? (
                       <>
-                        <FileCheck className="w-6 h-6" />
-                        Go to Dashboard
+                        <Loader className="w-5 h-5 animate-spin" />
+                        Saving...
                       </>
                     ) : (
                       <>
-                        <Calendar className="w-6 h-6" />
-                        Schedule a Session
+                        <Save className="w-5 h-5" />
+                        Save Changes
                       </>
                     )}
                   </button>
                   <button
-                    onClick={() => setActiveTab('info')}
-                    className="inline-flex items-center justify-center gap-2 bg-white text-black px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all shadow-lg text-lg"
+                    onClick={handleBack}
+                    className="px-6 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition-all border-2 border-gray-200"
                   >
-                    <FileCheck className="w-6 h-6" />
-                    Learn More
+                    Cancel
                   </button>
                 </div>
-              </section>
-            </div>
-          )}
+
+                {error && (
+                  <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 flex items-center gap-3 animate-slideDown">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                    <p className="text-red-800">{error}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Account Section */}
+            {activeSection === 'account' && (
+              <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">Account Settings</h2>
+                    <p className="text-gray-600 mt-1">Manage your account preferences and authentication</p>
+                  </div>
+                </div>
+
+                {/* Email & Password */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Mail className="w-5 h-5 text-blue-600" />
+                    Email & Password
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Email Address</p>
+                        <p className="text-sm text-gray-600">{user?.email}</p>
+                      </div>
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        Change Email
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Password</p>
+                        <p className="text-sm text-gray-600">••••••••</p>
+                      </div>
+                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        Change Password
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Two-Factor Authentication */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    Two-Factor Authentication
+                  </h3>
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1">
+                      <p className="text-gray-700 mb-2">Add an extra layer of security to your account</p>
+                      <p className="text-sm text-gray-500">Protect your account with 2FA using an authenticator app</p>
+                    </div>
+                    <button className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors whitespace-nowrap">
+                      Enable 2FA
+                    </button>
+                  </div>
+                </div>
+
+                {/* Sessions */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    Active Sessions
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                          <Monitor className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Current Device</p>
+                          <p className="text-xs text-gray-600">Chrome on Windows • Active now</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full">Active</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Danger Zone */}
+                <div className="bg-gradient-to-r from-red-50 to-rose-50 rounded-2xl p-6 shadow-md border-2 border-red-200">
+                  <h3 className="text-lg font-semibold text-red-900 mb-4 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                    Danger Zone
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 bg-white rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Deactivate Account</p>
+                        <p className="text-xs text-gray-600">Temporarily disable your account</p>
+                      </div>
+                      <button className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors">
+                        Deactivate
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-white rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">Delete Account</p>
+                        <p className="text-xs text-gray-600">Permanently delete your account and all data</p>
+                      </div>
+                      <button className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Learn Section */}
+            {activeSection === 'learn' && (
+              <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      {userRole === 'agent' ? 'Agent Resources' : 'Learn About Remote-Works'}
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      {userRole === 'agent'
+                        ? 'Professional guidance for building and scaling your consulting business'
+                        : 'Everything you need to know about working with agents and getting approved'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Hero Banner */}
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
+                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-10 rounded-full -ml-24 -mb-24"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                        <Rocket className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-3xl font-bold">
+                        {userRole === 'agent' ? 'Build Your Consulting Empire' : 'Start Your Remote Work Journey'}
+                      </h3>
+                    </div>
+                    <p className="text-xl text-blue-100 mb-6 max-w-2xl">
+                      {userRole === 'agent'
+                        ? 'Professional marketplace designed specifically for experienced agents who specialize in remote work platform approvals. Turn your expertise into sustainable revenue.'
+                        : 'Marketplace platform that connects talented individuals with expert agents who have proven success in getting candidates approved for 20+ remote work platforms.'}
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="font-semibold">98% Success Rate</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <Users className="w-5 h-5" />
+                        <span className="font-semibold">1000+ Users</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <Star className="w-5 h-5" />
+                        <span className="font-semibold">4.9 Rating</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Features Grid */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {features.map((feature, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all group cursor-pointer"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`p-3 rounded-xl bg-gradient-to-br ${feature.color} text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                          {feature.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h3 className="text-xl font-bold text-gray-900">{feature.title}</h3>
+                            <span className="text-xs font-semibold bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                              {feature.badge}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Supported Platforms */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                      <Globe className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">Supported Platforms</h3>
+                      <p className="text-gray-600">Access to 20+ leading remote work platforms</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {platforms.map((platform, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all group cursor-pointer"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl group-hover:scale-125 transition-transform">{platform.logo}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 truncate text-sm">{platform.name}</p>
+                            <p className="text-xs text-gray-500">{platform.category}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Work Types */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                      <Briefcase className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">Types of Work</h3>
+                      <p className="text-gray-600">Diverse opportunities across multiple domains</p>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {workTypes.map((type, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all group cursor-pointer"
+                      >
+                        <div className={`inline-block p-3 rounded-lg bg-gradient-to-br ${type.color} text-white mb-3 group-hover:scale-110 transition-transform`}>
+                          {type.icon}
+                        </div>
+                        <h4 className="font-semibold text-gray-900">{type.name}</h4>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pricing Models */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 shadow-md border-2 border-green-200">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                      <DollarSign className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        {userRole === 'agent' ? 'Revenue Models' : 'Payment Options'}
+                      </h3>
+                      <p className="text-gray-700">
+                        {userRole === 'agent'
+                          ? 'Choose how you monetize your expertise'
+                          : 'Flexible payment structures to match your budget'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-xl p-6 border-2 border-green-300 hover:shadow-lg transition-all">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                          <CreditCard className="w-6 h-6 text-green-600" />
+                        </div>
+                        <h4 className="text-xl font-bold text-gray-900">
+                          {userRole === 'agent' ? 'Project-Based Fees' : 'One-Time Fee'}
+                        </h4>
+                      </div>
+                      <p className="text-gray-700 mb-4">
+                        {userRole === 'agent'
+                          ? 'Set competitive upfront rates for platform approval services. Typically $100-$200 per engagement with instant payment upon successful approval.'
+                          : 'Pay a one-time fee upfront for approval assistance. Typical range: $100-$150 per platform. No ongoing commitments.'}
+                      </p>
+                      <ul className="space-y-2">
+                        {(userRole === 'agent' ? [
+                          'Set your own pricing tiers',
+                          'Instant payment on completion',
+                          'No long-term obligations',
+                          'Scale with volume discounts'
+                        ] : [
+                          'Clear, upfront pricing',
+                          'No hidden costs',
+                          'Pay only once',
+                          'Get full support'
+                        ]).map((item, i) => (
+                          <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 border-2 border-blue-300 hover:shadow-lg transition-all">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <TrendingUp className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <h4 className="text-xl font-bold text-gray-900">
+                          {userRole === 'agent' ? 'Revenue Share Partnership' : 'Revenue Share'}
+                        </h4>
+                      </div>
+                      <p className="text-gray-700 mb-4">
+                        {userRole === 'agent'
+                          ? 'Build recurring revenue by partnering with candidates long-term. Earn 40-50% of their platform earnings with optional task management services.'
+                          : 'Share 40-50% of your earnings with your agent. No upfront costs. Your agent may also handle tasks on your behalf with your authorization.'}
+                      </p>
+                      <ul className="space-y-2">
+                        {(userRole === 'agent' ? [
+                          'Recurring monthly revenue',
+                          '40-50% earnings share',
+                          'Optional task management',
+                          'Long-term client relationships'
+                        ] : [
+                          'No money upfront',
+                          'Share 40-50% of earnings',
+                          'Agent may handle tasks',
+                          'Flexible arrangements'
+                        ]).map((item, i) => (
+                          <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Success Tips */}
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 shadow-md border-2 border-purple-200">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg">
+                      <Lightbulb className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        {userRole === 'agent' ? 'Business Success Tips' : 'Success Tips'}
+                      </h3>
+                      <p className="text-gray-700">
+                        {userRole === 'agent'
+                          ? 'Proven strategies to grow your consulting business'
+                          : 'Expert advice to maximize your success'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid gap-4">
+                    {(userRole === 'agent' ? [
+                      {
+                        title: 'Build Your Reputation',
+                        desc: 'Maintain a high success rate and collect positive reviews. Your track record is your most valuable asset.',
+                        tips: ['Deliver consistent results', 'Communicate proactively', 'Set realistic expectations', 'Showcase success metrics']
+                      },
+                      {
+                        title: 'Set Competitive Pricing',
+                        desc: 'Research market rates and position yourself strategically based on your expertise and specializations.',
+                        tips: ['Study competitor pricing', 'Offer tiered packages', 'Bundle services for value', 'Consider seasonal promotions']
+                      },
+                      {
+                        title: 'Scale Systematically',
+                        desc: 'Develop efficient workflows and leverage platform tools to serve more clients without sacrificing quality.',
+                        tips: ['Create process templates', 'Use automation tools', 'Build a knowledge base', 'Track key metrics']
+                      },
+                      {
+                        title: 'Maintain Professionalism',
+                        desc: 'Professional communication and service delivery distinguish top agents from the rest.',
+                        tips: ['Respond within 24 hours', 'Keep detailed records', 'Honor commitments', 'Continuous learning']
+                      }
+                    ] : [
+                      {
+                        title: 'Complete Your Profile',
+                        desc: 'A complete profile increases credibility and helps agents understand your background better.',
+                        tips: ['Add professional bio', 'List relevant skills', 'Upload verification docs', 'Connect social profiles']
+                      },
+                      {
+                        title: 'Choose the Right Agent',
+                        desc: 'Review agent profiles carefully. Look for specialists in the platforms you\'re interested in.',
+                        tips: ['Check ratings & reviews', 'Review success rates', 'Read terms carefully', 'Ask questions first']
+                      },
+                      {
+                        title: 'Follow Agent Guidelines',
+                        desc: 'Your success depends on following the guidance provided by your agent.',
+                        tips: ['Read instructions carefully', 'Meet submission deadlines', 'Be responsive to messages', 'Ask when unclear']
+                      },
+                      {
+                        title: 'Stay Professional',
+                        desc: 'Clear and professional communication ensures smooth collaboration.',
+                        tips: ['Respond promptly', 'Be honest about skills', 'Meet agreed deadlines', 'Maintain regular contact']
+                      }
+                    ]).map((tip, index) => (
+                      <div key={index} className="bg-white rounded-xl p-6 border border-purple-200 hover:shadow-lg transition-all">
+                        <h4 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
+                          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 text-white text-sm font-bold">
+                            {index + 1}
+                          </span>
+                          {tip.title}
+                        </h4>
+                        <p className="text-gray-700 mb-4">{tip.desc}</p>
+                        <ul className="grid md:grid-cols-2 gap-2">
+                          {tip.tips.map((t, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                              <CheckCircle className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                              {t}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Screen Sharing Section */}
+            {activeSection === 'screen' && (
+              <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      {userRole === 'agent' ? 'Professional Screen Sharing Protocol' : 'Screen Sharing Guide'}
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                      {userRole === 'agent'
+                        ? 'Master secure remote access tools to deliver efficient, compliant client services'
+                        : 'Learn how to safely share your screen for efficient remote assistance'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Hero Section */}
+                <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-10 rounded-full -mr-48 -mt-48"></div>
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                        <Monitor className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-3xl font-bold">
+                        {userRole === 'agent' ? 'Deliver Premium Remote Services' : 'Why Screen Sharing?'}
+                      </h3>
+                    </div>
+                    <p className="text-xl text-indigo-100 mb-6 max-w-3xl">
+                      {userRole === 'agent'
+                        ? 'Screen sharing is your primary service delivery mechanism. Provide real-time guidance, complete platform applications, and demonstrate your expertise while maintaining the highest security and compliance standards.'
+                        : 'Screen sharing allows your agent to guide you through platform applications in real-time, ensuring every detail is perfect. It\'s faster, more efficient, and leads to better approval rates.'}
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <Zap className="w-5 h-5" />
+                        <span className="font-semibold">60-70% Faster</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <Shield className="w-5 h-5" />
+                        <span className="font-semibold">Bank-Level Security</span>
+                      </div>
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <CheckCircle className="w-5 h-5" />
+                        <span className="font-semibold">Verified Tools</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Benefits */}
+                <div className="grid md:grid-cols-3 gap-6">
+                  {(userRole === 'agent' ? [
+                    {
+                      icon: <TrendingUp className="w-8 h-8" />,
+                      title: 'Efficiency Gains',
+                      desc: 'Complete client onboarding 60-70% faster compared to email-based guidance',
+                      color: 'from-green-500 to-emerald-500'
+                    },
+                    {
+                      icon: <Target className="w-8 h-8" />,
+                      title: 'Service Excellence',
+                      desc: 'Demonstrate expertise in real-time, building trust and client satisfaction',
+                      color: 'from-blue-500 to-cyan-500'
+                    },
+                    {
+                      icon: <Users className="w-8 h-8" />,
+                      title: 'Client Capacity',
+                      desc: 'Handle 10+ active engagements simultaneously with streamlined workflows',
+                      color: 'from-purple-500 to-pink-500'
+                    }
+                  ] : [
+                    {
+                      icon: <Clock className="w-8 h-8" />,
+                      title: 'Save Time',
+                      desc: 'Complete applications 60-70% faster with real-time guidance',
+                      color: 'from-blue-500 to-cyan-500'
+                    },
+                    {
+                      icon: <Target className="w-8 h-8" />,
+                      title: 'Higher Success',
+                      desc: 'Agents can catch and fix mistakes before submission',
+                      color: 'from-green-500 to-emerald-500'
+                    },
+                    {
+                      icon: <Shield className="w-8 h-8" />,
+                      title: 'Safe & Secure',
+                      desc: 'All recommended tools use bank-level encryption',
+                      color: 'from-purple-500 to-pink-500'
+                    }
+                  ]).map((benefit, index) => (
+                    <div key={index} className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all">
+                      <div className={`inline-block p-3 rounded-xl bg-gradient-to-br ${benefit.color} text-white mb-4`}>
+                        {benefit.icon}
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                      <p className="text-gray-600">{benefit.desc}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Recommended Tools */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Monitor className="w-7 h-7 text-blue-600" />
+                    Recommended Tools
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {[
+                      {
+                        name: 'AnyDesk',
+                        icon: <Monitor className="w-6 h-6" />,
+                        features: ['Fast & lightweight', 'Cross-platform', 'File transfer', '256-bit encryption'],
+                        best: 'Best for quick sessions',
+                        color: 'from-red-500 to-rose-600'
+                      },
+                      {
+                        name: 'TeamViewer',
+                        icon: <Laptop className="w-6 h-6" />,
+                        features: ['Industry standard', 'Session recording', 'Whiteboard tools', 'Enterprise security'],
+                        best: 'Best for professional use',
+                        color: 'from-blue-500 to-cyan-600'
+                      },
+                      {
+                        name: 'Chrome Remote Desktop',
+                        icon: <Globe className="w-6 h-6" />,
+                        features: ['Free to use', 'Works in browser', 'Simple setup', 'Google security'],
+                        best: 'Best for beginners',
+                        color: 'from-green-500 to-emerald-600'
+                      },
+                      {
+                        name: 'Zoom Screen Share',
+                        icon: <Video className="w-6 h-6" />,
+                        features: ['Video + screen', 'Easy scheduling', 'Cloud recording', 'Annotation tools'],
+                        best: 'Best for video calls',
+                        color: 'from-purple-500 to-pink-600'
+                      }
+                    ].map((tool, index) => (
+                      <div key={index} className="border-2 border-gray-200 rounded-xl p-6 hover:border-blue-300 hover:shadow-lg transition-all">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className={`p-3 rounded-xl bg-gradient-to-br ${tool.color} text-white`}>
+                            {tool.icon}
+                          </div>
+                          <div>
+                            <h4 className="text-lg font-bold text-gray-900">{tool.name}</h4>
+                            <p className="text-sm text-gray-600">{tool.best}</p>
+                          </div>
+                        </div>
+                        <ul className="space-y-2">
+                          {tool.features.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                              <CheckCircle className="w-4 h-4 text-green-600" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Security Best Practices */}
+                <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-6 shadow-md border-2 border-red-200">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Shield className="w-7 h-7 text-red-600" />
+                    {userRole === 'agent' ? 'Non-Negotiable Security Compliance' : 'Security Guidelines'}
+                  </h3>
+                  <p className="text-gray-700 mb-6">
+                    {userRole === 'agent'
+                      ? 'Professional service delivery requires strict adherence to security protocols. These practices protect both you and your clients.'
+                      : 'Your safety is our priority. Always follow these security guidelines when sharing your screen.'}
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {(userRole === 'agent' ? [
+                      { icon: <Lock className="w-5 h-5" />, text: 'Require password-protected sessions', color: 'text-red-600' },
+                      { icon: <Eye className="w-5 h-5" />, text: 'Maintain professional boundaries at all times', color: 'text-orange-600' },
+                      { icon: <Shield className="w-5 h-5" />, text: 'Never request or store sensitive credentials', color: 'text-red-600' },
+                      { icon: <FileCheck className="w-5 h-5" />, text: 'Document all client interactions', color: 'text-orange-600' },
+                      { icon: <UserCheck className="w-5 h-5" />, text: 'Verify client identity before sessions', color: 'text-red-600' },
+                      { icon: <AlertTriangle className="w-5 h-5" />, text: 'Report suspicious requests immediately', color: 'text-orange-600' }
+                    ] : [
+                      { icon: <Lock className="w-5 h-5" />, text: 'Only use verified agents from our platform', color: 'text-red-600' },
+                      { icon: <Eye className="w-5 h-5" />, text: 'Close sensitive apps before sharing', color: 'text-orange-600' },
+                      { icon: <Shield className="w-5 h-5" />, text: 'Never share banking or payment passwords', color: 'text-red-600' },
+                      { icon: <Clock className="w-5 h-5" />, text: 'End session immediately if uncomfortable', color: 'text-orange-600' },
+                      { icon: <UserCheck className="w-5 h-5" />, text: 'Verify agent identity before starting', color: 'text-red-600' },
+                      { icon: <AlertTriangle className="w-5 h-5" />, text: 'Report suspicious behavior to support', color: 'text-orange-600' }
+                    ]).map((item, index) => (
+                      <div key={index} className="flex items-start gap-3 bg-white rounded-lg p-4">
+                        <div className={`${item.color} mt-1`}>{item.icon}</div>
+                        <p className="text-gray-900 font-medium">{item.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Use Cases */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <Briefcase className="w-7 h-7 text-blue-600" />
+                    {userRole === 'agent' ? 'Service Scenarios' : 'Common Use Cases'}
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {(userRole === 'agent' ? [
+                      {
+                        title: 'Platform Onboarding Services',
+                        desc: 'Guide candidates through initial registration, profile setup, and verification processes',
+                        time: '30-45 min per platform'
+                      },
+                      {
+                        title: 'Assessment & Certification Support',
+                        desc: 'Provide real-time guidance during qualification tests and skill assessments',
+                        time: '15-60 min per test'
+                      },
+                      {
+                        title: 'Application Optimization',
+                        desc: 'Review and enhance existing profiles, portfolios, and application materials',
+                        time: '20-30 min per review'
+                      },
+                      {
+                        title: 'Technical Issue Resolution',
+                        desc: 'Troubleshoot platform-specific technical problems and account issues',
+                        time: '15-30 min per issue'
+                      }
+                    ] : [
+                      {
+                        title: 'Platform Applications',
+                        desc: 'Agent guides you through filling out platform applications with optimal answers',
+                        time: '30-45 minutes'
+                      },
+                      {
+                        title: 'Profile Optimization',
+                        desc: 'Agent reviews and improves your profile, portfolio, and application materials',
+                        time: '20-30 minutes'
+                      },
+                      {
+                        title: 'Test Preparation',
+                        desc: 'Agent helps you prepare for and complete platform qualification tests',
+                        time: '15-60 minutes'
+                      },
+                      {
+                        title: 'Technical Issues',
+                        desc: 'Agent helps troubleshoot technical problems with platform access',
+                        time: '15-30 minutes'
+                      }
+                    ]).map((useCase, index) => (
+                      <div key={index} className="p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200">
+                        <h4 className="font-bold text-gray-900 mb-2">{useCase.title}</h4>
+                        <p className="text-sm text-gray-700 mb-2">{useCase.desc}</p>
+                        <div className="flex items-center gap-2 text-xs text-blue-600 font-semibold">
+                          <Clock className="w-4 h-4" />
+                          {useCase.time}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Security Section */}
+            {activeSection === 'security' && (
+              <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">Security & Privacy</h2>
+                    <p className="text-gray-600 mt-1">Manage your security settings and privacy preferences</p>
+                  </div>
+                </div>
+
+                {/* Security Score */}
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 shadow-md border-2 border-green-300">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <Shield className="w-7 h-7 text-green-600" />
+                        Security Score
+                      </h3>
+                      <p className="text-gray-700">Your account security rating</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-5xl font-bold text-green-600">85</div>
+                      <p className="text-sm text-gray-600">/ 100</p>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full" style={{ width: '85%' }}></div>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    Good! Enable two-factor authentication to reach 100.
+                  </p>
+                </div>
+
+                {/* Security Features */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 bg-blue-100 rounded-xl">
+                        <Lock className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900">Password Strength</h3>
+                        <p className="text-sm text-gray-600">Last changed 30 days ago</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="flex-1 bg-green-200 rounded-full h-2">
+                        <div className="bg-green-600 h-2 rounded-full" style={{ width: '80%' }}></div>
+                      </div>
+                      <span className="text-sm font-semibold text-green-600">Strong</span>
+                    </div>
+                    <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                      Change Password
+                    </button>
+                  </div>
+
+                  <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-3 bg-green-100 rounded-xl">
+                        <Shield className="w-6 h-6 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900">Two-Factor Auth</h3>
+                        <p className="text-sm text-gray-600">Not enabled</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Add an extra layer of security to your account
+                    </p>
+                    <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+                      Enable 2FA
+                    </button>
+                  </div>
+                </div>
+
+                {/* Privacy Settings */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Eye className="w-6 h-6 text-blue-600" />
+                    Privacy Settings
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Show profile to other users', desc: 'Make your profile visible in search results' },
+                      { label: 'Allow messages from anyone', desc: 'Receive messages from all platform users' },
+                      { label: 'Show online status', desc: 'Display when you\'re active on the platform' },
+                      { label: 'Share activity data', desc: 'Help us improve by sharing anonymous usage data' }
+                    ].map((setting, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-gray-900">{setting.label}</p>
+                          <p className="text-sm text-gray-600">{setting.desc}</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" defaultChecked className="sr-only peer" />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Data & Privacy */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Folder className="w-6 h-6 text-blue-600" />
+                    Data Management
+                  </h3>
+                  <div className="space-y-3">
+                    <button className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Download className="w-5 h-5 text-blue-600" />
+                        <div className="text-left">
+                          <p className="font-medium text-gray-900">Download Your Data</p>
+                          <p className="text-sm text-gray-600">Get a copy of your account data</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </button>
+                    <button className="w-full flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <FileCheck className="w-5 h-5 text-green-600" />
+                        <div className="text-left">
+                          <p className="font-medium text-gray-900">Privacy Policy</p>
+                          <p className="text-sm text-gray-600">Read our privacy policy</p>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Notifications Section */}
+            {activeSection === 'notifications' && (
+              <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-3xl font-bold text-gray-900">Notification Settings</h2>
+                    <p className="text-gray-600 mt-1">Manage how you receive updates and alerts</p>
+                  </div>
+                </div>
+
+                {/* Email Notifications */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Mail className="w-6 h-6 text-blue-600" />
+                    Email Notifications
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'New messages', desc: 'Get notified when you receive a new message' },
+                      { label: 'Project updates', desc: 'Updates on your active projects' },
+                      { label: 'Payment notifications', desc: 'Receipts and payment confirmations' },
+                      { label: 'Security alerts', desc: 'Important account security updates' },
+                      { label: 'Marketing emails', desc: 'Product updates and promotional offers' }
+                    ].map((notification, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-gray-900">{notification.label}</p>
+                          <p className="text-sm text-gray-600">{notification.desc}</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" defaultChecked={index < 3} className="sr-only peer" />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Push Notifications */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Bell className="w-6 h-6 text-purple-600" />
+                    Push Notifications
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Browser notifications', desc: 'Receive notifications in your browser' },
+                      { label: 'Sound alerts', desc: 'Play a sound for important notifications' },
+                      { label: 'Desktop notifications', desc: 'Show desktop notifications' }
+                    ].map((notification, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="font-medium text-gray-900">{notification.label}</p>
+                          <p className="text-sm text-gray-600">{notification.desc}</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" defaultChecked className="sr-only peer" />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Notification Frequency */}
+                <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Clock className="w-6 h-6 text-orange-600" />
+                    Notification Frequency
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'real-time', label: 'Real-time', desc: 'Get notified immediately' },
+                      { value: 'hourly', label: 'Hourly digest', desc: 'Summary every hour' },
+                      { value: 'daily', label: 'Daily digest', desc: 'One email per day' },
+                      { value: 'weekly', label: 'Weekly digest', desc: 'One email per week' }
+                    ].map((option, index) => (
+                      <label key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                        <input type="radio" name="frequency" defaultChecked={index === 0} className="w-4 h-4 text-blue-600" />
+                        <div>
+                          <p className="font-medium text-gray-900">{option.label}</p>
+                          <p className="text-sm text-gray-600">{option.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
         </div>
+
+        {/* Success Modal */}
+        {showSuccessModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+            <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl animate-scaleIn">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                  <CheckCircle className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Changes Saved!</h3>
+                <p className="text-gray-600 mb-6">Your profile has been updated successfully.</p>
+                <button
+                  onClick={() => setShowSuccessModal(false)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out;
+        }
+
+        .animate-slideDown {
+          animation: slideDown 0.3s ease-out;
+        }
+
+        .animate-scaleIn {
+          animation: scaleIn 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 }
