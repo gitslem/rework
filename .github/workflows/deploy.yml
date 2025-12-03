@@ -26,10 +26,18 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+    - name: Build and push Docker image
+      run: |
+        cd backend
+        gcloud builds submit \
+          --tag us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/rework-backend:${{ github.sha }} \
+          --project ${{ secrets.GCP_PROJECT_ID }} \
+          --quiet
+
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy rework-backend \
-          --source ./backend \
+          --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/rework-backend:${{ github.sha }} \
           --region us-central1 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
           --platform managed \
