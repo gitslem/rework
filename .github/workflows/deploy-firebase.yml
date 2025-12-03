@@ -14,7 +14,7 @@ jobs:
       id-token: 'write'
 
     outputs:
-      backend_url: ${{ steps.deploy.outputs.url }}
+      backend_url: ${{ steps.get-url.outputs.url }}
 
     steps:
       - name: Checkout
@@ -28,29 +28,15 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Configure Docker for Google Cloud
-        run: gcloud auth configure-docker
-
-      - name: Build and Push Docker Image
-        run: |
-          cd backend
-          docker build -t gcr.io/${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}/rework-backend:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}/rework-backend:${{ github.sha }}
-
       - name: Deploy to Cloud Run
         id: deploy
         run: |
           gcloud run deploy rework-backend \
-            --image gcr.io/${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}/rework-backend:${{ github.sha }} \
+            --source backend \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated \
-            --set-env-vars "ENVIRONMENT=production" \
-            --set-env-vars "MAILERSEND_API_KEY=${{ secrets.MAILERSEND_API_KEY }}" \
-            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }}" \
-            --set-env-vars "SECRET_KEY=${{ secrets.SECRET_KEY }}" \
-            --set-env-vars "FRONTEND_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }}" \
-            --set-env-vars "BACKEND_CORS_ORIGINS=${{ secrets.BACKEND_CORS_ORIGINS }}" \
+            --set-env-vars "ENVIRONMENT=production,MAILERSEND_API_KEY=${{ secrets.MAILERSEND_API_KEY }},DATABASE_URL=${{ secrets.DATABASE_URL }},SECRET_KEY=${{ secrets.SECRET_KEY }},FRONTEND_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }},BACKEND_CORS_ORIGINS=${{ secrets.BACKEND_CORS_ORIGINS }}" \
             --project ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
 
       - name: Get Cloud Run URL

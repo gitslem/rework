@@ -26,13 +26,11 @@ export PROJECT_ID="remote-worksio"
 
 # Enable required APIs
 gcloud services enable run.googleapis.com --project=$PROJECT_ID
-gcloud services enable containerregistry.googleapis.com --project=$PROJECT_ID
 gcloud services enable cloudbuild.googleapis.com --project=$PROJECT_ID
 ```
 
 Or enable them via the Cloud Console:
 - https://console.cloud.google.com/apis/library/run.googleapis.com
-- https://console.cloud.google.com/apis/library/containerregistry.googleapis.com
 - https://console.cloud.google.com/apis/library/cloudbuild.googleapis.com
 
 ## Step 2: Configure GitHub Secrets
@@ -97,9 +95,8 @@ Your Firebase service account needs additional permissions for Cloud Run deploym
 3. Click "Edit principal" (pencil icon)
 4. Add these roles:
    - **Cloud Run Admin** (`roles/run.admin`)
+   - **Cloud Build Editor** (`roles/cloudbuild.builds.editor`)
    - **Service Account User** (`roles/iam.serviceAccountUser`)
-   - **Storage Admin** (`roles/storage.admin`)
-   - **Container Registry Service Agent** (`roles/containerregistry.ServiceAgent`)
 
 Or via command line:
 ```bash
@@ -113,15 +110,11 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:$SERVICE_ACCOUNT" \
+  --role="roles/cloudbuild.builds.editor"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:$SERVICE_ACCOUNT" \
   --role="roles/iam.serviceAccountUser"
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="serviceAccount:$SERVICE_ACCOUNT" \
-  --role="roles/storage.admin"
-
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="serviceAccount:$SERVICE_ACCOUNT" \
-  --role="roles/containerregistry.ServiceAgent"
 ```
 
 ## Step 4: Deploy
