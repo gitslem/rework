@@ -1,0 +1,596 @@
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import {
+  MessageSquare,
+  X,
+  Send,
+  Bot,
+  User,
+  Minimize2,
+  Sparkles,
+  Mail,
+  Phone,
+  MapPin,
+  ExternalLink
+} from 'lucide-react';
+
+interface Message {
+  id: string;
+  text: string;
+  isBot: boolean;
+  timestamp: Date;
+  quickActions?: QuickAction[];
+}
+
+interface QuickAction {
+  label: string;
+  action: () => void;
+}
+
+const FAQ_DATA = [
+  {
+    category: "Getting Started",
+    keywords: ["what is", "sign up", "join", "fee", "approval", "start", "begin", "how to"],
+    faqs: [
+      {
+        question: "What is Remote-Works?",
+        answer: "Remote-Works is a marketplace that connects candidates with verified agents who help them get approved for projects on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, and more. Our agents have proven track records and provide personalized guidance to maximize your chances of approval."
+      },
+      {
+        question: "How do I sign up?",
+        answer: "Click 'Get Started' on our homepage and choose whether you want to sign up as a candidate or agent. Fill out your profile information and wait for admin approval (usually 24-48 hours). Once approved, candidates can browse agents and agents can start accepting clients."
+      },
+      {
+        question: "Is there a fee to join?",
+        answer: "Signing up is completely free for both candidates and agents. Candidates only pay when they hire an agent, and agents only pay a small platform fee when they complete a successful placement."
+      },
+      {
+        question: "How long does admin approval take?",
+        answer: "Admin approval typically takes 24-48 hours. We review each profile to ensure quality and authenticity. You'll receive an email notification once your account is approved."
+      }
+    ]
+  },
+  {
+    category: "For Candidates",
+    keywords: ["agent", "charge", "fee", "cost", "price", "success", "approval", "candidate", "hire"],
+    faqs: [
+      {
+        question: "How much do agents charge?",
+        answer: "Agent fees vary based on the service and platform. Most agents charge between $50-$200, but you only pay if you get approved. Each agent's profile lists their specific rates for different platforms."
+      },
+      {
+        question: "What's the success rate?",
+        answer: "Our verified agents have a 98% success rate in getting candidates approved. We only work with agents who have proven track records and consistently deliver results."
+      },
+      {
+        question: "How do I choose an agent?",
+        answer: "Browse agent profiles to see their specializations, success rates, reviews, and pricing. Look for agents who specialize in the platforms you're interested in and have high ratings from previous clients."
+      }
+    ]
+  },
+  {
+    category: "Payments & Security",
+    keywords: ["payment", "pay", "refund", "secure", "security", "data", "privacy", "credit card"],
+    faqs: [
+      {
+        question: "How does payment work?",
+        answer: "Candidates pay upfront, and funds are held in secure escrow. When the candidate gets approved for the platform, the funds are released to the agent. If approval doesn't happen (and the agent offers a guarantee), funds are refunded to the candidate."
+      },
+      {
+        question: "Is my payment information secure?",
+        answer: "Yes. We use industry-standard encryption and work with trusted payment processors (Stripe, PayPal). We never store your full credit card information on our servers."
+      },
+      {
+        question: "Can I get a refund?",
+        answer: "Refund policies depend on the agent's guarantee. Most agents offer full refunds if you don't get approved. Check the agent's profile for their specific refund policy."
+      }
+    ]
+  },
+  {
+    category: "Platform Features",
+    keywords: ["message", "review", "dispute", "support", "contact", "help", "profile", "update"],
+    faqs: [
+      {
+        question: "Can I message agents before hiring?",
+        answer: "Yes! You can message agents to ask questions and discuss your situation before making a commitment. This helps ensure you find the right fit."
+      },
+      {
+        question: "Is there customer support?",
+        answer: "Yes! We offer 24/7 email support and live chat during business hours (9 AM - 6 PM EST). Premium users get priority support with faster response times."
+      },
+      {
+        question: "What if I have a dispute with an agent?",
+        answer: "Contact our support team immediately. We'll mediate the dispute and, if necessary, issue refunds or take action against agents who violate our terms of service."
+      }
+    ]
+  },
+  {
+    category: "Supported Platforms",
+    keywords: ["platform", "outlier", "alignerr", "oneforma", "appen", "rws", "mindrift", "telus", "support"],
+    faqs: [
+      {
+        question: "Which platforms do you support?",
+        answer: "Our agents help with Outlier AI, Alignerr, OneForma, Appen, RWS, Mindrift AI, TELUS Digital, and 20+ other AI training and remote work platforms. New platforms are added regularly based on demand."
+      },
+      {
+        question: "Can agents help with multiple platforms?",
+        answer: "Yes! Many agents specialize in multiple platforms. Check their profile to see which services they offer."
+      }
+    ]
+  }
+];
+
+export default function ReworkAI() {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadData, setLeadData] = useState({ name: '', email: '', message: '' });
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen && !isMinimized && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen, isMinimized]);
+
+  const findBestAnswer = (query: string): string | null => {
+    const lowerQuery = query.toLowerCase();
+
+    // Check for greetings
+    if (lowerQuery.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
+      return "Hello! 👋 I'm Rework AI, your 24/7 assistant for Remote-Works. I can help you with:\n\n• Understanding how our platform works\n• Answering questions about agents and candidates\n• Information about pricing and payments\n• Navigating the platform\n• Connecting you with human support\n\nHow can I assist you today?";
+    }
+
+    // Check for navigation requests
+    if (lowerQuery.includes('navigate') || lowerQuery.includes('go to') || lowerQuery.includes('find page')) {
+      return "I can help you navigate to different pages:\n\n• Home page\n• Browse Agents\n• FAQ\n• About Us\n• Support\n• Sign Up/Login\n\nWhich page would you like to visit?";
+    }
+
+    // Search through FAQ data
+    for (const category of FAQ_DATA) {
+      // Check if query matches category keywords
+      const matchesCategory = category.keywords.some(keyword =>
+        lowerQuery.includes(keyword)
+      );
+
+      if (matchesCategory) {
+        // Find the most relevant FAQ
+        for (const faq of category.faqs) {
+          const questionWords = faq.question.toLowerCase().split(' ');
+          const queryWords = lowerQuery.split(' ');
+
+          const matchCount = queryWords.filter(word =>
+            questionWords.some(qWord => qWord.includes(word) || word.includes(qWord))
+          ).length;
+
+          if (matchCount >= 2 || lowerQuery.includes(faq.question.toLowerCase())) {
+            return faq.answer;
+          }
+        }
+
+        // If category matches but no specific FAQ, return first FAQ from category
+        if (category.faqs.length > 0) {
+          return `${category.faqs[0].answer}\n\nWould you like to know more about ${category.category.toLowerCase()}?`;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const addMessage = (text: string, isBot: boolean, quickActions?: QuickAction[]) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      isBot,
+      timestamp: new Date(),
+      quickActions
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const handleSendMessage = () => {
+    if (!inputValue.trim()) return;
+
+    const userMessage = inputValue.trim();
+    addMessage(userMessage, false);
+    setInputValue('');
+
+    // Simulate typing delay
+    setTimeout(() => {
+      const answer = findBestAnswer(userMessage);
+
+      if (answer) {
+        addMessage(answer, true, [
+          {
+            label: "Talk to Human",
+            action: () => handleEscalateToHuman()
+          },
+          {
+            label: "More Questions",
+            action: () => handleMoreQuestions()
+          }
+        ]);
+      } else {
+        addMessage(
+          "I don't have a specific answer for that question, but I'd be happy to connect you with our support team who can help! Would you like to:",
+          true,
+          [
+            {
+              label: "Contact Support",
+              action: () => handleEscalateToHuman()
+            },
+            {
+              label: "View FAQ",
+              action: () => router.push('/faq')
+            },
+            {
+              label: "Leave a Message",
+              action: () => setShowLeadForm(true)
+            }
+          ]
+        );
+      }
+    }, 800);
+  };
+
+  const handleEscalateToHuman = () => {
+    addMessage("I'd like to speak with a human support agent", false);
+    setTimeout(() => {
+      addMessage(
+        "I'll connect you with our support team right away! You can reach them through:",
+        true,
+        [
+          {
+            label: "Go to Support Page",
+            action: () => router.push('/support')
+          },
+          {
+            label: "Leave a Message",
+            action: () => setShowLeadForm(true)
+          }
+        ]
+      );
+    }, 500);
+  };
+
+  const handleMoreQuestions = () => {
+    addMessage(
+      "Great! Here are some topics I can help you with:\n\n• Getting started with Remote-Works\n• Agent fees and pricing\n• Payment and security\n• Platform features\n• Supported platforms\n\nWhat would you like to know?",
+      true
+    );
+  };
+
+  const handleQuickAction = (label: string) => {
+    if (label.toLowerCase().includes('started')) {
+      addMessage("How do I get started?", false);
+      setTimeout(() => {
+        const answer = findBestAnswer("how do i sign up");
+        if (answer) {
+          addMessage(answer, true, [
+            {
+              label: "Sign Up Now",
+              action: () => router.push('/register')
+            },
+            {
+              label: "Learn More",
+              action: () => router.push('/about')
+            }
+          ]);
+        }
+      }, 800);
+    } else if (label.toLowerCase().includes('pricing')) {
+      addMessage("How much does it cost?", false);
+      setTimeout(() => {
+        const answer = findBestAnswer("how much do agents charge");
+        if (answer) {
+          addMessage(answer, true);
+        }
+      }, 800);
+    } else if (label.toLowerCase().includes('agents')) {
+      addMessage("How do I find agents?", false);
+      setTimeout(() => {
+        addMessage(
+          "You can browse our verified agents who specialize in different platforms. Each agent's profile shows their success rate, reviews, and pricing. Ready to explore?",
+          true,
+          [
+            {
+              label: "Browse Agents",
+              action: () => router.push('/browse-agents')
+            },
+            {
+              label: "Sign Up First",
+              action: () => router.push('/register')
+            }
+          ]
+        );
+      }, 800);
+    } else if (label.toLowerCase().includes('support')) {
+      handleEscalateToHuman();
+    }
+  };
+
+  const handleSubmitLead = () => {
+    if (!leadData.name || !leadData.email || !leadData.message) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    // Here you would typically send this to your backend
+    console.log('Lead submitted:', leadData);
+
+    setShowLeadForm(false);
+    addMessage(
+      `Thank you, ${leadData.name}! 🎉\n\nWe've received your message and our support team will get back to you at ${leadData.email} within 24 hours. We appreciate your patience!`,
+      true
+    );
+    setLeadData({ name: '', email: '', message: '' });
+  };
+
+  const openChat = () => {
+    setIsOpen(true);
+    setIsMinimized(false);
+
+    if (messages.length === 0) {
+      setTimeout(() => {
+        addMessage(
+          "Hi there! 👋 I'm Rework AI, your 24/7 virtual assistant.\n\nI can help you with questions about Remote-Works, guide you through our platform, and connect you with our support team.\n\nHow can I assist you today?",
+          true,
+          []
+        );
+
+        // Add quick action buttons after initial message
+        setTimeout(() => {
+          addMessage(
+            "Here are some quick options to get started:",
+            true,
+            [
+              {
+                label: "🚀 Get Started",
+                action: () => handleQuickAction("Get Started")
+              },
+              {
+                label: "💰 Pricing Info",
+                action: () => handleQuickAction("Pricing")
+              },
+              {
+                label: "👥 Find Agents",
+                action: () => handleQuickAction("Find Agents")
+              },
+              {
+                label: "💬 Contact Support",
+                action: () => handleQuickAction("Contact Support")
+              }
+            ]
+          );
+        }, 1000);
+      }, 500);
+    }
+  };
+
+  if (!isOpen) {
+    return (
+      <button
+        onClick={openChat}
+        className="fixed bottom-6 right-6 z-50 bg-black text-white rounded-full p-4 shadow-2xl hover:scale-110 transition-all duration-300 group animate-bounce-subtle"
+        aria-label="Open Rework AI Chat"
+      >
+        <div className="relative">
+          <MessageSquare className="w-7 h-7" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+        </div>
+        <div className="absolute bottom-full right-0 mb-2 px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <Sparkles className="w-4 h-4 inline mr-1" />
+          Chat with Rework AI
+        </div>
+      </button>
+    );
+  }
+
+  if (isMinimized) {
+    return (
+      <div className="fixed bottom-6 right-6 z-50">
+        <button
+          onClick={() => setIsMinimized(false)}
+          className="bg-black text-white rounded-full px-6 py-3 shadow-2xl hover:scale-105 transition-all duration-200 flex items-center space-x-2"
+        >
+          <Bot className="w-5 h-5" />
+          <span className="font-semibold">Rework AI</span>
+          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-3rem)] animate-fade-in-scale">
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col h-[600px] max-h-[calc(100vh-3rem)]">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-black to-gray-800 text-white px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <Bot className="w-6 h-6 text-black" />
+              </div>
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg flex items-center">
+                Rework AI
+                <Sparkles className="w-4 h-4 ml-2" />
+              </h3>
+              <p className="text-xs text-gray-300">Online • Typically replies instantly</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsMinimized(true)}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="Minimize chat"
+            >
+              <Minimize2 className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              aria-label="Close chat"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Messages */}
+        {!showLeadForm ? (
+          <>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+              {messages.map((message) => (
+                <div key={message.id} className="space-y-2">
+                  <div className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`flex items-start space-x-2 max-w-[80%] ${message.isBot ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.isBot ? 'bg-black text-white' : 'bg-gray-300 text-gray-700'}`}>
+                        {message.isBot ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                      </div>
+                      <div className={`rounded-2xl px-4 py-3 ${message.isBot ? 'bg-white border border-gray-200' : 'bg-black text-white'}`}>
+                        <p className="text-sm whitespace-pre-line leading-relaxed">{message.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {message.quickActions && message.quickActions.length > 0 && (
+                    <div className="flex flex-wrap gap-2 ml-10">
+                      {message.quickActions.map((action, idx) => (
+                        <button
+                          key={idx}
+                          onClick={action.action}
+                          className="px-4 py-2 bg-white border-2 border-black text-black rounded-full text-sm font-medium hover:bg-black hover:text-white transition-all duration-200"
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="border-t border-gray-200 p-4 bg-white">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendMessage();
+                }}
+                className="flex items-center space-x-2"
+              >
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:border-black transition-colors text-sm"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className="bg-black text-white p-3 rounded-full hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Send message"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </form>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Powered by Rework AI • 24/7 Support
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Lead Form */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+              <div className="text-center mb-6">
+                <Mail className="w-12 h-12 mx-auto mb-3 text-black" />
+                <h4 className="font-bold text-xl text-gray-900">Leave us a message</h4>
+                <p className="text-sm text-gray-600 mt-2">
+                  We'll get back to you within 24 hours
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={leadData.name}
+                    onChange={(e) => setLeadData({ ...leadData, name: e.target.value })}
+                    placeholder="John Doe"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    value={leadData.email}
+                    onChange={(e) => setLeadData({ ...leadData, email: e.target.value })}
+                    placeholder="john@example.com"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Message *
+                  </label>
+                  <textarea
+                    value={leadData.message}
+                    onChange={(e) => setLeadData({ ...leadData, message: e.target.value })}
+                    placeholder="How can we help you?"
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors resize-none"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-200 p-4 bg-white space-y-2">
+              <button
+                onClick={handleSubmitLead}
+                className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+              >
+                Send Message
+              </button>
+              <button
+                onClick={() => setShowLeadForm(false)}
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+              >
+                Back to Chat
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
