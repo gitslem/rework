@@ -83,6 +83,9 @@ export default function CandidateDashboard() {
   const [sendingReply, setSendingReply] = useState(false);
   const [messageFilter, setMessageFilter] = useState<'all' | 'unread' | 'read'>('all');
 
+  // Projects count
+  const [projectsCount, setProjectsCount] = useState(0);
+
   useEffect(() => {
     checkAuthAndLoadProfile();
   }, []);
@@ -136,6 +139,7 @@ export default function CandidateDashboard() {
         if (approved) {
           await loadAgents(db, firebaseUser.uid);
           await loadMessages(db, firebaseUser.uid);
+          await loadProjectsCount(db, firebaseUser.uid);
         }
 
         setLoading(false);
@@ -149,6 +153,21 @@ export default function CandidateDashboard() {
   const handleLogout = () => {
     logout();
     router.push('/');
+  };
+
+  const loadProjectsCount = async (db: any, candidateId: string) => {
+    try {
+      const projectsQuery = query(
+        collection(db, 'candidate_projects'),
+        where('candidate_id', '==', candidateId)
+      );
+
+      const projectsSnapshot = await getDocs(projectsQuery);
+      setProjectsCount(projectsSnapshot.size);
+    } catch (error) {
+      console.error('Error loading projects count:', error);
+      setProjectsCount(0);
+    }
   };
 
   const loadMessages = async (db: any, candidateId: string) => {
@@ -554,7 +573,7 @@ export default function CandidateDashboard() {
     { label: 'Active Agents', value: agents.length.toString(), icon: <Users className="w-6 h-6" />, color: 'from-blue-500 to-blue-600', bgColor: 'bg-blue-50' },
     { label: 'Messages', value: messages.length.toString(), icon: <MessageSquare className="w-6 h-6" />, color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-50' },
     { label: 'Unread', value: unreadCount.toString(), icon: <Bell className="w-6 h-6" />, color: 'from-orange-500 to-orange-600', bgColor: 'bg-orange-50' },
-    { label: 'Projects', value: '0', icon: <FileText className="w-6 h-6" />, color: 'from-green-500 to-green-600', bgColor: 'bg-green-50' },
+    { label: 'Projects', value: projectsCount.toString(), icon: <FileText className="w-6 h-6" />, color: 'from-green-500 to-green-600', bgColor: 'bg-green-50' },
   ];
 
   return (
