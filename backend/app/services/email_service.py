@@ -64,17 +64,32 @@ class EmailService:
                 self.mailer.set_plaintext_content(text_content, mail_body)
 
             # Send email
+            logger.info(f"Attempting to send email to {to_email} with subject: {subject}")
+            logger.info(f"Using sender: {self.from_name} <{self.from_email}>")
+
             response = self.mailer.send(mail_body)
 
-            if response:
-                logger.info(f"Email sent successfully to {to_email}")
+            # Check response - MailerSend returns HTTP response
+            if response and hasattr(response, 'status_code'):
+                if response.status_code == 202:  # MailerSend returns 202 for accepted emails
+                    logger.info(f"✅ Email sent successfully to {to_email} (Status: {response.status_code})")
+                    return True
+                else:
+                    logger.error(f"❌ Failed to send email to {to_email}. Status: {response.status_code}")
+                    if hasattr(response, 'text'):
+                        logger.error(f"Response: {response.text}")
+                    return False
+            elif response:
+                # Fallback if response doesn't have status_code
+                logger.info(f"✅ Email queued for {to_email}")
                 return True
             else:
-                logger.error(f"Failed to send email to {to_email}")
+                logger.error(f"❌ Failed to send email to {to_email} - No response received")
                 return False
 
         except Exception as e:
-            logger.error(f"Error sending email to {to_email}: {str(e)}")
+            logger.error(f"❌ Error sending email to {to_email}: {str(e)}")
+            logger.exception("Full traceback:")
             return False
 
     def send_project_created_notification(
