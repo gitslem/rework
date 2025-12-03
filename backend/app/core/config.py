@@ -25,8 +25,9 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = ["http://localhost:3000"]
 
     # Email
-    SENDGRID_API_KEY: str = ""
+    MAILERSEND_API_KEY: str = "mlsn.9889284d06ac747a2b60c558f1c8df50a4dfd177281ee966fd9740c109ce49fe"
     FROM_EMAIL: str = "noreply@remote-works.io"
+    FROM_NAME: str = "Remote-Works"
 
     # Stripe
     STRIPE_SECRET_KEY: str = ""

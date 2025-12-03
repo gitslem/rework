@@ -1,7 +1,6 @@
-"""Email notification service using SendGrid"""
+"""Email notification service using MailerSend"""
 from typing import Optional
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email, To, Content
+from mailersend import emails
 from app.core.config import settings
 import logging
 
@@ -12,43 +11,66 @@ class EmailService:
     """Service for sending email notifications"""
 
     def __init__(self):
-        """Initialize the email service with SendGrid API key"""
-        self.api_key = settings.SENDGRID_API_KEY
+        """Initialize the email service with MailerSend API key"""
+        self.api_key = settings.MAILERSEND_API_KEY
         self.from_email = settings.FROM_EMAIL
+        self.from_name = settings.FROM_NAME
         self.frontend_url = settings.FRONTEND_URL
+        self.mailer = emails.NewEmail(self.api_key)
 
-    def _send_email(self, to_email: str, subject: str, html_content: str) -> bool:
+    def _send_email(self, to_email: str, to_name: str, subject: str, html_content: str, text_content: str = None) -> bool:
         """
-        Internal method to send email via SendGrid
+        Internal method to send email via MailerSend
 
         Args:
             to_email: Recipient email address
+            to_name: Recipient name
             subject: Email subject
             html_content: HTML content of the email
+            text_content: Plain text content (optional)
 
         Returns:
             True if email sent successfully, False otherwise
         """
-        if not self.api_key:
-            logger.warning("SendGrid API key not configured. Email not sent.")
+        if not self.api_key or self.api_key == "":
+            logger.warning("MailerSend API key not configured. Email not sent.")
             return False
 
         try:
-            message = Mail(
-                from_email=Email(self.from_email, "Remote-Works"),
-                to_emails=To(to_email),
-                subject=subject,
-                html_content=Content("text/html", html_content)
-            )
+            # Set mail body
+            mail_body = {}
 
-            sg = SendGridAPIClient(self.api_key)
-            response = sg.send(message)
+            # From
+            mail_from = {
+                "name": self.from_name,
+                "email": self.from_email,
+            }
 
-            if response.status_code in [200, 201, 202]:
+            # Recipients
+            recipients = [
+                {
+                    "name": to_name,
+                    "email": to_email,
+                }
+            ]
+
+            # Set recipients
+            self.mailer.set_mail_from(mail_from, mail_body)
+            self.mailer.set_mail_to(recipients, mail_body)
+            self.mailer.set_subject(subject, mail_body)
+            self.mailer.set_html_content(html_content, mail_body)
+
+            if text_content:
+                self.mailer.set_plaintext_content(text_content, mail_body)
+
+            # Send email
+            response = self.mailer.send(mail_body)
+
+            if response:
                 logger.info(f"Email sent successfully to {to_email}")
                 return True
             else:
-                logger.error(f"Failed to send email. Status code: {response.status_code}")
+                logger.error(f"Failed to send email to {to_email}")
                 return False
 
         except Exception as e:
@@ -177,7 +199,23 @@ class EmailService:
         </html>
         """
 
-        return self._send_email(candidate_email, subject, html_content)
+        text_content = f"""
+        New Project Created: {project_title}
+
+        Hi {candidate_name},
+
+        Great news! Your agent {agent_name} has created a new project for you{platform_text}.
+
+        Project: {project_title}
+        {project_description}
+
+        View your project at: {self.frontend_url}/candidate-projects/{project_id}
+
+        Best regards,
+        The Remote-Works Team
+        """
+
+        return self._send_email(candidate_email, candidate_name, subject, html_content, text_content)
 
     def send_project_updated_notification(
         self,
@@ -205,6 +243,7 @@ class EmailService:
         subject = f"Project Updated: {project_title}"
 
         update_text = f"<p><strong>What changed:</strong> {update_summary}</p>" if update_summary else ""
+        update_text_plain = f"\n\nWhat changed: {update_summary}" if update_summary else ""
 
         html_content = f"""
         <!DOCTYPE html>
@@ -299,7 +338,20 @@ class EmailService:
         </html>
         """
 
-        return self._send_email(candidate_email, subject, html_content)
+        text_content = f"""
+        Project Updated: {project_title}
+
+        Hi {candidate_name},
+
+        Your agent {agent_name} has made updates to your project: {project_title}{update_text_plain}
+
+        View your updated project at: {self.frontend_url}/candidate-projects/{project_id}
+
+        Best regards,
+        The Remote-Works Team
+        """
+
+        return self._send_email(candidate_email, candidate_name, subject, html_content, text_content)
 
     def send_project_status_changed_notification(
         self,
@@ -442,7 +494,22 @@ class EmailService:
         </html>
         """
 
-        return self._send_email(candidate_email, subject, html_content)
+        text_content = f"""
+        Project Status Changed: {project_title}
+
+        Hi {candidate_name},
+
+        Your agent {agent_name} has updated the status of your project: {project_title}
+
+        Status changed from {old_status} to {new_status}
+
+        View your project at: {self.frontend_url}/candidate-projects/{project_id}
+
+        Best regards,
+        The Remote-Works Team
+        """
+
+        return self._send_email(candidate_email, candidate_name, subject, html_content, text_content)
 
 
 # Singleton instance
