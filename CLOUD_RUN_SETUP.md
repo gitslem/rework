@@ -35,62 +35,99 @@ Or enable them via the Cloud Console:
 - https://console.cloud.google.com/apis/library/cloudbuild.googleapis.com
 - https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com
 
-## Step 2: Configure GitHub Secrets
+## Step 2: Set Up Google Cloud Secrets
 
-You need to add the following secrets to your GitHub repository. Go to:
+The deployment uses Google Secret Manager to securely store sensitive configuration. You have two options:
+
+### Option A: Use the Setup Script (Recommended)
+
+```bash
+./setup-gcp-secrets.sh
+```
+
+This interactive script will:
+1. Enable Secret Manager API
+2. Create all required secrets
+3. Grant access to the Cloud Run service account
+
+### Option B: Manual Setup
+
+Create these secrets in Google Secret Manager:
+
+```bash
+# Set your project ID
+export PROJECT_ID="your-project-id"
+
+# Enable Secret Manager API
+gcloud services enable secretmanager.googleapis.com --project=$PROJECT_ID
+
+# Create secrets (you'll be prompted for values)
+echo -n "your-database-url" | gcloud secrets create DATABASE_URL \
+  --data-file=- --replication-policy="automatic" --project=$PROJECT_ID
+
+echo -n "$(openssl rand -hex 32)" | gcloud secrets create SECRET_KEY \
+  --data-file=- --replication-policy="automatic" --project=$PROJECT_ID
+
+echo -n "your-mailersend-api-key" | gcloud secrets create MAILERSEND_API_KEY \
+  --data-file=- --replication-policy="automatic" --project=$PROJECT_ID
+
+echo -n '["https://www.remote-works.io","https://remote-works.io"]' | gcloud secrets create BACKEND_CORS_ORIGINS \
+  --data-file=- --replication-policy="automatic" --project=$PROJECT_ID
+```
+
+### Required Secret Values
+
+1. **DATABASE_URL** - Database connection string
+   - SQLite (testing): `sqlite:///./remoteworks.db`
+   - PostgreSQL: `postgresql://user:pass@host:port/db`
+   - Cloud SQL: `postgresql://user:pass@/db?host=/cloudsql/PROJECT:REGION:INSTANCE`
+
+2. **SECRET_KEY** - JWT token signing key
+   - Generate with: `openssl rand -hex 32`
+
+3. **MAILERSEND_API_KEY** - MailerSend API key
+   - Get from: https://app.mailersend.com/api-tokens
+   - Format: `mlsn.xxxxxxxxxxxxx`
+
+4. **BACKEND_CORS_ORIGINS** - Allowed CORS origins (JSON array)
+   - Example: `["https://www.remote-works.io","https://remote-works.io"]`
+
+## Step 3: Configure GitHub Secrets
+
+Add these secrets to your GitHub repository:
 **Settings → Secrets and variables → Actions → New repository secret**
 
-### Required Secrets
+### Required GitHub Secrets
 
-#### 1. MAILERSEND_API_KEY
-Your MailerSend API key for sending email notifications.
-- Get from: https://app.mailersend.com/api-tokens
-- Format: `mlsn.xxxxxxxxxxxxx`
+1. **WORKLOAD_IDENTITY_PROVIDER**
+   - Your Workload Identity Provider resource name
+   - Format: `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID`
+   - See setup guide: https://github.com/google-github-actions/auth#setup
 
-#### 2. DATABASE_URL
-Your database connection string.
+2. **GCP_SERVICE_ACCOUNT**
+   - Service account email for deployment
+   - Format: `github-actions@PROJECT_ID.iam.gserviceaccount.com`
+   - **NOT** the firebase-adminsdk account
 
-For SQLite (testing/development):
-```
-sqlite:///./remoteworks.db
-```
+3. **GCP_PROJECT_ID**
+   - Your Google Cloud project ID
 
-For PostgreSQL (production recommended):
-```
-postgresql://username:password@host:port/database
-```
+4. **NEXT_PUBLIC_SITE_URL**
+   - Your production frontend URL
+   - Example: `https://www.remote-works.io`
 
-For Google Cloud SQL:
-```
-postgresql://username:password@/database?host=/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME
-```
+5. **FROM_EMAIL**
+   - Email address for notifications
+   - Example: `noreply@remote-works.io`
 
-#### 3. SECRET_KEY
-A secure random key for JWT token signing.
-
-Generate with:
-```bash
-openssl rand -hex 32
-```
-
-#### 4. BACKEND_CORS_ORIGINS
-JSON array of allowed CORS origins (should include your frontend URL).
-
-Format:
-```json
-["https://www.remote-works.io","https://remote-works.io"]
-```
-
-#### 5. Existing Secrets
-Make sure these are already set (they should be from your Firebase setup):
-- `FIREBASE_SERVICE_ACCOUNT` - Your Firebase service account JSON
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` - Your Firebase project ID
-- `NEXT_PUBLIC_SITE_URL` - Your production site URL
+### Existing Secrets (from Firebase setup)
+- `FIREBASE_SERVICE_ACCOUNT` - Firebase service account JSON (used for Firebase Hosting only)
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` - Firebase project ID
 - All other `NEXT_PUBLIC_FIREBASE_*` secrets
 
-## Step 3: Grant Permissions to Service Account
+## Step 4: Grant Permissions to Service Account
 
-Your Firebase service account needs additional permissions for Cloud Run deployment.
+The service account specified in GCP_SERVICE_ACCOUNT needs proper IAM permissions.
 
 1. Go to Google Cloud Console: https://console.cloud.google.com/iam-admin/iam
 2. Find the service account used in `FIREBASE_SERVICE_ACCOUNT`
@@ -124,7 +161,26 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
   --role="roles/iam.serviceAccountUser"
 ```
 
-## Step 4: Deploy
+## Step 5: Grant Secret Access
+
+The Cloud Run service account needs access to read secrets from Secret Manager:
+
+```bash
+# Get your service account email
+SERVICE_ACCOUNT="github-actions@PROJECT_ID.iam.gserviceaccount.com"
+
+# Grant secret accessor role for each secret
+for secret in DATABASE_URL SECRET_KEY MAILERSEND_API_KEY BACKEND_CORS_ORIGINS; do
+  gcloud secrets add-iam-policy-binding $secret \
+    --member="serviceAccount:$SERVICE_ACCOUNT" \
+    --role="roles/secretmanager.secretAccessor" \
+    --project=$PROJECT_ID
+done
+```
+
+Or use the setup script which does this automatically.
+
+## Step 6: Deploy
 
 Once secrets are configured, push to the main branch:
 
@@ -140,7 +196,7 @@ GitHub Actions will:
 3. ✅ Build frontend with the backend URL
 4. ✅ Deploy frontend to Firebase Hosting
 
-## Step 5: Verify Deployment
+## Step 7: Verify Deployment
 
 ### Check Backend Deployment
 
@@ -173,7 +229,7 @@ curl $BACKEND_URL/health
 3. Check the browser console for email notification logs
 4. Candidate should receive an email notification
 
-## Step 6: Monitor Logs
+## Step 8: Monitor Logs
 
 ### Backend Logs (Cloud Run)
 

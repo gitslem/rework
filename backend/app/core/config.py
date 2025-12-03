@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: Union[str, List[str]] = ["http://localhost:3000"]
 
     # Email
-    MAILERSEND_API_KEY: str = "mlsn.dd1a69c9738d7806d730cb8d4e7be44555d60044092fdb9906e0dd4aad6a5998"
+    MAILERSEND_API_KEY: str = ""  # MUST be set via environment variable or secret
     FROM_EMAIL: str = "noreply@remote-works.io"
     FROM_NAME: str = "Remote-Works"
 
