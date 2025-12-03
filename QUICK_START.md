@@ -10,6 +10,7 @@ Visit Google Cloud Console and enable these APIs for your project:
 
 - [ ] Cloud Run API: https://console.cloud.google.com/apis/library/run.googleapis.com
 - [ ] Cloud Build API: https://console.cloud.google.com/apis/library/cloudbuild.googleapis.com
+- [ ] Artifact Registry API: https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com
 
 ### 2. Add GitHub Secrets (10 minutes)
 
@@ -26,15 +27,16 @@ Add these new secrets:
 
 ### 3. Grant Service Account Permissions (5 minutes)
 
-Your Firebase service account needs Cloud Run and Cloud Build permissions.
+Your Firebase service account needs Cloud Run, Cloud Build, and Artifact Registry permissions.
 
 **Option A: Via Cloud Console**
 1. Go to: https://console.cloud.google.com/iam-admin/iam
 2. Find your Firebase service account (looks like `firebase-adminsdk-xxxxx@...`)
 3. Click Edit (pencil icon)
-4. Add these roles:
+4. Add these 4 roles:
    - Cloud Run Admin
    - Cloud Build Editor
+   - Artifact Registry Writer
    - Service Account User
 5. Save
 
@@ -51,6 +53,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:$SA_EMAIL" \
   --role="roles/cloudbuild.builds.editor"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:$SA_EMAIL" \
+  --role="roles/artifactregistry.writer"
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:$SA_EMAIL" \

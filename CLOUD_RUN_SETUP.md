@@ -27,11 +27,13 @@ export PROJECT_ID="remote-worksio"
 # Enable required APIs
 gcloud services enable run.googleapis.com --project=$PROJECT_ID
 gcloud services enable cloudbuild.googleapis.com --project=$PROJECT_ID
+gcloud services enable artifactregistry.googleapis.com --project=$PROJECT_ID
 ```
 
 Or enable them via the Cloud Console:
 - https://console.cloud.google.com/apis/library/run.googleapis.com
 - https://console.cloud.google.com/apis/library/cloudbuild.googleapis.com
+- https://console.cloud.google.com/apis/library/artifactregistry.googleapis.com
 
 ## Step 2: Configure GitHub Secrets
 
@@ -96,6 +98,7 @@ Your Firebase service account needs additional permissions for Cloud Run deploym
 4. Add these roles:
    - **Cloud Run Admin** (`roles/run.admin`)
    - **Cloud Build Editor** (`roles/cloudbuild.builds.editor`)
+   - **Artifact Registry Writer** (`roles/artifactregistry.writer`)
    - **Service Account User** (`roles/iam.serviceAccountUser`)
 
 Or via command line:
@@ -111,6 +114,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:$SERVICE_ACCOUNT" \
   --role="roles/cloudbuild.builds.editor"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:$SERVICE_ACCOUNT" \
+  --role="roles/artifactregistry.writer"
 
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:$SERVICE_ACCOUNT" \
