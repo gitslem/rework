@@ -13,6 +13,37 @@
 - Configure Workload Identity Federation
 - Add GitHub secrets: `WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT`
 
+### 1.1. ❌ Missing ActAs Permission (CRITICAL)
+**Issue**: Service account can't "act as" the Cloud Run runtime service account
+```
+ERROR: Permission 'iam.serviceaccounts.actAs' denied on service account
+706683337174-compute@developer.gserviceaccount.com
+```
+
+**Why**: Cloud Run needs to run containers as the default compute service account. The GitHub Actions service account must have permission to "impersonate" or "act as" this runtime account.
+
+**Solution**: Grant `roles/iam.serviceAccountUser` on the compute service account itself:
+```bash
+gcloud iam service-accounts add-iam-policy-binding \
+  PROJECT_NUMBER-compute@developer.gserviceaccount.com \
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+```
+
+### 1.2. ❌ Missing Artifact Registry Repository
+**Issue**: Repository doesn't exist and service account can't create it
+```
+ERROR: PERMISSION_DENIED: Permission 'artifactregistry.repositories.create' denied
+```
+
+**Solution**: Pre-create the repository:
+```bash
+gcloud artifacts repositories create cloud-run-source-deploy \
+  --repository-format=docker \
+  --location=us-central1 \
+  --project=PROJECT_ID
+```
+
 ### 2. ❌ Deploying from Wrong Directory
 **Issue**: Workflow was deploying from root directory (`.`) but Dockerfile is in `backend/`
 ```yaml
@@ -51,7 +82,9 @@ MAILERSEND_API_KEY: str = "mlsn.dd1a69c9738d7806d730cb8d4e7be44555d60044092fdb99
 ### 1. Updated GitHub Actions Workflow (`.github/workflows/deploy.yml`)
 
 **Changes**:
-- ✅ Fixed source directory: `--source ./backend`
+- ✅ Separated build and deploy steps for better control
+- ✅ Build Docker image first with `gcloud builds submit`
+- ✅ Deploy pre-built image to Cloud Run
 - ✅ Added environment variables via `--set-env-vars`
 - ✅ Added secret references via `--set-secrets`
 - ✅ Added resource limits (512Mi memory, 1 CPU)
@@ -60,10 +93,18 @@ MAILERSEND_API_KEY: str = "mlsn.dd1a69c9738d7806d730cb8d4e7be44555d60044092fdb99
 - ✅ Enabled public access with `--allow-unauthenticated`
 
 ```yaml
+- name: Build and push Docker image
+  run: |
+    cd backend
+    gcloud builds submit \
+      --tag us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/rework-backend:${{ github.sha }} \
+      --project ${{ secrets.GCP_PROJECT_ID }} \
+      --quiet
+
 - name: Deploy to Cloud Run
   run: |
     gcloud run deploy rework-backend \
-      --source ./backend \
+      --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/rework-backend:${{ github.sha }} \
       --region us-central1 \
       --project ${{ secrets.GCP_PROJECT_ID }} \
       --platform managed \
@@ -90,9 +131,10 @@ MAILERSEND_API_KEY: str = "mlsn.dd1a69c9738d7806d730cb8d4e7be44555d60044092fdb99
 MAILERSEND_API_KEY: str = ""  # MUST be set via environment variable or secret
 ```
 
-### 3. Created Setup Script (`setup-gcp-secrets.sh`)
+### 3. Created Setup Scripts
 
-New interactive script to:
+#### `setup-gcp-secrets.sh`
+Interactive script to:
 - Enable Secret Manager API
 - Create all required secrets in Google Secret Manager
 - Grant service account access to secrets
@@ -102,14 +144,38 @@ Usage:
 ./setup-gcp-secrets.sh
 ```
 
-### 4. Updated Documentation (`CLOUD_RUN_SETUP.md`)
+#### `setup-service-account-permissions.sh` (NEW - CRITICAL)
+Comprehensive script to fix ALL permission issues:
+- Grant all required project-level IAM roles
+- Grant actAs permission on Cloud Run runtime service account
+- Create Artifact Registry repository
+- Enable all required APIs
+- Grant access to secrets
 
+Usage:
+```bash
+./setup-service-account-permissions.sh
+```
+
+**⚠️ IMPORTANT**: Run this script FIRST to fix permission issues!
+
+### 4. Updated Documentation
+
+#### `CLOUD_RUN_SETUP.md`
 Enhanced documentation with:
 - Clear distinction between Firebase Admin SDK account and deployment account
 - Step-by-step secret setup instructions
 - GitHub secrets configuration
 - Service account IAM permissions
 - Troubleshooting guide
+
+#### `PERMISSION_FIX_GUIDE.md` (NEW)
+Comprehensive guide for fixing permission issues:
+- Detailed explanation of actAs permission
+- Step-by-step manual setup instructions
+- Verification steps
+- Common issues and solutions
+- Security best practices
 
 ## Required Configuration
 
@@ -141,8 +207,24 @@ The service account specified in `GCP_SERVICE_ACCOUNT` needs:
 | `roles/run.admin` | Deploy and manage Cloud Run services |
 | `roles/cloudbuild.builds.editor` | Create and manage Cloud Build builds |
 | `roles/artifactregistry.writer` | Push Docker images to Artifact Registry |
-| `roles/iam.serviceAccountUser` | Act as the Cloud Run service account |
+| `roles/artifactregistry.admin` | Create Artifact Registry repositories |
+| `roles/iam.serviceAccountUser` | Act as other service accounts (project-level) |
 | `roles/secretmanager.secretAccessor` | Read secrets from Secret Manager |
+
+### ActAs Permission (CRITICAL - Must be granted separately)
+
+In addition to project-level roles, the service account needs permission to act as the Cloud Run runtime account:
+
+```bash
+PROJECT_NUMBER=$(gcloud projects describe PROJECT_ID --format="value(projectNumber)")
+COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
+gcloud iam service-accounts add-iam-policy-binding "$COMPUTE_SA" \
+  --member="serviceAccount:github-actions@PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+```
+
+This is **separate** from the project-level `roles/iam.serviceAccountUser` role!
 
 ## Verification Steps
 
