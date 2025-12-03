@@ -173,4 +173,26 @@ export const reviewsAPI = {
   delete: (id: number) => api.delete(`/reviews/${id}`),
 };
 
+// Candidate Projects API (Email notifications for Firebase projects)
+export const candidateProjectsAPI = {
+  sendCreationEmail: (data: {
+    candidate_email: string;
+    candidate_name: string;
+    agent_name: string;
+    project_title: string;
+    project_description: string;
+    project_id: string;
+    platform?: string;
+  }) => api.post('/candidate-projects/send-creation-email', data),
+
+  sendUpdateEmail: (data: {
+    candidate_email: string;
+    candidate_name: string;
+    agent_name: string;
+    project_title: string;
+    project_id: string;
+    update_summary?: string;
+  }) => api.post('/candidate-projects/send-update-email', data),
+};
+
 export default api;

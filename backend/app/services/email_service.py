@@ -99,7 +99,7 @@ class EmailService:
         agent_name: str,
         project_title: str,
         project_description: str,
-        project_id: int,
+        project_id: str,  # Can be int or str (Firebase ID)
         platform: Optional[str] = None
     ) -> bool:
         """
@@ -238,7 +238,7 @@ class EmailService:
         candidate_name: str,
         agent_name: str,
         project_title: str,
-        project_id: int,
+        project_id: str,  # Can be int or str (Firebase ID)
         update_summary: Optional[str] = None
     ) -> bool:
         """
@@ -374,7 +374,7 @@ class EmailService:
         candidate_name: str,
         agent_name: str,
         project_title: str,
-        project_id: int,
+        project_id: str,  # Can be int or str (Firebase ID)
         old_status: str,
         new_status: str
     ) -> bool:

@@ -30,8 +30,119 @@ from app.tasks.email_tasks import (
     send_project_updated_email,
     send_project_status_changed_email
 )
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/candidate-projects", tags=["candidate-projects"])
+
+
+# ============================================================================
+# EMAIL NOTIFICATION ENDPOINTS (for Firebase-created projects)
+# ============================================================================
+
+class EmailNotificationRequest(BaseModel):
+    """Request model for triggering email notifications"""
+    candidate_email: str
+    candidate_name: str
+    agent_name: str
+    project_title: str
+    project_description: str
+    project_id: str  # Firebase project ID (string)
+    platform: Optional[str] = None
+
+
+class ProjectUpdateEmailRequest(BaseModel):
+    """Request model for project update email notifications"""
+    candidate_email: str
+    candidate_name: str
+    agent_name: str
+    project_title: str
+    project_id: str  # Firebase project ID (string)
+    update_summary: Optional[str] = None
+
+
+@router.post("/send-creation-email", status_code=status.HTTP_200_OK)
+def send_project_creation_email(
+    email_data: EmailNotificationRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Send email notification for project created in Firebase
+    (Agents only)
+    """
+    if current_user.role != UserRole.AGENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only agents can trigger project creation emails"
+        )
+
+    try:
+        from app.services.email_service import email_service
+
+        success = email_service.send_project_created_notification(
+            candidate_email=email_data.candidate_email,
+            candidate_name=email_data.candidate_name,
+            agent_name=email_data.agent_name,
+            project_title=email_data.project_title,
+            project_description=email_data.project_description,
+            project_id=email_data.project_id,
+            platform=email_data.platform
+        )
+
+        if success:
+            return {"message": "Email sent successfully", "success": True}
+        else:
+            return {"message": "Failed to send email", "success": False}
+
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error sending project creation email: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send email: {str(e)}"
+        )
+
+
+@router.post("/send-update-email", status_code=status.HTTP_200_OK)
+def send_project_update_email_endpoint(
+    email_data: ProjectUpdateEmailRequest,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Send email notification for project updated in Firebase
+    (Agents only)
+    """
+    if current_user.role != UserRole.AGENT:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only agents can trigger project update emails"
+        )
+
+    try:
+        from app.services.email_service import email_service
+
+        success = email_service.send_project_updated_notification(
+            candidate_email=email_data.candidate_email,
+            candidate_name=email_data.candidate_name,
+            agent_name=email_data.agent_name,
+            project_title=email_data.project_title,
+            project_id=email_data.project_id,
+            update_summary=email_data.update_summary
+        )
+
+        if success:
+            return {"message": "Email sent successfully", "success": True}
+        else:
+            return {"message": "Failed to send email", "success": False}
+
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error sending project update email: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send email: {str(e)}"
+        )
 
 
 # ============================================================================
@@ -244,12 +355,12 @@ def update_candidate_project(
             detail="Not authorized to update this project"
         )
 
-    # Track old status for email notification
-    old_status = project.status.value if project.status else None
-    status_changed = 'status' in update_data and update_data['status'] != old_status
-
     # Update fields
     update_data_dict = project_data.model_dump(exclude_unset=True)
+
+    # Track old status for email notification
+    old_status = project.status.value if project.status else None
+    status_changed = 'status' in update_data_dict and update_data_dict.get('status') != project.status
     for field, value in update_data_dict.items():
         setattr(project, field, value)
 

@@ -21,6 +21,7 @@ import {
   ProjectActionStatus,
   ProjectActionPriority
 } from '../types';
+import { candidateProjectsAPI } from '../lib/api';
 
 // Firestore Collections
 const PROJECTS_COLLECTION = 'candidate_projects';
@@ -271,6 +272,37 @@ export default function CandidateProjectsPage() {
         createdAt: Timestamp.now()
       });
 
+      // Send email notification
+      try {
+        // Get agent profile
+        const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+        const agentProfile = agentProfileDoc.data();
+        const agentName = agentProfile?.firstName && agentProfile?.lastName
+          ? `${agentProfile.firstName} ${agentProfile.lastName}`
+          : user.email?.split('@')[0] || 'Your Agent';
+
+        // Get candidate profile
+        const candidateDoc = await getDoc(doc(getDb(), 'users', projectData.candidate_id));
+        const candidateData = candidateDoc.data();
+        const candidateEmail = candidateData?.email || projectData.candidate_email;
+
+        if (candidateEmail) {
+          await candidateProjectsAPI.sendCreationEmail({
+            candidate_email: candidateEmail,
+            candidate_name: projectData.candidate_name || 'Candidate',
+            agent_name: agentName,
+            project_title: projectData.title,
+            project_description: projectData.description || '',
+            project_id: projectRef.id,
+            platform: projectData.platform
+          });
+          console.log('Email notification sent successfully');
+        }
+      } catch (emailErr) {
+        console.error('Failed to send email notification:', emailErr);
+        // Don't fail the project creation if email fails
+      }
+
       setShowProjectModal(false);
     } catch (err: any) {
       console.error('Error creating project:', err);
@@ -290,8 +322,41 @@ export default function CandidateProjectsPage() {
         updated_at: Timestamp.now()
       });
 
-      // Note: Removed automatic notification for project updates to reduce spam.
-      // Only critical actions will trigger notifications.
+      // Send email notification
+      try {
+        // Get agent profile
+        const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+        const agentProfile = agentProfileDoc.data();
+        const agentName = agentProfile?.firstName && agentProfile?.lastName
+          ? `${agentProfile.firstName} ${agentProfile.lastName}`
+          : user.email?.split('@')[0] || 'Your Agent';
+
+        // Get candidate info from selected project
+        const candidateDoc = await getDoc(doc(getDb(), 'users', selectedProject.candidate_id));
+        const candidateData = candidateDoc.data();
+        const candidateEmail = candidateData?.email;
+
+        const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
+        const candidateProfile = candidateProfileDoc.data();
+        const candidateName = candidateProfile?.firstName || candidateData?.email?.split('@')[0] || 'Candidate';
+
+        if (candidateEmail) {
+          const updateSummary = updateData.update_title || updateData.update_content?.substring(0, 100) || 'New progress update';
+
+          await candidateProjectsAPI.sendUpdateEmail({
+            candidate_email: candidateEmail,
+            candidate_name: candidateName,
+            agent_name: agentName,
+            project_title: selectedProject.title,
+            project_id: selectedProject.id,
+            update_summary: updateSummary
+          });
+          console.log('Update email notification sent successfully');
+        }
+      } catch (emailErr) {
+        console.error('Failed to send update email notification:', emailErr);
+        // Don't fail the update creation if email fails
+      }
 
       setShowUpdateModal(false);
     } catch (err: any) {
