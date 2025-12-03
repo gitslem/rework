@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Users, DollarSign, Star, TrendingUp, Settings, MessageSquare, LogOut,
   User, MapPin, Mail, Phone, Calendar, CheckCircle, Clock, X, Edit, Upload as UploadIcon, Plus, Trash2,
-  Bell, Send, Loader, FileText, CreditCard, Percent, DollarSign as Dollar, CalendarClock, Bookmark
+  Bell, Send, Loader, FileText, CreditCard, Percent, DollarSign as Dollar, CalendarClock, Bookmark, Search
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
