@@ -441,3 +441,159 @@ Focus on actionable insights and concrete progress indicators."""
                 ProjectMessage.deleted_at.is_(None)
             )
         ).order_by(desc(ProjectMessage.created_at)).offset(offset).limit(limit).all()
+
+    def mark_message_read(self, message_id: int, user_id: int):
+        """Mark a message as read by a user"""
+        from app.models.models import MessageReadStatus
+
+        # Check if already marked as read
+        existing = self.db.query(MessageReadStatus).filter(
+            and_(
+                MessageReadStatus.message_id == message_id,
+                MessageReadStatus.user_id == user_id
+            )
+        ).first()
+
+        if not existing:
+            read_status = MessageReadStatus(
+                message_id=message_id,
+                user_id=user_id
+            )
+            self.db.add(read_status)
+            self.db.commit()
+
+    def mark_all_messages_read(self, project_id: int, user_id: int):
+        """Mark all messages in a project as read by a user"""
+        from app.models.models import MessageReadStatus
+
+        # Get all unread messages in the project
+        messages = self.db.query(ProjectMessage).filter(
+            and_(
+                ProjectMessage.project_id == project_id,
+                ProjectMessage.deleted_at.is_(None),
+                ProjectMessage.sender_id != user_id  # Don't mark own messages
+            )
+        ).all()
+
+        for message in messages:
+            # Check if already marked as read
+            existing = self.db.query(MessageReadStatus).filter(
+                and_(
+                    MessageReadStatus.message_id == message.id,
+                    MessageReadStatus.user_id == user_id
+                )
+            ).first()
+
+            if not existing:
+                read_status = MessageReadStatus(
+                    message_id=message.id,
+                    user_id=user_id
+                )
+                self.db.add(read_status)
+
+        self.db.commit()
+
+    def update_online_status(self, user_id: int, is_online: bool):
+        """Update user's online status"""
+        from app.models.models import UserOnlineStatus
+        from datetime import datetime, timezone
+
+        status = self.db.query(UserOnlineStatus).filter(
+            UserOnlineStatus.user_id == user_id
+        ).first()
+
+        if status:
+            status.is_online = is_online
+            status.last_seen = datetime.now(timezone.utc)
+        else:
+            status = UserOnlineStatus(
+                user_id=user_id,
+                is_online=is_online
+            )
+            self.db.add(status)
+
+        self.db.commit()
+        self.db.refresh(status)
+        return status
+
+    def get_online_status(self, user_id: int):
+        """Get user's online status"""
+        from app.models.models import UserOnlineStatus
+        from datetime import datetime, timezone
+
+        status = self.db.query(UserOnlineStatus).filter(
+            UserOnlineStatus.user_id == user_id
+        ).first()
+
+        if not status:
+            # Return default offline status
+            return UserOnlineStatus(
+                user_id=user_id,
+                is_online=False,
+                last_seen=datetime.now(timezone.utc)
+            )
+
+        return status
+
+    def start_typing(self, project_id: int, user_id: int):
+        """Start typing indicator for a user in a project"""
+        from app.models.models import TypingIndicator
+        from datetime import datetime, timezone
+
+        indicator = self.db.query(TypingIndicator).filter(
+            and_(
+                TypingIndicator.project_id == project_id,
+                TypingIndicator.user_id == user_id
+            )
+        ).first()
+
+        if indicator:
+            indicator.updated_at = datetime.now(timezone.utc)
+        else:
+            indicator = TypingIndicator(
+                project_id=project_id,
+                user_id=user_id
+            )
+            self.db.add(indicator)
+
+        self.db.commit()
+
+    def stop_typing(self, project_id: int, user_id: int):
+        """Stop typing indicator for a user in a project"""
+        from app.models.models import TypingIndicator
+
+        self.db.query(TypingIndicator).filter(
+            and_(
+                TypingIndicator.project_id == project_id,
+                TypingIndicator.user_id == user_id
+            )
+        ).delete()
+
+        self.db.commit()
+
+    def get_typing_indicators(self, project_id: int, exclude_user_id: int):
+        """Get list of users currently typing in a project (excluding specified user)"""
+        from app.models.models import TypingIndicator, User
+        from datetime import datetime, timezone, timedelta
+
+        # Only show typing indicators updated within last 10 seconds
+        cutoff_time = datetime.now(timezone.utc) - timedelta(seconds=10)
+
+        indicators = self.db.query(TypingIndicator, User).join(
+            User, TypingIndicator.user_id == User.id
+        ).filter(
+            and_(
+                TypingIndicator.project_id == project_id,
+                TypingIndicator.user_id != exclude_user_id,
+                TypingIndicator.updated_at >= cutoff_time
+            )
+        ).all()
+
+        return [
+            {
+                "user_id": indicator.user_id,
+                "user_name": user.full_name or user.username,
+                "started_typing_at": indicator.started_typing_at
+            }
+            for indicator, user in indicators
+        ]

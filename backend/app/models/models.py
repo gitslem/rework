@@ -750,6 +750,60 @@ class ProjectMessage(Base):
     project = relationship("Project", foreign_keys=[project_id])
     sender = relationship("User", foreign_keys=[sender_id])
     parent_message = relationship("ProjectMessage", remote_side=[id], foreign_keys=[parent_message_id])
+    read_by = relationship("MessageReadStatus", back_populates="message", cascade="all, delete-orphan")
+
+
+class MessageReadStatus(Base):
+    """Track read status of messages for real-time chat features"""
+    __tablename__ = "message_read_status"
+
+    id = Column(Integer, primary_key=True, index=True)
+    message_id = Column(Integer, ForeignKey("project_messages.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    read_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationships
+    message = relationship("ProjectMessage", back_populates="read_by")
+    user = relationship("User")
+
+    # Unique constraint: one read status per user per message
+    __table_args__ = (
+        Index('idx_message_user', 'message_id', 'user_id', unique=True),
+    )
+
+
+class UserOnlineStatus(Base):
+    """Track user online/offline status for chat"""
+    __tablename__ = "user_online_status"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, unique=True)
+    is_online = Column(Boolean, default=False)
+    last_seen = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    # Relationships
+    user = relationship("User")
+
+
+class TypingIndicator(Base):
+    """Track who is currently typing in a project chat"""
+    __tablename__ = "typing_indicators"
+
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    started_typing_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    # Relationships
+    project = relationship("Project")
+    user = relationship("User")
+
+    # Unique constraint: one typing indicator per user per project
+    __table_args__ = (
+        Index('idx_project_user_typing', 'project_id', 'user_id', unique=True),
+    )
 
 
 class AISummary(Base):

@@ -827,6 +827,51 @@ class ProjectMessageResponse(ProjectMessageBase):
     updated_at: Optional[datetime]
     deleted_at: Optional[datetime]
 
+    # Enhanced fields for chat UI
+    sender_name: Optional[str] = None
+    sender_avatar: Optional[str] = None
+    read_by_user_ids: List[int] = []
+    is_read: bool = False
+
+    class Config:
+        from_attributes = True
+
+
+# Message Read Status Schemas
+class MessageReadStatusCreate(BaseModel):
+    message_id: int
+
+
+class MessageReadStatusResponse(BaseModel):
+    id: int
+    message_id: int
+    user_id: int
+    read_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# User Online Status Schemas
+class UserOnlineStatusResponse(BaseModel):
+    user_id: int
+    is_online: bool
+    last_seen: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# Typing Indicator Schemas
+class TypingIndicatorCreate(BaseModel):
+    project_id: int
+
+
+class TypingIndicatorResponse(BaseModel):
+    user_id: int
+    user_name: str
+    started_typing_at: datetime
+
     class Config:
         from_attributes = True
 

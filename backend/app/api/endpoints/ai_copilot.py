@@ -14,7 +14,9 @@ from app.schemas.schemas import (
     GenerateSummaryRequest,
     AISummaryResponse,
     ProjectMessageCreate,
-    ProjectMessageResponse
+    ProjectMessageResponse,
+    UserOnlineStatusResponse,
+    TypingIndicatorResponse
 )
 from app.services.ai_copilot_service import AICopilotService
 
@@ -206,4 +208,179 @@ async def get_project_messages(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve messages: {str(e)}"
+        )
+
+
+@router.post("/messages/{message_id}/read", status_code=status.HTTP_200_OK)
+async def mark_message_read(
+    message_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Mark a message as read by the current user.
+
+    **Returns:**
+    - Success message
+    """
+    service = AICopilotService(db)
+
+    try:
+        service.mark_message_read(message_id, current_user.id)
+        return {"status": "success", "message": "Message marked as read"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to mark message as read: {str(e)}"
+        )
+
+
+@router.post("/messages/mark-all-read/{project_id}", status_code=status.HTTP_200_OK)
+async def mark_all_messages_read(
+    project_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Mark all messages in a project as read by the current user.
+
+    **Returns:**
+    - Success message
+    """
+    service = AICopilotService(db)
+
+    try:
+        service.mark_all_messages_read(project_id, current_user.id)
+        return {"status": "success", "message": "All messages marked as read"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to mark messages as read: {str(e)}"
+        )
+
+
+@router.post("/online-status", status_code=status.HTTP_200_OK)
+async def update_online_status(
+    is_online: bool = True,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update the current user's online status.
+
+    **Body Parameters:**
+    - is_online: True if user is online, False if offline
+
+    **Returns:**
+    - Updated online status
+    """
+    service = AICopilotService(db)
+
+    try:
+        status_obj = service.update_online_status(current_user.id, is_online)
+        return {
+            "user_id": current_user.id,
+            "is_online": status_obj.is_online,
+            "last_seen": status_obj.last_seen
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update online status: {str(e)}"
+        )
+
+
+@router.get("/online-status/{user_id}", response_model=UserOnlineStatusResponse)
+async def get_online_status(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get online status of a user.
+
+    **Returns:**
+    - User's online status
+    """
+    service = AICopilotService(db)
+
+    try:
+        status_obj = service.get_online_status(user_id)
+        return status_obj
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get online status: {str(e)}"
+        )
+
+
+@router.post("/typing/{project_id}/start", status_code=status.HTTP_200_OK)
+async def start_typing(
+    project_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Indicate that the current user has started typing in a project chat.
+
+    **Returns:**
+    - Success message
+    """
+    service = AICopilotService(db)
+
+    try:
+        service.start_typing(project_id, current_user.id)
+        return {"status": "success", "message": "Typing indicator started"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to start typing indicator: {str(e)}"
+        )
+
+
+@router.post("/typing/{project_id}/stop", status_code=status.HTTP_200_OK)
+async def stop_typing(
+    project_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Indicate that the current user has stopped typing in a project chat.
+
+    **Returns:**
+    - Success message
+    """
+    service = AICopilotService(db)
+
+    try:
+        service.stop_typing(project_id, current_user.id)
+        return {"status": "success", "message": "Typing indicator stopped"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to stop typing indicator: {str(e)}"
+        )
+
+
+@router.get("/typing/{project_id}", response_model=List[TypingIndicatorResponse])
+async def get_typing_indicators(
+    project_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get list of users currently typing in a project chat.
+
+    **Returns:**
+    - List of users typing (excludes current user)
+    """
+    service = AICopilotService(db)
+
+    try:
+        typing_users = service.get_typing_indicators(project_id, current_user.id)
+        return typing_users
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get typing indicators: {str(e)}"
         )
