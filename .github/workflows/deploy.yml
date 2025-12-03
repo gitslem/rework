@@ -29,7 +29,16 @@ jobs:
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy rework-backend \
-          --source . \
+          --source ./backend \
           --region us-central1 \
           --project ${{ secrets.GCP_PROJECT_ID }} \
+          --platform managed \
+          --allow-unauthenticated \
+          --set-env-vars="ENVIRONMENT=production,API_V1_STR=/api/v1,FRONTEND_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }},FROM_EMAIL=${{ secrets.FROM_EMAIL }},FROM_NAME=Remote-Works" \
+          --set-secrets="DATABASE_URL=DATABASE_URL:latest,SECRET_KEY=SECRET_KEY:latest,MAILERSEND_API_KEY=MAILERSEND_API_KEY:latest,BACKEND_CORS_ORIGINS=BACKEND_CORS_ORIGINS:latest" \
+          --memory 512Mi \
+          --cpu 1 \
+          --min-instances 0 \
+          --max-instances 10 \
+          --timeout 300 \
           --quiet
