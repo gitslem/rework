@@ -62,17 +62,17 @@ class ProjectUpdateEmailRequest(BaseModel):
 
 @router.post("/send-creation-email", status_code=status.HTTP_200_OK)
 def send_project_creation_email(
-    email_data: EmailNotificationRequest,
-    current_user: User = Depends(get_current_user)
+    email_data: EmailNotificationRequest
 ):
     """
     Send email notification for project created in Firebase
-    (Agents only)
+    (No authentication required - called from Firebase frontend)
     """
-    if current_user.role != UserRole.AGENT:
+    # Validate required fields
+    if not email_data.candidate_email or not email_data.project_title:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only agents can trigger project creation emails"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required fields: candidate_email and project_title are required"
         )
 
     try:
@@ -105,17 +105,17 @@ def send_project_creation_email(
 
 @router.post("/send-update-email", status_code=status.HTTP_200_OK)
 def send_project_update_email_endpoint(
-    email_data: ProjectUpdateEmailRequest,
-    current_user: User = Depends(get_current_user)
+    email_data: ProjectUpdateEmailRequest
 ):
     """
     Send email notification for project updated in Firebase
-    (Agents only)
+    (No authentication required - called from Firebase frontend)
     """
-    if current_user.role != UserRole.AGENT:
+    # Validate required fields
+    if not email_data.candidate_email or not email_data.project_title:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only agents can trigger project update emails"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required fields: candidate_email and project_title are required"
         )
 
     try:
