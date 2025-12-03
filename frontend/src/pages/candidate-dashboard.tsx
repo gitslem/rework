@@ -627,7 +627,10 @@ export default function CandidateDashboard() {
             <div className="h-full flex flex-col">
               <div className="flex-1 px-3 py-6 space-y-1">
                 <button
-                  onClick={() => setActiveTab('overview')}
+                  onClick={() => {
+                    setActiveTab('overview');
+                    setSidebarOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     activeTab === 'overview'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
@@ -639,7 +642,10 @@ export default function CandidateDashboard() {
                 </button>
 
                 <button
-                  onClick={() => setActiveTab('agents')}
+                  onClick={() => {
+                    setActiveTab('agents');
+                    setSidebarOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     activeTab === 'agents'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
@@ -658,7 +664,10 @@ export default function CandidateDashboard() {
                 </button>
 
                 <button
-                  onClick={() => setActiveTab('messages')}
+                  onClick={() => {
+                    setActiveTab('messages');
+                    setSidebarOpen(false);
+                  }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     activeTab === 'messages'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
@@ -677,7 +686,10 @@ export default function CandidateDashboard() {
                 </button>
 
                 <button
-                  onClick={() => router.push('/candidate-projects')}
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    router.push('/candidate-projects');
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all"
                 >
                   <FileText className="w-5 h-5" />
@@ -685,7 +697,10 @@ export default function CandidateDashboard() {
                 </button>
 
                 <button
-                  onClick={() => router.push('/profile-settings')}
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    router.push('/profile-settings');
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all"
                 >
                   <Settings className="w-5 h-5" />
@@ -750,21 +765,30 @@ export default function CandidateDashboard() {
                   </h2>
                   <div className="grid md:grid-cols-3 gap-4">
                     <button
-                      onClick={() => setActiveTab('agents')}
+                      onClick={() => {
+                        setActiveTab('agents');
+                        setSidebarOpen(false);
+                      }}
                       className="flex items-center gap-3 p-4 rounded-lg border-2 border-blue-200 hover:border-blue-400 hover:bg-blue-50 transition-all"
                     >
                       <Users className="w-5 h-5 text-blue-600" />
                       <span className="font-medium text-gray-900">View Agents</span>
                     </button>
                     <button
-                      onClick={() => setActiveTab('messages')}
+                      onClick={() => {
+                        setActiveTab('messages');
+                        setSidebarOpen(false);
+                      }}
                       className="flex items-center gap-3 p-4 rounded-lg border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all"
                     >
                       <MessageSquare className="w-5 h-5 text-purple-600" />
                       <span className="font-medium text-gray-900">Check Messages</span>
                     </button>
                     <button
-                      onClick={() => router.push('/profile-settings')}
+                      onClick={() => {
+                        setSidebarOpen(false);
+                        router.push('/profile-settings');
+                      }}
                       className="flex items-center gap-3 p-4 rounded-lg border-2 border-green-200 hover:border-green-400 hover:bg-green-50 transition-all"
                     >
                       <Edit className="w-5 h-5 text-green-600" />
