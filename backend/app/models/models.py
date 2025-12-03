@@ -188,6 +188,19 @@ class Profile(Base):
     is_agent_approved = Column(Boolean, default=False)
     agent_multiplier = Column(Float, default=3.0)  # Agents earn 3x
 
+    # Email notification preferences
+    email_notifications = Column(
+        JSON,
+        default={
+            "project_created": True,
+            "project_updated": True,
+            "project_status_changed": True,
+            "new_messages": True,
+            "payment_updates": True,
+            "weekly_summary": True
+        }
+    )  # User preferences for email notifications
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
