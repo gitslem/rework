@@ -52,7 +52,25 @@ for ROLE in "${ROLES[@]}"; do
 done
 
 echo ""
-echo "Step 2: Granting Artifact Registry repository-level permissions..."
+echo "Step 2: Granting permission to act as service account..."
+echo ""
+
+# Service account that Cloud Run will use
+CLOUD_RUN_SERVICE_ACCOUNT="github-actions@${PROJECT_ID}.iam.gserviceaccount.com"
+
+echo "Granting permission to act as service account: $CLOUD_RUN_SERVICE_ACCOUNT"
+if gcloud iam service-accounts add-iam-policy-binding "$CLOUD_RUN_SERVICE_ACCOUNT" \
+  --member="$PRINCIPAL" \
+  --role="roles/iam.serviceAccountUser" \
+  --project="$PROJECT_ID" > /dev/null 2>&1; then
+  echo "✓ Granted permission to act as $CLOUD_RUN_SERVICE_ACCOUNT"
+else
+  echo "⚠ Warning: Could not grant service account user permission"
+  echo "  The service account may not exist. You may need to create it first."
+fi
+
+echo ""
+echo "Step 3: Granting Artifact Registry repository-level permissions..."
 echo ""
 
 # Grant repository-level permissions (CRITICAL for Direct WIF)
@@ -72,7 +90,7 @@ else
 fi
 
 echo ""
-echo "Step 3: Granting Secret Manager access to specific secrets..."
+echo "Step 4: Granting Secret Manager access to specific secrets..."
 echo ""
 
 # List of secrets that need access
@@ -90,14 +108,23 @@ for SECRET in "${SECRETS[@]}"; do
   echo "Processing secret: $SECRET"
 
   if gcloud secrets describe "$SECRET" --project="$PROJECT_ID" &>/dev/null; then
+    # Grant access to WIF principal
     if gcloud secrets add-iam-policy-binding "$SECRET" \
       --member="$PRINCIPAL" \
       --role="roles/secretmanager.secretAccessor" \
       --project="$PROJECT_ID" &>/dev/null; then
-      echo "  ✓ Granted access to $SECRET"
+      echo "  ✓ Granted WIF principal access to $SECRET"
+    fi
+
+    # Grant access to Cloud Run service account
+    if gcloud secrets add-iam-policy-binding "$SECRET" \
+      --member="serviceAccount:$CLOUD_RUN_SERVICE_ACCOUNT" \
+      --role="roles/secretmanager.secretAccessor" \
+      --project="$PROJECT_ID" &>/dev/null; then
+      echo "  ✓ Granted service account access to $SECRET"
       ((SUCCESS_COUNT++))
     else
-      echo "  ✗ Failed to grant access to $SECRET"
+      echo "  ✗ Failed to grant service account access to $SECRET"
       ((FAILED_COUNT++))
     fi
   else
@@ -112,6 +139,7 @@ echo "✓ Direct WIF permission setup complete!"
 echo ""
 echo "Summary:"
 echo "  ✓ Project-level roles: ${#ROLES[@]}"
+echo "  ✓ Service account user permission: granted"
 echo "  ✓ Artifact Registry repository: configured"
 echo "  ✓ Secret access granted: $SUCCESS_COUNT"
 if [ $FAILED_COUNT -gt 0 ]; then
