@@ -34,9 +34,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Artifact Registry
+      - name: Get access token and login to Artifact Registry
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          ACCESS_TOKEN=$(gcloud auth print-access-token)
+          echo "$ACCESS_TOKEN" | docker login -u oauth2accesstoken --password-stdin https://us-central1-docker.pkg.dev
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
