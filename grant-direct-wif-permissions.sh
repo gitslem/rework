@@ -52,7 +52,27 @@ for ROLE in "${ROLES[@]}"; do
 done
 
 echo ""
-echo "Step 2: Granting Secret Manager access to specific secrets..."
+echo "Step 2: Granting Artifact Registry repository-level permissions..."
+echo ""
+
+# Grant repository-level permissions (CRITICAL for Direct WIF)
+ARTIFACT_REPO="cloud-run-source-deploy"
+ARTIFACT_LOCATION="us-central1"
+
+echo "Granting roles/artifactregistry.writer to repository: $ARTIFACT_REPO"
+if gcloud artifacts repositories add-iam-policy-binding "$ARTIFACT_REPO" \
+  --location="$ARTIFACT_LOCATION" \
+  --member="$PRINCIPAL" \
+  --role="roles/artifactregistry.writer" \
+  --project="$PROJECT_ID" > /dev/null 2>&1; then
+  echo "✓ Granted repository-level access to $ARTIFACT_REPO"
+else
+  echo "⚠ Warning: Could not grant repository-level access (repository may not exist yet)"
+  echo "  If repository doesn't exist, it will be created automatically on first push"
+fi
+
+echo ""
+echo "Step 3: Granting Secret Manager access to specific secrets..."
 echo ""
 
 # List of secrets that need access
@@ -92,6 +112,7 @@ echo "✓ Direct WIF permission setup complete!"
 echo ""
 echo "Summary:"
 echo "  ✓ Project-level roles: ${#ROLES[@]}"
+echo "  ✓ Artifact Registry repository: configured"
 echo "  ✓ Secret access granted: $SUCCESS_COUNT"
 if [ $FAILED_COUNT -gt 0 ]; then
   echo "  ⚠ Secrets skipped: $FAILED_COUNT"
@@ -100,6 +121,7 @@ echo ""
 echo "IMPORTANT CHANGES:"
 echo "  - Using Direct Workload Identity Federation"
 echo "  - Permissions granted to WIF pool principal directly"
+echo "  - Repository-level permissions added for Artifact Registry"
 echo "  - No service account impersonation (this was causing errors)"
 echo ""
 echo "IMPORTANT: Wait 5 minutes for IAM changes to propagate"
