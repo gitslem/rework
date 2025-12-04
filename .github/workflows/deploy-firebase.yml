@@ -69,6 +69,8 @@ jobs:
             --min-instances 0 \
             --max-instances 10 \
             --timeout 300 \
+            --cpu-boost \
+            --port 8080 \
             --quiet
 
       - name: Get Cloud Run URL
