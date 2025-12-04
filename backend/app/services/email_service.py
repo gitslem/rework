@@ -1,10 +1,18 @@
 """Email notification service using MailerSend"""
 from typing import Optional
-from mailersend import NewEmail
 from app.core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Try to import MailerSend - gracefully handle if not available
+try:
+    from mailersend import emails
+    MAILERSEND_AVAILABLE = True
+    logger.info("MailerSend module loaded successfully")
+except ImportError as e:
+    logger.warning(f"MailerSend module not available: {e}. Email functionality will be disabled.")
+    MAILERSEND_AVAILABLE = False
 
 
 class EmailService:
@@ -16,7 +24,20 @@ class EmailService:
         self.from_email = settings.FROM_EMAIL
         self.from_name = settings.FROM_NAME
         self.frontend_url = settings.FRONTEND_URL
-        self.mailer = NewEmail(self.api_key)
+
+        if MAILERSEND_AVAILABLE and self.api_key:
+            try:
+                self.mailer = emails.NewEmail(self.api_key)
+                logger.info("MailerSend email service initialized")
+            except Exception as e:
+                logger.error(f"Failed to initialize MailerSend: {e}")
+                self.mailer = None
+        else:
+            self.mailer = None
+            if not MAILERSEND_AVAILABLE:
+                logger.warning("Email service disabled: MailerSend not available")
+            elif not self.api_key:
+                logger.warning("Email service disabled: No API key configured")
 
     def _send_email(self, to_email: str, to_name: str, subject: str, html_content: str, text_content: str = None) -> bool:
         """
@@ -32,6 +53,10 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
+        if not self.mailer:
+            logger.warning("Email service not available. Email not sent.")
+            return False
+
         if not self.api_key or self.api_key == "":
             logger.warning("MailerSend API key not configured. Email not sent.")
             return False
