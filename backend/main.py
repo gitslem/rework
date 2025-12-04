@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from app.core.config import settings
+from starlette.middleware.base import BaseHTTPMiddleware
 from app.api.endpoints import auth, projects, applications, users, ai_briefs, sandboxes, proof_of_build, collaboration, payments, escrow, reviews, ai_copilot, freelancers, milestones, webhooks, notifications, candidate_projects
 from app.db.database import Base, engine, get_db, init_db
 from datetime import datetime
@@ -19,14 +20,58 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
+class CustomCORSMiddleware(BaseHTTPMiddleware):
+    """Custom CORS middleware to handle preflight OPTIONS requests"""
+
+    async def dispatch(self, request: Request, call_next):
+        # Log the request for debugging
+        logger.debug(f"Request: {request.method} {request.url.path}")
+        logger.debug(f"Origin: {request.headers.get('origin', 'none')}")
+
+        # Handle OPTIONS preflight requests
+        if request.method == "OPTIONS":
+            response = Response(content="", status_code=200)
+
+            # Get origin from request
+            origin = request.headers.get('origin', '*')
+
+            # Set CORS headers
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+            response.headers["Access-Control-Allow-Headers"] = request.headers.get(
+                "access-control-request-headers", "*"
+            )
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Max-Age"] = "3600"
+
+            logger.info(f"✅ OPTIONS preflight handled for {request.url.path} from origin {origin}")
+            return response
+
+        # Process the request
+        response = await call_next(request)
+
+        # Add CORS headers to all responses
+        origin = request.headers.get('origin')
+        if origin and origin in settings.cors_origins:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+
+        return response
+
+
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
     description="Remote Works Platform API"
 )
 
-# CORS middleware
-logger.info(f"Configuring CORS for origins: {settings.cors_origins}")
+# Add custom CORS middleware first (processes requests first, added last)
+logger.info(f"Configuring custom CORS middleware for origins: {settings.cors_origins}")
+app.add_middleware(CustomCORSMiddleware)
+
+# CORS middleware (as backup)
+logger.info(f"Configuring standard CORS middleware")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

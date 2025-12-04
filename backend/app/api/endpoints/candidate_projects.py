@@ -56,6 +56,12 @@ class ProjectUpdateEmailRequest(BaseModel):
     update_summary: Optional[str] = None
 
 
+@router.options("/send-creation-email", status_code=status.HTTP_200_OK)
+def send_creation_email_preflight():
+    """Handle CORS preflight for send-creation-email endpoint"""
+    return {}
+
+
 @router.post("/send-creation-email", status_code=status.HTTP_200_OK)
 def send_project_creation_email(
     email_data: EmailNotificationRequest
@@ -107,6 +113,12 @@ def send_project_creation_email(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to send email: {str(e)}"
         )
+
+
+@router.options("/send-update-email", status_code=status.HTTP_200_OK)
+def send_update_email_preflight():
+    """Handle CORS preflight for send-update-email endpoint"""
+    return {}
 
 
 @router.post("/send-update-email", status_code=status.HTTP_200_OK)
