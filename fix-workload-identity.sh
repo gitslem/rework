@@ -3,11 +3,11 @@ set -e
 
 # Fix Workload Identity Federation for GitHub Actions
 # Based on official Google Cloud troubleshooting guides
+# Auto-detects the actual pool name
 
 PROJECT_ID="remote-worksio"
 PROJECT_NUMBER="706683337174"
 SERVICE_ACCOUNT="github-actions@remote-worksio.iam.gserviceaccount.com"
-POOL_NAME="github-pool"
 PROVIDER_NAME="github-provider"
 REPO="gitslem/rework"
 
@@ -17,8 +17,35 @@ echo "=================================================================="
 echo ""
 echo "Project: $PROJECT_ID"
 echo "Service Account: $SERVICE_ACCOUNT"
-echo "Pool: $POOL_NAME"
 echo "Repository: $REPO"
+echo ""
+
+# Auto-detect the pool name
+echo "Detecting Workload Identity Pool..."
+POOL_NAME=""
+for pool in "github-pool" "github-actions" "github-actions-pool"; do
+  if gcloud iam workload-identity-pools describe "$pool" \
+      --location=global \
+      --project="$PROJECT_ID" &>/dev/null; then
+    POOL_NAME="$pool"
+    echo "✓ Found pool: $POOL_NAME"
+    break
+  fi
+done
+
+if [ -z "$POOL_NAME" ]; then
+  echo ""
+  echo "=================================================================="
+  echo "ERROR: No Workload Identity Pool found!"
+  echo "=================================================================="
+  echo ""
+  echo "Please create one first using ./setup-workload-identity-pool.sh"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "Pool: $POOL_NAME"
 echo ""
 
 # Step 1: Enable IAM Service Account Credentials API
@@ -59,8 +86,16 @@ echo "=================================================================="
 echo ""
 echo "Set these in your GitHub repository secrets:"
 echo ""
+
+# Get the full provider resource name
+WORKLOAD_IDENTITY_PROVIDER=$(gcloud iam workload-identity-pools providers describe "$PROVIDER_NAME" \
+  --workload-identity-pool="$POOL_NAME" \
+  --location=global \
+  --project="$PROJECT_ID" \
+  --format="value(name)")
+
 echo "WORKLOAD_IDENTITY_PROVIDER:"
-echo "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_NAME/providers/$PROVIDER_NAME"
+echo "$WORKLOAD_IDENTITY_PROVIDER"
 echo ""
 echo "GCP_SERVICE_ACCOUNT:"
 echo "$SERVICE_ACCOUNT"
