@@ -3,14 +3,11 @@ set -e
 
 # Grant permissions directly to Workload Identity Pool principal
 # This uses Direct WIF instead of service account impersonation
+# Auto-detects the actual pool name
 
 PROJECT_ID="remote-worksio"
 PROJECT_NUMBER="706683337174"
-POOL_NAME="github-pool"
 REPO="gitslem/rework"
-
-# Construct the principal for the Workload Identity Pool
-PRINCIPAL="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_NAME}/attribute.repository/${REPO}"
 
 echo "=================================================================="
 echo "Grant Direct Workload Identity Federation Permissions"
@@ -18,8 +15,45 @@ echo "=================================================================="
 echo ""
 echo "Project: $PROJECT_ID"
 echo "Project Number: $PROJECT_NUMBER"
-echo "Pool: $POOL_NAME"
 echo "Repository: $REPO"
+echo ""
+
+# Auto-detect the pool name
+echo "Detecting Workload Identity Pool..."
+POOL_NAME=""
+for pool in "github-pool" "github-actions" "github-actions-pool"; do
+  if gcloud iam workload-identity-pools describe "$pool" \
+      --location=global \
+      --project="$PROJECT_ID" &>/dev/null; then
+    POOL_NAME="$pool"
+    echo "✓ Found pool: $POOL_NAME"
+    break
+  fi
+done
+
+if [ -z "$POOL_NAME" ]; then
+  echo ""
+  echo "=================================================================="
+  echo "ERROR: No Workload Identity Pool found!"
+  echo "=================================================================="
+  echo ""
+  echo "Please create one first:"
+  echo "  ./setup-workload-identity-pool.sh"
+  echo ""
+  echo "Or manually create it:"
+  echo "  gcloud iam workload-identity-pools create github-pool \\"
+  echo "    --location=global \\"
+  echo "    --display-name=\"GitHub Actions Pool\" \\"
+  echo "    --project=$PROJECT_ID"
+  echo ""
+  exit 1
+fi
+
+# Construct the principal for the Workload Identity Pool
+PRINCIPAL="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_NAME}/attribute.repository/${REPO}"
+
+echo ""
+echo "Pool: $POOL_NAME"
 echo ""
 echo "Principal:"
 echo "$PRINCIPAL"
@@ -138,6 +172,7 @@ echo "=================================================================="
 echo "✓ Direct WIF permission setup complete!"
 echo ""
 echo "Summary:"
+echo "  ✓ Workload Identity Pool: $POOL_NAME"
 echo "  ✓ Project-level roles: ${#ROLES[@]}"
 echo "  ✓ Service account user permission: granted"
 echo "  ✓ Artifact Registry repository: configured"
