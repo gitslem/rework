@@ -279,11 +279,6 @@ export default function AgentDashboard() {
       const conversationId = message.conversationId || `conv_${ids[0]}_${ids[1]}`;
 
       // Check if connection already exists to prevent duplicates
-      console.log('=== DEBUG: Creating/Updating Connection ===');
-      console.log('Agent ID:', user.uid);
-      console.log('Candidate ID:', message.senderId);
-      console.log('Candidate Name:', message.senderName);
-
       try {
         const existingConnectionQuery = query(
           collection(db, 'connections'),
@@ -292,12 +287,9 @@ export default function AgentDashboard() {
         );
         const existingConnectionSnapshot = await getDocs(existingConnectionQuery);
 
-        console.log('Existing connections found:', existingConnectionSnapshot.docs.length);
-
         // Only create connection if it doesn't already exist
         if (existingConnectionSnapshot.empty) {
-          console.log('Creating NEW connection document');
-          const newConnectionRef = await addDoc(collection(db, 'connections'), {
+          await addDoc(collection(db, 'connections'), {
             agentId: user.uid,
             agentName: `${profile?.firstName} ${profile?.lastName}`,
             agentEmail: profile?.email || user.email,
@@ -309,28 +301,23 @@ export default function AgentDashboard() {
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now()
           });
-          console.log('New connection created with ID:', newConnectionRef.id);
+          console.log(`Connection created with ${message.senderName}`);
         } else {
-          // Update existing connection if needed (e.g., ensure status is 'connected')
-          console.log('UPDATING existing connection');
+          // Update existing connection to ensure status is 'connected'
           const existingConnectionDoc = existingConnectionSnapshot.docs[0];
-          console.log('Updating connection ID:', existingConnectionDoc.id);
           await updateDoc(doc(db, 'connections', existingConnectionDoc.id), {
             status: 'connected',
             conversationId: conversationId,
             updatedAt: Timestamp.now()
           });
-          console.log('Connection updated successfully');
+          console.log(`Connection updated with ${message.senderName}`);
         }
       } catch (queryError: any) {
-        console.error('Error checking for existing connection (possibly missing Firestore index):', queryError);
-        console.error('Error code:', queryError.code);
-        console.error('Error message:', queryError.message);
+        console.error('Error managing connection:', queryError);
 
-        // If query fails (e.g., due to missing index), fall back to creating connection
-        // This ensures connections are still created even if the duplicate check fails
-        console.warn('FALLBACK: Creating connection without duplicate check due to query error');
-        const newConnectionRef = await addDoc(collection(db, 'connections'), {
+        // If query fails (e.g., missing index), fall back to creating connection
+        // This ensures connections are still created even if duplicate check fails
+        await addDoc(collection(db, 'connections'), {
           agentId: user.uid,
           agentName: `${profile?.firstName} ${profile?.lastName}`,
           agentEmail: profile?.email || user.email,
@@ -342,7 +329,7 @@ export default function AgentDashboard() {
           createdAt: Timestamp.now(),
           updatedAt: Timestamp.now()
         });
-        console.log('Fallback connection created with ID:', newConnectionRef.id);
+        console.log(`Connection created (fallback) with ${message.senderName}`);
       }
 
       // Send acceptance message to candidate

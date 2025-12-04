@@ -124,9 +124,6 @@ export default function CandidateProjectsPage() {
 
     const fetchConnections = async () => {
       try {
-        console.log('=== DEBUG: Fetching Connected Candidates ===');
-        console.log('Agent UID:', user.uid);
-
         const connectionsQuery = query(
           collection(getDb(), 'connections'),
           where('agentId', '==', user.uid),
@@ -135,86 +132,64 @@ export default function CandidateProjectsPage() {
 
         const snapshot = await getDocs(connectionsQuery);
 
-        console.log('Query executed successfully');
-        console.log('Total connection documents found:', snapshot.docs.length);
-        console.log('Raw connection data:', snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })));
-
-        // Use a Map to deduplicate candidates by candidateId
+        // Deduplicate by candidateId and filter out invalid entries
         const candidatesMap = new Map();
+
         snapshot.docs.forEach(doc => {
           const data = doc.data();
-          const candidateId = data.candidateId;
 
-          console.log('Processing connection:', {
-            docId: doc.id,
-            candidateId,
-            candidateName: data.candidateName,
-            status: data.status
-          });
+          // Skip if missing required fields
+          if (!data.candidateId || !data.candidateName) {
+            console.warn('Skipping connection with missing candidateId or candidateName:', doc.id);
+            return;
+          }
 
-          // Keep only one connection per candidateId (use the most recent one)
-          if (!candidatesMap.has(candidateId)) {
-            candidatesMap.set(candidateId, {
+          // Keep only one connection per candidateId (most recent)
+          if (!candidatesMap.has(data.candidateId)) {
+            candidatesMap.set(data.candidateId, {
               id: doc.id,
-              ...data
+              candidateId: data.candidateId,
+              candidateName: data.candidateName,
+              candidateEmail: data.candidateEmail || '',
+              agentId: data.agentId,
+              status: data.status,
+              conversationId: data.conversationId,
+              createdAt: data.createdAt
             });
           } else {
-            // If duplicate found, keep the one with the most recent createdAt
-            const existing = candidatesMap.get(candidateId);
-            if (data.createdAt && existing.createdAt &&
-                data.createdAt.toMillis() > existing.createdAt.toMillis()) {
-              candidatesMap.set(candidateId, {
+            // If duplicate, keep the most recent one
+            const existing = candidatesMap.get(data.candidateId);
+            const existingTime = existing.createdAt?.toMillis() || 0;
+            const currentTime = data.createdAt?.toMillis() || 0;
+
+            if (currentTime > existingTime) {
+              candidatesMap.set(data.candidateId, {
                 id: doc.id,
-                ...data
+                candidateId: data.candidateId,
+                candidateName: data.candidateName,
+                candidateEmail: data.candidateEmail || '',
+                agentId: data.agentId,
+                status: data.status,
+                conversationId: data.conversationId,
+                createdAt: data.createdAt
               });
             }
           }
         });
 
         const candidates = Array.from(candidatesMap.values());
-        console.log('Deduplicated candidates:', candidates);
-        console.log('Final candidate count:', candidates.length);
-        console.log('Candidate IDs:', candidates.map(c => c.candidateId));
-        console.log('Candidate Names:', candidates.map(c => c.candidateName));
-
-        // Alert for debugging
-        if (candidates.length === 0) {
-          console.warn('WARNING: No connected candidates found for this agent');
-          console.warn('Possible causes:');
-          console.warn('1. No connections created yet (agent needs to accept service requests)');
-          console.warn('2. Missing Firestore composite index');
-          console.warn('3. Connections have incorrect status or agentId');
-        } else if (candidates.length === 1) {
-          console.warn('WARNING: Only 1 candidate found. If you expect more, check:');
-          console.warn('1. Firestore connections collection for this agent');
-          console.warn('2. Whether all connections have status="connected"');
-          console.warn('3. Browser console for connection creation logs');
-        } else {
-          console.log(`SUCCESS: Found ${candidates.length} connected candidates`);
-        }
-
         setConnectedCandidates(candidates);
-      } catch (err: any) {
-        console.error('=== ERROR fetching connected candidates ===');
-        console.error('Error object:', err);
-        console.error('Error code:', err.code);
-        console.error('Error message:', err.message);
 
+        console.log(`Loaded ${candidates.length} connected candidates`);
+      } catch (err: any) {
+        console.error('Error fetching connected candidates:', err);
+
+        // Check if it's a Firestore index error
         if (err.code === 'failed-precondition' || err.message?.includes('index')) {
-          console.error('');
-          console.error('*** FIRESTORE INDEX ERROR DETECTED ***');
-          console.error('This query requires a composite index in Firestore.');
-          console.error('Create an index with these fields:');
-          console.error('Collection: connections');
-          console.error('Fields: agentId (Ascending), status (Ascending)');
-          console.error('');
-          alert('Database index error detected. Please check the browser console for details.');
+          console.error('FIRESTORE INDEX ERROR: Create a composite index on connections collection with fields: agentId (ASC), status (ASC)');
+          alert('Database configuration error. Please contact support.');
         }
 
-        // Set empty array so dropdown shows "No connected candidates" message
         setConnectedCandidates([]);
       }
     };
@@ -1349,15 +1324,6 @@ function ActionFormModal({ onClose, onSubmit }: any) {
 }
 
 function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
-  console.log('=== DEBUG: ProjectFormModal Rendered ===');
-  console.log('connectedCandidates prop:', connectedCandidates);
-  console.log('connectedCandidates length:', connectedCandidates?.length);
-  console.log('connectedCandidates details:', connectedCandidates?.map((c: any) => ({
-    candidateId: c.candidateId,
-    candidateName: c.candidateName,
-    candidateEmail: c.candidateEmail
-  })));
-
   const [formData, setFormData] = useState({
     candidate_id: '',
     candidate_name: '',
