@@ -7,13 +7,13 @@ logger = logging.getLogger(__name__)
 
 # Try to import MailerSend - gracefully handle if not available
 try:
-    from mailersend import MailerSend
+    from mailersend import emails as mailersend_emails
     MAILERSEND_AVAILABLE = True
     logger.info("MailerSend module loaded successfully")
 except ImportError as e:
     logger.warning(f"MailerSend module not available: {e}. Email functionality will be disabled.")
     MAILERSEND_AVAILABLE = False
-    MailerSend = None
+    mailersend_emails = None
 
 
 class EmailService:
@@ -25,16 +25,9 @@ class EmailService:
         self.from_email = settings.FROM_EMAIL
         self.from_name = settings.FROM_NAME
         self.frontend_url = settings.FRONTEND_URL
-        self.mailer = None
 
         if MAILERSEND_AVAILABLE and self.api_key:
-            try:
-                # Use the newer MailerSend API (version 1.x+)
-                self.mailer = MailerSend({"api_key": self.api_key})
-                logger.info("MailerSend email service initialized successfully")
-            except Exception as e:
-                logger.error(f"Failed to initialize MailerSend: {e}")
-                self.mailer = None
+            logger.info("MailerSend email service initialized successfully")
         else:
             if not MAILERSEND_AVAILABLE:
                 logger.warning("Email service disabled: MailerSend not available")
@@ -55,7 +48,7 @@ class EmailService:
         Returns:
             True if email sent successfully, False otherwise
         """
-        if not self.mailer or not MAILERSEND_AVAILABLE:
+        if not MAILERSEND_AVAILABLE:
             logger.warning("Email service not available. Email not sent.")
             return False
 
@@ -64,37 +57,40 @@ class EmailService:
             return False
 
         try:
-            # Build email using the newer MailerSend API (version 1.x+)
-            from mailersend import emails as mailersend_emails
+            # Build email using MailerSend API (version 0.5.x)
+            # Create email instance with API key
+            mailer = mailersend_emails.NewEmail(self.api_key)
 
-            # Create email message
-            mail = mailersend_emails.NewEmail(self.mailer)
+            # Create mail_body dictionary
+            mail_body = {}
 
             # Set sender
-            mail.set_mail_from({
+            mail_from = {
                 "name": self.from_name,
                 "email": self.from_email,
-            })
+            }
+            mailer.set_mail_from(mail_from, mail_body)
 
             # Set recipient
-            mail.set_mail_to([{
+            recipients = [{
                 "name": to_name,
                 "email": to_email,
-            }])
+            }]
+            mailer.set_mail_to(recipients, mail_body)
 
             # Set subject and content
-            mail.set_subject(subject)
-            mail.set_html_content(html_content)
+            mailer.set_subject(subject, mail_body)
+            mailer.set_html_content(html_content, mail_body)
 
             # Add plain text if provided
             if text_content:
-                mail.set_text_content(text_content)
+                mailer.set_plaintext_content(text_content, mail_body)
 
             # Send email
             logger.info(f"Attempting to send email to {to_email} with subject: {subject}")
             logger.info(f"Using sender: {self.from_name} <{self.from_email}>")
 
-            response = mail.send()
+            response = mailer.send(mail_body)
 
             # Check response - MailerSend returns 202 on success
             if hasattr(response, 'status_code') and response.status_code == 202:
