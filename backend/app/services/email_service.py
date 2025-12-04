@@ -84,9 +84,16 @@ class EmailService:
             email = email_builder.build()
             response = self.client.emails.send(email)
 
-            # Check response - MailerSend returns message_id on success
-            if hasattr(response, 'message_id') and response.message_id:
-                logger.info(f"✅ Email sent successfully to {to_email} (message_id: {response.message_id})")
+            # Check response - MailerSend returns 'id' on success
+            # Response can be dict-like or object-like, check both ways
+            message_id = None
+            if hasattr(response, 'id'):
+                message_id = response.id
+            elif isinstance(response, dict) and 'id' in response:
+                message_id = response['id']
+
+            if message_id:
+                logger.info(f"✅ Email sent successfully to {to_email} (message_id: {message_id})")
                 return True
             else:
                 logger.error(f"❌ Failed to send email to {to_email} - Response: {response}")
