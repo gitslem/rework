@@ -7,13 +7,13 @@ logger = logging.getLogger(__name__)
 
 # Try to import MailerSend - gracefully handle if not available
 try:
-    from mailersend import emails
+    from mailersend import MailerSend
     MAILERSEND_AVAILABLE = True
     logger.info("MailerSend module loaded successfully")
 except ImportError as e:
     logger.warning(f"MailerSend module not available: {e}. Email functionality will be disabled.")
     MAILERSEND_AVAILABLE = False
-    emails = None
+    MailerSend = None
 
 
 class EmailService:
@@ -29,8 +29,8 @@ class EmailService:
 
         if MAILERSEND_AVAILABLE and self.api_key:
             try:
-                # Use the MailerSend emails API (version 0.5.x+)
-                self.mailer = emails.NewEmail(self.api_key)
+                # Use the newer MailerSend API (version 1.x+)
+                self.mailer = MailerSend({"api_key": self.api_key})
                 logger.info("MailerSend email service initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize MailerSend: {e}")
@@ -64,45 +64,47 @@ class EmailService:
             return False
 
         try:
-            # Build email using the MailerSend API (version 0.5.x+)
-            mail_body = {}
+            # Build email using the newer MailerSend API (version 1.x+)
+            from mailersend import emails as mailersend_emails
+
+            # Create email message
+            mail = mailersend_emails.NewEmail(self.mailer)
 
             # Set sender
-            mail_from = {
+            mail.set_mail_from({
                 "name": self.from_name,
                 "email": self.from_email,
-            }
-            self.mailer.set_mail_from(mail_from, mail_body)
+            })
 
             # Set recipient
-            recipients = [
-                {
-                    "name": to_name,
-                    "email": to_email,
-                }
-            ]
-            self.mailer.set_mail_to(recipients, mail_body)
+            mail.set_mail_to([{
+                "name": to_name,
+                "email": to_email,
+            }])
 
             # Set subject and content
-            self.mailer.set_subject(subject, mail_body)
-            self.mailer.set_html_content(html_content, mail_body)
+            mail.set_subject(subject)
+            mail.set_html_content(html_content)
 
             # Add plain text if provided
             if text_content:
-                self.mailer.set_plaintext_content(text_content, mail_body)
+                mail.set_text_content(text_content)
 
             # Send email
             logger.info(f"Attempting to send email to {to_email} with subject: {subject}")
             logger.info(f"Using sender: {self.from_name} <{self.from_email}>")
 
-            response = self.mailer.send(mail_body)
+            response = mail.send()
 
             # Check response - MailerSend returns 202 on success
-            if response == 202:
+            if hasattr(response, 'status_code') and response.status_code == 202:
+                logger.info(f"✅ Email sent successfully to {to_email}")
+                return True
+            elif response == 202:
                 logger.info(f"✅ Email sent successfully to {to_email}")
                 return True
             else:
-                logger.error(f"❌ Failed to send email to {to_email} - Response code: {response}")
+                logger.error(f"❌ Failed to send email to {to_email} - Response: {response}")
                 return False
 
         except Exception as e:
