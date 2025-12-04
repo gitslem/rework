@@ -124,6 +124,9 @@ export default function CandidateProjectsPage() {
 
     const fetchConnections = async () => {
       try {
+        console.log('=== DEBUG: Fetching Connected Candidates ===');
+        console.log('Agent UID:', user.uid);
+
         const connectionsQuery = query(
           collection(getDb(), 'connections'),
           where('agentId', '==', user.uid),
@@ -132,11 +135,25 @@ export default function CandidateProjectsPage() {
 
         const snapshot = await getDocs(connectionsQuery);
 
+        console.log('Query executed successfully');
+        console.log('Total connection documents found:', snapshot.docs.length);
+        console.log('Raw connection data:', snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })));
+
         // Use a Map to deduplicate candidates by candidateId
         const candidatesMap = new Map();
         snapshot.docs.forEach(doc => {
           const data = doc.data();
           const candidateId = data.candidateId;
+
+          console.log('Processing connection:', {
+            docId: doc.id,
+            candidateId,
+            candidateName: data.candidateName,
+            status: data.status
+          });
 
           // Keep only one connection per candidateId (use the most recent one)
           if (!candidatesMap.has(candidateId)) {
@@ -158,9 +175,47 @@ export default function CandidateProjectsPage() {
         });
 
         const candidates = Array.from(candidatesMap.values());
+        console.log('Deduplicated candidates:', candidates);
+        console.log('Final candidate count:', candidates.length);
+        console.log('Candidate IDs:', candidates.map(c => c.candidateId));
+        console.log('Candidate Names:', candidates.map(c => c.candidateName));
+
+        // Alert for debugging
+        if (candidates.length === 0) {
+          console.warn('WARNING: No connected candidates found for this agent');
+          console.warn('Possible causes:');
+          console.warn('1. No connections created yet (agent needs to accept service requests)');
+          console.warn('2. Missing Firestore composite index');
+          console.warn('3. Connections have incorrect status or agentId');
+        } else if (candidates.length === 1) {
+          console.warn('WARNING: Only 1 candidate found. If you expect more, check:');
+          console.warn('1. Firestore connections collection for this agent');
+          console.warn('2. Whether all connections have status="connected"');
+          console.warn('3. Browser console for connection creation logs');
+        } else {
+          console.log(`SUCCESS: Found ${candidates.length} connected candidates`);
+        }
+
         setConnectedCandidates(candidates);
-      } catch (err) {
-        console.error('Error fetching connected candidates:', err);
+      } catch (err: any) {
+        console.error('=== ERROR fetching connected candidates ===');
+        console.error('Error object:', err);
+        console.error('Error code:', err.code);
+        console.error('Error message:', err.message);
+
+        if (err.code === 'failed-precondition' || err.message?.includes('index')) {
+          console.error('');
+          console.error('*** FIRESTORE INDEX ERROR DETECTED ***');
+          console.error('This query requires a composite index in Firestore.');
+          console.error('Create an index with these fields:');
+          console.error('Collection: connections');
+          console.error('Fields: agentId (Ascending), status (Ascending)');
+          console.error('');
+          alert('Database index error detected. Please check the browser console for details.');
+        }
+
+        // Set empty array so dropdown shows "No connected candidates" message
+        setConnectedCandidates([]);
       }
     };
 
@@ -1294,6 +1349,15 @@ function ActionFormModal({ onClose, onSubmit }: any) {
 }
 
 function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
+  console.log('=== DEBUG: ProjectFormModal Rendered ===');
+  console.log('connectedCandidates prop:', connectedCandidates);
+  console.log('connectedCandidates length:', connectedCandidates?.length);
+  console.log('connectedCandidates details:', connectedCandidates?.map((c: any) => ({
+    candidateId: c.candidateId,
+    candidateName: c.candidateName,
+    candidateEmail: c.candidateEmail
+  })));
+
   const [formData, setFormData] = useState({
     candidate_id: '',
     candidate_name: '',
