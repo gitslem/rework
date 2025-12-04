@@ -131,10 +131,33 @@ export default function CandidateProjectsPage() {
         );
 
         const snapshot = await getDocs(connectionsQuery);
-        const candidates = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+
+        // Use a Map to deduplicate candidates by candidateId
+        const candidatesMap = new Map();
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          const candidateId = data.candidateId;
+
+          // Keep only one connection per candidateId (use the most recent one)
+          if (!candidatesMap.has(candidateId)) {
+            candidatesMap.set(candidateId, {
+              id: doc.id,
+              ...data
+            });
+          } else {
+            // If duplicate found, keep the one with the most recent createdAt
+            const existing = candidatesMap.get(candidateId);
+            if (data.createdAt && existing.createdAt &&
+                data.createdAt.toMillis() > existing.createdAt.toMillis()) {
+              candidatesMap.set(candidateId, {
+                id: doc.id,
+                ...data
+              });
+            }
+          }
+        });
+
+        const candidates = Array.from(candidatesMap.values());
         setConnectedCandidates(candidates);
       } catch (err) {
         console.error('Error fetching connected candidates:', err);

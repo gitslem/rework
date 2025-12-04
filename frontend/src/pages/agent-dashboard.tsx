@@ -278,19 +278,37 @@ export default function AgentDashboard() {
       const ids = [message.senderId, user.uid].sort();
       const conversationId = message.conversationId || `conv_${ids[0]}_${ids[1]}`;
 
-      // Create connection/friendship between agent and candidate
-      await addDoc(collection(db, 'connections'), {
-        agentId: user.uid,
-        agentName: `${profile?.firstName} ${profile?.lastName}`,
-        agentEmail: profile?.email || user.email,
-        candidateId: message.senderId,
-        candidateName: message.senderName,
-        candidateEmail: message.senderEmail,
-        conversationId: conversationId,
-        status: 'connected',
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-      });
+      // Check if connection already exists to prevent duplicates
+      const existingConnectionQuery = query(
+        collection(db, 'connections'),
+        where('agentId', '==', user.uid),
+        where('candidateId', '==', message.senderId)
+      );
+      const existingConnectionSnapshot = await getDocs(existingConnectionQuery);
+
+      // Only create connection if it doesn't already exist
+      if (existingConnectionSnapshot.empty) {
+        await addDoc(collection(db, 'connections'), {
+          agentId: user.uid,
+          agentName: `${profile?.firstName} ${profile?.lastName}`,
+          agentEmail: profile?.email || user.email,
+          candidateId: message.senderId,
+          candidateName: message.senderName,
+          candidateEmail: message.senderEmail,
+          conversationId: conversationId,
+          status: 'connected',
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now()
+        });
+      } else {
+        // Update existing connection if needed (e.g., ensure status is 'connected')
+        const existingConnectionDoc = existingConnectionSnapshot.docs[0];
+        await updateDoc(doc(db, 'connections', existingConnectionDoc.id), {
+          status: 'connected',
+          conversationId: conversationId,
+          updatedAt: Timestamp.now()
+        });
+      }
 
       // Send acceptance message to candidate
       await addDoc(collection(db, 'messages'), {
