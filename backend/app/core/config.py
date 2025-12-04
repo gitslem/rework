@@ -74,13 +74,37 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins(self) -> List[str]:
-        """Parse CORS origins from string or list"""
+        """Parse CORS origins from string or list and auto-include www/non-www variants"""
+        origins = []
+
         if isinstance(self.BACKEND_CORS_ORIGINS, str):
             try:
-                return json.loads(self.BACKEND_CORS_ORIGINS)
+                origins = json.loads(self.BACKEND_CORS_ORIGINS)
             except json.JSONDecodeError:
-                return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",")]
-        return self.BACKEND_CORS_ORIGINS
+                origins = [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",")]
+        else:
+            origins = self.BACKEND_CORS_ORIGINS
+
+        # Expand origins to include both www and non-www versions
+        expanded_origins = set(origins)  # Use set to avoid duplicates
+
+        for origin in origins:
+            if origin.startswith('https://www.'):
+                # Add non-www version
+                expanded_origins.add(origin.replace('https://www.', 'https://'))
+            elif origin.startswith('https://') and 'www.' not in origin:
+                # Add www version
+                domain = origin.replace('https://', '')
+                expanded_origins.add(f'https://www.{domain}')
+            elif origin.startswith('http://www.'):
+                # Add non-www version for http
+                expanded_origins.add(origin.replace('http://www.', 'http://'))
+            elif origin.startswith('http://') and 'www.' not in origin and 'localhost' not in origin:
+                # Add www version for http (but not localhost)
+                domain = origin.replace('http://', '')
+                expanded_origins.add(f'http://www.{domain}')
+
+        return list(expanded_origins)
 
 
 settings = Settings()
