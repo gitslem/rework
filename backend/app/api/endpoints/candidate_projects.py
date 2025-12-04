@@ -8,6 +8,7 @@ from app.models.models import (
     ProjectUpdate,
     ProjectAction,
     User,
+    Notification,
     UserRole,
     CandidateProjectStatus,
     ProjectActionStatus
@@ -218,6 +219,31 @@ def create_candidate_project(
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to queue project created email: {str(e)}")
 
+    # Create in-app notification for candidate
+    try:
+        agent = db.query(User).filter(User.id == new_project.agent_id).first()
+        agent_name = agent.email.split('@')[0] if agent else "Your agent"
+
+        notification = Notification(
+            user_id=new_project.candidate_id,
+            title="New Project Created",
+            message=f"{agent_name} has created a new project for you: {new_project.title}",
+            type="candidate_project",
+            notification_data={
+                "project_id": new_project.id,
+                "project_title": new_project.title,
+                "agent_id": new_project.agent_id,
+                "action": "created"
+            }
+        )
+        db.add(notification)
+        db.commit()
+    except Exception as e:
+        # Log error but don't fail the request
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to create in-app notification: {str(e)}")
+
     return new_project
 
 
@@ -413,6 +439,41 @@ def update_candidate_project(
         import logging
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to queue project update email: {str(e)}")
+
+    # Create in-app notification for candidate
+    try:
+        agent = db.query(User).filter(User.id == project.agent_id).first()
+        agent_name = agent.email.split('@')[0] if agent else "Your agent"
+
+        if status_changed:
+            new_status = update_data_dict['status'].value if hasattr(update_data_dict['status'], 'value') else str(update_data_dict['status'])
+            notification_message = f"{agent_name} changed the status of '{project.title}' to {new_status}"
+            notification_title = "Project Status Updated"
+        else:
+            notification_message = f"{agent_name} updated your project: {project.title}"
+            notification_title = "Project Updated"
+
+        notification = Notification(
+            user_id=project.candidate_id,
+            title=notification_title,
+            message=notification_message,
+            type="candidate_project",
+            notification_data={
+                "project_id": project.id,
+                "project_title": project.title,
+                "agent_id": project.agent_id,
+                "action": "updated",
+                "status_changed": status_changed,
+                "updates": update_data_dict
+            }
+        )
+        db.add(notification)
+        db.commit()
+    except Exception as e:
+        # Log error but don't fail the request
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to create in-app notification: {str(e)}")
 
     return project
 
