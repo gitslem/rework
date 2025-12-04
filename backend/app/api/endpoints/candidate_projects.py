@@ -26,11 +26,6 @@ from app.schemas.schemas import (
     ProjectActionResponse
 )
 from app.api.dependencies import get_current_user
-from app.tasks.email_tasks import (
-    send_project_created_email,
-    send_project_updated_email,
-    send_project_status_changed_email
-)
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/candidate-projects", tags=["candidate-projects"])
@@ -210,14 +205,64 @@ def create_candidate_project(
     db.commit()
     db.refresh(new_project)
 
-    # Send email notification to candidate (async)
+    # Send email notification to candidate (direct call - no Celery needed)
     try:
-        send_project_created_email.delay(new_project.id)
+        from app.services.email_service import email_service
+        from app.models.models import Profile
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Get candidate and agent info for email
+        candidate = db.query(User).filter(User.id == new_project.candidate_id).first()
+        agent = db.query(User).filter(User.id == current_user.id).first()
+
+        if candidate and candidate.email and agent:
+            # Get profiles for names
+            candidate_profile = db.query(Profile).filter(Profile.user_id == candidate.id).first()
+            agent_profile = db.query(Profile).filter(Profile.user_id == agent.id).first()
+
+            # Check if candidate has email notifications enabled
+            send_email = True
+            if candidate_profile and candidate_profile.email_notifications:
+                send_email = candidate_profile.email_notifications.get("project_created", True)
+
+            if send_email:
+                candidate_name = (
+                    candidate_profile.first_name if candidate_profile and candidate_profile.first_name
+                    else candidate.email.split('@')[0]
+                )
+
+                agent_name = (
+                    f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+                    if agent_profile and agent_profile.first_name
+                    else agent.email.split('@')[0]
+                )
+
+                # Send email directly
+                logger.info(f"📧 Sending project created email to {candidate.email}")
+
+                success = email_service.send_project_created_notification(
+                    candidate_email=candidate.email,
+                    candidate_name=candidate_name,
+                    agent_name=agent_name,
+                    project_title=new_project.title,
+                    project_description=new_project.description or "No description provided",
+                    project_id=str(new_project.id),
+                    platform=new_project.platform
+                )
+
+                if success:
+                    logger.info(f"✅ Project created email sent successfully to {candidate.email}")
+                else:
+                    logger.warning(f"⚠️ Failed to send project created email to {candidate.email}")
+            else:
+                logger.info(f"📭 Candidate {candidate.id} has project_created notifications disabled")
     except Exception as e:
         # Log error but don't fail the request
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Failed to queue project created email: {str(e)}")
+        logger.error(f"❌ Error sending project created email: {str(e)}")
+        logger.exception("Full traceback:")
 
     # Create in-app notification for candidate
     try:
@@ -420,25 +465,86 @@ def update_candidate_project(
     db.commit()
     db.refresh(project)
 
-    # Send email notifications (async)
+    # Send email notifications (direct call - no Celery needed)
     try:
-        if status_changed:
-            # Send status change email
-            new_status = update_data_dict['status'].value if hasattr(update_data_dict['status'], 'value') else str(update_data_dict['status'])
-            send_project_status_changed_email.delay(
-                project.id,
-                old_status,
-                new_status
-            )
-        else:
-            # Send general update email
-            update_summary = ", ".join([f"{k}: {v}" for k, v in update_data_dict.items()])
-            send_project_updated_email.delay(project.id, update_summary)
+        from app.services.email_service import email_service
+        from app.models.models import Profile
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Get candidate and agent info for email
+        candidate = db.query(User).filter(User.id == project.candidate_id).first()
+        agent = db.query(User).filter(User.id == project.agent_id).first()
+
+        if candidate and candidate.email and agent:
+            # Get profiles for names
+            candidate_profile = db.query(Profile).filter(Profile.user_id == candidate.id).first()
+            agent_profile = db.query(Profile).filter(Profile.user_id == agent.id).first()
+
+            # Check if candidate has email notifications enabled
+            send_email = True
+            notification_type = "project_status_changed" if status_changed else "project_updated"
+            if candidate_profile and candidate_profile.email_notifications:
+                send_email = candidate_profile.email_notifications.get(notification_type, True)
+
+            if send_email:
+                candidate_name = (
+                    candidate_profile.first_name if candidate_profile and candidate_profile.first_name
+                    else candidate.email.split('@')[0]
+                )
+
+                agent_name = (
+                    f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+                    if agent_profile and agent_profile.first_name
+                    else agent.email.split('@')[0]
+                )
+
+                # Send email directly based on update type
+                if status_changed:
+                    # Send status change email
+                    new_status = update_data_dict['status'].value if hasattr(update_data_dict['status'], 'value') else str(update_data_dict['status'])
+                    logger.info(f"📧 Sending project status changed email to {candidate.email}")
+
+                    success = email_service.send_project_status_changed_notification(
+                        candidate_email=candidate.email,
+                        candidate_name=candidate_name,
+                        agent_name=agent_name,
+                        project_title=project.title,
+                        project_id=str(project.id),
+                        old_status=old_status,
+                        new_status=new_status
+                    )
+
+                    if success:
+                        logger.info(f"✅ Project status changed email sent successfully to {candidate.email}")
+                    else:
+                        logger.warning(f"⚠️ Failed to send project status changed email to {candidate.email}")
+                else:
+                    # Send general update email
+                    update_summary = ", ".join([f"{k}: {v}" for k, v in update_data_dict.items()])
+                    logger.info(f"📧 Sending project updated email to {candidate.email}")
+
+                    success = email_service.send_project_updated_notification(
+                        candidate_email=candidate.email,
+                        candidate_name=candidate_name,
+                        agent_name=agent_name,
+                        project_title=project.title,
+                        project_id=str(project.id),
+                        update_summary=update_summary
+                    )
+
+                    if success:
+                        logger.info(f"✅ Project updated email sent successfully to {candidate.email}")
+                    else:
+                        logger.warning(f"⚠️ Failed to send project updated email to {candidate.email}")
+            else:
+                logger.info(f"📭 Candidate {candidate.id} has {notification_type} notifications disabled")
     except Exception as e:
         # Log error but don't fail the request
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Failed to queue project update email: {str(e)}")
+        logger.error(f"❌ Error sending project update email: {str(e)}")
+        logger.exception("Full traceback:")
 
     # Create in-app notification for candidate
     try:
@@ -550,18 +656,66 @@ def create_project_update(
     db.commit()
     db.refresh(new_update)
 
-    # Send email notification about project update (async)
+    # Send email notification about project update (direct call - no Celery needed)
     try:
-        update_text = new_update.update_text or "New progress update added"
-        send_project_updated_email.delay(
-            project.id,
-            f"New update: {update_text[:100]}..."  # Send first 100 chars
-        )
+        from app.services.email_service import email_service
+        from app.models.models import Profile
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Get candidate and agent info for email
+        candidate = db.query(User).filter(User.id == project.candidate_id).first()
+        agent = db.query(User).filter(User.id == project.agent_id).first()
+
+        if candidate and candidate.email and agent:
+            # Get profiles for names
+            candidate_profile = db.query(Profile).filter(Profile.user_id == candidate.id).first()
+            agent_profile = db.query(Profile).filter(Profile.user_id == agent.id).first()
+
+            # Check if candidate has email notifications enabled
+            send_email = True
+            if candidate_profile and candidate_profile.email_notifications:
+                send_email = candidate_profile.email_notifications.get("project_updated", True)
+
+            if send_email:
+                candidate_name = (
+                    candidate_profile.first_name if candidate_profile and candidate_profile.first_name
+                    else candidate.email.split('@')[0]
+                )
+
+                agent_name = (
+                    f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+                    if agent_profile and agent_profile.first_name
+                    else agent.email.split('@')[0]
+                )
+
+                # Send email directly
+                update_text = new_update.update_text or "New progress update added"
+                update_summary = f"New update: {update_text[:100]}..."  # First 100 chars
+
+                logger.info(f"📧 Sending project update email to {candidate.email}")
+
+                success = email_service.send_project_updated_notification(
+                    candidate_email=candidate.email,
+                    candidate_name=candidate_name,
+                    agent_name=agent_name,
+                    project_title=project.title,
+                    project_id=str(project.id),
+                    update_summary=update_summary
+                )
+
+                if success:
+                    logger.info(f"✅ Project update email sent successfully to {candidate.email}")
+                else:
+                    logger.warning(f"⚠️ Failed to send project update email to {candidate.email}")
+            else:
+                logger.info(f"📭 Candidate {candidate.id} has project_updated notifications disabled")
     except Exception as e:
         # Log error but don't fail the request
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Failed to queue project update email: {str(e)}")
+        logger.error(f"❌ Error sending project update email: {str(e)}")
+        logger.exception("Full traceback:")
 
     return new_update
 
