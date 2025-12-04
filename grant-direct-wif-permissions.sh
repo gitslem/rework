@@ -1,0 +1,107 @@
+#!/bin/bash
+set -e
+
+# Grant permissions directly to Workload Identity Pool principal
+# This uses Direct WIF instead of service account impersonation
+
+PROJECT_ID="remote-worksio"
+PROJECT_NUMBER="706683337174"
+POOL_NAME="github-pool"
+REPO="gitslem/rework"
+
+# Construct the principal for the Workload Identity Pool
+PRINCIPAL="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_NAME}/attribute.repository/${REPO}"
+
+echo "=================================================================="
+echo "Grant Direct Workload Identity Federation Permissions"
+echo "=================================================================="
+echo ""
+echo "Project: $PROJECT_ID"
+echo "Project Number: $PROJECT_NUMBER"
+echo "Pool: $POOL_NAME"
+echo "Repository: $REPO"
+echo ""
+echo "Principal:"
+echo "$PRINCIPAL"
+echo ""
+echo "This script will grant the following roles directly to the"
+echo "Workload Identity Pool principal (no service account):"
+echo "  - roles/artifactregistry.writer"
+echo "  - roles/run.admin"
+echo "  - roles/iam.serviceAccountUser"
+echo ""
+
+# Array of roles to grant at project level
+ROLES=(
+  "roles/artifactregistry.writer"
+  "roles/run.admin"
+  "roles/iam.serviceAccountUser"
+)
+
+echo "Step 1: Granting project-level roles to WIF principal..."
+echo ""
+
+for ROLE in "${ROLES[@]}"; do
+  echo "Granting $ROLE..."
+  gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="$PRINCIPAL" \
+    --role="$ROLE" \
+    --condition=None \
+    > /dev/null
+  echo "✓ Granted $ROLE"
+done
+
+echo ""
+echo "Step 2: Granting Secret Manager access to specific secrets..."
+echo ""
+
+# List of secrets that need access
+SECRETS=(
+  "DATABASE_URL"
+  "SECRET_KEY"
+  "MAILERSEND_API_KEY"
+  "BACKEND_CORS_ORIGINS"
+)
+
+SUCCESS_COUNT=0
+FAILED_COUNT=0
+
+for SECRET in "${SECRETS[@]}"; do
+  echo "Processing secret: $SECRET"
+
+  if gcloud secrets describe "$SECRET" --project="$PROJECT_ID" &>/dev/null; then
+    if gcloud secrets add-iam-policy-binding "$SECRET" \
+      --member="$PRINCIPAL" \
+      --role="roles/secretmanager.secretAccessor" \
+      --project="$PROJECT_ID" &>/dev/null; then
+      echo "  ✓ Granted access to $SECRET"
+      ((SUCCESS_COUNT++))
+    else
+      echo "  ✗ Failed to grant access to $SECRET"
+      ((FAILED_COUNT++))
+    fi
+  else
+    echo "  ⚠ Secret $SECRET does not exist - skipping"
+    ((FAILED_COUNT++))
+  fi
+done
+
+echo ""
+echo "=================================================================="
+echo "✓ Direct WIF permission setup complete!"
+echo ""
+echo "Summary:"
+echo "  ✓ Project-level roles: ${#ROLES[@]}"
+echo "  ✓ Secret access granted: $SUCCESS_COUNT"
+if [ $FAILED_COUNT -gt 0 ]; then
+  echo "  ⚠ Secrets skipped: $FAILED_COUNT"
+fi
+echo ""
+echo "IMPORTANT CHANGES:"
+echo "  - Using Direct Workload Identity Federation"
+echo "  - Permissions granted to WIF pool principal directly"
+echo "  - No service account impersonation (this was causing errors)"
+echo ""
+echo "IMPORTANT: Wait 5 minutes for IAM changes to propagate"
+echo "Then retry your GitHub Actions deployment"
+echo "=================================================================="
