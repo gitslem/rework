@@ -1,6 +1,6 @@
 """Email notification service using MailerSend"""
 from typing import Optional
-from mailersend import emails
+from mailersend import NewEmail
 from app.core.config import settings
 import logging
 
@@ -16,7 +16,7 @@ class EmailService:
         self.from_email = settings.FROM_EMAIL
         self.from_name = settings.FROM_NAME
         self.frontend_url = settings.FRONTEND_URL
-        self.mailer = emails.NewEmail(self.api_key)
+        self.mailer = NewEmail(self.api_key)
 
     def _send_email(self, to_email: str, to_name: str, subject: str, html_content: str, text_content: str = None) -> bool:
         """
