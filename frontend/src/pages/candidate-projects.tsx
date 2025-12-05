@@ -216,7 +216,6 @@ export default function CandidateProjectsPage() {
         !n.isRead && (
           n.type === 'action_needed' ||
           n.type === 'action_status_changed' ||
-          n.type === 'project_update' ||
           n.metadata?.projectId
         )
       );
@@ -802,7 +801,6 @@ export default function CandidateProjectsPage() {
                     {notifications.filter(n =>
                       n.type === 'action_needed' ||
                       n.type === 'action_status_changed' ||
-                      n.type === 'project_update' ||
                       n.metadata?.projectId
                     ).length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -816,7 +814,6 @@ export default function CandidateProjectsPage() {
                           .filter(n =>
                             n.type === 'action_needed' ||
                             n.type === 'action_status_changed' ||
-                            n.type === 'project_update' ||
                             n.metadata?.projectId
                           )
                           .map((notification) => (
@@ -870,7 +867,6 @@ export default function CandidateProjectsPage() {
                   {notifications.filter(n =>
                     n.type === 'action_needed' ||
                     n.type === 'action_status_changed' ||
-                    n.type === 'project_update' ||
                     n.metadata?.projectId
                   ).length > 0 && (
                     <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
@@ -881,7 +877,6 @@ export default function CandidateProjectsPage() {
                             !n.isRead && (
                               n.type === 'action_needed' ||
                               n.type === 'action_status_changed' ||
-                              n.type === 'project_update' ||
                               n.metadata?.projectId
                             )
                           );
