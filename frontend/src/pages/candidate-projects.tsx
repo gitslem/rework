@@ -493,6 +493,60 @@ export default function CandidateProjectsPage() {
         });
       }
 
+      // Send email for scheduled sessions (screen_share or work_session)
+      if (actionData.action_type === 'screen_share' || actionData.action_type === 'work_session') {
+        try {
+          // Determine recipient based on who created the action
+          const isAgent = userRole === 'agent';
+          const recipientId = isAgent ? selectedProject.candidate_id : selectedProject.agent_id;
+          const recipientEmail = isAgent ? selectedProject.candidate_email : selectedProject.agent_email;
+          const recipientName = isAgent ? selectedProject.candidate_name : selectedProject.agent_name;
+
+          // Get requester info from Firestore user doc
+          const userDoc = await getDoc(doc(getDb(), 'users', user.uid));
+          const userData = userDoc.data();
+          const requesterName = userData?.displayName || userData?.email || user.email || 'User';
+
+          // Format scheduled time for email
+          let scheduledTimeStr = null;
+          if (actionData.scheduled_time) {
+            const scheduledDate = new Date(actionData.scheduled_time);
+            scheduledTimeStr = scheduledDate.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              timeZoneName: 'short'
+            });
+          }
+
+          // Call backend to send email
+          await candidateProjectsAPI.sendScheduleEmail({
+            recipient_email: recipientEmail,
+            recipient_name: recipientName,
+            requester_name: requesterName,
+            requester_role: isAgent ? 'agent' : 'candidate',
+            project_title: selectedProject.title,
+            project_id: selectedProject.id,
+            action_type: actionData.action_type,
+            scheduled_time: scheduledTimeStr,
+            duration_minutes: actionData.duration_minutes,
+            description: actionData.description
+          });
+
+          console.log('✅ Schedule email sent successfully');
+        } catch (emailErr: any) {
+          console.error('⚠️ Failed to send schedule email:', emailErr);
+          console.error('Email error details:', {
+            message: emailErr.message,
+            response: emailErr.response?.data,
+            status: emailErr.response?.status
+          });
+          // Don't fail the action creation if email fails
+        }
+      }
+
       setShowActionModal(false);
     } catch (err: any) {
       console.error('Error creating action:', err);
@@ -501,13 +555,48 @@ export default function CandidateProjectsPage() {
   };
 
   const updateActionStatus = async (actionId: string, status: ProjectActionStatus) => {
+    if (!selectedProject || !user) return;
+
     try {
       const actionRef = doc(getDb(), ACTIONS_COLLECTION, actionId);
+
+      // Get the action to retrieve its details
+      const actionSnap = await getDoc(actionRef);
+      const action = actionSnap.data();
+
       await updateDoc(actionRef, {
         status,
         ...(status === 'completed' ? { completed_at: Timestamp.now() } : {}),
         updated_at: Timestamp.now()
       });
+
+      // Notify the other party about the status change
+      if (action) {
+        const isAgent = userRole === 'agent';
+        const otherPartyId = isAgent ? selectedProject.candidate_id : selectedProject.agent_id;
+
+        // Create notification for the other party
+        const statusMessages: { [key: string]: string } = {
+          'in_progress': 'started working on',
+          'completed': 'completed',
+          'cancelled': 'cancelled'
+        };
+
+        const actionMessage = statusMessages[status] || 'updated';
+
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: otherPartyId,
+          type: 'action_status_changed',
+          title: 'Action Status Updated',
+          message: `${isAgent ? 'Agent' : 'Candidate'} ${actionMessage} action "${action.title}" on project "${selectedProject.title}"`,
+          projectId: selectedProject.id,
+          actionId: actionId,
+          read: false,
+          createdAt: Timestamp.now()
+        });
+
+        console.log(`✅ Notification sent for action status change to ${status}`);
+      }
     } catch (err: any) {
       console.error('Error updating action:', err);
       setError(err.message || 'Failed to update action');
