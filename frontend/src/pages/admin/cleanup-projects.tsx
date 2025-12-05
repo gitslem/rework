@@ -2,20 +2,41 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { Trash2, AlertTriangle, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
+import { Trash2, AlertTriangle, ArrowLeft, CheckCircle, Loader2, User, Filter, Calendar } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, query, getDocs, doc, deleteDoc, getDoc } from 'firebase/firestore';
+import { collection, query, getDocs, doc, deleteDoc, getDoc, where, orderBy, Timestamp } from 'firebase/firestore';
+
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  platform: string;
+  status: string;
+  agent_id: string;
+  candidate_id: string;
+  candidate_name: string;
+  created_at: Timestamp;
+  agentName?: string;
+  agentEmail?: string;
+  [key: string]: any;
+}
+
+interface Agent {
+  id: string;
+  name: string;
+  email: string;
+}
 
 export default function CleanupProjects() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [projectCount, setProjectCount] = useState(0);
-  const [updateCount, setUpdateCount] = useState(0);
-  const [actionCount, setActionCount] = useState(0);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<string>('all');
+  const [selectedProjects, setSelectedProjects] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
-  const [deleted, setDeleted] = useState(false);
   const [deleteProgress, setDeleteProgress] = useState('');
 
   useEffect(() => {
@@ -24,7 +45,8 @@ export default function CleanupProjects() {
 
   useEffect(() => {
     if (isAdmin) {
-      countProjects();
+      fetchProjects();
+      fetchAgents();
     }
   }, [isAdmin]);
 
@@ -35,26 +57,20 @@ export default function CleanupProjects() {
 
       onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
-          console.log('🔐 Checking admin access for user:', firebaseUser.uid);
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
 
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            console.log('👤 User data:', { uid: firebaseUser.uid, role: userData.role, email: firebaseUser.email });
 
             if (userData.role === 'admin') {
-              console.log('✅ Admin access granted');
               setIsAdmin(true);
             } else {
-              console.log('❌ User is not admin, role:', userData.role);
               router.push('/admin');
             }
           } else {
-            console.log('❌ User document does not exist');
             router.push('/admin');
           }
         } else {
-          console.log('❌ No authenticated user');
           router.push('/admin');
         }
         setLoading(false);
@@ -66,44 +82,163 @@ export default function CleanupProjects() {
     }
   };
 
-  const countProjects = async () => {
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Get ALL projects
+      const projectsQuery = query(
+        collection(db, 'candidate_projects'),
+        orderBy('created_at', 'desc')
+      );
+      const projectsSnapshot = await getDocs(projectsQuery);
+
+      const projectsList: Project[] = [];
+
+      for (const projectDoc of projectsSnapshot.docs) {
+        const projectData = projectDoc.data() as Project;
+
+        // Fetch agent info
+        let agentName = 'Unknown Agent';
+        let agentEmail = '';
+        if (projectData.agent_id) {
+          const agentUserDoc = await getDoc(doc(db, 'users', projectData.agent_id));
+          if (agentUserDoc.exists()) {
+            agentEmail = agentUserDoc.data().email || '';
+          }
+
+          const agentProfileDoc = await getDoc(doc(db, 'profiles', projectData.agent_id));
+          if (agentProfileDoc.exists()) {
+            const agentProfile = agentProfileDoc.data();
+            agentName = agentProfile.firstName && agentProfile.lastName
+              ? `${agentProfile.firstName} ${agentProfile.lastName}`
+              : agentEmail || 'Unknown Agent';
+          }
+        }
+
+        projectsList.push({
+          ...projectData,
+          id: projectDoc.id,
+          agentName,
+          agentEmail
+        });
+      }
+
+      setProjects(projectsList);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAgents = async () => {
     try {
       const db = getFirebaseFirestore();
 
-      console.log('🔍 Admin counting projects...');
+      const agentsQuery = query(
+        collection(db, 'users'),
+        where('role', '==', 'agent')
+      );
+      const agentsSnapshot = await getDocs(agentsQuery);
 
-      // Count projects
-      const projectsSnapshot = await getDocs(collection(db, 'candidate_projects'));
-      console.log('✅ Projects count:', projectsSnapshot.size);
-      setProjectCount(projectsSnapshot.size);
+      const agentsList: Agent[] = [];
 
-      // Count updates
-      const updatesSnapshot = await getDocs(collection(db, 'project_updates'));
-      console.log('✅ Updates count:', updatesSnapshot.size);
-      setUpdateCount(updatesSnapshot.size);
+      for (const agentDoc of agentsSnapshot.docs) {
+        const agentData = agentDoc.data();
 
-      // Count actions
-      const actionsSnapshot = await getDocs(collection(db, 'project_actions'));
-      console.log('✅ Actions count:', actionsSnapshot.size);
-      setActionCount(actionsSnapshot.size);
-    } catch (error: any) {
-      console.error('❌ Error counting projects:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
+        const profileDoc = await getDoc(doc(db, 'profiles', agentDoc.id));
+        const profileData = profileDoc.exists() ? profileDoc.data() : {};
 
-      if (error.code === 'permission-denied') {
-        alert('⚠️ PERMISSION DENIED: Firestore rules need to be deployed!\n\nThe local firestore.rules file has been updated, but the rules must be deployed to Firebase.\n\nPlease run: firebase deploy --only firestore:rules');
+        agentsList.push({
+          id: agentDoc.id,
+          email: agentData.email,
+          name: profileData.firstName && profileData.lastName
+            ? `${profileData.firstName} ${profileData.lastName}`
+            : agentData.email
+        });
       }
+
+      setAgents(agentsList);
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+    }
+  };
+
+  const deleteSelectedProjects = async () => {
+    if (selectedProjects.size === 0) {
+      alert('Please select at least one project to delete');
+      return;
+    }
+
+    if (!confirm(`⚠️ WARNING: This will permanently delete ${selectedProjects.size} selected project(s) and their associated updates and actions. This cannot be undone!\n\nClick OK to confirm.`)) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      const db = getFirebaseFirestore();
+
+      let deleteCount = 0;
+      const totalCount = selectedProjects.size;
+
+      for (const projectId of selectedProjects) {
+        setDeleteProgress(`Deleting project ${deleteCount + 1}/${totalCount}...`);
+
+        // Delete the project
+        await deleteDoc(doc(db, 'candidate_projects', projectId));
+
+        // Delete associated updates
+        const updatesQuery = query(
+          collection(db, 'project_updates'),
+          where('project_id', '==', projectId)
+        );
+        const updatesSnapshot = await getDocs(updatesQuery);
+        for (const updateDoc of updatesSnapshot.docs) {
+          await deleteDoc(updateDoc.ref);
+        }
+
+        // Delete associated actions
+        const actionsQuery = query(
+          collection(db, 'project_actions'),
+          where('project_id', '==', projectId)
+        );
+        const actionsSnapshot = await getDocs(actionsQuery);
+        for (const actionDoc of actionsSnapshot.docs) {
+          await deleteDoc(actionDoc.ref);
+        }
+
+        deleteCount++;
+      }
+
+      setDeleteProgress('Deletion complete!');
+      alert(`✅ Successfully deleted ${deleteCount} project(s)`);
+
+      // Reset and refresh
+      setSelectedProjects(new Set());
+      await fetchProjects();
+    } catch (error: any) {
+      console.error('Error deleting projects:', error);
+      alert('Failed to delete projects: ' + error.message);
+    } finally {
+      setDeleting(false);
+      setDeleteProgress('');
     }
   };
 
   const deleteAllProjects = async () => {
-    if (!confirm(`⚠️ WARNING: This will permanently delete ALL ${projectCount} projects, ${updateCount} updates, and ${actionCount} actions. This cannot be undone!\n\nType "DELETE" in the next prompt to confirm.`)) {
+    if (projects.length === 0) {
+      alert('No projects to delete');
       return;
     }
 
-    const confirmText = prompt('Type "DELETE" (all caps) to confirm deletion:');
-    if (confirmText !== 'DELETE') {
+    if (!confirm(`⚠️ WARNING: This will permanently delete ALL ${projects.length} projects and their associated data. This cannot be undone!\n\nType "DELETE ALL" in the next prompt to confirm.`)) {
+      return;
+    }
+
+    const confirmText = prompt('Type "DELETE ALL" (all caps with space) to confirm deletion:');
+    if (confirmText !== 'DELETE ALL') {
       alert('Deletion cancelled.');
       return;
     }
@@ -113,58 +248,73 @@ export default function CleanupProjects() {
       const db = getFirebaseFirestore();
 
       // Delete all projects
-      setDeleteProgress('Deleting projects...');
+      setDeleteProgress('Deleting all projects...');
       const projectsSnapshot = await getDocs(collection(db, 'candidate_projects'));
       let deleteCount = 0;
       for (const projectDoc of projectsSnapshot.docs) {
         await deleteDoc(projectDoc.ref);
         deleteCount++;
-        if (deleteCount % 10 === 0) {
-          setDeleteProgress(`Deleted ${deleteCount}/${projectCount} projects...`);
+        if (deleteCount % 5 === 0) {
+          setDeleteProgress(`Deleted ${deleteCount}/${projectsSnapshot.size} projects...`);
         }
       }
 
       // Delete all updates
       setDeleteProgress('Deleting project updates...');
       const updatesSnapshot = await getDocs(collection(db, 'project_updates'));
-      deleteCount = 0;
       for (const updateDoc of updatesSnapshot.docs) {
         await deleteDoc(updateDoc.ref);
-        deleteCount++;
-        if (deleteCount % 10 === 0) {
-          setDeleteProgress(`Deleted ${deleteCount}/${updateCount} updates...`);
-        }
       }
 
       // Delete all actions
       setDeleteProgress('Deleting project actions...');
       const actionsSnapshot = await getDocs(collection(db, 'project_actions'));
-      deleteCount = 0;
       for (const actionDoc of actionsSnapshot.docs) {
         await deleteDoc(actionDoc.ref);
-        deleteCount++;
-        if (deleteCount % 10 === 0) {
-          setDeleteProgress(`Deleted ${deleteCount}/${actionCount} actions...`);
-        }
       }
 
       setDeleteProgress('Cleanup complete!');
-      setDeleted(true);
-      setProjectCount(0);
-      setUpdateCount(0);
-      setActionCount(0);
+      alert('✅ All projects deleted successfully!');
 
-      setTimeout(() => {
-        setDeleting(false);
-        setDeleteProgress('');
-      }, 3000);
+      setProjects([]);
+      setSelectedProjects(new Set());
     } catch (error: any) {
-      console.error('Error deleting projects:', error);
+      console.error('Error deleting all projects:', error);
       alert('Failed to delete projects: ' + error.message);
+    } finally {
       setDeleting(false);
       setDeleteProgress('');
     }
   };
+
+  const toggleProjectSelection = (projectId: string) => {
+    const newSelected = new Set(selectedProjects);
+    if (newSelected.has(projectId)) {
+      newSelected.delete(projectId);
+    } else {
+      newSelected.add(projectId);
+    }
+    setSelectedProjects(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProjects.size === filteredProjects.length) {
+      setSelectedProjects(new Set());
+    } else {
+      setSelectedProjects(new Set(filteredProjects.map(p => p.id)));
+    }
+  };
+
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return 'N/A';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString();
+  };
+
+  // Filter projects by selected agent
+  const filteredProjects = selectedAgent === 'all'
+    ? projects
+    : projects.filter(p => p.agent_id === selectedAgent);
 
   if (!isAdmin || loading) {
     return (
@@ -211,102 +361,199 @@ export default function CleanupProjects() {
           </div>
         </nav>
 
-        <div className="max-w-4xl mx-auto px-6 py-12">
-          {/* Warning Banner */}
-          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-8">
-            <div className="flex items-start space-x-4">
-              <AlertTriangle className="w-8 h-8 text-red-600 flex-shrink-0" />
-              <div>
-                <h2 className="text-xl font-bold text-red-900 mb-2">Danger Zone</h2>
-                <p className="text-red-800">
-                  This action will permanently delete ALL existing projects, updates, and actions from the database.
-                  This is irreversible and cannot be undone.
-                </p>
-              </div>
-            </div>
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-black mb-2">Project Cleanup</h1>
+            <p className="text-gray-600">Select and delete specific projects or all projects</p>
           </div>
 
           {/* Stats */}
-          <div className="bg-white rounded-lg border border-gray-200 p-8 mb-8">
-            <h3 className="text-2xl font-bold text-black mb-6">Current Database Status</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-black mb-2">{projectCount}</div>
-                <div className="text-gray-600">Projects</div>
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="text-3xl font-bold text-black mb-1">{projects.length}</div>
+              <div className="text-gray-600 text-sm">Total Projects</div>
+            </div>
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="text-3xl font-bold text-blue-600 mb-1">{filteredProjects.length}</div>
+              <div className="text-gray-600 text-sm">Filtered Projects</div>
+            </div>
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="text-3xl font-bold text-purple-600 mb-1">{selectedProjects.size}</div>
+              <div className="text-gray-600 text-sm">Selected Projects</div>
+            </div>
+          </div>
+
+          {/* Filter and Actions */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Filter className="w-5 h-5 text-gray-600" />
+                  <label className="text-sm font-medium text-gray-700">Filter by Agent:</label>
+                </div>
+                <select
+                  value={selectedAgent}
+                  onChange={(e) => {
+                    setSelectedAgent(e.target.value);
+                    setSelectedProjects(new Set());
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                >
+                  <option value="all">All Agents ({projects.length})</option>
+                  {agents.map(agent => {
+                    const count = projects.filter(p => p.agent_id === agent.id).length;
+                    return (
+                      <option key={agent.id} value={agent.id}>
+                        {agent.name} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-black mb-2">{updateCount}</div>
-                <div className="text-gray-600">Updates</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold text-black mb-2">{actionCount}</div>
-                <div className="text-gray-600">Actions</div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={deleteSelectedProjects}
+                  disabled={selectedProjects.size === 0 || deleting}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete Selected ({selectedProjects.size})
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Deletion Info */}
-          <div className="bg-white rounded-lg border border-gray-200 p-8 mb-8">
-            <h3 className="text-xl font-bold text-black mb-4">What will be deleted:</h3>
-            <ul className="space-y-2 text-gray-700">
-              <li className="flex items-center space-x-2">
-                <Trash2 className="w-5 h-5 text-red-500" />
-                <span>All candidate projects from all agents</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <Trash2 className="w-5 h-5 text-red-500" />
-                <span>All project updates and progress reports</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <Trash2 className="w-5 h-5 text-red-500" />
-                <span>All project actions and tasks</span>
-              </li>
-            </ul>
-            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900">
-                <strong>Note:</strong> This will allow agents to start creating projects afresh with the new system.
+          {/* Projects Table */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black mb-4"></div>
+              <p className="text-gray-600">Loading projects...</p>
+            </div>
+          ) : filteredProjects.length === 0 ? (
+            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+              <CheckCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 text-lg">No projects found</p>
+              <p className="text-gray-500 text-sm mt-2">
+                {selectedAgent === 'all' ? 'The database is clean.' : 'This agent has no projects.'}
               </p>
             </div>
-          </div>
+          ) : (
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              {/* Table Header */}
+              <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
+                <div className="flex items-center gap-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedProjects.size === filteredProjects.length && filteredProjects.length > 0}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+                  />
+                  <span className="text-sm font-semibold text-gray-700">Select All</span>
+                </div>
+              </div>
 
-          {/* Delete Button */}
-          {!deleted ? (
+              {/* Projects List */}
+              <div className="divide-y divide-gray-200">
+                {filteredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className={`p-6 hover:bg-gray-50 transition-colors ${
+                      selectedProjects.has(project.id) ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedProjects.has(project.id)}
+                        onChange={() => toggleProjectSelection(project.id)}
+                        className="mt-1 w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+                      />
+
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="text-lg font-semibold text-black">{project.title}</h3>
+                            <p className="text-sm text-gray-600 mt-1">{project.description}</p>
+                          </div>
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            project.status === 'active' ? 'bg-green-100 text-green-800' :
+                            project.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {project.status}
+                          </span>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-4 text-sm text-gray-600 mt-3">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            <div>
+                              <span className="font-medium">Agent:</span>
+                              <span className="ml-1">{project.agentName}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            <div>
+                              <span className="font-medium">Candidate:</span>
+                              <span className="ml-1">{project.candidate_name || 'N/A'}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <div>
+                              <span className="font-medium">Created:</span>
+                              <span className="ml-1">{formatDate(project.created_at)}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {project.platform && (
+                          <div className="mt-2">
+                            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                              {project.platform}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Danger Zone */}
+          <div className="mt-8 bg-red-50 border-2 border-red-200 rounded-lg p-6">
+            <div className="flex items-start gap-4 mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-lg font-bold text-red-900 mb-1">Danger Zone</h3>
+                <p className="text-red-800 text-sm">
+                  Delete ALL projects from all agents. This action is irreversible and will remove all projects, updates, and actions from the database.
+                </p>
+              </div>
+            </div>
             <button
               onClick={deleteAllProjects}
-              disabled={deleting || projectCount === 0}
-              className="w-full bg-red-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3"
+              disabled={deleting || projects.length === 0}
+              className="w-full bg-red-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {deleting ? (
                 <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   <span>{deleteProgress || 'Deleting...'}</span>
                 </>
               ) : (
                 <>
-                  <Trash2 className="w-6 h-6" />
-                  <span>Delete All Projects</span>
+                  <Trash2 className="w-5 h-5" />
+                  <span>Delete All {projects.length} Projects</span>
                 </>
               )}
             </button>
-          ) : (
-            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 text-center">
-              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-green-900 mb-2">Cleanup Complete!</h3>
-              <p className="text-green-800">All projects have been successfully deleted.</p>
-              <button
-                onClick={() => router.push('/admin/projects')}
-                className="mt-6 bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-              >
-                Go to Project Management
-              </button>
-            </div>
-          )}
-
-          {projectCount === 0 && !deleted && (
-            <div className="mt-4 text-center text-gray-600">
-              No projects to delete. The database is already clean.
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </>
