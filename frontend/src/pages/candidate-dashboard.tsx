@@ -157,7 +157,7 @@ export default function CandidateDashboard() {
             const projectNotifs = unreadNotifs.filter(n =>
               n.type === 'action_needed' ||
               n.type === 'action_status_changed' ||
-              n.metadata?.projectId
+              n.projectId
             );
             setProjectNotificationCount(projectNotifs.length);
           });
@@ -667,9 +667,8 @@ export default function CandidateDashboard() {
                                   }
 
                                   // Navigate based on notification type
-                                  if (notification.projectId || notification.metadata?.projectId) {
-                                    const projectId = notification.projectId || notification.metadata?.projectId;
-                                    router.push(`/candidate-projects?project=${projectId}`);
+                                  if (notification.projectId) {
+                                    router.push(`/candidate-projects?project=${notification.projectId}`);
                                   } else if (notification.link) {
                                     router.push(notification.link);
                                   }

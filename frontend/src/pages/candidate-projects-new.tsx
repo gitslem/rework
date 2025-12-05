@@ -170,7 +170,7 @@ export default function CandidateProjectsNew() {
         !n.isRead && (
           n.type === 'action_needed' ||
           n.type === 'action_status_changed' ||
-          n.metadata?.projectId
+          n.projectId
         )
       );
       setProjectNotificationCount(projectNotifs.length);
@@ -304,7 +304,7 @@ export default function CandidateProjectsNew() {
         title: 'New Project Assigned',
         message: `You have been assigned to a new project: ${projectData.title}`,
         projectId: projectRef.id,
-        read: false,
+        isRead: false,
         createdAt: Timestamp.now()
       });
 
@@ -465,7 +465,7 @@ export default function CandidateProjectsNew() {
               {notifications.filter(n =>
                 n.type === 'action_needed' ||
                 n.type === 'action_status_changed' ||
-                n.metadata?.projectId
+                n.projectId
               ).length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                   <Bell className="w-12 h-12 text-gray-300 mb-3" />
@@ -478,7 +478,7 @@ export default function CandidateProjectsNew() {
                     .filter(n =>
                       n.type === 'action_needed' ||
                       n.type === 'action_status_changed' ||
-                      n.metadata?.projectId
+                      n.projectId
                     )
                     .map((notification) => (
                       <div
@@ -490,9 +490,8 @@ export default function CandidateProjectsNew() {
                           }
 
                           // Navigate to project if projectId exists
-                          if (notification.projectId || notification.metadata?.projectId) {
-                            const projectId = notification.projectId || notification.metadata?.projectId;
-                            router.push(`/candidate-projects?project=${projectId}`);
+                          if (notification.projectId) {
+                            router.push(`/candidate-projects?project=${notification.projectId}`);
                           }
 
                           setShowNotificationPanel(false);
@@ -530,7 +529,7 @@ export default function CandidateProjectsNew() {
             {notifications.filter(n =>
               n.type === 'action_needed' ||
               n.type === 'action_status_changed' ||
-              n.metadata?.projectId
+              n.projectId
             ).length > 0 && (
               <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
                 <button
@@ -540,7 +539,7 @@ export default function CandidateProjectsNew() {
                       !n.isRead && (
                         n.type === 'action_needed' ||
                         n.type === 'action_status_changed' ||
-                        n.metadata?.projectId
+                        n.projectId
                       )
                     );
                     for (const notif of projectNotifs) {
