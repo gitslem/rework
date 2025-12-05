@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseFirestore, getFirebaseAuth } from '../lib/firebase/config';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { Calendar, Clock } from 'lucide-react';
 import {
   CandidateProjectStatus,
   ProjectActionStatus,
