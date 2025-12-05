@@ -119,8 +119,8 @@ export default function AdminProjects() {
         }
 
         projectsList.push({
-          id: projectDoc.id,
           ...projectData,
+          id: projectDoc.id, // Override with document ID
           agentName // Add agent name for display
         });
       }
