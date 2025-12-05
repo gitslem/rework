@@ -162,11 +162,11 @@ export default function CandidateDashboard() {
             setProjectNotificationCount(projectNotifs.length);
           });
 
+          setLoading(false);
+
           // Cleanup subscription on unmount
           return () => unsubscribe();
         }
-
-        setLoading(false);
       });
     } catch (error) {
       console.error('Error loading profile:', error);
