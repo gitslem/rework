@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Mail, Calendar,
-  Award, Filter, Search, X, Shield, AlertCircle, Users, Star, Trash2
+  Award, Filter, Search, X, Shield, AlertCircle, Users, Star, Trash2, FileText
 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -102,6 +102,7 @@ export default function AdminCandidates() {
 
         candidateList.push({
           ...userData,
+          ...profileData, // Spread all profile data to include contactMethodType, contactMethodValue, idCardUrl, etc.
           profile: {
             firstName: profileData.firstName,
             lastName: profileData.lastName,
@@ -614,6 +615,52 @@ export default function AdminCandidates() {
                     <p className="text-sm text-gray-700 leading-relaxed">{selectedCandidate.profile.bio}</p>
                   </div>
                 )}
+
+                {/* Contact Method for Verification */}
+                <div>
+                  <h3 className="text-lg font-bold text-black mb-3">Contact Method for Verification</h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">Platform:</span>
+                      <p className="font-medium capitalize">{(selectedCandidate as any).contactMethodType || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Contact:</span>
+                      <p className="font-medium">{(selectedCandidate as any).contactMethodValue || 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ID Card Verification */}
+                <div>
+                  <h3 className="text-lg font-bold text-black mb-3">ID Card Verification</h3>
+                  {(selectedCandidate as any).idCardUrl ? (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <FileText className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">ID Card Uploaded</p>
+                            <p className="text-sm text-gray-600">Click to view verification document</p>
+                          </div>
+                        </div>
+                        <a
+                          href={(selectedCandidate as any).idCardUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        >
+                          <Shield className="w-4 h-4" />
+                          View ID Card
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600 italic">No ID card uploaded</p>
+                  )}
+                </div>
 
                 {/* Approval Status */}
                 <div className={`p-4 rounded-lg ${
