@@ -35,13 +35,26 @@ export default function CleanupProjects() {
 
       onAuthStateChanged(auth, async (firebaseUser) => {
         if (firebaseUser) {
+          console.log('🔐 Checking admin access for user:', firebaseUser.uid);
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          if (userDoc.exists() && userDoc.data().role === 'admin') {
-            setIsAdmin(true);
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('👤 User data:', { uid: firebaseUser.uid, role: userData.role, email: firebaseUser.email });
+
+            if (userData.role === 'admin') {
+              console.log('✅ Admin access granted');
+              setIsAdmin(true);
+            } else {
+              console.log('❌ User is not admin, role:', userData.role);
+              router.push('/admin');
+            }
           } else {
+            console.log('❌ User document does not exist');
             router.push('/admin');
           }
         } else {
+          console.log('❌ No authenticated user');
           router.push('/admin');
         }
         setLoading(false);
