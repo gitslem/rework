@@ -429,6 +429,17 @@ export default function CandidateProjectsPage() {
         updated_at: Timestamp.now()
       });
 
+      // Create app notification for candidate
+      await addDoc(collection(getDb(), 'notifications'), {
+        userId: selectedProject.candidate_id,
+        type: 'info',
+        title: 'Project Update',
+        message: `New update on project "${selectedProject.title}": ${updateData.update_title || 'Progress update added'}`,
+        projectId: selectedProject.id,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
       // Send email notification
       try {
         console.log('📧 Preparing to send update email notification...');
@@ -522,7 +533,26 @@ export default function CandidateProjectsPage() {
         });
       }
 
-      // Send email for scheduled sessions (screen_share or work_session)
+      if (actionData.assigned_to_agent) {
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: selectedProject.agent_id,
+          type: 'action_needed',
+          title: 'Action Required',
+          message: `New action on project "${selectedProject.title}": ${actionData.title}`,
+          projectId: selectedProject.id,
+          priority: actionData.priority || 'medium',
+          isRead: false,
+          createdAt: Timestamp.now()
+        });
+      }
+
+      // Send email notification for the action
+      const isAgent = userRole === 'agent';
+      const recipientId = isAgent ? selectedProject.candidate_id : selectedProject.agent_id;
+      const recipientEmail = isAgent ? selectedProject.candidate_email : selectedProject.agent_email;
+      const recipientName = isAgent ? selectedProject.candidate_name : selectedProject.agent_name;
+
+      // Send email for scheduled sessions (screen_share or work_session) using dedicated endpoint
       if (actionData.action_type === 'screen_share' || actionData.action_type === 'work_session') {
         try {
           // Determine recipient based on who created the action
@@ -567,6 +597,54 @@ export default function CandidateProjectsPage() {
           console.log('✅ Schedule email sent successfully');
         } catch (emailErr: any) {
           console.error('⚠️ Failed to send schedule email:', emailErr);
+          console.error('Email error details:', {
+            message: emailErr.message,
+            response: emailErr.response?.data,
+            status: emailErr.response?.status
+          });
+          // Don't fail the action creation if email fails
+        }
+      } else {
+        // Send generic action email for all other action types
+        try {
+          if (recipientEmail) {
+            // Get requester info
+            const userDoc = await getDoc(doc(getDb(), 'users', user.uid));
+            const userData = userDoc.data();
+
+            // Get profiles for names
+            const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.agent_id));
+            const agentProfile = agentProfileDoc.data();
+            const agentName = agentProfile?.firstName && agentProfile?.lastName
+              ? `${agentProfile.firstName} ${agentProfile.lastName}`
+              : selectedProject.agent_name || 'Agent';
+
+            const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
+            const candidateProfile = candidateProfileDoc.data();
+            const candidateName = candidateProfile?.firstName || selectedProject.candidate_name || 'Candidate';
+
+            const actionSummary = `New action required: ${actionData.title}${actionData.description ? ' - ' + actionData.description.substring(0, 100) : ''}`;
+
+            const emailData = {
+              candidate_email: recipientEmail,
+              candidate_name: isAgent ? candidateName : agentName,
+              agent_name: isAgent ? agentName : candidateName,
+              project_title: selectedProject.title,
+              project_id: selectedProject.id,
+              update_summary: actionSummary
+            };
+
+            console.log('📤 Sending action email notification...');
+            const response = await candidateProjectsAPI.sendUpdateEmail(emailData);
+
+            if (response.data.success) {
+              console.log('✅ Action email sent successfully!');
+            } else {
+              console.warn('⚠️ Action email API returned success=false:', response.data.message);
+            }
+          }
+        } catch (emailErr: any) {
+          console.error('⚠️ Failed to send action email:', emailErr);
           console.error('Email error details:', {
             message: emailErr.message,
             response: emailErr.response?.data,
