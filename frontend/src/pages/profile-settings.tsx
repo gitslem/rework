@@ -131,6 +131,7 @@ export default function ProfileSettingsPage() {
       const updateData = {
         firstName,
         lastName,
+        displayName: `${firstName} ${lastName}`, // Keep displayName in sync with name changes
         bio,
         city,
         country,
