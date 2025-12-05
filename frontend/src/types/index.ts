@@ -143,9 +143,11 @@ export interface Notification {
   userId: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: 'info' | 'success' | 'warning' | 'error' | 'action_needed' | 'action_status_changed';
   isRead: boolean;
   link?: string;
+  projectId?: string;
+  actionId?: string;
   metadata?: Record<string, any>;
   createdAt: Timestamp;
 }
