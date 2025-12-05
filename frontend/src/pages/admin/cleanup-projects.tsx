@@ -57,19 +57,30 @@ export default function CleanupProjects() {
     try {
       const db = getFirebaseFirestore();
 
+      console.log('🔍 Admin counting projects...');
+
       // Count projects
       const projectsSnapshot = await getDocs(collection(db, 'candidate_projects'));
+      console.log('✅ Projects count:', projectsSnapshot.size);
       setProjectCount(projectsSnapshot.size);
 
       // Count updates
       const updatesSnapshot = await getDocs(collection(db, 'project_updates'));
+      console.log('✅ Updates count:', updatesSnapshot.size);
       setUpdateCount(updatesSnapshot.size);
 
       // Count actions
       const actionsSnapshot = await getDocs(collection(db, 'project_actions'));
+      console.log('✅ Actions count:', actionsSnapshot.size);
       setActionCount(actionsSnapshot.size);
-    } catch (error) {
-      console.error('Error counting projects:', error);
+    } catch (error: any) {
+      console.error('❌ Error counting projects:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      if (error.code === 'permission-denied') {
+        alert('⚠️ PERMISSION DENIED: Firestore rules need to be deployed!\n\nThe local firestore.rules file has been updated, but the rules must be deployed to Firebase.\n\nPlease run: firebase deploy --only firestore:rules');
+      }
     }
   };
 
