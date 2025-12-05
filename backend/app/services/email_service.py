@@ -538,6 +538,215 @@ class EmailService:
 
         return self._send_email(candidate_email, candidate_name, subject, html_content, text_content)
 
+    def send_schedule_request_notification(
+        self,
+        recipient_email: str,
+        recipient_name: str,
+        requester_name: str,
+        requester_role: str,  # "agent" or "candidate"
+        project_title: str,
+        project_id: str,
+        action_type: str,  # "screen_share" or "work_session"
+        scheduled_time: Optional[str] = None,
+        duration_minutes: Optional[int] = None,
+        description: Optional[str] = None
+    ) -> bool:
+        """
+        Send notification when someone schedules or requests a work session or screen share
+
+        Args:
+            recipient_email: Recipient's email address
+            recipient_name: Recipient's name
+            requester_name: Name of person making the request
+            requester_role: Role of requester (agent/candidate)
+            project_title: Project title
+            project_id: Project ID
+            action_type: Type of scheduling (screen_share/work_session)
+            scheduled_time: When the session is scheduled (formatted string)
+            duration_minutes: Expected duration in minutes
+            description: Additional details about the session
+
+        Returns:
+            True if email sent successfully
+        """
+        # Determine action display name
+        action_display = {
+            "screen_share": "Screen Sharing Session",
+            "work_session": "Work Session"
+        }.get(action_type, "Scheduled Session")
+
+        # Build time and duration text
+        time_text = ""
+        if scheduled_time:
+            time_text = f"<p><strong>📅 Scheduled Time:</strong> {scheduled_time}</p>"
+        else:
+            time_text = "<p><strong>⏰ Scheduling:</strong> Time to be confirmed</p>"
+
+        duration_text = ""
+        if duration_minutes:
+            hours = duration_minutes // 60
+            minutes = duration_minutes % 60
+            duration_str = ""
+            if hours > 0:
+                duration_str = f"{hours} hour{'s' if hours > 1 else ''}"
+            if minutes > 0:
+                if duration_str:
+                    duration_str += f" {minutes} min"
+                else:
+                    duration_str = f"{minutes} minutes"
+            duration_text = f"<p><strong>⏱️ Duration:</strong> {duration_str}</p>"
+
+        description_text = f"<p><strong>Details:</strong> {description}</p>" if description else ""
+
+        # Customize message based on requester role
+        if requester_role == "agent":
+            intro_text = f"Your agent <strong>{requester_name}</strong> has scheduled a {action_display.lower()} for the project:"
+        else:
+            intro_text = f"Your candidate <strong>{requester_name}</strong> has proposed a {action_display.lower()} for the project:"
+
+        subject = f"{action_display} Scheduled: {project_title}"
+
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {{
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }}
+                .header {{
+                    background: linear-gradient(135deg, #000000 0%, #262626 100%);
+                    color: white;
+                    padding: 30px;
+                    text-align: center;
+                    border-radius: 8px 8px 0 0;
+                }}
+                .content {{
+                    background: #ffffff;
+                    padding: 30px;
+                    border: 1px solid #e5e5e5;
+                }}
+                .schedule-card {{
+                    background: #f5f5f5;
+                    border-left: 4px solid #000000;
+                    padding: 20px;
+                    margin: 20px 0;
+                    border-radius: 4px;
+                }}
+                .schedule-details {{
+                    margin: 15px 0;
+                    padding: 15px;
+                    background: white;
+                    border-radius: 4px;
+                }}
+                .button {{
+                    display: inline-block;
+                    background: #000000;
+                    color: white;
+                    padding: 12px 30px;
+                    text-decoration: none;
+                    border-radius: 25px;
+                    margin: 20px 0;
+                    font-weight: 600;
+                }}
+                .footer {{
+                    background: #f5f5f5;
+                    padding: 20px;
+                    text-align: center;
+                    font-size: 12px;
+                    color: #737373;
+                    border-radius: 0 0 8px 8px;
+                }}
+                h2 {{
+                    color: #000000;
+                    margin-top: 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1 style="margin: 0; font-size: 28px;">🗓️ {action_display} Scheduled</h1>
+            </div>
+
+            <div class="content">
+                <p>Hi {recipient_name},</p>
+
+                <p>{intro_text}</p>
+
+                <div class="schedule-card">
+                    <h2>{project_title}</h2>
+                    <div class="schedule-details">
+                        {time_text}
+                        {duration_text}
+                        {description_text}
+                    </div>
+                </div>
+
+                <p>Please make sure you're available at the scheduled time. You can view all details and manage your scheduled sessions from your project page.</p>
+
+                <div style="text-align: center;">
+                    <a href="{self.frontend_url}/candidate-projects/{project_id}" class="button">View Project & Schedule</a>
+                </div>
+
+                <p><strong>Important:</strong> Ensure you have the necessary tools ready for the session (screen sharing software, stable internet connection, etc.).</p>
+
+                <p>Best regards,<br>
+                <strong>The Remote-Works Team</strong></p>
+            </div>
+
+            <div class="footer">
+                <p>You're receiving this email because a session was scheduled for your project on Remote-Works.</p>
+                <p>&copy; 2024 Remote-Works. All rights reserved.</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        time_text_plain = f"\nScheduled Time: {scheduled_time}" if scheduled_time else "\nScheduling: Time to be confirmed"
+        duration_text_plain = ""
+        if duration_minutes:
+            hours = duration_minutes // 60
+            minutes = duration_minutes % 60
+            duration_str = ""
+            if hours > 0:
+                duration_str = f"{hours} hour{'s' if hours > 1 else ''}"
+            if minutes > 0:
+                if duration_str:
+                    duration_str += f" {minutes} min"
+                else:
+                    duration_str = f"{minutes} minutes"
+            duration_text_plain = f"\nDuration: {duration_str}"
+
+        description_text_plain = f"\nDetails: {description}" if description else ""
+
+        intro_text_plain = f"Your agent {requester_name} has scheduled a {action_display.lower()} for the project:" if requester_role == "agent" else f"Your candidate {requester_name} has proposed a {action_display.lower()} for the project:"
+
+        text_content = f"""
+        {action_display} Scheduled: {project_title}
+
+        Hi {recipient_name},
+
+        {intro_text_plain}
+
+        Project: {project_title}{time_text_plain}{duration_text_plain}{description_text_plain}
+
+        Please make sure you're available at the scheduled time.
+
+        View your project at: {self.frontend_url}/candidate-projects/{project_id}
+
+        Best regards,
+        The Remote-Works Team
+        """
+
+        return self._send_email(recipient_email, recipient_name, subject, html_content, text_content)
+
 
 # Singleton instance
 email_service = EmailService()

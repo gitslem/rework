@@ -1031,6 +1031,111 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
             )}
           </div>
 
+          {/* Scheduled Sessions Section */}
+          {actions.filter((action: any) =>
+            (action.action_type === 'screen_share' || action.action_type === 'work_session') &&
+            action.status !== 'completed' &&
+            action.status !== 'cancelled'
+          ).length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
+                Scheduled Sessions
+              </h3>
+              <div className="space-y-3">
+                {actions
+                  .filter((action: any) =>
+                    (action.action_type === 'screen_share' || action.action_type === 'work_session') &&
+                    action.status !== 'completed' &&
+                    action.status !== 'cancelled'
+                  )
+                  .map((action: any) => (
+                    <div
+                      key={action.id}
+                      className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-4 border-l-4 border-blue-500"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
+                              {action.title}
+                            </h4>
+                            <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                              {action.action_type === 'screen_share' ? '🖥️ Screen Share' : '💼 Work Session'}
+                            </span>
+                            <span className={`${getStatusColor(action.status)} text-white text-xs px-2 py-1 rounded-full`}>
+                              {action.status}
+                            </span>
+                          </div>
+
+                          {action.description && (
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                              {action.description}
+                            </p>
+                          )}
+
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            {action.scheduled_time && (
+                              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                                <Clock className="w-4 h-4" />
+                                <div>
+                                  <div className="font-medium">Scheduled Time:</div>
+                                  <div className="text-blue-600 dark:text-blue-400 font-semibold">
+                                    {formatDate(action.scheduled_time)}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {action.duration_minutes && (
+                              <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                                <Clock className="w-4 h-4" />
+                                <div>
+                                  <div className="font-medium">Duration:</div>
+                                  <div className="text-purple-600 dark:text-purple-400 font-semibold">
+                                    {action.duration_minutes} minutes
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {action.assigned_to_candidate && (
+                            <div className="mt-3 bg-white dark:bg-gray-800 p-2 rounded text-xs text-gray-600 dark:text-gray-400">
+                              👤 Assigned to: Candidate
+                            </div>
+                          )}
+                          {action.assigned_to_agent && (
+                            <div className="mt-3 bg-white dark:bg-gray-800 p-2 rounded text-xs text-gray-600 dark:text-gray-400">
+                              👤 Assigned to: Agent
+                            </div>
+                          )}
+                        </div>
+
+                        {action.status !== 'completed' && action.status !== 'cancelled' && (
+                          <div className="flex flex-col gap-2">
+                            {action.status === 'pending' && (
+                              <button
+                                onClick={() => onUpdateActionStatus(action.id, 'in_progress')}
+                                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-2 rounded transition-colors"
+                              >
+                                Start Session
+                              </button>
+                            )}
+                            <button
+                              onClick={() => onUpdateActionStatus(action.id, 'completed')}
+                              className="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded transition-colors"
+                            >
+                              Mark Complete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
           {/* Actions Section */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
@@ -1211,12 +1316,24 @@ function ActionFormModal({ onClose, onSubmit }: any) {
     priority: 'medium' as ProjectActionPriority,
     status: 'pending' as ProjectActionStatus,
     platform: '',
-    platform_url: ''
+    platform_url: '',
+    scheduled_time: '',
+    duration_minutes: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    // Format the data for submission
+    const submitData: any = {
+      ...formData,
+      // Convert scheduled_time to ISO string if provided
+      scheduled_time: formData.scheduled_time ? new Date(formData.scheduled_time).toISOString() : null,
+      // Convert duration to number if provided
+      duration_minutes: formData.duration_minutes ? parseInt(formData.duration_minutes) : null
+    };
+
+    onSubmit(submitData);
   };
 
   return (
@@ -1264,6 +1381,8 @@ function ActionFormModal({ onClose, onSubmit }: any) {
                 <option value="verification">Verification</option>
                 <option value="exam">Exam</option>
                 <option value="meeting">Meeting</option>
+                <option value="screen_share">Screen Share Session</option>
+                <option value="work_session">Work Session</option>
               </select>
             </div>
             <div>
@@ -1302,6 +1421,57 @@ function ActionFormModal({ onClose, onSubmit }: any) {
               <span className="text-sm text-gray-700 dark:text-gray-300">Assign to Agent</span>
             </label>
           </div>
+
+          {/* Scheduling fields for screen share and work sessions */}
+          {(formData.action_type === 'screen_share' || formData.action_type === 'work_session') && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 space-y-4">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-300 flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
+                Session Scheduling
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Scheduled Date & Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={formData.scheduled_time}
+                    onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    When should this session take place?
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Duration (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    min="15"
+                    step="15"
+                    value={formData.duration_minutes}
+                    onChange={(e) => setFormData({ ...formData, duration_minutes: e.target.value })}
+                    placeholder="e.g., 60"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Expected session duration
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-3 rounded border border-blue-200 dark:border-blue-700">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <strong className="text-blue-700 dark:text-blue-400">Note:</strong> {formData.action_type === 'screen_share'
+                    ? 'The recipient will receive an email notification about this screen sharing request. Make sure both parties have screen sharing software ready.'
+                    : 'The recipient will receive an email notification about this work session. Ensure both parties are available at the scheduled time.'}
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"

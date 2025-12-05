@@ -865,6 +865,61 @@ def create_project_action(
     db.commit()
     db.refresh(new_action)
 
+    # Send email notification for scheduling actions (screen_share or work_session)
+    if action_data.action_type in ["screen_share", "work_session"]:
+        try:
+            from app.services.email_service import email_service
+
+            # Get agent and candidate details
+            agent = db.query(User).filter(User.id == project.agent_id).first()
+            candidate = db.query(User).filter(User.id == project.candidate_id).first()
+
+            if agent and candidate:
+                # Determine recipient and requester based on who created the action
+                if current_user.role == UserRole.AGENT:
+                    # Agent created the action, send to candidate
+                    recipient = candidate
+                    requester = agent
+                    requester_role = "agent"
+                    # Check candidate's email preferences
+                    email_prefs = candidate.profile.email_notifications if candidate.profile else {}
+                    send_email = email_prefs.get("project_updated", True) if isinstance(email_prefs, dict) else True
+                else:
+                    # Candidate created the action, send to agent
+                    recipient = agent
+                    requester = candidate
+                    requester_role = "candidate"
+                    # Check agent's email preferences
+                    email_prefs = agent.profile.email_notifications if agent.profile else {}
+                    send_email = email_prefs.get("project_updated", True) if isinstance(email_prefs, dict) else True
+
+                if send_email:
+                    # Format scheduled time for email
+                    scheduled_time_str = None
+                    if action_data.scheduled_time:
+                        scheduled_time_str = action_data.scheduled_time.strftime("%B %d, %Y at %I:%M %p UTC")
+
+                    recipient_name = f"{recipient.profile.first_name} {recipient.profile.last_name}".strip() if recipient.profile and recipient.profile.first_name else recipient.email
+                    requester_name = f"{requester.profile.first_name} {requester.profile.last_name}".strip() if requester.profile and requester.profile.first_name else requester.email
+
+                    email_service.send_schedule_request_notification(
+                        recipient_email=recipient.email,
+                        recipient_name=recipient_name,
+                        requester_name=requester_name,
+                        requester_role=requester_role,
+                        project_title=project.title,
+                        project_id=str(project.id),
+                        action_type=action_data.action_type,
+                        scheduled_time=scheduled_time_str,
+                        duration_minutes=action_data.duration_minutes,
+                        description=action_data.description
+                    )
+        except Exception as e:
+            # Log error but don't fail the action creation
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to send scheduling email notification: {str(e)}")
+
     return new_action
 
 
