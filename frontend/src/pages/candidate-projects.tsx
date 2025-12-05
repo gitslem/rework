@@ -16,13 +16,14 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseFirestore, getFirebaseAuth } from '../lib/firebase/config';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Bell, X } from 'lucide-react';
 import {
   CandidateProjectStatus,
   ProjectActionStatus,
   ProjectActionPriority
 } from '../types';
 import { candidateProjectsAPI } from '../lib/api';
+import { subscribeToNotifications, markNotificationAsRead } from '../lib/firebase/firestore';
 
 // Firestore Collections
 const PROJECTS_COLLECTION = 'candidate_projects';
@@ -55,6 +56,11 @@ export default function CandidateProjectsPage() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showActionModal, setShowActionModal] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
+
+  // Notification states
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [projectNotificationCount, setProjectNotificationCount] = useState(0);
 
   // Check Firebase authentication and get user role
   useEffect(() => {
@@ -197,6 +203,28 @@ export default function CandidateProjectsPage() {
 
     fetchConnections();
   }, [user, userRole]);
+
+  // Subscribe to real-time notifications
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubscribe = subscribeToNotifications(user.uid, (notifs) => {
+      setNotifications(notifs);
+
+      // Count project-related notifications
+      const projectNotifs = notifs.filter(n =>
+        !n.isRead && (
+          n.type === 'action_needed' ||
+          n.type === 'action_status_changed' ||
+          n.type === 'project_update' ||
+          n.metadata?.projectId
+        )
+      );
+      setProjectNotificationCount(projectNotifs.length);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   // Fetch project details with real-time updates
   const fetchProjectDetails = async (projectId: string) => {
@@ -741,12 +769,143 @@ export default function CandidateProjectsPage() {
                 : 'View your projects and track progress'}
             </p>
           </div>
-          <button
-            onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-dashboard')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          >
-            ← Back to Dashboard
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Notification Bell */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotificationPanel(!showNotificationPanel)}
+                className="relative p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                title="Project Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                {projectNotificationCount > 0 && (
+                  <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    {projectNotificationCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Dropdown Panel */}
+              {showNotificationPanel && (
+                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Project Notifications</h3>
+                    <button
+                      onClick={() => setShowNotificationPanel(false)}
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="overflow-y-auto flex-1">
+                    {notifications.filter(n =>
+                      n.type === 'action_needed' ||
+                      n.type === 'action_status_changed' ||
+                      n.type === 'project_update' ||
+                      n.metadata?.projectId
+                    ).length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                        <Bell className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
+                        <p className="text-gray-500 dark:text-gray-400 font-medium">No notifications</p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">You're all caught up!</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                        {notifications
+                          .filter(n =>
+                            n.type === 'action_needed' ||
+                            n.type === 'action_status_changed' ||
+                            n.type === 'project_update' ||
+                            n.metadata?.projectId
+                          )
+                          .map((notification) => (
+                            <div
+                              key={notification.id}
+                              onClick={async () => {
+                                // Mark as read
+                                if (!notification.isRead) {
+                                  await markNotificationAsRead(notification.id);
+                                }
+
+                                // Navigate to project if projectId exists
+                                if (notification.projectId || notification.metadata?.projectId) {
+                                  const projectId = notification.projectId || notification.metadata?.projectId;
+                                  await fetchProjectDetails(projectId);
+                                  setSelectedProject({ id: projectId });
+                                }
+
+                                setShowNotificationPanel(false);
+                              }}
+                              className={`px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors ${
+                                !notification.isRead ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
+                              }`}
+                            >
+                              <div className="flex gap-3">
+                                <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                                  !notification.isRead ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                                }`}></div>
+                                <div className="flex-1 min-w-0">
+                                  <p className={`text-sm font-medium text-gray-900 dark:text-white ${
+                                    !notification.isRead ? 'font-semibold' : ''
+                                  }`}>
+                                    {notification.title}
+                                  </p>
+                                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                    {notification.message}
+                                  </p>
+                                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                    {notification.createdAt?.toDate?.() ?
+                                      new Date(notification.createdAt.toDate()).toLocaleString() :
+                                      'Just now'}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {notifications.filter(n =>
+                    n.type === 'action_needed' ||
+                    n.type === 'action_status_changed' ||
+                    n.type === 'project_update' ||
+                    n.metadata?.projectId
+                  ).length > 0 && (
+                    <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                      <button
+                        onClick={async () => {
+                          // Mark all project notifications as read
+                          const projectNotifs = notifications.filter(n =>
+                            !n.isRead && (
+                              n.type === 'action_needed' ||
+                              n.type === 'action_status_changed' ||
+                              n.type === 'project_update' ||
+                              n.metadata?.projectId
+                            )
+                          );
+                          for (const notif of projectNotifs) {
+                            await markNotificationAsRead(notif.id);
+                          }
+                        }}
+                        className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                      >
+                        Mark all as read
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => router.push(userRole === 'agent' ? '/agent-dashboard' : '/candidate-dashboard')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              ← Back to Dashboard
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
