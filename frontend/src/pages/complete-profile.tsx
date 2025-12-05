@@ -146,7 +146,24 @@ export default function CompleteProfile() {
 
       // Upload ID card (required)
       setUploadingIdCard(true);
-      const idCardRef = ref(storage, `id-cards/${user.uid}/${Date.now()}_${idCardFile.name}`);
+
+      // Sanitize candidate name for file path
+      const sanitizeName = (name: string) => {
+        return name
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]/g, '_') // Replace special chars with underscore
+          .replace(/_+/g, '_') // Replace multiple underscores with single
+          .replace(/^_|_$/g, ''); // Remove leading/trailing underscores
+      };
+
+      const sanitizedFirstName = sanitizeName(formData.firstName);
+      const sanitizedLastName = sanitizeName(formData.lastName);
+      const fileExtension = idCardFile.name.split('.').pop() || 'jpg';
+
+      // Use candidate name in file path: id-cards/firstName_lastName_uid.extension
+      const idCardFileName = `${sanitizedFirstName}_${sanitizedLastName}_${user.uid}.${fileExtension}`;
+      const idCardRef = ref(storage, `id-cards/${idCardFileName}`);
       await uploadBytes(idCardRef, idCardFile);
       idCardUrl = await getDownloadURL(idCardRef);
       setUploadingIdCard(false);
@@ -156,6 +173,7 @@ export default function CompleteProfile() {
         uid: user.uid,
         firstName: formData.firstName,
         lastName: formData.lastName,
+        displayName: `${formData.firstName} ${formData.lastName}`, // Full name for easy admin identification
         country: formData.country,
         city: formData.city,
         bio: formData.bio || '',
