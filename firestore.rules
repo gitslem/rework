@@ -79,22 +79,24 @@ service cloud.firestore {
 
     // Projects collection
     match /candidate_projects/{projectId} {
-      // Allow read if user is agent or candidate in the project
+      // Allow read if user is admin, agent, or candidate in the project
       allow read: if isAuthenticated() &&
-        (resource.data.agent_id == request.auth.uid ||
+        (isAdmin() ||
+         resource.data.agent_id == request.auth.uid ||
          resource.data.candidate_id == request.auth.uid);
 
       // Allow create if user is an agent
       allow create: if isAuthenticated() &&
                       request.resource.data.agent_id == request.auth.uid;
 
-      // Allow update if user is agent or candidate in the project
+      // Allow update if user is admin, agent, or candidate in the project
       allow update: if isAuthenticated() &&
-        (resource.data.agent_id == request.auth.uid ||
+        (isAdmin() ||
+         resource.data.agent_id == request.auth.uid ||
          resource.data.candidate_id == request.auth.uid);
 
-      // Allow delete only if user is the agent
-      allow delete: if isAuthenticated() && resource.data.agent_id == request.auth.uid;
+      // Allow delete if user is admin or the agent
+      allow delete: if isAuthenticated() && (isAdmin() || resource.data.agent_id == request.auth.uid);
     }
 
     // Project updates collection
@@ -105,11 +107,11 @@ service cloud.firestore {
       // Allow create if authenticated (will check project ownership in app logic)
       allow create: if isAuthenticated();
 
-      // Allow update if user is the creator
-      allow update: if isAuthenticated() && resource.data.agent_id == request.auth.uid;
+      // Allow update if user is admin or the creator
+      allow update: if isAuthenticated() && (isAdmin() || resource.data.agent_id == request.auth.uid);
 
-      // Allow delete if user is the creator
-      allow delete: if isAuthenticated() && resource.data.agent_id == request.auth.uid;
+      // Allow delete if user is admin or the creator
+      allow delete: if isAuthenticated() && (isAdmin() || resource.data.agent_id == request.auth.uid);
     }
 
     // Project actions collection
@@ -123,8 +125,8 @@ service cloud.firestore {
       // Allow update if authenticated (anyone can update status)
       allow update: if isAuthenticated();
 
-      // Allow delete if user is the creator
-      allow delete: if isAuthenticated() && resource.data.creator_id == request.auth.uid;
+      // Allow delete if user is admin or the creator
+      allow delete: if isAuthenticated() && (isAdmin() || resource.data.creator_id == request.auth.uid);
     }
 
     // Notifications collection
