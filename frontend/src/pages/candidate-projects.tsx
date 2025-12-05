@@ -218,7 +218,7 @@ export default function CandidateProjectsPage() {
         !n.isRead && (
           n.type === 'action_needed' ||
           n.type === 'action_status_changed' ||
-          n.metadata?.projectId
+          n.projectId
         )
       );
       setProjectNotificationCount(projectNotifs.length);
@@ -351,7 +351,7 @@ export default function CandidateProjectsPage() {
         title: 'New Project Assigned',
         message: `You have been assigned to a new project: ${projectData.title}`,
         projectId: projectRef.id,
-        read: false,
+        isRead: false,
         createdAt: Timestamp.now()
       });
 
@@ -517,7 +517,7 @@ export default function CandidateProjectsPage() {
           message: `New action on project "${selectedProject.title}": ${actionData.title}`,
           projectId: selectedProject.id,
           priority: actionData.priority || 'medium',
-          read: false,
+          isRead: false,
           createdAt: Timestamp.now()
         });
       }
@@ -620,7 +620,7 @@ export default function CandidateProjectsPage() {
           message: `${isAgent ? 'Agent' : 'Candidate'} ${actionMessage} action "${action.title}" on project "${selectedProject.title}"`,
           projectId: selectedProject.id,
           actionId: actionId,
-          read: false,
+          isRead: false,
           createdAt: Timestamp.now()
         });
 
@@ -853,7 +853,7 @@ export default function CandidateProjectsPage() {
                     {notifications.filter(n =>
                       n.type === 'action_needed' ||
                       n.type === 'action_status_changed' ||
-                      n.metadata?.projectId
+                      n.projectId
                     ).length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                         <Bell className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
@@ -866,7 +866,7 @@ export default function CandidateProjectsPage() {
                           .filter(n =>
                             n.type === 'action_needed' ||
                             n.type === 'action_status_changed' ||
-                            n.metadata?.projectId
+                            n.projectId
                           )
                           .map((notification) => (
                             <div
@@ -878,10 +878,9 @@ export default function CandidateProjectsPage() {
                                 }
 
                                 // Navigate to project if projectId exists
-                                if (notification.projectId || notification.metadata?.projectId) {
-                                  const projectId = notification.projectId || notification.metadata?.projectId;
-                                  await fetchProjectDetails(projectId);
-                                  setSelectedProject({ id: projectId });
+                                if (notification.projectId) {
+                                  await fetchProjectDetails(notification.projectId);
+                                  setSelectedProject({ id: notification.projectId });
                                 }
 
                                 setShowNotificationPanel(false);
@@ -919,7 +918,7 @@ export default function CandidateProjectsPage() {
                   {notifications.filter(n =>
                     n.type === 'action_needed' ||
                     n.type === 'action_status_changed' ||
-                    n.metadata?.projectId
+                    n.projectId
                   ).length > 0 && (
                     <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                       <button
@@ -929,7 +928,7 @@ export default function CandidateProjectsPage() {
                             !n.isRead && (
                               n.type === 'action_needed' ||
                               n.type === 'action_status_changed' ||
-                              n.metadata?.projectId
+                              n.projectId
                             )
                           );
                           for (const notif of projectNotifs) {
