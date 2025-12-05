@@ -94,12 +94,16 @@ export default function AdminProjects() {
       setLoading(true);
       const db = getFirebaseFirestore();
 
+      console.log('🔍 Admin fetching all projects...');
+
       // Get ALL projects (no filtering by agent_id)
       const projectsQuery = query(
         collection(db, 'candidate_projects'),
         orderBy('created_at', 'desc')
       );
       const projectsSnapshot = await getDocs(projectsQuery);
+
+      console.log('✅ Found', projectsSnapshot.size, 'projects');
 
       const projectsList: Project[] = [];
 
@@ -125,9 +129,16 @@ export default function AdminProjects() {
         });
       }
 
+      console.log('✅ Loaded', projectsList.length, 'projects with agent names');
       setProjects(projectsList);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
+    } catch (error: any) {
+      console.error('❌ Error fetching projects:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      if (error.code === 'permission-denied') {
+        alert('⚠️ PERMISSION DENIED: Firestore rules need to be deployed!\n\nThe local firestore.rules file has been updated, but the rules must be deployed to Firebase.\n\nPlease run: firebase deploy --only firestore:rules');
+      }
     } finally {
       setLoading(false);
     }
