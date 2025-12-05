@@ -57,7 +57,7 @@ export default function TestAdminRules() {
 
             // Check for hidden characters
             if (userData.role) {
-              const roleBytes = Array.from(userData.role).map((c: string) => c.charCodeAt(0));
+              const roleBytes = Array.from(String(userData.role)).map((c) => c.charCodeAt(0));
               addLog(`   Role bytes: [${roleBytes.join(', ')}]`);
               addLog(`   Expected bytes for "admin": [97, 100, 109, 105, 110]`);
             }
