@@ -56,6 +56,20 @@ class ProjectUpdateEmailRequest(BaseModel):
     update_summary: Optional[str] = None
 
 
+class ScheduleEmailRequest(BaseModel):
+    """Request model for scheduling email notifications"""
+    recipient_email: str
+    recipient_name: str
+    requester_name: str
+    requester_role: str  # "agent" or "candidate"
+    project_title: str
+    project_id: str  # Firebase project ID (string)
+    action_type: str  # "screen_share" or "work_session"
+    scheduled_time: Optional[str] = None
+    duration_minutes: Optional[int] = None
+    description: Optional[str] = None
+
+
 @router.post("/send-creation-email", status_code=status.HTTP_200_OK)
 def send_project_creation_email(
     email_data: EmailNotificationRequest
@@ -158,6 +172,63 @@ def send_project_update_email_endpoint(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to send email: {str(e)}"
+        )
+
+
+@router.post("/send-schedule-email", status_code=status.HTTP_200_OK)
+def send_schedule_email_endpoint(
+    email_data: ScheduleEmailRequest
+):
+    """
+    Send email notification for scheduled session (screen share or work session)
+    (No authentication required - called from Firebase frontend)
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"📧 Schedule email request received for: {email_data.recipient_email}")
+    logger.info(f"   Project: {email_data.project_title}")
+    logger.info(f"   Type: {email_data.action_type}")
+    logger.info(f"   Scheduled Time: {email_data.scheduled_time}")
+
+    # Validate required fields
+    if not email_data.recipient_email or not email_data.project_title or not email_data.action_type:
+        logger.error("❌ Missing required fields")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Missing required fields: recipient_email, project_title, and action_type are required"
+        )
+
+    try:
+        from app.services.email_service import email_service
+
+        logger.info("Calling email service for scheduling notification...")
+        success = email_service.send_schedule_request_notification(
+            recipient_email=email_data.recipient_email,
+            recipient_name=email_data.recipient_name,
+            requester_name=email_data.requester_name,
+            requester_role=email_data.requester_role,
+            project_title=email_data.project_title,
+            project_id=email_data.project_id,
+            action_type=email_data.action_type,
+            scheduled_time=email_data.scheduled_time,
+            duration_minutes=email_data.duration_minutes,
+            description=email_data.description
+        )
+
+        if success:
+            logger.info(f"✅ Schedule email sent successfully to {email_data.recipient_email}")
+            return {"message": "Schedule email sent successfully", "success": True}
+        else:
+            logger.error(f"❌ Schedule email sending failed for {email_data.recipient_email}")
+            return {"message": "Failed to send schedule email - check backend logs", "success": False}
+
+    except Exception as e:
+        logger.error(f"❌ Error sending schedule email: {str(e)}")
+        logger.exception("Full traceback:")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to send schedule email: {str(e)}"
         )
 
 

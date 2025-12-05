@@ -202,6 +202,19 @@ export const candidateProjectsAPI = {
     project_id: string;
     update_summary?: string;
   }) => publicApi.post('/candidate-projects/send-update-email', data),
+
+  sendScheduleEmail: (data: {
+    recipient_email: string;
+    recipient_name: string;
+    requester_name: string;
+    requester_role: string;
+    project_title: string;
+    project_id: string;
+    action_type: string;
+    scheduled_time?: string | null;
+    duration_minutes?: number | null;
+    description?: string | null;
+  }) => publicApi.post('/candidate-projects/send-schedule-email', data),
 };
 
 export default api;
