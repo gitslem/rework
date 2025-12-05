@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { Shield, Users, CheckCircle, Clock, AlertCircle, ArrowRight } from 'lucide-react';
+import { Shield, Users, CheckCircle, Clock, AlertCircle, ArrowRight, Briefcase } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -155,7 +155,7 @@ export default function AdminLogin() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <button
               onClick={() => router.push('/admin/agents')}
               className="bg-white border-2 border-gray-200 rounded-2xl p-8 text-left hover:border-black transition-all group"
@@ -191,6 +191,23 @@ export default function AdminLogin() {
             </button>
 
             <button
+              onClick={() => router.push('/admin/projects')}
+              className="bg-white border-2 border-gray-200 rounded-2xl p-8 text-left hover:border-black transition-all group"
+            >
+              <div className="w-14 h-14 bg-black rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Briefcase className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-black mb-2">Project Management</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                View and reassign projects between agents
+              </p>
+              <div className="flex items-center text-black font-semibold text-sm">
+                Manage Projects
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+
+            <button
               onClick={() => router.push('/admin/analytics')}
               className="bg-white border-2 border-gray-200 rounded-2xl p-8 text-left hover:border-black transition-all group"
             >
@@ -211,7 +228,7 @@ export default function AdminLogin() {
           {/* Instructions */}
           <div className="mt-12 bg-white border border-gray-200 rounded-2xl p-8">
             <h2 className="text-2xl font-bold text-black mb-6">Admin Features</h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <h3 className="font-semibold text-black mb-2">Agent Management</h3>
                 <ul className="space-y-2 text-sm text-gray-600">
@@ -228,6 +245,15 @@ export default function AdminLogin() {
                   <li>• View candidate profiles</li>
                   <li>• Manage account status</li>
                   <li>• Track approval history</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-black mb-2">Project Management</h3>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• View all projects across agents</li>
+                  <li>• Reassign projects between agents</li>
+                  <li>• Filter by status and platform</li>
+                  <li>• Track project statistics</li>
                 </ul>
               </div>
             </div>
