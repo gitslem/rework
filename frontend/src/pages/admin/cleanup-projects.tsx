@@ -182,8 +182,9 @@ export default function CleanupProjects() {
 
       let deleteCount = 0;
       const totalCount = selectedProjects.size;
+      const projectsArray = Array.from(selectedProjects);
 
-      for (const projectId of selectedProjects) {
+      for (const projectId of projectsArray) {
         setDeleteProgress(`Deleting project ${deleteCount + 1}/${totalCount}...`);
 
         // Delete the project
