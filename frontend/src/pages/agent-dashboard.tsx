@@ -10,9 +10,9 @@ import Logo from '@/components/Logo';
 import { useAuthStore } from '@/lib/authStore';
 import { getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc, Timestamp, collection, query, where, getDocs, orderBy, addDoc, limit } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp, collection, query, where, getDocs, orderBy, addDoc, limit, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { saveMessage, unsaveMessage } from '@/lib/firebase/firestore';
+import { saveMessage, unsaveMessage, subscribeToNotifications, markNotificationAsRead } from '@/lib/firebase/firestore';
 
 interface AgentProfile {
   uid: string;
@@ -103,6 +103,12 @@ export default function AgentDashboard() {
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [messageFilter, setMessageFilter] = useState<'all' | 'unread' | 'read'>('all');
+
+  // Notifications
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [projectNotificationCount, setProjectNotificationCount] = useState(0);
 
   // Enhanced settings
   const [agentTerms, setAgentTerms] = useState('');
@@ -198,6 +204,24 @@ export default function AgentDashboard() {
 
         // Load messages regardless of approval status (so agents can see why they can't get messages)
         await loadMessages(db, firebaseUser.uid);
+
+        // Subscribe to real-time notifications
+        const unsubscribe = subscribeToNotifications(firebaseUser.uid, (notifs) => {
+          setNotifications(notifs);
+          const unreadNotifs = notifs.filter(n => !n.isRead);
+          setNotificationCount(unreadNotifs.length);
+
+          // Count project-related notifications
+          const projectNotifs = unreadNotifs.filter(n =>
+            n.type === 'action_needed' ||
+            n.type === 'action_status_changed' ||
+            n.metadata?.projectId
+          );
+          setProjectNotificationCount(projectNotifs.length);
+        });
+
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
 
         setLoading(false);
       });
@@ -680,13 +704,122 @@ export default function AgentDashboard() {
               <div className="flex justify-between items-center h-16 md:h-20">
                 <Logo showText={false} onClick={() => router.push('/')} />
                 <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowNotificationPanel(!showNotificationPanel)}
+                      className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                      title="Notifications"
+                    >
+                      <Bell className="w-5 h-5" />
+                      {notificationCount > 0 && (
+                        <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                          {notificationCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Notification Dropdown Panel */}
+                    {showNotificationPanel && (
+                      <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                        <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
+                          <h3 className="font-semibold text-gray-900">Notifications</h3>
+                          <button
+                            onClick={() => setShowNotificationPanel(false)}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        <div className="overflow-y-auto flex-1">
+                          {notifications.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                              <Bell className="w-12 h-12 text-gray-300 mb-3" />
+                              <p className="text-gray-500 font-medium">No notifications</p>
+                              <p className="text-sm text-gray-400 mt-1">You're all caught up!</p>
+                            </div>
+                          ) : (
+                            <div className="divide-y divide-gray-100">
+                              {notifications.map((notification) => (
+                                <div
+                                  key={notification.id}
+                                  onClick={async () => {
+                                    // Mark as read
+                                    if (!notification.isRead) {
+                                      await markNotificationAsRead(notification.id);
+                                    }
+
+                                    // Navigate based on notification type
+                                    if (notification.projectId || notification.metadata?.projectId) {
+                                      const projectId = notification.projectId || notification.metadata?.projectId;
+                                      router.push(`/candidate-projects?project=${projectId}`);
+                                    } else if (notification.link) {
+                                      router.push(notification.link);
+                                    }
+
+                                    setShowNotificationPanel(false);
+                                  }}
+                                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                    !notification.isRead ? 'bg-blue-50/50' : ''
+                                  }`}
+                                >
+                                  <div className="flex gap-3">
+                                    <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                                      !notification.isRead ? 'bg-blue-500' : 'bg-gray-300'
+                                    }`}></div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className={`text-sm font-medium text-gray-900 ${
+                                        !notification.isRead ? 'font-semibold' : ''
+                                      }`}>
+                                        {notification.title}
+                                      </p>
+                                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                        {notification.message}
+                                      </p>
+                                      <p className="text-xs text-gray-400 mt-1">
+                                        {notification.createdAt?.toDate?.() ?
+                                          new Date(notification.createdAt.toDate()).toLocaleString() :
+                                          'Just now'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {notifications.length > 0 && (
+                          <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                            <button
+                              onClick={async () => {
+                                // Mark all as read
+                                for (const notif of notifications.filter(n => !n.isRead)) {
+                                  await markNotificationAsRead(notif.id);
+                                }
+                              }}
+                              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                              Mark all as read
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
                   <button
                     onClick={() => router.push('/candidate-projects')}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all relative"
                     title="Projects"
                   >
                     <FileText className="w-5 h-5" />
                     <span className="hidden md:inline">Projects</span>
+                    {projectNotificationCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                        {projectNotificationCount}
+                      </span>
+                    )}
                   </button>
                   <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block"></div>
                   <button
@@ -793,6 +926,105 @@ export default function AgentDashboard() {
             <div className="flex justify-between items-center h-16 md:h-20">
               <Logo showText={false} onClick={() => router.push('/')} size="sm" />
               <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotificationPanel(!showNotificationPanel)}
+                    className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                    title="Notifications"
+                  >
+                    <Bell className="w-5 h-5" />
+                    {notificationCount > 0 && (
+                      <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                        {notificationCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notification Dropdown Panel - Reusing same component */}
+                  {showNotificationPanel && (
+                    <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                      <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
+                        <h3 className="font-semibold text-gray-900">Notifications</h3>
+                        <button
+                          onClick={() => setShowNotificationPanel(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      <div className="overflow-y-auto flex-1">
+                        {notifications.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                            <Bell className="w-12 h-12 text-gray-300 mb-3" />
+                            <p className="text-gray-500 font-medium">No notifications</p>
+                            <p className="text-sm text-gray-400 mt-1">You're all caught up!</p>
+                          </div>
+                        ) : (
+                          <div className="divide-y divide-gray-100">
+                            {notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                onClick={async () => {
+                                  if (!notification.isRead) {
+                                    await markNotificationAsRead(notification.id);
+                                  }
+                                  if (notification.projectId || notification.metadata?.projectId) {
+                                    const projectId = notification.projectId || notification.metadata?.projectId;
+                                    router.push(`/candidate-projects?project=${projectId}`);
+                                  } else if (notification.link) {
+                                    router.push(notification.link);
+                                  }
+                                  setShowNotificationPanel(false);
+                                }}
+                                className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                  !notification.isRead ? 'bg-blue-50/50' : ''
+                                }`}
+                              >
+                                <div className="flex gap-3">
+                                  <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                                    !notification.isRead ? 'bg-blue-500' : 'bg-gray-300'
+                                  }`}></div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`text-sm font-medium text-gray-900 ${
+                                      !notification.isRead ? 'font-semibold' : ''
+                                    }`}>
+                                      {notification.title}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                      {notification.message}
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      {notification.createdAt?.toDate?.() ?
+                                        new Date(notification.createdAt.toDate()).toLocaleString() :
+                                        'Just now'}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {notifications.length > 0 && (
+                        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                          <button
+                            onClick={async () => {
+                              for (const notif of notifications.filter(n => !n.isRead)) {
+                                await markNotificationAsRead(notif.id);
+                              }
+                            }}
+                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            Mark all as read
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <button
                   onClick={() => setActiveTab('overview')}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
@@ -803,11 +1035,16 @@ export default function AgentDashboard() {
                 </button>
                 <button
                   onClick={() => router.push('/candidate-projects')}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all relative"
                   title="Projects"
                 >
                   <FileText className="w-5 h-5" />
                   <span className="hidden md:inline">Projects</span>
+                  {projectNotificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {projectNotificationCount}
+                    </span>
+                  )}
                 </button>
                 <button
                   onClick={() => setActiveTab('messages')}
