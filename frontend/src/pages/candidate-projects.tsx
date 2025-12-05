@@ -51,6 +51,8 @@ export default function CandidateProjectsPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [platformFilter, setPlatformFilter] = useState<string>('all');
+  const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
+  const [groupBy, setGroupBy] = useState<'none' | 'assignee'>('none');
 
   // Modal states
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -701,6 +703,17 @@ export default function CandidateProjectsPage() {
   // Get unique platforms for filter
   const uniquePlatforms = Array.from(new Set(projects.map(p => p.platform).filter(Boolean)));
 
+  // Get unique assignees (candidates for agents, agents for candidates)
+  const uniqueAssignees = Array.from(new Set(
+    projects.map(p => {
+      if (userRole === 'agent') {
+        return p.candidate_name || p.candidate_id;
+      } else {
+        return p.agent_name || p.agent_id || 'Unassigned';
+      }
+    }).filter(Boolean)
+  ));
+
   // Sort and filter projects
   const getSortedAndFilteredProjects = () => {
     let filtered = [...projects];
@@ -716,6 +729,16 @@ export default function CandidateProjectsPage() {
     // Apply platform filter
     if (platformFilter !== 'all') {
       filtered = filtered.filter(p => p.platform === platformFilter);
+    }
+
+    // Apply assignee filter
+    if (assigneeFilter !== 'all') {
+      filtered = filtered.filter(p => {
+        const assigneeName = userRole === 'agent'
+          ? (p.candidate_name || p.candidate_id)
+          : (p.agent_name || p.agent_id || 'Unassigned');
+        return assigneeName === assigneeFilter;
+      });
     }
 
     // Apply sorting
@@ -747,7 +770,36 @@ export default function CandidateProjectsPage() {
     return filtered;
   };
 
+  // Group projects if grouping is enabled
+  const getGroupedProjects = () => {
+    const filtered = getSortedAndFilteredProjects();
+
+    if (groupBy === 'none') {
+      return { 'All Projects': filtered };
+    }
+
+    if (groupBy === 'assignee') {
+      const grouped: { [key: string]: any[] } = {};
+
+      filtered.forEach(project => {
+        const groupKey = userRole === 'agent'
+          ? (project.candidate_name || project.candidate_id || 'Unknown Candidate')
+          : (project.agent_name || project.agent_id || 'Unassigned Agent');
+
+        if (!grouped[groupKey]) {
+          grouped[groupKey] = [];
+        }
+        grouped[groupKey].push(project);
+      });
+
+      return grouped;
+    }
+
+    return { 'All Projects': filtered };
+  };
+
   const sortedAndFilteredProjects = getSortedAndFilteredProjects();
+  const groupedProjects = getGroupedProjects();
 
   if (!user) {
     return null; // Will redirect to login
@@ -945,9 +997,9 @@ export default function CandidateProjectsPage() {
 
         {/* Sorting and Filtering Controls */}
         <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
             {/* Search */}
-            <div>
+            <div className="xl:col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Search Projects
               </label>
@@ -958,6 +1010,23 @@ export default function CandidateProjectsPage() {
                 placeholder="Search by title or description..."
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
               />
+            </div>
+
+            {/* Assignee Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {userRole === 'agent' ? 'Candidate' : 'Agent'}
+              </label>
+              <select
+                value={assigneeFilter}
+                onChange={(e) => setAssigneeFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+              >
+                <option value="all">All {userRole === 'agent' ? 'Candidates' : 'Agents'}</option>
+                {uniqueAssignees.map(assignee => (
+                  <option key={assignee} value={assignee}>{assignee}</option>
+                ))}
+              </select>
             </div>
 
             {/* Platform Filter */}
@@ -974,6 +1043,21 @@ export default function CandidateProjectsPage() {
                 {uniquePlatforms.map(platform => (
                   <option key={platform} value={platform}>{platform}</option>
                 ))}
+              </select>
+            </div>
+
+            {/* Group By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Group By
+              </label>
+              <select
+                value={groupBy}
+                onChange={(e) => setGroupBy(e.target.value as any)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+              >
+                <option value="none">No Grouping</option>
+                <option value="assignee">{userRole === 'agent' ? 'By Candidate' : 'By Agent'}</option>
               </select>
             </div>
 
@@ -1035,8 +1119,24 @@ export default function CandidateProjectsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedAndFilteredProjects.map((project) => (
+          <div className="space-y-8">
+            {Object.entries(groupedProjects).map(([groupName, groupProjects]) => (
+              <div key={groupName}>
+                {/* Group Header */}
+                {groupBy !== 'none' && (
+                  <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                      <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm">
+                        {groupProjects.length}
+                      </span>
+                      {groupName}
+                    </h3>
+                  </div>
+                )}
+
+                {/* Projects Grid for this group */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {groupProjects.map((project: any) => (
               <div
                 key={project.id}
                 onClick={() => fetchProjectDetails(project.id)}
@@ -1058,6 +1158,18 @@ export default function CandidateProjectsPage() {
                 )}
 
                 <div className="space-y-2 text-sm">
+                  {/* Assignment Info */}
+                  <div className="flex items-center text-gray-600 dark:text-gray-400">
+                    <span className="font-medium mr-2">
+                      {userRole === 'agent' ? 'Candidate:' : 'Agent:'}
+                    </span>
+                    <span className="text-blue-600 dark:text-blue-400 font-medium">
+                      {userRole === 'agent'
+                        ? (project.candidate_name || 'Unknown Candidate')
+                        : (project.agent_name || 'Unassigned')}
+                    </span>
+                  </div>
+
                   {project.platform && (
                     <div className="flex items-center text-gray-600 dark:text-gray-400">
                       <span className="font-medium mr-2">Platform:</span>
@@ -1092,6 +1204,9 @@ export default function CandidateProjectsPage() {
                     ))}
                   </div>
                 )}
+              </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

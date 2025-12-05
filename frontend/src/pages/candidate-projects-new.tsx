@@ -38,6 +38,8 @@ export default function CandidateProjectsNew() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [platformFilter, setPlatformFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'budget' | 'deadline'>('date');
+  const [assigneeFilter, setAssigneeFilter] = useState<string>('all');
+  const [groupBy, setGroupBy] = useState<'none' | 'assignee'>('none');
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [connectedCandidates, setConnectedCandidates] = useState<any[]>([]);
@@ -177,6 +179,17 @@ export default function CandidateProjectsNew() {
     return () => unsubscribe();
   }, [user]);
 
+  // Get unique assignees (candidates for agents, agents for candidates)
+  const uniqueAssignees = Array.from(new Set(
+    projects.map(p => {
+      if (userRole === 'agent') {
+        return p.candidate_name || p.candidate_id;
+      } else {
+        return p.agent_name || p.agent_id || 'Unassigned';
+      }
+    }).filter(Boolean)
+  ));
+
   // Filter and sort projects
   useEffect(() => {
     let filtered = [...projects];
@@ -189,6 +202,16 @@ export default function CandidateProjectsNew() {
     // Platform filter
     if (platformFilter !== 'all') {
       filtered = filtered.filter(p => p.platform === platformFilter);
+    }
+
+    // Assignee filter
+    if (assigneeFilter !== 'all') {
+      filtered = filtered.filter(p => {
+        const assigneeName = userRole === 'agent'
+          ? (p.candidate_name || p.candidate_id)
+          : (p.agent_name || p.agent_id || 'Unassigned');
+        return assigneeName === assigneeFilter;
+      });
     }
 
     // Search
@@ -222,7 +245,35 @@ export default function CandidateProjectsNew() {
     });
 
     setFilteredProjects(filtered);
-  }, [projects, statusFilter, platformFilter, searchQuery, sortBy]);
+  }, [projects, statusFilter, platformFilter, assigneeFilter, searchQuery, sortBy]);
+
+  // Group projects if grouping is enabled
+  const getGroupedProjects = () => {
+    if (groupBy === 'none') {
+      return { 'All Projects': filteredProjects };
+    }
+
+    if (groupBy === 'assignee') {
+      const grouped: { [key: string]: any[] } = {};
+
+      filteredProjects.forEach(project => {
+        const groupKey = userRole === 'agent'
+          ? (project.candidate_name || project.candidate_id || 'Unknown Candidate')
+          : (project.agent_name || project.agent_id || 'Unassigned Agent');
+
+        if (!grouped[groupKey]) {
+          grouped[groupKey] = [];
+        }
+        grouped[groupKey].push(project);
+      });
+
+      return grouped;
+    }
+
+    return { 'All Projects': filteredProjects };
+  };
+
+  const groupedProjects = getGroupedProjects();
 
   const calculateStats = (projectsList: any[]) => {
     const stats = {
@@ -595,6 +646,30 @@ export default function CandidateProjectsNew() {
                   </select>
                 )}
 
+                {/* Assignee Filter */}
+                {uniqueAssignees.length > 0 && (
+                  <select
+                    value={assigneeFilter}
+                    onChange={(e) => setAssigneeFilter(e.target.value)}
+                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
+                  >
+                    <option value="all">All {userRole === 'agent' ? 'Candidates' : 'Agents'}</option>
+                    {uniqueAssignees.map(assignee => (
+                      <option key={assignee} value={assignee}>{assignee}</option>
+                    ))}
+                  </select>
+                )}
+
+                {/* Group By */}
+                <select
+                  value={groupBy}
+                  onChange={(e) => setGroupBy(e.target.value as any)}
+                  className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
+                >
+                  <option value="none">No Grouping</option>
+                  <option value="assignee">Group by {userRole === 'agent' ? 'Candidate' : 'Agent'}</option>
+                </select>
+
                 {/* Sort */}
                 <select
                   value={sortBy}
@@ -666,12 +741,33 @@ export default function CandidateProjectsNew() {
                 </button>
               )}
             </div>
-          ) : viewMode === 'grid' ? (
-            <GridView projects={filteredProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} />
-          ) : viewMode === 'list' ? (
-            <ListView projects={filteredProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} />
           ) : (
-            <KanbanView projects={filteredProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} />
+            <div className="space-y-8">
+              {Object.entries(groupedProjects).map(([groupName, groupProjects]) => (
+                <div key={groupName}>
+                  {/* Group Header */}
+                  {groupBy !== 'none' && (
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                          {groupProjects.length}
+                        </span>
+                        {groupName}
+                      </h3>
+                    </div>
+                  )}
+
+                  {/* Projects for this group */}
+                  {viewMode === 'grid' ? (
+                    <GridView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
+                  ) : viewMode === 'list' ? (
+                    <ListView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
+                  ) : (
+                    <KanbanView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </main>
 
@@ -689,7 +785,7 @@ export default function CandidateProjectsNew() {
 }
 
 // Grid View Component
-function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router }: any) {
+function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole }: any) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {projects.map((project: any) => (
@@ -723,16 +819,20 @@ function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
 
             {/* Meta Info */}
             <div className="space-y-2.5 text-sm">
+              {/* Assignment Info */}
+              <div className="flex items-center text-gray-600">
+                <User className="w-4 h-4 mr-2 text-gray-400" />
+                <span className="font-medium text-blue-600">
+                  {userRole === 'agent'
+                    ? (project.candidate_name || 'Unknown Candidate')
+                    : (project.agent_name || 'Unassigned')}
+                </span>
+              </div>
+
               {project.platform && (
                 <div className="flex items-center text-gray-600">
                   <Tag className="w-4 h-4 mr-2 text-gray-400" />
                   <span className="font-medium">{project.platform}</span>
-                </div>
-              )}
-              {project.candidate_name && (
-                <div className="flex items-center text-gray-600">
-                  <User className="w-4 h-4 mr-2 text-gray-400" />
-                  <span>{project.candidate_name}</span>
                 </div>
               )}
               {project.budget && (
@@ -786,7 +886,7 @@ function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
 }
 
 // List View Component
-function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router }: any) {
+function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole }: any) {
   return (
     <div className="space-y-3">
       {projects.map((project: any) => (
@@ -809,16 +909,18 @@ function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
               </div>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                {/* Assignment Info */}
+                <span className="flex items-center font-medium text-blue-600">
+                  <User className="w-4 h-4 mr-1.5 text-gray-400" />
+                  {userRole === 'agent'
+                    ? (project.candidate_name || 'Unknown Candidate')
+                    : (project.agent_name || 'Unassigned')}
+                </span>
+
                 {project.platform && (
                   <span className="flex items-center">
                     <Tag className="w-4 h-4 mr-1.5 text-gray-400" />
                     {project.platform}
-                  </span>
-                )}
-                {project.candidate_name && (
-                  <span className="flex items-center">
-                    <User className="w-4 h-4 mr-1.5 text-gray-400" />
-                    {project.candidate_name}
                   </span>
                 )}
                 {project.budget && (
@@ -847,7 +949,7 @@ function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
 }
 
 // Kanban View Component
-function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router }: any) {
+function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole }: any) {
   const statuses = ['pending', 'active', 'on_hold', 'completed'];
   const statusLabels: any = {
     pending: 'Pending',
@@ -882,6 +984,15 @@ function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, 
                   <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">
                     {project.title}
                   </h4>
+
+                  {/* Assignment Info */}
+                  <div className="flex items-center text-sm text-blue-600 font-medium mb-2">
+                    <User className="w-4 h-4 mr-1" />
+                    {userRole === 'agent'
+                      ? (project.candidate_name || 'Unknown Candidate')
+                      : (project.agent_name || 'Unassigned')}
+                  </div>
+
                   {project.budget && (
                     <div className="flex items-center text-sm text-gray-600 mb-2">
                       <DollarSign className="w-4 h-4 mr-1" />
