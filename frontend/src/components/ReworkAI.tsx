@@ -445,7 +445,7 @@ export default function ReworkAI() {
     if (messages.length === 0) {
       setTimeout(() => {
         addMessage(
-          "Hi there! 👋 I'm Rework AI, your 24/7 intelligent assistant.\n\nI have comprehensive knowledge of our entire platform:\n\n📍 Company info (address: 5 Buttermill Ave, L4K 0J5, CA)\n📊 All statistics (98% success rate, 20+ platforms, $3k+ avg income)\n🌐 Every page (Trust & Transparency, GDPR, etc.)\n🔒 Security & verification processes\n💼 All supported platforms (Outlier, Google, Scale AI, etc.)\n\nAsk me anything - from our location to GDPR policies!",
+          "Hi there! 👋 I'm Rework AI, your personal assistant.\n\nI'm here to help you with anything about Remote-Works - whether it's finding information, navigating the site, or answering your questions.\n\nWhat can I help you with today?",
           true,
           []
         );
@@ -453,23 +453,23 @@ export default function ReworkAI() {
         // Add quick action buttons after initial message
         setTimeout(() => {
           addMessage(
-            "Here are some quick options to get started:",
+            "Here are some ways I can assist you:",
             true,
             [
               {
-                label: "🚀 Get Started",
+                label: "Help me get started",
                 action: () => handleQuickAction("Get Started")
               },
               {
-                label: "💰 Pricing Info",
+                label: "Tell me about pricing",
                 action: () => handleQuickAction("Pricing")
               },
               {
-                label: "👥 Find Agents",
+                label: "Find me an agent",
                 action: () => handleQuickAction("Find Agents")
               },
               {
-                label: "💬 Contact Support",
+                label: "Talk to a human",
                 action: () => handleQuickAction("Contact Support")
               }
             ]
