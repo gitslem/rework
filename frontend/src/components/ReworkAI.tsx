@@ -225,6 +225,23 @@ export default function ReworkAI() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Hide ReworkAI on profile/dashboard pages
+  const hideOnPages = [
+    '/candidate-dashboard',
+    '/agent-dashboard',
+    '/profile-settings',
+    '/dashboard',
+    '/admin',
+  ];
+
+  const currentPath = router.pathname;
+  const shouldHide = hideOnPages.some(page => currentPath.startsWith(page));
+
+  // Don't render if on profile/dashboard pages
+  if (shouldHide) {
+    return null;
+  }
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -242,6 +259,20 @@ export default function ReworkAI() {
   const findBestAnswer = (query: string): string | null => {
     const lowerQuery = query.toLowerCase();
 
+    // Varied introduction phrases for natural conversation
+    const scanningPhrases = [
+      "Let me look that up for you...\n\n",
+      "I'll search our website for that information...\n\n",
+      "Let me find that information...\n\n",
+      "Searching our database...\n\n",
+      "Looking into that for you...\n\n",
+      "I found this on our site:\n\n",
+      "Here's what I discovered:\n\n",
+      "Based on our website information:\n\n"
+    ];
+
+    const getRandomPhrase = () => scanningPhrases[Math.floor(Math.random() * scanningPhrases.length)];
+
     // Check for greetings
     if (lowerQuery.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
       return "Hello! 👋 I'm Rework AI, your personal assistant.\n\nI'm here to help you find any information about Remote-Works. I can scan our entire website to give you accurate answers about our company, services, policies, and more.\n\nWhat would you like to know?";
@@ -254,56 +285,86 @@ export default function ReworkAI() {
 
     // Check for social media requests
     if (lowerQuery.includes('social') || lowerQuery.includes('twitter') || lowerQuery.includes('blog') || lowerQuery.includes('trustpilot') || lowerQuery.includes('follow')) {
-      return "Let me check our social media links for you...\n\nI found our online presence across these platforms:\n\n📝 Blog: https://ai.remote-works.io/\n🐦 Twitter/X: https://x.com/remote_worksio\n⭐ Trustpilot: https://ca.trustpilot.com/review/remote-works.io\n\nYou can follow us on any of these platforms to stay updated with the latest news, tips, and opportunities!"
+      return `${getRandomPhrase()}Our social media presence:\n\n📝 Blog: https://ai.remote-works.io/\n🐦 Twitter/X: https://x.com/remote_worksio\n⭐ Trustpilot: https://ca.trustpilot.com/review/remote-works.io\n\nYou can follow us on any of these platforms to stay updated with the latest news, tips, and opportunities!`
     }
 
-    // Enhanced scanning mechanism - Search through all categories
-    let bestMatch: { answer: string; score: number } | null = null;
+    // Enhanced scanning mechanism - Search through all categories with better scoring
+    let bestMatch: { answer: string; score: number; category: string } | null = null;
 
     for (const category of FAQ_DATA) {
       // Check if query matches category keywords
-      const categoryMatch = category.keywords.some(keyword =>
+      const categoryKeywordMatches = category.keywords.filter(keyword =>
         lowerQuery.includes(keyword)
-      );
+      ).length;
 
-      if (categoryMatch) {
+      if (categoryKeywordMatches > 0) {
         // Scan through FAQs in this category
         for (const faq of category.faqs) {
-          const questionWords = faq.question.toLowerCase().split(' ');
-          const queryWords = lowerQuery.split(' ');
+          const questionLower = faq.question.toLowerCase();
+          const questionWords = questionLower.split(' ').filter(w => w.length > 2);
+          const queryWords = lowerQuery.split(' ').filter(w => w.length > 2);
 
-          // Calculate match score
-          const matchCount = queryWords.filter(word =>
-            word.length > 2 && questionWords.some(qWord => qWord.includes(word) || word.includes(qWord))
+          // Calculate comprehensive match score
+          let score = 0;
+
+          // Exact question match (highest priority)
+          if (lowerQuery === questionLower || questionLower.includes(lowerQuery) || lowerQuery.includes(questionLower)) {
+            score += 1000;
+          }
+
+          // Word matching score
+          const matchingWords = queryWords.filter(word =>
+            questionWords.some(qWord => qWord.includes(word) || word.includes(qWord))
+          );
+          score += matchingWords.length * 10;
+
+          // Keyword match bonus
+          score += categoryKeywordMatches * 5;
+
+          // Answer content relevance (check if answer contains query words)
+          const answerLower = faq.answer.toLowerCase();
+          const answerMatches = queryWords.filter(word =>
+            answerLower.includes(word)
           ).length;
-
-          // Check for exact phrase matches
-          const exactMatch = lowerQuery.includes(faq.question.toLowerCase()) ||
-                           faq.question.toLowerCase().includes(lowerQuery);
-
-          const score = exactMatch ? 100 : matchCount;
+          score += answerMatches * 3;
 
           if (score > 0 && (!bestMatch || score > bestMatch.score)) {
-            // Narrate the finding
-            const narratedAnswer = `Let me check that for you...\n\nI found information on our website about this:\n\n${faq.answer}`;
-            bestMatch = { answer: narratedAnswer, score };
+            bestMatch = {
+              answer: faq.answer,
+              score,
+              category: category.category
+            };
           }
         }
       }
     }
 
     if (bestMatch) {
-      return bestMatch.answer;
+      // Use varied introduction based on category for more natural responses
+      let intro = getRandomPhrase();
+
+      // Customize intro based on category for better context
+      if (bestMatch.category === "Company Information") {
+        intro = "I found our company information:\n\n";
+      } else if (bestMatch.category === "Supported Platforms") {
+        intro = "Here's our platform information:\n\n";
+      } else if (bestMatch.category === "Trust & Security") {
+        intro = "Here's how we ensure your safety:\n\n";
+      } else if (bestMatch.category === "Platform Features & Statistics") {
+        intro = "Here are our key stats and features:\n\n";
+      }
+
+      return `${intro}${bestMatch.answer}`;
     }
 
-    // If no specific match, try to provide category-level information
+    // Fallback: try partial category match with better context
     for (const category of FAQ_DATA) {
       const categoryMatch = category.keywords.some(keyword =>
         lowerQuery.includes(keyword)
       );
 
       if (categoryMatch && category.faqs.length > 0) {
-        return `I've scanned our website and found information about ${category.category.toLowerCase()}:\n\n${category.faqs[0].answer}\n\nWould you like to know more about this topic?`;
+        return `${getRandomPhrase()}I found information about ${category.category.toLowerCase()}:\n\n${category.faqs[0].answer}\n\nWould you like to know something more specific?`;
       }
     }
 
