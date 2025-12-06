@@ -773,6 +773,102 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Trust Badges Section */}
+        <section className="py-16 bg-white border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-full mb-4">
+                <BadgeCheck className="w-4 h-4 text-gray-700" />
+                <span className="text-gray-700 text-sm font-semibold">Trusted by Leading Platforms</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                Connecting You to Top AI Platforms
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Our verified agents have proven track records with industry-leading companies
+              </p>
+            </div>
+
+            {/* Trust Badges Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center">
+              {/* PayPal */}
+              <div className="group flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <DollarSign className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="font-bold text-gray-900 text-sm">PayPal</p>
+                  <p className="text-xs text-gray-500 mt-1">Secure Payments</p>
+                </div>
+              </div>
+
+              {/* Telus Digital */}
+              <div className="group flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-purple-600 to-purple-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Headphones className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="font-bold text-gray-900 text-sm">TELUS Digital</p>
+                  <p className="text-xs text-gray-500 mt-1">AI Training</p>
+                </div>
+              </div>
+
+              {/* OneForma */}
+              <div className="group flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 hover:border-amber-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-amber-600 to-amber-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Layers className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="font-bold text-gray-900 text-sm">OneForma</p>
+                  <p className="text-xs text-gray-500 mt-1">Data Collection</p>
+                </div>
+              </div>
+
+              {/* Google */}
+              <div className="group flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 hover:border-red-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-red-600 to-yellow-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Search className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="font-bold text-gray-900 text-sm">Google</p>
+                  <p className="text-xs text-gray-500 mt-1">AI & ML</p>
+                </div>
+              </div>
+
+              {/* Scale AI */}
+              <div className="group flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-green-600 to-green-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </div>
+                  <p className="font-bold text-gray-900 text-sm">Scale AI</p>
+                  <p className="text-xs text-gray-500 mt-1">Data Labeling</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Bar */}
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+                <div className="text-3xl font-bold text-gray-900 mb-1">98%</div>
+                <div className="text-sm text-gray-600">Success Rate</div>
+              </div>
+              <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-amber-50 rounded-xl border border-purple-100">
+                <div className="text-3xl font-bold text-gray-900 mb-1">20+</div>
+                <div className="text-sm text-gray-600">Platforms</div>
+              </div>
+              <div className="text-center p-4 bg-gradient-to-br from-amber-50 to-green-50 rounded-xl border border-amber-100">
+                <div className="text-3xl font-bold text-gray-900 mb-1">5k+</div>
+                <div className="text-sm text-gray-600">Active Users</div>
+              </div>
+              <div className="text-center p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl border border-green-100">
+                <div className="text-3xl font-bold text-gray-900 mb-1">24/7</div>
+                <div className="text-sm text-gray-600">Support</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <Footer />
       </div>
     </>
