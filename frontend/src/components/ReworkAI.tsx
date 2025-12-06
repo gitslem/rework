@@ -91,8 +91,8 @@ const FAQ_DATA = [
     keywords: ["agent", "charge", "fee", "cost", "price", "success", "approval", "candidate", "hire"],
     faqs: [
       {
-        question: "How much do agents charge?",
-        answer: "Agent fees vary based on the service and platform. Most agents charge between $50-$200, but you only pay if you get approved. Each agent's profile lists their specific rates for different platforms."
+        question: "How do agents work with candidates?",
+        answer: "Agents offer flexible arrangements based on your needs:\n\n💼 Different Models Available:\n• Free assistance (some agents help at no charge)\n• Revenue sharing (percentage of your earnings)\n• One-time service fee (varies by agent and platform)\n\nEach agent's profile clearly shows their preferred working model and terms. Browse profiles to find an arrangement that works best for you!"
       },
       {
         question: "What's the success rate?",
@@ -100,25 +100,25 @@ const FAQ_DATA = [
       },
       {
         question: "How do I choose an agent?",
-        answer: "Browse agent profiles to see their specializations, success rates, reviews, and pricing. Look for agents who specialize in the platforms you're interested in and have high ratings from previous clients."
+        answer: "Browse agent profiles to see their specializations, success rates, reviews, and working models. Look for agents who specialize in the platforms you're interested in and have high ratings from previous clients. Each agent clearly lists their terms and preferred arrangement."
       }
     ]
   },
   {
     category: "Payments & Security",
-    keywords: ["payment", "pay", "refund", "secure", "security", "data", "privacy", "credit card"],
+    keywords: ["payment", "pay", "refund", "secure", "security", "data", "privacy", "arrangement", "terms"],
     faqs: [
       {
         question: "How does payment work?",
-        answer: "Candidates pay upfront, and funds are held in secure escrow. When the candidate gets approved for the platform, the funds are released to the agent. If approval doesn't happen (and the agent offers a guarantee), funds are refunded to the candidate."
+        answer: "Payment arrangements are flexible and depend on the agent you choose:\n\n💰 Common Models:\n• Free service - Some agents help without charge\n• Revenue share - Agent gets percentage of your earnings\n• One-time fee - Pay once for the service\n\nAll arrangements are clearly stated in the agent's profile before you connect. We ensure transparency in all agreements between candidates and agents."
       },
       {
         question: "Is my payment information secure?",
-        answer: "Yes. We use industry-standard encryption and work with trusted payment processors (Stripe, PayPal). We never store your full credit card information on our servers."
+        answer: "Yes! We use industry-standard encryption and work with trusted payment processors. We never store your full payment information on our servers. All transactions are secured with the highest level of protection."
       },
       {
-        question: "Can I get a refund?",
-        answer: "Refund policies depend on the agent's guarantee. Most agents offer full refunds if you don't get approved. Check the agent's profile for their specific refund policy."
+        question: "What if there's a dispute?",
+        answer: "Our support team mediates any disputes fairly. We review the agreed terms between you and the agent, and work to resolve issues quickly. If necessary, we can take action to protect both parties and ensure fair treatment."
       }
     ]
   },
@@ -146,7 +146,7 @@ const FAQ_DATA = [
     faqs: [
       {
         question: "Which platforms do you support?",
-        answer: "We support 20+ leading AI training and remote work platforms including:\n\n🔷 PayPal - Payment processing\n🔷 TELUS Digital - AI training & data collection\n🔷 OneForma - Data annotation & AI training\n🔷 Google - AI & ML projects\n🔷 Scale AI - Data labeling & AI training\n🔷 Outlier AI - AI training & feedback\n🔷 Appen - Data collection & annotation\n🔷 Alignerr - AI model alignment\n🔷 Handshake AI - Career platform integration\n🔷 Mindrift - AI training platform\n🔷 Lionbridge - Translation & AI training\n🔷 Mercor - Tech talent marketplace\n\nAnd many more! New platforms are added regularly."
+        answer: "We support 20+ leading AI training and remote work platforms including:\n\n🔷 TELUS Digital - AI training & data collection\n🔷 OneForma - Data annotation & AI training\n🔷 Google - AI & ML projects\n🔷 Scale AI - Data labeling & AI training\n🔷 Outlier AI - AI training & feedback\n🔷 Appen - Data collection & annotation\n🔷 Alignerr - AI model alignment\n🔷 Handshake AI - Career platform integration\n🔷 Mindrift - AI training platform\n🔷 Lionbridge - Translation & AI training\n🔷 Mercor - Tech talent marketplace\n\nAnd many more! New platforms are added regularly based on demand from our community."
       },
       {
         question: "Can agents help with multiple platforms?",
@@ -186,7 +186,7 @@ const FAQ_DATA = [
     faqs: [
       {
         question: "What are Remote-Works key features?",
-        answer: "Our platform offers:\n\n✅ Verified Agents - Thoroughly vetted professionals\n🔒 Secure Platform - Direct PayPal payments with flexible options\n💬 Direct Communication - Message agents directly\n📈 High Success Rate - 98% approval success rate\n⏱️ Fast Approval - Matched within 24 hours\n🎁 100% Free to Use - No subscription or hidden fees\n🌍 20+ Platforms - Wide range of opportunities\n💰 $3k+ Average Monthly Income\n🎯 24/7 Support - Always here to help\n\nStart your journey to remote work success today!"
+        answer: "Our platform offers:\n\n✅ Verified Agents - Thoroughly vetted professionals\n🔒 Secure Platform - Flexible payment arrangements (free, revenue share, or one-time)\n💬 Direct Communication - Message agents directly\n📈 High Success Rate - 98% approval success rate\n⏱️ Fast Approval - Matched within 24 hours\n🎁 100% Free to Use - No subscription or hidden fees\n🌍 20+ Platforms - Wide range of opportunities\n💰 $3k+ Average Monthly Income\n🎯 24/7 Support - Always here to help\n\nStart your journey to remote work success today!"
       },
       {
         question: "What are your platform statistics?",
@@ -244,7 +244,7 @@ export default function ReworkAI() {
 
     // Check for greetings
     if (lowerQuery.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
-      return "Hello! 👋 I'm Rework AI, your 24/7 intelligent assistant for Remote-Works.\n\nI have complete knowledge of our platform including:\n\n📍 Company Information (address, contact, location)\n📊 Platform Statistics (98% success rate, 20+ platforms)\n🌐 All Website Pages (Trust & Transparency, GDPR, etc.)\n💼 Platform Features & Services\n🔒 Security & Verification Process\n💰 Pricing & Payment Information\n🎯 Supported Platforms (Outlier, Scale AI, Google, etc.)\n\nAsk me anything about Remote-Works - I'm here to help!";
+      return "Hello! 👋 I'm Rework AI, your personal assistant.\n\nI'm here to help you find any information about Remote-Works. I can scan our entire website to give you accurate answers about our company, services, policies, and more.\n\nWhat would you like to know?";
     }
 
     // Check for navigation requests
@@ -254,35 +254,56 @@ export default function ReworkAI() {
 
     // Check for social media requests
     if (lowerQuery.includes('social') || lowerQuery.includes('twitter') || lowerQuery.includes('blog') || lowerQuery.includes('trustpilot') || lowerQuery.includes('follow')) {
-      return "Connect with us on social media:\n\n📝 Blog: https://ai.remote-works.io/\n🐦 Twitter/X: https://x.com/remote_worksio\n⭐ Trustpilot: https://ca.trustpilot.com/review/remote-works.io\n\nStay updated with the latest news, tips, and opportunities!"
+      return "Let me check our social media links for you...\n\nI found our online presence across these platforms:\n\n📝 Blog: https://ai.remote-works.io/\n🐦 Twitter/X: https://x.com/remote_worksio\n⭐ Trustpilot: https://ca.trustpilot.com/review/remote-works.io\n\nYou can follow us on any of these platforms to stay updated with the latest news, tips, and opportunities!"
     }
 
-    // Search through FAQ data
+    // Enhanced scanning mechanism - Search through all categories
+    let bestMatch: { answer: string; score: number } | null = null;
+
     for (const category of FAQ_DATA) {
       // Check if query matches category keywords
-      const matchesCategory = category.keywords.some(keyword =>
+      const categoryMatch = category.keywords.some(keyword =>
         lowerQuery.includes(keyword)
       );
 
-      if (matchesCategory) {
-        // Find the most relevant FAQ
+      if (categoryMatch) {
+        // Scan through FAQs in this category
         for (const faq of category.faqs) {
           const questionWords = faq.question.toLowerCase().split(' ');
           const queryWords = lowerQuery.split(' ');
 
+          // Calculate match score
           const matchCount = queryWords.filter(word =>
-            questionWords.some(qWord => qWord.includes(word) || word.includes(qWord))
+            word.length > 2 && questionWords.some(qWord => qWord.includes(word) || word.includes(qWord))
           ).length;
 
-          if (matchCount >= 2 || lowerQuery.includes(faq.question.toLowerCase())) {
-            return faq.answer;
+          // Check for exact phrase matches
+          const exactMatch = lowerQuery.includes(faq.question.toLowerCase()) ||
+                           faq.question.toLowerCase().includes(lowerQuery);
+
+          const score = exactMatch ? 100 : matchCount;
+
+          if (score > 0 && (!bestMatch || score > bestMatch.score)) {
+            // Narrate the finding
+            const narratedAnswer = `Let me check that for you...\n\nI found information on our website about this:\n\n${faq.answer}`;
+            bestMatch = { answer: narratedAnswer, score };
           }
         }
+      }
+    }
 
-        // If category matches but no specific FAQ, return first FAQ from category
-        if (category.faqs.length > 0) {
-          return `${category.faqs[0].answer}\n\nWould you like to know more about ${category.category.toLowerCase()}?`;
-        }
+    if (bestMatch) {
+      return bestMatch.answer;
+    }
+
+    // If no specific match, try to provide category-level information
+    for (const category of FAQ_DATA) {
+      const categoryMatch = category.keywords.some(keyword =>
+        lowerQuery.includes(keyword)
+      );
+
+      if (categoryMatch && category.faqs.length > 0) {
+        return `I've scanned our website and found information about ${category.category.toLowerCase()}:\n\n${category.faqs[0].answer}\n\nWould you like to know more about this topic?`;
       }
     }
 
