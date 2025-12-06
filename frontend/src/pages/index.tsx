@@ -11,6 +11,7 @@ import {
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
+import HeroVideoBackground from '@/components/HeroVideoBackground';
 
 export default function Home() {
   const router = useRouter();
@@ -246,12 +247,8 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="relative pt-24 pb-32 px-6 lg:px-8 overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-            <div className="absolute top-40 right-10 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
-          </div>
+          {/* Video Background */}
+          <HeroVideoBackground />
 
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-8">
