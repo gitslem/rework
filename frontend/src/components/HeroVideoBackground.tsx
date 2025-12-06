@@ -1,6 +1,6 @@
 export default function HeroVideoBackground() {
   // Set to true to use animated background, false to try loading video
-  const useAnimatedBackground = true;
+  const useAnimatedBackground = false;
 
   return (
     <div className="absolute inset-0 -z-10">
