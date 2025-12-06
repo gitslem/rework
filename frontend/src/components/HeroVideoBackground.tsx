@@ -1,28 +1,27 @@
-import { useEffect, useState } from 'react';
-
 export default function HeroVideoBackground() {
-  const [videoError, setVideoError] = useState(false);
+  // Set to true to use animated background, false to try loading video
+  const useAnimatedBackground = true;
 
   return (
     <div className="absolute inset-0 -z-10">
       {/* Video Container */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-        {!videoError && (
+        {/* Video option - uncomment and set useAnimatedBackground to false to use video */}
+        {!useAnimatedBackground && (
           <video
             autoPlay
             loop
             muted
             playsInline
             className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
-            onError={() => setVideoError(true)}
           >
             <source src="/videos/hero-background.mp4" type="video/mp4" />
             <source src="/videos/hero-background.webm" type="video/webm" />
           </video>
         )}
 
-        {/* Animated CSS Background Fallback */}
-        {videoError && (
+        {/* Animated CSS Background */}
+        {useAnimatedBackground && (
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
             {/* Animated Workspace Illustration */}
             <svg
