@@ -1,77 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-
 export default function HeroVideoBackground() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current;
-
-      const handleLoadedData = () => {
-        console.log('Video loaded successfully');
-        setVideoLoaded(true);
-        video.play().then(() => {
-          console.log('Video playing');
-          // Wait a bit then show the video
-          setTimeout(() => setShowVideo(true), 500);
-        }).catch(err => {
-          console.error('Video play failed:', err);
-        });
-      };
-
-      const handleError = (e: Event) => {
-        console.error('Video error:', e);
-      };
-
-      video.addEventListener('loadeddata', handleLoadedData);
-      video.addEventListener('error', handleError);
-
-      // Fallback timeout - if video doesn't load in 3 seconds, keep showing animated background
-      const timeout = setTimeout(() => {
-        if (!videoLoaded) {
-          console.log('Video load timeout - keeping animated background');
-        }
-      }, 3000);
-
-      return () => {
-        video.removeEventListener('loadeddata', handleLoadedData);
-        video.removeEventListener('error', handleError);
-        clearTimeout(timeout);
-      };
-    }
-  }, [videoLoaded]);
-
   return (
     <div className="absolute inset-0" style={{ zIndex: -10 }}>
-      {/* Video Container - Always try to load */}
+      {/* Animated Background Container */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute top-0 left-0 w-full h-full object-cover"
-          style={{
-            opacity: showVideo ? 1 : 0,
-            transition: 'opacity 1s ease-in-out',
-            zIndex: showVideo ? 2 : 0
-          }}
-        >
-          <source src="/videos/hero-background.mp4" type="video/mp4" />
-        </video>
-
-        {/* Animated Background - Always show by default, hide when video plays */}
-        <div
-          className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50"
-          style={{
-            opacity: showVideo ? 0 : 1,
-            transition: 'opacity 1s ease-in-out',
-            zIndex: 1
-          }}
-        >
+        {/* Animated Background - Professional Workspace Theme */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
             {/* Animated Workspace Illustration */}
             <svg
               className="absolute inset-0 w-full h-full opacity-30"
@@ -277,20 +210,19 @@ export default function HeroVideoBackground() {
 
             {/* Additional Animated Gradient Layers */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-100/30 via-transparent to-amber-100/30 animate-gradient"></div>
-          </div>
-
-          {/* Overlay for text readability - applies to both video and animated background */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.1))',
-              zIndex: 3
-            }}
-          ></div>
         </div>
 
-        {/* Animated Background Elements */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
+        {/* Overlay for text readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.1))'
+          }}
+        ></div>
+      </div>
+
+      {/* Animated Background Elements */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
       <div
         className="absolute top-40 right-10 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"
         style={{ animationDelay: '2s' }}
