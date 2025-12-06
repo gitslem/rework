@@ -232,10 +232,10 @@ export default function HeroVideoBackground() {
         )}
 
         {/* Gradient Overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/90 to-white/85"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/60 to-white/50"></div>
 
         {/* Additional subtle overlay with animated gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/40 via-transparent to-amber-50/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/20 via-transparent to-amber-50/20"></div>
       </div>
 
       {/* Animated Background Elements (enhancement) */}
