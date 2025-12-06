@@ -29,12 +29,48 @@ interface QuickAction {
 
 const FAQ_DATA = [
   {
+    category: "Company Information",
+    keywords: ["company", "address", "location", "where located", "office", "contact", "email", "phone", "reach", "headquarters", "based"],
+    faqs: [
+      {
+        question: "Where is Remote-Works located?",
+        answer: "Remote-Works is located at:\n📍 5 Buttermill Ave, L4K 0J5, CA\n✉️ support@remote-works.io\n\nWe're a Canadian company serving clients worldwide. Our team is available 24/7 to support our global community of candidates and agents."
+      },
+      {
+        question: "How can I contact Remote-Works?",
+        answer: "You can reach us through:\n\n✉️ Email: support@remote-works.io\n📍 Address: 5 Buttermill Ave, L4K 0J5, CA\n💬 Live Chat: Available 24/7 through this chat\n🌐 Support Page: Visit /support for more options\n📝 Contact Form: Available on our website\n\nWe typically respond within 24 hours!"
+      },
+      {
+        question: "What are your business hours?",
+        answer: "We offer 24/7 support! Our AI assistant (that's me!) is always available to help. Human support agents are available during extended hours to serve our global community. Email support@remote-works.io anytime and we'll respond within 24 hours."
+      }
+    ]
+  },
+  {
+    category: "Website Pages & Navigation",
+    keywords: ["page", "where find", "navigate", "trust", "gdpr", "privacy", "transparency", "about", "faq", "terms"],
+    faqs: [
+      {
+        question: "What is the Trust & Transparency page?",
+        answer: "Our Trust & Transparency page (/trust-transparency) covers:\n\n🛡️ What We Stand For - Our core values\n✅ Our Promise - Our commitments to you\n⚠️ Scam Detection - How to spot and avoid scams\n🔍 Verification Process - How we verify agents\n🔒 Safety Features - Built-in protection measures\n\nThis page shows our commitment to maintaining a safe, trustworthy platform for everyone."
+      },
+      {
+        question: "What is GDPR compliance?",
+        answer: "Our GDPR Compliance page (/gdpr-compliance) explains:\n\n📋 Your Data Rights - Access, rectification, erasure, etc.\n🔐 Data Protection - How we secure your information\n📊 What We Collect - Complete transparency on data collection\n⏰ Data Retention - How long we keep your data\n🌍 International Transfers - Cross-border data handling\n✉️ DPO Contact: dpo@remote-works.io\n\nWe're fully committed to protecting your privacy and complying with GDPR regulations."
+      },
+      {
+        question: "Where can I find information about company policies?",
+        answer: "Important pages:\n\n🔒 Privacy Policy - /privacy\n📜 Terms of Service - /terms\n🛡️ Trust & Transparency - /trust-transparency\n🇪🇺 GDPR Compliance - /gdpr-compliance\n📖 Code of Conduct - /code-of-conduct\n❓ FAQ - /faq\n📞 Support - /support\n\nAll policies are easily accessible from our footer menu!"
+      }
+    ]
+  },
+  {
     category: "Getting Started",
-    keywords: ["what is", "sign up", "join", "fee", "approval", "start", "begin", "how to"],
+    keywords: ["what is", "sign up", "join", "fee", "approval", "start", "begin", "how to", "register"],
     faqs: [
       {
         question: "What is Remote-Works?",
-        answer: "Remote-Works is a marketplace that connects candidates with verified agents who help them get approved for projects on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, and more. Our agents have proven track records and provide personalized guidance to maximize your chances of approval."
+        answer: "Remote-Works is a marketplace that connects candidates with verified agents who help them get approved for projects on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, Scale AI, Handshake AI, Lionbridge, Mercor, and 20+ more platforms. Our agents have proven track records (98% success rate) and provide personalized guidance to maximize your approval chances."
       },
       {
         question: "How do I sign up?",
@@ -42,7 +78,7 @@ const FAQ_DATA = [
       },
       {
         question: "Is there a fee to join?",
-        answer: "Signing up is completely free for both candidates and agents. Candidates only pay when they hire an agent, and agents only pay a small platform fee when they complete a successful placement."
+        answer: "Signing up is completely free for both candidates and agents. It's 100% free to use - no subscription fees, no hidden charges. Candidates only pay agents for services after receiving results or approval. Connect with agents and only pay for services you need!"
       },
       {
         question: "How long does admin approval take?",
@@ -106,15 +142,73 @@ const FAQ_DATA = [
   },
   {
     category: "Supported Platforms",
-    keywords: ["platform", "outlier", "alignerr", "oneforma", "appen", "rws", "mindrift", "telus", "support"],
+    keywords: ["platform", "outlier", "alignerr", "oneforma", "appen", "rws", "mindrift", "telus", "scale", "google", "paypal", "handshake", "lionbridge", "mercor", "support", "which platforms"],
     faqs: [
       {
         question: "Which platforms do you support?",
-        answer: "Our agents help with Outlier AI, Alignerr, OneForma, Appen, RWS, Mindrift AI, TELUS Digital, and 20+ other AI training and remote work platforms. New platforms are added regularly based on demand."
+        answer: "We support 20+ leading AI training and remote work platforms including:\n\n🔷 PayPal - Payment processing\n🔷 TELUS Digital - AI training & data collection\n🔷 OneForma - Data annotation & AI training\n🔷 Google - AI & ML projects\n🔷 Scale AI - Data labeling & AI training\n🔷 Outlier AI - AI training & feedback\n🔷 Appen - Data collection & annotation\n🔷 Alignerr - AI model alignment\n🔷 Handshake AI - Career platform integration\n🔷 Mindrift - AI training platform\n🔷 Lionbridge - Translation & AI training\n🔷 Mercor - Tech talent marketplace\n\nAnd many more! New platforms are added regularly."
       },
       {
         question: "Can agents help with multiple platforms?",
-        answer: "Yes! Many agents specialize in multiple platforms. Check their profile to see which services they offer."
+        answer: "Yes! Many agents specialize in multiple platforms. Check their profile to see which services they offer. Our verified agents have proven track records across various platforms with a 98% success rate!"
+      },
+      {
+        question: "What is your success rate?",
+        answer: "We maintain an impressive 98% success rate! Our verified agents have helped thousands of candidates get approved on their desired platforms. This high success rate comes from:\n\n✅ Thoroughly vetted agents\n✅ Proven strategies and guidance\n✅ Platform-specific expertise\n✅ Continuous quality monitoring\n✅ Personalized support throughout the process"
+      }
+    ]
+  },
+  {
+    category: "Trust & Security",
+    keywords: ["trust", "safe", "security", "scam", "fraud", "verify", "verified", "legitimate", "real", "authentic", "protect", "protection"],
+    faqs: [
+      {
+        question: "How do you verify agents?",
+        answer: "Our rigorous 4-step verification process includes:\n\n1️⃣ Identity Verification - Government-issued ID and proof of address\n2️⃣ Track Record Check - Review history of successful placements\n3️⃣ Background Screening - Comprehensive credibility checks\n4️⃣ Continuous Monitoring - Ongoing performance and feedback tracking\n\nOnly agents who pass all checks get the verified badge and can work with candidates!"
+      },
+      {
+        question: "How do I avoid scams?",
+        answer: "Watch out for these red flags:\n\n🚫 Large upfront payments without guarantees\n🚫 Unrealistic promises or guaranteed approval\n🚫 Requests to communicate off-platform\n🚫 Pressure tactics or false urgency\n🚫 Requests for login credentials\n🚫 Unverified agents (no verified badge)\n\nAlways:\n✅ Use our secure messaging system\n✅ Work only with verified agents\n✅ Report suspicious activity immediately\n✅ Read agent reviews and ratings\n\nYour safety is our priority!"
+      },
+      {
+        question: "What safety features do you have?",
+        answer: "We provide multiple layers of protection:\n\n🔔 Real-Time Alerts - Suspicious activity notifications\n✅ Verified Badges - Easy identification of trusted agents\n🔒 Encrypted Messages - End-to-end encryption\n📋 Transaction Records - Complete audit trail\n🛡️ Secure Payments - Industry-standard encryption\n👁️ 24/7 Monitoring - Continuous platform surveillance\n⚖️ Dispute Resolution - Fair mediation process\n\nVisit our Trust & Transparency page for more details!"
+      },
+      {
+        question: "Is my data protected?",
+        answer: "Absolutely! We take data protection seriously:\n\n🔐 End-to-end encryption for all sensitive data\n🏢 Secure, certified data centers with 24/7 monitoring\n🔑 Strict access controls - need-to-know basis only\n🔍 Regular security audits and penetration testing\n📊 GDPR compliant - full transparency on data use\n⏰ Clear data retention policies\n🚫 We NEVER sell your data to third parties\n\nContact our DPO at dpo@remote-works.io for data privacy questions!"
+      }
+    ]
+  },
+  {
+    category: "Platform Features & Statistics",
+    keywords: ["feature", "statistics", "stats", "how many", "users", "monthly income", "average", "earnings", "platforms", "support hours"],
+    faqs: [
+      {
+        question: "What are Remote-Works key features?",
+        answer: "Our platform offers:\n\n✅ Verified Agents - Thoroughly vetted professionals\n🔒 Secure Platform - Direct PayPal payments with flexible options\n💬 Direct Communication - Message agents directly\n📈 High Success Rate - 98% approval success rate\n⏱️ Fast Approval - Matched within 24 hours\n🎁 100% Free to Use - No subscription or hidden fees\n🌍 20+ Platforms - Wide range of opportunities\n💰 $3k+ Average Monthly Income\n🎯 24/7 Support - Always here to help\n\nStart your journey to remote work success today!"
+      },
+      {
+        question: "What are your platform statistics?",
+        answer: "Here are our impressive numbers:\n\n📊 98% Success Rate - Industry-leading approval rate\n🌐 20+ Platforms Supported - And growing!\n💰 $3k+ Average Monthly Income for candidates\n⏰ 24/7 Support - Round-the-clock assistance\n👥 5,000+ Active Users worldwide\n⚡ 24 Hours - Average agent matching time\n🌍 Global Reach - Serving clients worldwide\n✨ 100% Free - No subscription fees\n\nJoin thousands of successful remote workers!"
+      },
+      {
+        question: "What is the average monthly income?",
+        answer: "Our candidates earn an average of $3,000+ per month! This varies based on:\n\n• Platform(s) you work with\n• Hours committed per week\n• Skill level and experience\n• Project availability\n• Geographic location\n\nMany candidates work with multiple platforms simultaneously to maximize their earnings. Our verified agents help you get approved faster so you can start earning sooner!"
+      }
+    ]
+  },
+  {
+    category: "Core Values & Mission",
+    keywords: ["value", "mission", "stand for", "believe", "principle", "integrity", "community", "fair"],
+    faqs: [
+      {
+        question: "What does Remote-Works stand for?",
+        answer: "Our core values guide everything we do:\n\n❤️ Integrity First - Honesty and transparency in every interaction\n👥 Community Focus - Your success is our success\n⚖️ Fair & Equal - Equal opportunity for everyone\n💡 Innovation - Continuous improvement using latest technology\n\nWe're committed to building a safe, transparent, and trustworthy platform where candidates and agents can succeed together!"
+      },
+      {
+        question: "What is your promise to users?",
+        answer: "We promise:\n\n✅ 100% Verified Agents - Rigorous verification process\n🔒 Secure Payments - Encrypted, fraud-protected transactions\n👁️ Complete Transparency - No hidden fees or surprises\n📞 24/7 Support - Always available when you need us\n🛡️ Data Protection - Your information is safe with us\n⭐ Quality Assurance - High standards maintained through monitoring\n\nYour trust is earned through our actions, not just words!"
       }
     ]
   }
@@ -150,12 +244,17 @@ export default function ReworkAI() {
 
     // Check for greetings
     if (lowerQuery.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
-      return "Hello! 👋 I'm Rework AI, your 24/7 assistant for Remote-Works. I can help you with:\n\n• Understanding how our platform works\n• Answering questions about agents and candidates\n• Information about pricing and payments\n• Navigating the platform\n• Connecting you with human support\n\nHow can I assist you today?";
+      return "Hello! 👋 I'm Rework AI, your 24/7 intelligent assistant for Remote-Works.\n\nI have complete knowledge of our platform including:\n\n📍 Company Information (address, contact, location)\n📊 Platform Statistics (98% success rate, 20+ platforms)\n🌐 All Website Pages (Trust & Transparency, GDPR, etc.)\n💼 Platform Features & Services\n🔒 Security & Verification Process\n💰 Pricing & Payment Information\n🎯 Supported Platforms (Outlier, Scale AI, Google, etc.)\n\nAsk me anything about Remote-Works - I'm here to help!";
     }
 
     // Check for navigation requests
     if (lowerQuery.includes('navigate') || lowerQuery.includes('go to') || lowerQuery.includes('find page')) {
-      return "I can help you navigate to different pages:\n\n• Home page\n• Browse Agents\n• FAQ\n• About Us\n• Support\n• Sign Up/Login\n\nWhich page would you like to visit?";
+      return "I can help you navigate to different pages:\n\n🏠 Home - /\n👥 Browse Agents - /browse-agents\n❓ FAQ - /faq\n📖 About Us - /about\n🛡️ Trust & Transparency - /trust-transparency\n🇪🇺 GDPR Compliance - /gdpr-compliance\n📞 Support - /support\n📝 Sign Up - /register\n🔑 Login - /login\n📜 Terms of Service - /terms\n🔒 Privacy Policy - /privacy\n\nWhich page would you like to visit?";
+    }
+
+    // Check for social media requests
+    if (lowerQuery.includes('social') || lowerQuery.includes('twitter') || lowerQuery.includes('blog') || lowerQuery.includes('trustpilot') || lowerQuery.includes('follow')) {
+      return "Connect with us on social media:\n\n📝 Blog: https://ai.remote-works.io/\n🐦 Twitter/X: https://x.com/remote_worksio\n⭐ Trustpilot: https://ca.trustpilot.com/review/remote-works.io\n\nStay updated with the latest news, tips, and opportunities!"
     }
 
     // Search through FAQ data
@@ -346,7 +445,7 @@ export default function ReworkAI() {
     if (messages.length === 0) {
       setTimeout(() => {
         addMessage(
-          "Hi there! 👋 I'm Rework AI, your 24/7 virtual assistant.\n\nI can help you with questions about Remote-Works, guide you through our platform, and connect you with our support team.\n\nHow can I assist you today?",
+          "Hi there! 👋 I'm Rework AI, your 24/7 intelligent assistant.\n\nI have comprehensive knowledge of our entire platform:\n\n📍 Company info (address: 5 Buttermill Ave, L4K 0J5, CA)\n📊 All statistics (98% success rate, 20+ platforms, $3k+ avg income)\n🌐 Every page (Trust & Transparency, GDPR, etc.)\n🔒 Security & verification processes\n💼 All supported platforms (Outlier, Google, Scale AI, etc.)\n\nAsk me anything - from our location to GDPR policies!",
           true,
           []
         );
