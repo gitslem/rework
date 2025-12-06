@@ -1,6 +1,38 @@
+import { useEffect, useRef, useState } from 'react';
+
 export default function HeroVideoBackground() {
   // Set to true to use animated background, false to try loading video
   const useAnimatedBackground = false;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+
+      const handleLoadedData = () => {
+        console.log('Video loaded successfully');
+        setVideoLoaded(true);
+        video.play().catch(err => {
+          console.error('Video play failed:', err);
+        });
+      };
+
+      const handleError = (e: Event) => {
+        console.error('Video error:', e);
+        setVideoError(true);
+      };
+
+      video.addEventListener('loadeddata', handleLoadedData);
+      video.addEventListener('error', handleError);
+
+      return () => {
+        video.removeEventListener('loadeddata', handleLoadedData);
+        video.removeEventListener('error', handleError);
+      };
+    }
+  }, []);
 
   return (
     <div className="absolute inset-0 -z-10">
@@ -9,19 +41,21 @@ export default function HeroVideoBackground() {
         {/* Video option - uncomment and set useAnimatedBackground to false to use video */}
         {!useAnimatedBackground && (
           <video
+            ref={videoRef}
             autoPlay
             loop
             muted
             playsInline
             className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+            style={{ opacity: videoLoaded ? 1 : 0 }}
           >
             <source src="/videos/hero-background.mp4" type="video/mp4" />
             <source src="/videos/hero-background.webm" type="video/webm" />
           </video>
         )}
 
-        {/* Animated CSS Background */}
-        {useAnimatedBackground && (
+        {/* Animated CSS Background - Show if using animated mode OR if video fails */}
+        {(useAnimatedBackground || videoError) && (
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
             {/* Animated Workspace Illustration */}
             <svg
@@ -232,10 +266,10 @@ export default function HeroVideoBackground() {
         )}
 
         {/* Gradient Overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-white/60 to-white/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white/50 via-white/40 to-white/30"></div>
 
         {/* Additional subtle overlay with animated gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/20 via-transparent to-amber-50/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/10 via-transparent to-amber-50/10"></div>
       </div>
 
       {/* Animated Background Elements (enhancement) */}
