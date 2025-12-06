@@ -35,33 +35,42 @@ export default function HeroVideoBackground() {
   }, []);
 
   return (
-    <div className="absolute inset-0 -z-10">
+    <div className="absolute inset-0" style={{ zIndex: -10 }}>
       {/* Video Container */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden" style={{ zIndex: 0 }}>
-        {/* Video option - uncomment and set useAnimatedBackground to false to use video */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        {/* Video option */}
         {!useAnimatedBackground && (
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
-            style={{
-              opacity: videoLoaded ? 1 : 0,
-              zIndex: 1,
-              WebkitTransformStyle: 'preserve-3d',
-              WebkitTransform: 'translateZ(0)'
-            }}
-          >
-            <source src="/videos/hero-background.mp4" type="video/mp4" />
-            <source src="/videos/hero-background.webm" type="video/webm" />
-          </video>
+          <>
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute top-0 left-0 w-full h-full object-cover"
+              style={{
+                opacity: videoLoaded ? 1 : 0,
+                display: videoLoaded ? 'block' : 'none'
+              }}
+            >
+              <source src="/videos/hero-background.mp4" type="video/mp4" />
+              <source src="/videos/hero-background.webm" type="video/webm" />
+            </video>
+
+            {/* Very light overlay for text readability only */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.1))',
+                display: videoLoaded ? 'block' : 'none'
+              }}
+            ></div>
+          </>
         )}
 
         {/* Animated CSS Background - Show if using animated mode OR if video fails */}
         {(useAnimatedBackground || videoError) && (
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50" style={{ zIndex: 1 }}>
             {/* Animated Workspace Illustration */}
             <svg
               className="absolute inset-0 w-full h-full opacity-30"
@@ -269,12 +278,6 @@ export default function HeroVideoBackground() {
             <div className="absolute inset-0 bg-gradient-to-br from-purple-100/30 via-transparent to-amber-100/30 animate-gradient"></div>
           </div>
         )}
-
-        {/* Gradient Overlay for text readability - Much lighter for video visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/15 to-white/10" style={{ zIndex: 2 }}></div>
-
-        {/* Additional subtle overlay with animated gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/5 via-transparent to-amber-50/5" style={{ zIndex: 2 }}></div>
       </div>
 
       {/* Animated Background Elements (enhancement) */}
