@@ -785,7 +785,7 @@ export default function Home() {
               }
             }
             .animate-scroll {
-              animation: scroll 30s linear infinite;
+              animation: scroll 40s linear infinite;
             }
             .animate-scroll:hover {
               animation-play-state: paused;
@@ -795,136 +795,222 @@ export default function Home() {
           <div className="relative">
             <div className="flex animate-scroll">
               {/* First set of logos */}
-              <div className="flex items-center space-x-12 px-6">
+              <div className="flex items-center space-x-16 px-8">
                 {/* PayPal */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold" style={{ color: '#003087' }}>PayPal</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
+                    <text x="0" y="24" fontFamily="Verdana, sans-serif" fontSize="20" fontWeight="bold" fill="#003087">PayPal</text>
+                  </svg>
                 </div>
 
-                {/* Telus Digital */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#66CC00' }}>TELUS</div>
-                    <div className="text-xs font-semibold text-gray-600">Digital</div>
-                  </div>
+                {/* TELUS Digital */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="110" height="40" viewBox="0 0 110 40">
+                    <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#66CC00">TELUS</text>
+                    <text x="0" y="34" fontFamily="Arial, sans-serif" fontSize="10" fontWeight="600" fill="#4A5568">Digital</text>
+                  </svg>
                 </div>
 
                 {/* OneForma */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#FF6B35' }}>OneForma</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="120" height="32" viewBox="0 0 120 32">
+                    <text x="0" y="24" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#FF6B35">OneForma</text>
+                  </svg>
                 </div>
 
                 {/* Google */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">
-                      <span style={{ color: '#4285F4' }}>G</span>
-                      <span style={{ color: '#EA4335' }}>o</span>
-                      <span style={{ color: '#FBBC04' }}>o</span>
-                      <span style={{ color: '#4285F4' }}>g</span>
-                      <span style={{ color: '#34A853' }}>l</span>
-                      <span style={{ color: '#EA4335' }}>e</span>
-                    </div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <text x="0" y="24" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold">
+                      <tspan fill="#4285F4">G</tspan>
+                      <tspan fill="#EA4335">o</tspan>
+                      <tspan fill="#FBBC04">o</tspan>
+                      <tspan fill="#4285F4">g</tspan>
+                      <tspan fill="#34A853">l</tspan>
+                      <tspan fill="#EA4335">e</tspan>
+                    </text>
+                  </svg>
                 </div>
 
                 {/* Scale AI */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#00D4AA' }}>Scale AI</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <rect x="0" y="8" width="8" height="16" fill="#00D4AA" rx="2"/>
+                    <rect x="10" y="4" width="8" height="20" fill="#00D4AA" rx="2"/>
+                    <rect x="20" y="0" width="8" height="24" fill="#00D4AA" rx="2"/>
+                    <text x="32" y="20" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#00D4AA">Scale AI</text>
+                  </svg>
                 </div>
 
                 {/* Outlier */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#5B47FB' }}>Outlier</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <circle cx="12" cy="16" r="10" fill="none" stroke="#5B47FB" strokeWidth="2.5"/>
+                    <circle cx="12" cy="16" r="3" fill="#5B47FB"/>
+                    <text x="28" y="22" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#5B47FB">Outlier</text>
+                  </svg>
                 </div>
 
                 {/* Appen */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#00A3E0' }}>Appen</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="90" height="32" viewBox="0 0 90 32">
+                    <path d="M8 22 L12 10 L16 22" fill="none" stroke="#00A3E0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="22" y="22" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#00A3E0">ppen</text>
+                  </svg>
                 </div>
 
                 {/* Alignerr */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#8B5CF6' }}>Alignerr</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="110" height="32" viewBox="0 0 110 32">
+                    <path d="M4 16 L10 8 L16 16 L10 24 Z" fill="#8B5CF6"/>
+                    <text x="20" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#8B5CF6">Alignerr</text>
+                  </svg>
+                </div>
+
+                {/* Handshake AI */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="130" height="40" viewBox="0 0 130 40">
+                    <path d="M8 18 Q10 14 14 16 Q18 18 16 22" fill="none" stroke="#FF6B9D" strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M16 22 Q18 26 22 24 Q26 22 24 18" fill="none" stroke="#FF6B9D" strokeWidth="2.5" strokeLinecap="round"/>
+                    <text x="0" y="24" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="#FF6B9D">Handshake</text>
+                    <text x="75" y="24" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="#6B7280">AI</text>
+                  </svg>
+                </div>
+
+                {/* Mindrift */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="110" height="32" viewBox="0 0 110 32">
+                    <circle cx="10" cy="16" r="8" fill="#7C3AED" opacity="0.3"/>
+                    <circle cx="10" cy="16" r="4" fill="#7C3AED"/>
+                    <text x="24" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#7C3AED">Mindrift</text>
+                  </svg>
+                </div>
+
+                {/* Lionbridge */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="120" height="32" viewBox="0 0 120 32">
+                    <path d="M4 12 L12 4 L20 12 M12 4 L12 24" fill="none" stroke="#E97451" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="26" y="22" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#E97451">Lionbridge</text>
+                  </svg>
+                </div>
+
+                {/* Mercor */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <rect x="0" y="8" width="16" height="16" fill="none" stroke="#10B981" strokeWidth="2.5" rx="3"/>
+                    <path d="M4 16 L8 12 L12 16" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="20" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#10B981">Mercor</text>
+                  </svg>
                 </div>
               </div>
 
               {/* Duplicate set for seamless loop */}
-              <div className="flex items-center space-x-12 px-6">
+              <div className="flex items-center space-x-16 px-8">
                 {/* PayPal */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold" style={{ color: '#003087' }}>PayPal</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
+                    <text x="0" y="24" fontFamily="Verdana, sans-serif" fontSize="20" fontWeight="bold" fill="#003087">PayPal</text>
+                  </svg>
                 </div>
 
-                {/* Telus Digital */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#66CC00' }}>TELUS</div>
-                    <div className="text-xs font-semibold text-gray-600">Digital</div>
-                  </div>
+                {/* TELUS Digital */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="110" height="40" viewBox="0 0 110 40">
+                    <text x="0" y="20" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#66CC00">TELUS</text>
+                    <text x="0" y="34" fontFamily="Arial, sans-serif" fontSize="10" fontWeight="600" fill="#4A5568">Digital</text>
+                  </svg>
                 </div>
 
                 {/* OneForma */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#FF6B35' }}>OneForma</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="120" height="32" viewBox="0 0 120 32">
+                    <text x="0" y="24" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#FF6B35">OneForma</text>
+                  </svg>
                 </div>
 
                 {/* Google */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold">
-                      <span style={{ color: '#4285F4' }}>G</span>
-                      <span style={{ color: '#EA4335' }}>o</span>
-                      <span style={{ color: '#FBBC04' }}>o</span>
-                      <span style={{ color: '#4285F4' }}>g</span>
-                      <span style={{ color: '#34A853' }}>l</span>
-                      <span style={{ color: '#EA4335' }}>e</span>
-                    </div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <text x="0" y="24" fontFamily="Arial, sans-serif" fontSize="22" fontWeight="bold">
+                      <tspan fill="#4285F4">G</tspan>
+                      <tspan fill="#EA4335">o</tspan>
+                      <tspan fill="#FBBC04">o</tspan>
+                      <tspan fill="#4285F4">g</tspan>
+                      <tspan fill="#34A853">l</tspan>
+                      <tspan fill="#EA4335">e</tspan>
+                    </text>
+                  </svg>
                 </div>
 
                 {/* Scale AI */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#00D4AA' }}>Scale AI</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <rect x="0" y="8" width="8" height="16" fill="#00D4AA" rx="2"/>
+                    <rect x="10" y="4" width="8" height="20" fill="#00D4AA" rx="2"/>
+                    <rect x="20" y="0" width="8" height="24" fill="#00D4AA" rx="2"/>
+                    <text x="32" y="20" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#00D4AA">Scale AI</text>
+                  </svg>
                 </div>
 
                 {/* Outlier */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#5B47FB' }}>Outlier</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <circle cx="12" cy="16" r="10" fill="none" stroke="#5B47FB" strokeWidth="2.5"/>
+                    <circle cx="12" cy="16" r="3" fill="#5B47FB"/>
+                    <text x="28" y="22" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#5B47FB">Outlier</text>
+                  </svg>
                 </div>
 
                 {/* Appen */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#00A3E0' }}>Appen</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="90" height="32" viewBox="0 0 90 32">
+                    <path d="M8 22 L12 10 L16 22" fill="none" stroke="#00A3E0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="22" y="22" fontFamily="Arial, sans-serif" fontSize="18" fontWeight="bold" fill="#00A3E0">ppen</text>
+                  </svg>
                 </div>
 
                 {/* Alignerr */}
-                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold" style={{ color: '#8B5CF6' }}>Alignerr</div>
-                  </div>
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="110" height="32" viewBox="0 0 110 32">
+                    <path d="M4 16 L10 8 L16 16 L10 24 Z" fill="#8B5CF6"/>
+                    <text x="20" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#8B5CF6">Alignerr</text>
+                  </svg>
+                </div>
+
+                {/* Handshake AI */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="130" height="40" viewBox="0 0 130 40">
+                    <path d="M8 18 Q10 14 14 16 Q18 18 16 22" fill="none" stroke="#FF6B9D" strokeWidth="2.5" strokeLinecap="round"/>
+                    <path d="M16 22 Q18 26 22 24 Q26 22 24 18" fill="none" stroke="#FF6B9D" strokeWidth="2.5" strokeLinecap="round"/>
+                    <text x="0" y="24" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="#FF6B9D">Handshake</text>
+                    <text x="75" y="24" fontFamily="Arial, sans-serif" fontSize="14" fontWeight="bold" fill="#6B7280">AI</text>
+                  </svg>
+                </div>
+
+                {/* Mindrift */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="110" height="32" viewBox="0 0 110 32">
+                    <circle cx="10" cy="16" r="8" fill="#7C3AED" opacity="0.3"/>
+                    <circle cx="10" cy="16" r="4" fill="#7C3AED"/>
+                    <text x="24" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#7C3AED">Mindrift</text>
+                  </svg>
+                </div>
+
+                {/* Lionbridge */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="120" height="32" viewBox="0 0 120 32">
+                    <path d="M4 12 L12 4 L20 12 M12 4 L12 24" fill="none" stroke="#E97451" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="26" y="22" fontFamily="Arial, sans-serif" fontSize="16" fontWeight="bold" fill="#E97451">Lionbridge</text>
+                  </svg>
+                </div>
+
+                {/* Mercor */}
+                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <svg width="100" height="32" viewBox="0 0 100 32">
+                    <rect x="0" y="8" width="16" height="16" fill="none" stroke="#10B981" strokeWidth="2.5" rx="3"/>
+                    <path d="M4 16 L8 12 L12 16" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <text x="20" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#10B981">Mercor</text>
+                  </svg>
                 </div>
               </div>
             </div>
