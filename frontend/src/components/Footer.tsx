@@ -73,6 +73,14 @@ export default function Footer() {
                 </li>
                 <li>
                   <button
+                    onClick={() => router.push('/gdpr-compliance')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    GDPR Compliance
+                  </button>
+                </li>
+                <li>
+                  <button
                     onClick={() => router.push('/agent-signup?type=individual')}
                     className="hover:text-white transition-colors inline-block"
                   >
@@ -102,6 +110,14 @@ export default function Footer() {
                     className="hover:text-white transition-colors inline-block"
                   >
                     For Companies
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/trust-transparency')}
+                    className="hover:text-white transition-colors inline-block"
+                  >
+                    Trust & Transparency
                   </button>
                 </li>
                 <li>
