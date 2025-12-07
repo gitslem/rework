@@ -11,7 +11,6 @@ import {
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
-import HeroVideoBackground from '@/components/HeroVideoBackground';
 
 export default function Home() {
   const router = useRouter();
@@ -245,130 +244,129 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section - Premium Dark Tech Design */}
-        <section className="relative min-h-[90vh] flex items-center px-6 lg:px-8 overflow-hidden">
-          {/* Modern Background */}
-          <HeroVideoBackground />
+        {/* Hero Section - Clean White Design with Professional Animations */}
+        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+          {/* Subtle Background Decoration */}
+          <div className="absolute inset-0 overflow-hidden opacity-40">
+            {/* Animated gradient orbs */}
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+            <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}></div>
+            <div className="absolute -bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '10s' }}></div>
+          </div>
 
-          <div className="max-w-7xl mx-auto w-full py-20">
-            <div className="text-center space-y-12">
-              {/* Premium AI Badge */}
-              <div className={`inline-flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-white/20 shadow-2xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} hover:scale-105 hover:bg-white/15 transition-all duration-300`}>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                  <Bot className="w-5 h-5 text-cyan-400" />
-                  <span className="font-bold text-sm sm:text-base bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    AI-Powered Platform
-                  </span>
-                  <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center space-y-10">
+              {/* Enhanced Badge with Shimmer Effect */}
+              <div className={`inline-flex items-center space-x-3 bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-4 rounded-full shadow-2xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+                <div className="relative flex items-center space-x-3">
+                  <div className="relative">
+                    <Bot className="w-5 h-5 animate-pulse relative z-10" />
+                    <div className="absolute inset-0 bg-white rounded-full blur-sm opacity-50"></div>
+                  </div>
+                  <span className="font-bold text-sm sm:text-base tracking-wide">Personalized Support + AI Powered</span>
+                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
                 </div>
               </div>
 
-              {/* Stunning Main Headline */}
-              <div className="space-y-6">
-                <h1 className={`text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.95] tracking-tighter ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
-                  <span className="block text-white drop-shadow-2xl">Get Approved for</span>
-                  <span className="block mt-4 relative inline-block">
-                    <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-2xl animate-gradient">
-                      AI Training
-                    </span>
-                    <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400/20 via-blue-400/20 to-purple-400/20 blur-2xl -z-10"></div>
-                  </span>
-                  <span className="block mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent drop-shadow-2xl animate-gradient">
-                    Projects
+              {/* Enhanced Main Headline with Professional Animations */}
+              <div className="space-y-4">
+                <h1 className={`text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-black leading-[1.1] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
+                  <span className="block">Get Approved for</span>
+                  <span className="block mt-3 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent animate-gradient relative">
+                    AI Training Projects
+                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-600/10 via-amber-500/10 to-yellow-500/10 blur-2xl -z-10 animate-pulse"></div>
                   </span>
                 </h1>
-
-                {/* Tech Decorative Line */}
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-16 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent rounded-full"></div>
-                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/50"></div>
-                  <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-transparent rounded-full"></div>
-                </div>
               </div>
 
-              {/* Modern Glass Subheadline */}
-              <div className={`max-w-5xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
-                <div className="bg-white/5 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-white/10 shadow-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300">
-                  <p className="text-xl sm:text-2xl lg:text-3xl text-white/90 leading-relaxed font-semibold">
-                    Connect with verified{' '}
-                    <span className="relative inline-block group">
-                      <span className="font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        onboarding specialists
-                      </span>
-                      <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full shadow-lg"></span>
+              {/* Enhanced Subheadline with Clean Background */}
+              <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
+                  Connect with verified{' '}
+                  <span className="relative inline-block group">
+                    <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
+                      onboarding specialists
                     </span>
-                    {' '}who help you qualify for{' '}
-                    <span className="font-black text-white">top global AI training opportunities</span>
-                  </p>
-                </div>
+                    <svg className="absolute -bottom-1 left-0 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
+                      <path d="M0,3 Q50,6 100,3" stroke="url(#gradient-underline)" strokeWidth="3" fill="none" strokeLinecap="round"/>
+                      <defs>
+                        <linearGradient id="gradient-underline" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#9333ea" />
+                          <stop offset="100%" stopColor="#f59e0b" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </span>
+                  {' '}who help candidates qualify for{' '}
+                  <span className="font-bold text-black relative">
+                    top global AI training opportunities
+                  </span>
+                </p>
               </div>
 
-              {/* Premium Glass Trust Badges */}
+              {/* Enhanced Trust Badges with Professional Look */}
               <div className={`flex items-center justify-center flex-wrap gap-4 sm:gap-6 ${isVisible ? 'animate-fade-in-up stagger-3' : 'opacity-0'}`}>
-                <div className="group relative bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-xl px-5 py-3 rounded-2xl border-2 border-green-400/30 hover:border-green-400/60 transition-all duration-300 hover:shadow-2xl hover:shadow-green-400/20 hover:scale-105">
+                <div className="group relative bg-gradient-to-br from-green-50 to-emerald-50 px-5 py-3 rounded-2xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <CheckCircle className="w-6 h-6 text-green-400" />
+                      <CheckCircle className="w-6 h-6 text-green-600" />
                       <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-white font-bold text-sm sm:text-base">98% Success Rate</span>
+                    <span className="text-green-900 font-bold text-sm sm:text-base">98% Success Rate</span>
                   </div>
                 </div>
-                <div className="group relative bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-xl px-5 py-3 rounded-2xl border-2 border-blue-400/30 hover:border-blue-400/60 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-400/20 hover:scale-105">
+                <div className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 px-5 py-3 rounded-2xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <Shield className="w-6 h-6 text-blue-400" />
+                      <Shield className="w-6 h-6 text-blue-600" />
                       <div className="absolute inset-0 bg-blue-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-white font-bold text-sm sm:text-base">100% Free Platform</span>
+                    <span className="text-blue-900 font-bold text-sm sm:text-base">100% Free Platform</span>
                   </div>
                 </div>
-                <div className="group relative bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl px-5 py-3 rounded-2xl border-2 border-purple-400/30 hover:border-purple-400/60 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-400/20 hover:scale-105">
+                <div className="group relative bg-gradient-to-br from-purple-50 to-pink-50 px-5 py-3 rounded-2xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <Zap className="w-6 h-6 text-purple-400" />
+                      <Zap className="w-6 h-6 text-purple-600" />
                       <div className="absolute inset-0 bg-purple-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-white font-bold text-sm sm:text-base">24hr Response</span>
+                    <span className="text-purple-900 font-bold text-sm sm:text-base">24hr Response</span>
                   </div>
                 </div>
               </div>
 
-              {/* Ultra-Modern CTA Section */}
-              <div className={`pt-4 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
-                <div className="relative inline-block">
-                  {/* Enhanced Glow Effect */}
-                  <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity animate-pulse-slow"></div>
+              {/* Enhanced CTA Buttons with Professional Animations */}
+              <div className={`flex justify-center pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
+                <button
+                  onClick={() => router.push('/register?type=candidate')}
+                  className="group relative bg-gradient-to-r from-black via-gray-900 to-black text-white px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10 flex items-center justify-center space-x-3">
+                    <Rocket className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce-subtle" />
+                    <span>Find an Agent Now</span>
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform duration-300" />
+                  </span>
+                </button>
+              </div>
 
-                  <button
-                    onClick={() => router.push('/register?type=candidate')}
-                    className="relative group bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white px-12 sm:px-16 py-6 sm:py-7 rounded-full font-black text-lg sm:text-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-110 overflow-hidden border-2 border-white/20"
-                  >
-                    {/* Animated Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-
-                    <span className="relative z-10 flex items-center justify-center space-x-3">
-                      <Rocket className="w-6 h-6 sm:w-7 sm:h-7 animate-bounce-subtle" />
-                      <span className="tracking-wide">Find an Agent Now</span>
-                      <ArrowRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-2 transition-transform duration-300" />
-                    </span>
-                  </button>
-                </div>
-
-                {/* Premium Trust Indicators Below Button */}
-                <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-green-400/30 hover:bg-white/15 transition-all">
-                    <CheckCircle className="w-4 h-4 text-green-400" />
-                    <span className="text-sm font-semibold text-white/90">No credit card</span>
+              {/* Enhanced Trust Indicators */}
+              <div className={`pt-8 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
+                <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-600 font-medium">
+                  <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span>No credit card required</span>
                   </div>
-                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-blue-400/30 hover:bg-white/15 transition-all">
-                    <Clock className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm font-semibold text-white/90">2-min setup</span>
+                  <span className="text-gray-400">•</span>
+                  <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
+                    <Clock className="w-4 h-4 text-blue-600" />
+                    <span>Start in 2 minutes</span>
                   </div>
-                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-purple-400/30 hover:bg-white/15 transition-all">
-                    <Headphones className="w-4 h-4 text-purple-400" />
-                    <span className="text-sm font-semibold text-white/90">24/7 support</span>
+                  <span className="text-gray-400">•</span>
+                  <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
+                    <Headphones className="w-4 h-4 text-purple-600" />
+                    <span>24/7 support</span>
                   </div>
                 </div>
               </div>
@@ -377,18 +375,30 @@ export default function Home() {
         </section>
 
         {/* Platform Badges */}
-        <section id="platforms" className="py-16 px-6 lg:px-8 bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/40">
-          <div className="max-w-6xl mx-auto">
-            <p className="text-center text-xs font-bold text-gray-600 mb-8 tracking-widest uppercase animate-fade-in">
-              Trusted Platforms We Work With
-            </p>
+        <section id="platforms" className="py-20 px-6 lg:px-8 bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/40 relative overflow-hidden">
+          {/* Subtle background decoration */}
+          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-orange-200/30 rounded-full blur-3xl"></div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="text-center mb-12">
+              <p className="text-xs font-bold text-gray-500 mb-3 tracking-widest uppercase animate-fade-in">
+                Trusted Platforms We Work With
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 animate-fade-in-up">
+                Connect to <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Top AI Platforms</span>
+              </h2>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {platforms.map((platform, index) => (
                 <div
                   key={platform}
-                  className={`bg-white px-6 py-5 rounded-xl text-center font-bold text-gray-900 border-2 border-gray-200 hover:border-purple-500 hover-lift transition-smooth shadow-sm hover:shadow-xl animate-fade-in-scale stagger-${(index % 6) + 1}`}
+                  className={`group bg-white px-6 py-5 rounded-xl text-center font-bold text-gray-900 border-2 border-gray-200 hover:border-purple-500 hover-lift transition-all duration-300 shadow-sm hover:shadow-xl animate-fade-in-scale stagger-${(index % 6) + 1} cursor-pointer`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  {platform}
+                  <span className="group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+                    {platform}
+                  </span>
                 </div>
               ))}
             </div>
@@ -412,7 +422,7 @@ export default function Home() {
         {/* Stats Section with Animated Remote Work Icons */}
         <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
           {/* Animated Background - Remote Work Icons */}
-          <div className="absolute inset-0 overflow-hidden opacity-10">
+          <div className="absolute inset-0 overflow-hidden opacity-10" style={{ pointerEvents: 'none' }}>
             {/* Floating Icons Row 1 */}
             <div className="absolute top-10 left-10 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
               <Laptop className="w-16 h-16 text-white" />
@@ -491,32 +501,39 @@ export default function Home() {
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
               {stats.map((stat, index) => (
-                <div key={index} className={`text-center group animate-fade-in-up stagger-${index + 1}`}>
+                <div
+                  key={index}
+                  className={`text-center group animate-fade-in-up stagger-${index + 1} cursor-default`}
+                  style={{ animationDelay: `${index * 0.15}s` }}
+                >
                   {/* Icon Container with Glow Effect */}
                   <div className="relative inline-flex items-center justify-center mb-6">
                     {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500"></div>
 
                     {/* Icon */}
-                    <div className="relative w-20 h-20 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-2 border-white border-opacity-30 rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float transform group-hover:scale-110 transition-transform" style={{ animationDelay: `${index * 0.5}s` }}>
-                      <div className="text-white">
+                    <div
+                      className="relative w-20 h-20 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-2 border-white border-opacity-30 rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
+                      style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
+                    >
+                      <div className="text-white group-hover:scale-110 transition-transform duration-300">
                         {stat.icon}
                       </div>
                     </div>
                   </div>
 
                   {/* Number with Gradient */}
-                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent">
+                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                     {stat.number}
                   </div>
 
                   {/* Label */}
-                  <div className="text-sm md:text-base text-gray-300 font-semibold tracking-wide uppercase">
+                  <div className="text-sm md:text-base text-gray-300 font-semibold tracking-wide uppercase group-hover:text-white transition-colors duration-300">
                     {stat.label}
                   </div>
 
                   {/* Decorative Line */}
-                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100"></div>
                 </div>
               ))}
             </div>
@@ -530,9 +547,17 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-stone-100 via-amber-50/40 to-orange-50/30">
-          <div className="max-w-6xl mx-auto">
+        <section id="how-it-works" className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-stone-100 via-amber-50/40 to-orange-50/30 overflow-hidden">
+          {/* Subtle background decoration */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 mb-6 animate-fade-in">
+                <Target className="w-5 h-5 text-purple-600" />
+                <span className="text-sm font-semibold text-gray-700">Simple Process</span>
+              </div>
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
                 How It Works
               </h2>
@@ -545,20 +570,33 @@ export default function Home() {
               {howItWorks.map((item, index) => (
                 <div
                   key={index}
-                  className={`relative bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-smooth group hover-lift shadow-lg animate-fade-in-scale stagger-${index + 1}`}
+                  className={`relative bg-white rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all duration-500 group hover-lift shadow-lg animate-fade-in-scale stagger-${index + 1} hover:shadow-2xl`}
+                  style={{ animationDelay: `${index * 0.15}s` }}
                 >
-                  <div className="text-7xl font-extrabold bg-gradient-to-br from-purple-200 to-amber-200 bg-clip-text text-transparent mb-4 group-hover:scale-110 transition-transform">
+                  {/* Step Number */}
+                  <div className="text-7xl font-extrabold bg-gradient-to-br from-purple-200 to-amber-200 bg-clip-text text-transparent mb-4 group-hover:scale-125 transition-all duration-500 group-hover:bg-gradient-to-br group-hover:from-purple-600 group-hover:to-amber-500">
                     {item.step}
                   </div>
-                  <h3 className="text-xl font-bold text-black mb-3 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-black mb-3 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed text-sm">{item.description}</p>
+
+                  {/* Description */}
+                  <p className="text-gray-600 leading-relaxed text-sm group-hover:text-gray-700 transition-colors">
+                    {item.description}
+                  </p>
+
+                  {/* Arrow Connector */}
                   {index < howItWorks.length - 1 && (
-                    <div className="hidden lg:block absolute top-12 -right-3 w-6 h-6">
-                      <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-amber-500 transition-colors animate-bounce-subtle" />
+                    <div className="hidden lg:block absolute top-12 -right-3 w-6 h-6 z-10">
+                      <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-amber-500 transition-all duration-300 group-hover:translate-x-1" />
                     </div>
                   )}
+
+                  {/* Decorative corner accent */}
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-purple-500/0 to-amber-500/0 group-hover:from-purple-500/10 group-hover:to-amber-500/10 rounded-bl-full rounded-tr-2xl transition-all duration-500"></div>
                 </div>
               ))}
             </div>
@@ -566,9 +604,17 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/40 via-amber-50 to-yellow-50/50">
-          <div className="max-w-6xl mx-auto">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/40 via-amber-50 to-yellow-50/50 overflow-hidden">
+          {/* Subtle background decoration */}
+          <div className="absolute top-10 right-10 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-10 left-10 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 mb-6 animate-fade-in">
+                <Sparkles className="w-5 h-5 text-amber-600" />
+                <span className="text-sm font-semibold text-gray-700">Why Choose Us</span>
+              </div>
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
                 Why Choose
                 <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
@@ -584,15 +630,29 @@ export default function Home() {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`group bg-gray-50 p-8 rounded-2xl hover-lift transition-smooth border-2 border-transparent hover:border-purple-500 animate-fade-in-scale stagger-${(index % 6) + 1}`}
+                  className={`group bg-white/70 backdrop-blur-sm p-8 rounded-2xl hover-lift transition-all duration-500 border-2 border-gray-200 hover:border-purple-500 hover:bg-white animate-fade-in-scale stagger-${(index % 6) + 1} hover:shadow-xl`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-600 to-amber-500 text-white rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    {feature.icon}
+                  {/* Icon with animated background */}
+                  <div className="relative inline-flex items-center justify-center mb-6">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-30 transition-all duration-500"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-br from-purple-600 to-amber-500 text-white rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg">
+                      {feature.icon}
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-black mb-3 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-black mb-3 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+
+                  {/* Description */}
+                  <p className="text-gray-600 leading-relaxed group-hover:text-gray-700 transition-colors">
+                    {feature.description}
+                  </p>
+
+                  {/* Decorative bottom accent */}
+                  <div className="mt-6 w-0 h-1 bg-gradient-to-r from-purple-600 to-amber-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
                 </div>
               ))}
             </div>
@@ -600,13 +660,23 @@ export default function Home() {
         </section>
 
         {/* Testimonials Section - Slider */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 text-white">
-          <div className="max-w-6xl mx-auto">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 text-white overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden opacity-5" style={{ pointerEvents: 'none' }}>
+            <div className="absolute top-20 left-20 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-20 w-64 h-64 bg-blue-500 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-6 animate-fade-in">
+                <Star className="w-5 h-5 text-yellow-400" />
+                <span className="text-sm font-semibold text-white">Testimonials</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 animate-fade-in-up">
                 Success Stories
               </h2>
-              <p className="text-xl text-gray-400">
+              <p className="text-xl text-gray-400 animate-fade-in-up stagger-1">
                 Join thousands who found success with our AI-powered platform
               </p>
             </div>
@@ -615,17 +685,17 @@ export default function Home() {
             <div className="relative">
               {/* Testimonial Card */}
               <div className="max-w-4xl mx-auto">
-                <div className="bg-gray-900 rounded-2xl p-12 border border-gray-800 transition-all">
+                <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-12 border border-gray-800 transition-all duration-500 hover:border-gray-700 hover:shadow-2xl animate-fade-in-scale">
                   <div className="flex gap-1 mb-8 justify-center">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400 animate-pulse" style={{ animationDelay: `${i * 0.1}s` }} />
                     ))}
                   </div>
-                  <p className="text-white text-xl leading-relaxed mb-8 text-center">
+                  <p className="text-white text-xl leading-relaxed mb-8 text-center transition-all duration-500">
                     "{testimonials[currentTestimonial].quote}"
                   </p>
                   <div className="flex items-center justify-center">
-                    <div className="w-14 h-14 bg-gray-800 rounded-full flex items-center justify-center font-bold text-lg border-2 border-gray-700">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center font-bold text-lg border-2 border-white/20 shadow-lg transition-transform duration-300 hover:scale-110">
                       {testimonials[currentTestimonial].author[0]}
                     </div>
                     <div className="ml-4 text-left">
@@ -637,10 +707,10 @@ export default function Home() {
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex items-center justify-center gap-4 mt-8">
+              <div className="flex items-center justify-center gap-4 mt-8 animate-fade-in">
                 <button
                   onClick={() => setCurrentTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
-                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center"
+                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:scale-110 transition-all duration-300 flex items-center justify-center hover:shadow-xl"
                   aria-label="Previous testimonial"
                 >
                   <ChevronLeft className="w-6 h-6 text-white" />
@@ -652,8 +722,8 @@ export default function Home() {
                     <button
                       key={index}
                       onClick={() => setCurrentTestimonial(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        currentTestimonial === index ? 'bg-white w-8' : 'bg-gray-600'
+                      className={`h-2 rounded-full transition-all duration-500 hover:scale-125 ${
+                        currentTestimonial === index ? 'bg-white w-8' : 'bg-gray-600 w-2'
                       }`}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
@@ -662,7 +732,7 @@ export default function Home() {
 
                 <button
                   onClick={() => setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
-                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 transition-all flex items-center justify-center"
+                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:scale-110 transition-all duration-300 flex items-center justify-center hover:shadow-xl"
                   aria-label="Next testimonial"
                 >
                   <ChevronRight className="w-6 h-6 text-white" />
