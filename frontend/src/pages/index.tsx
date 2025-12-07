@@ -245,107 +245,108 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section - Redesigned */}
+        {/* Hero Section - Premium Dark Tech Design */}
         <section className="relative min-h-[90vh] flex items-center px-6 lg:px-8 overflow-hidden">
           {/* Modern Background */}
           <HeroVideoBackground />
 
           <div className="max-w-7xl mx-auto w-full py-20">
             <div className="text-center space-y-12">
-              {/* Modern Badge */}
-              <div className={`inline-flex items-center space-x-2 bg-white/80 backdrop-blur-md px-6 py-3 rounded-full border-2 border-purple-200 shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'} hover:scale-105 transition-transform duration-300`}>
+              {/* Premium AI Badge */}
+              <div className={`inline-flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-white/20 shadow-2xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} hover:scale-105 hover:bg-white/15 transition-all duration-300`}>
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <Bot className="w-5 h-5 text-purple-600" />
-                  <span className="font-bold text-sm sm:text-base bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+                  <Bot className="w-5 h-5 text-cyan-400" />
+                  <span className="font-bold text-sm sm:text-base bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                     AI-Powered Platform
                   </span>
-                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
                 </div>
               </div>
 
-              {/* Redesigned Main Headline */}
+              {/* Stunning Main Headline */}
               <div className="space-y-6">
                 <h1 className={`text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.95] tracking-tighter ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
-                  <span className="block text-gray-900">Get Approved for</span>
+                  <span className="block text-white drop-shadow-2xl">Get Approved for</span>
                   <span className="block mt-4 relative inline-block">
-                    <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent drop-shadow-2xl animate-gradient">
                       AI Training
                     </span>
+                    <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400/20 via-blue-400/20 to-purple-400/20 blur-2xl -z-10"></div>
                   </span>
-                  <span className="block mt-2 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+                  <span className="block mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400 bg-clip-text text-transparent drop-shadow-2xl animate-gradient">
                     Projects
                   </span>
                 </h1>
 
-                {/* Decorative Line */}
+                {/* Tech Decorative Line */}
                 <div className="flex items-center justify-center gap-4">
-                  <div className="w-16 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent rounded-full"></div>
-                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                  <div className="w-24 h-1 bg-gradient-to-r from-purple-500 via-amber-500 to-transparent rounded-full"></div>
+                  <div className="w-16 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent rounded-full"></div>
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse shadow-lg shadow-cyan-400/50"></div>
+                  <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-400 to-transparent rounded-full"></div>
                 </div>
               </div>
 
-              {/* Redesigned Subheadline */}
+              {/* Modern Glass Subheadline */}
               <div className={`max-w-5xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
-                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 sm:p-10 border-2 border-white shadow-xl">
-                  <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-semibold">
+                <div className="bg-white/5 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border-2 border-white/10 shadow-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                  <p className="text-xl sm:text-2xl lg:text-3xl text-white/90 leading-relaxed font-semibold">
                     Connect with verified{' '}
                     <span className="relative inline-block group">
-                      <span className="font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-600 bg-clip-text text-transparent">
+                      <span className="font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                         onboarding specialists
                       </span>
-                      <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 to-amber-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+                      <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-full shadow-lg"></span>
                     </span>
                     {' '}who help you qualify for{' '}
-                    <span className="font-black text-gray-900">top global AI training opportunities</span>
+                    <span className="font-black text-white">top global AI training opportunities</span>
                   </p>
                 </div>
               </div>
 
-              {/* Enhanced Trust Badges */}
+              {/* Premium Glass Trust Badges */}
               <div className={`flex items-center justify-center flex-wrap gap-4 sm:gap-6 ${isVisible ? 'animate-fade-in-up stagger-3' : 'opacity-0'}`}>
-                <div className="group relative bg-gradient-to-br from-green-50 to-emerald-50 px-5 py-3 rounded-2xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div className="group relative bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-xl px-5 py-3 rounded-2xl border-2 border-green-400/30 hover:border-green-400/60 transition-all duration-300 hover:shadow-2xl hover:shadow-green-400/20 hover:scale-105">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
+                      <CheckCircle className="w-6 h-6 text-green-400" />
                       <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-green-900 font-bold text-sm sm:text-base">98% Success Rate</span>
+                    <span className="text-white font-bold text-sm sm:text-base">98% Success Rate</span>
                   </div>
                 </div>
-                <div className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 px-5 py-3 rounded-2xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div className="group relative bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-xl px-5 py-3 rounded-2xl border-2 border-blue-400/30 hover:border-blue-400/60 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-400/20 hover:scale-105">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <Shield className="w-6 h-6 text-blue-600" />
+                      <Shield className="w-6 h-6 text-blue-400" />
                       <div className="absolute inset-0 bg-blue-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-blue-900 font-bold text-sm sm:text-base">100% Free Platform</span>
+                    <span className="text-white font-bold text-sm sm:text-base">100% Free Platform</span>
                   </div>
                 </div>
-                <div className="group relative bg-gradient-to-br from-purple-50 to-pink-50 px-5 py-3 rounded-2xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:scale-105">
+                <div className="group relative bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl px-5 py-3 rounded-2xl border-2 border-purple-400/30 hover:border-purple-400/60 transition-all duration-300 hover:shadow-2xl hover:shadow-purple-400/20 hover:scale-105">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <Zap className="w-6 h-6 text-purple-600" />
+                      <Zap className="w-6 h-6 text-purple-400" />
                       <div className="absolute inset-0 bg-purple-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-purple-900 font-bold text-sm sm:text-base">24hr Response</span>
+                    <span className="text-white font-bold text-sm sm:text-base">24hr Response</span>
                   </div>
                 </div>
               </div>
 
-              {/* Modern CTA Section */}
+              {/* Ultra-Modern CTA Section */}
               <div className={`pt-4 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
                 <div className="relative inline-block">
-                  {/* Glow Effect */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+                  {/* Enhanced Glow Effect */}
+                  <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity animate-pulse-slow"></div>
 
                   <button
                     onClick={() => router.push('/register?type=candidate')}
-                    className="relative group bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 text-white px-12 sm:px-16 py-6 sm:py-7 rounded-full font-black text-lg sm:text-xl transition-all duration-500 hover:shadow-2xl hover:scale-110 overflow-hidden"
+                    className="relative group bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white px-12 sm:px-16 py-6 sm:py-7 rounded-full font-black text-lg sm:text-xl transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/50 hover:scale-110 overflow-hidden border-2 border-white/20"
                   >
                     {/* Animated Shine Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
                     <span className="relative z-10 flex items-center justify-center space-x-3">
                       <Rocket className="w-6 h-6 sm:w-7 sm:h-7 animate-bounce-subtle" />
@@ -355,19 +356,19 @@ export default function Home() {
                   </button>
                 </div>
 
-                {/* Trust Indicators Below Button */}
+                {/* Premium Trust Indicators Below Button */}
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-                  <div className="flex items-center space-x-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-green-200">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-semibold text-gray-700">No credit card</span>
+                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-green-400/30 hover:bg-white/15 transition-all">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span className="text-sm font-semibold text-white/90">No credit card</span>
                   </div>
-                  <div className="flex items-center space-x-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-200">
-                    <Clock className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-semibold text-gray-700">2-min setup</span>
+                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-blue-400/30 hover:bg-white/15 transition-all">
+                    <Clock className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm font-semibold text-white/90">2-min setup</span>
                   </div>
-                  <div className="flex items-center space-x-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-200">
-                    <Headphones className="w-4 h-4 text-purple-600" />
-                    <span className="text-sm font-semibold text-gray-700">24/7 support</span>
+                  <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl px-4 py-2 rounded-full border border-purple-400/30 hover:bg-white/15 transition-all">
+                    <Headphones className="w-4 h-4 text-purple-400" />
+                    <span className="text-sm font-semibold text-white/90">24/7 support</span>
                   </div>
                 </div>
               </div>
