@@ -333,7 +333,7 @@ export default function Home() {
               </div>
 
               {/* Enhanced CTA Buttons */}
-              <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
+              <div className={`flex justify-center pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
                 <button
                   onClick={() => router.push('/register?type=candidate')}
                   className="group relative bg-gradient-to-r from-black via-gray-900 to-black text-white px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
@@ -343,16 +343,6 @@ export default function Home() {
                     <Rocket className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce-subtle" />
                     <span>Find an Agent Now</span>
                     <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform duration-300" />
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => router.push('/platforms')}
-                  className="group relative bg-white text-gray-900 px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg border-2 border-gray-300 hover:border-purple-500 transition-all duration-300 hover:shadow-xl hover:scale-105"
-                >
-                  <span className="flex items-center justify-center space-x-3">
-                    <Globe className="w-5 h-5 sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform duration-300" />
-                    <span>View Platforms</span>
                   </span>
                 </button>
               </div>
