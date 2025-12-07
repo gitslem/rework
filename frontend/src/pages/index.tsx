@@ -244,8 +244,8 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section - Clean White Design with Professional Animations */}
-        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+        {/* Hero Section - Clean Milkish Design with Professional Animations */}
+        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30">
           {/* Subtle Background Decoration */}
           <div className="absolute inset-0 overflow-hidden opacity-40">
             {/* Animated gradient orbs */}
@@ -256,16 +256,20 @@ export default function Home() {
 
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center space-y-10">
-              {/* Enhanced Badge with Shimmer Effect */}
-              <div className={`inline-flex items-center space-x-3 bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-4 rounded-full shadow-2xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
+              {/* Enhanced Badge with Typewriter Effect */}
+              <div className={`inline-flex items-center space-x-3 bg-white/90 backdrop-blur-lg px-8 py-4 rounded-full border-2 border-purple-200 shadow-xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group hover:border-purple-400 transition-all duration-500`}>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-amber-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="relative flex items-center space-x-3">
                   <div className="relative">
-                    <Bot className="w-5 h-5 animate-pulse relative z-10" />
-                    <div className="absolute inset-0 bg-white rounded-full blur-sm opacity-50"></div>
+                    <Bot className="w-5 h-5 text-purple-600 animate-pulse relative z-10" />
+                    <div className="absolute inset-0 bg-purple-400 rounded-full blur-md opacity-30"></div>
                   </div>
-                  <span className="font-bold text-sm sm:text-base tracking-wide">Personalized Support + AI Powered</span>
-                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <span className={`font-bold text-sm sm:text-base tracking-wide bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent ${isVisible ? 'animate-typewriter' : 'opacity-0'}`} style={{
+                    textShadow: '0 0 20px rgba(147, 51, 234, 0.3), 0 0 30px rgba(245, 158, 11, 0.2)',
+                    filter: 'drop-shadow(0 0 10px rgba(147, 51, 234, 0.4))'
+                  }}>
+                    Personalized Support + AI Powered
+                  </span>
                 </div>
               </div>
 
@@ -547,7 +551,7 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-stone-100 via-amber-50/40 to-orange-50/30 overflow-hidden">
+        <section id="how-it-works" className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
@@ -604,7 +608,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/40 via-amber-50 to-yellow-50/50 overflow-hidden">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute top-10 right-10 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-10 left-10 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
@@ -612,7 +616,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
               <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 mb-6 animate-fade-in">
-                <Sparkles className="w-5 h-5 text-amber-600" />
+                <Award className="w-5 h-5 text-amber-600" />
                 <span className="text-sm font-semibold text-gray-700">Why Choose Us</span>
               </div>
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
@@ -886,9 +890,9 @@ export default function Home() {
         </section>
 
         {/* Trust Badges Slider */}
-        <section className="py-12 bg-gradient-to-br from-stone-100 via-amber-50/50 to-orange-50/40 border-t border-amber-200/50 overflow-hidden">
+        <section className="py-12 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 border-t border-amber-200/30 overflow-hidden">
           <style jsx>{`
-            @keyframes scroll {
+            @keyframes logoScroll {
               0% {
                 transform: translateX(0);
               }
@@ -896,24 +900,25 @@ export default function Home() {
                 transform: translateX(-50%);
               }
             }
-            .animate-scroll {
-              animation: scroll 40s linear infinite;
+            .logo-scroll-animation {
+              animation: logoScroll 40s linear infinite;
+              will-change: transform;
             }
-            /* Much faster animation on mobile devices */
+            /* Faster animation on mobile devices */
             @media (max-width: 768px) {
-              .animate-scroll {
-                animation: scroll 15s linear infinite;
+              .logo-scroll-animation {
+                animation: logoScroll 20s linear infinite;
               }
             }
-            .animate-scroll:hover {
+            .logo-scroll-animation:hover {
               animation-play-state: paused;
             }
           `}</style>
 
           <div className="relative">
-            <div className="flex animate-scroll">
+            <div className="flex logo-scroll-animation">
               {/* First set of logos */}
-              <div className="flex items-center space-x-16 px-8">
+              <div className="flex items-center space-x-16 px-8 md:space-x-16 space-x-8">
                 {/* PayPal */}
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
@@ -1023,7 +1028,7 @@ export default function Home() {
               </div>
 
               {/* Duplicate set for seamless loop */}
-              <div className="flex items-center space-x-16 px-8">
+              <div className="flex items-center space-x-16 px-8 md:space-x-16 space-x-8">
                 {/* PayPal */}
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
