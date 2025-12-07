@@ -376,7 +376,7 @@ export default function Home() {
         </section>
 
         {/* Platform Badges */}
-        <section id="platforms" className="py-16 px-6 lg:px-8 bg-gradient-to-b from-gray-50/50 via-purple-50/30 to-white">
+        <section id="platforms" className="py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-100/60 via-blue-50/40 to-pink-50/40">
           <div className="max-w-6xl mx-auto">
             <p className="text-center text-xs font-bold text-gray-600 mb-8 tracking-widest uppercase animate-fade-in">
               Trusted Platforms We Work With
@@ -529,7 +529,7 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30">
+        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-blue-100/50 via-purple-50/40 to-pink-100/50">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
@@ -565,7 +565,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-50/40 via-white to-blue-50/40">
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-pink-100/50 via-purple-50/40 to-blue-100/50">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
@@ -815,7 +815,7 @@ export default function Home() {
         </section>
 
         {/* Trust Badges Slider */}
-        <section className="py-12 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 border-t border-purple-100/50 overflow-hidden">
+        <section className="py-12 bg-gradient-to-br from-blue-100/50 via-purple-50/40 to-pink-100/50 border-t border-purple-200/50 overflow-hidden">
           <style jsx>{`
             @keyframes scroll {
               0% {
@@ -828,10 +828,10 @@ export default function Home() {
             .animate-scroll {
               animation: scroll 40s linear infinite;
             }
-            /* Faster animation on mobile devices */
+            /* Much faster animation on mobile devices */
             @media (max-width: 768px) {
               .animate-scroll {
-                animation: scroll 20s linear infinite;
+                animation: scroll 15s linear infinite;
               }
             }
             .animate-scroll:hover {
