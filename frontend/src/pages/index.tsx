@@ -28,7 +28,7 @@ export default function Home() {
   // Auto-play testimonials slider
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+      setCurrentTestimonial((prev) => (prev === 3 ? 0 : prev + 1)); // 4 testimonials (0-3)
     }, 5000); // Change testimonial every 5 seconds
 
     return () => clearInterval(interval);
