@@ -245,60 +245,62 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden">
-          {/* Video Background */}
+        {/* Hero Section - Redesigned */}
+        <section className="relative min-h-[90vh] flex items-center px-6 lg:px-8 overflow-hidden">
+          {/* Modern Background */}
           <HeroVideoBackground />
 
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center space-y-10">
-              {/* Enhanced Badge with Shimmer Effect */}
-              <div className={`inline-flex items-center space-x-3 bg-gradient-to-r from-black via-gray-900 to-black text-white px-8 py-4 rounded-full shadow-2xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
-                <div className="relative flex items-center space-x-3">
-                  <div className="relative">
-                    <Bot className="w-5 h-5 animate-pulse-custom relative z-10" />
-                    <div className="absolute inset-0 bg-white rounded-full blur-sm opacity-50"></div>
-                  </div>
-                  <span className="font-bold text-sm sm:text-base tracking-wide">Personalized Support + AI Powered</span>
-                  <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+          <div className="max-w-7xl mx-auto w-full py-20">
+            <div className="text-center space-y-12">
+              {/* Modern Badge */}
+              <div className={`inline-flex items-center space-x-2 bg-white/80 backdrop-blur-md px-6 py-3 rounded-full border-2 border-purple-200 shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'} hover:scale-105 transition-transform duration-300`}>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <Bot className="w-5 h-5 text-purple-600" />
+                  <span className="font-bold text-sm sm:text-base bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+                    AI-Powered Platform
+                  </span>
+                  <Sparkles className="w-4 h-4 text-amber-500" />
                 </div>
               </div>
 
-              {/* Enhanced Main Headline */}
-              <div className="space-y-4">
-                <h1 className={`text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-black leading-[1.1] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
-                  <span className="block">Get Approved for</span>
-                  <span className="block mt-3 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent animate-gradient relative">
-                    AI Training Projects
-                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-600/10 via-amber-500/10 to-yellow-500/10 blur-2xl -z-10 animate-pulse-custom"></div>
+              {/* Redesigned Main Headline */}
+              <div className="space-y-6">
+                <h1 className={`text-6xl sm:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.95] tracking-tighter ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
+                  <span className="block text-gray-900">Get Approved for</span>
+                  <span className="block mt-4 relative inline-block">
+                    <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 bg-clip-text text-transparent">
+                      AI Training
+                    </span>
+                  </span>
+                  <span className="block mt-2 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent">
+                    Projects
                   </span>
                 </h1>
+
+                {/* Decorative Line */}
+                <div className="flex items-center justify-center gap-4">
+                  <div className="w-16 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent rounded-full"></div>
+                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                  <div className="w-24 h-1 bg-gradient-to-r from-purple-500 via-amber-500 to-transparent rounded-full"></div>
+                </div>
               </div>
 
-              {/* Enhanced Subheadline */}
-              <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
-                <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
-                  Connect with verified{' '}
-                  <span className="relative inline-block">
-                    <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
-                      onboarding specialists
+              {/* Redesigned Subheadline */}
+              <div className={`max-w-5xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-8 sm:p-10 border-2 border-white shadow-xl">
+                  <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-semibold">
+                    Connect with verified{' '}
+                    <span className="relative inline-block group">
+                      <span className="font-black bg-gradient-to-r from-purple-600 via-pink-500 to-amber-600 bg-clip-text text-transparent">
+                        onboarding specialists
+                      </span>
+                      <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 to-amber-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
                     </span>
-                    <svg className="absolute -bottom-1 left-0 w-full" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
-                      <path d="M0,3 Q50,6 100,3" stroke="url(#gradient-underline)" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                      <defs>
-                        <linearGradient id="gradient-underline" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#9333ea" />
-                          <stop offset="100%" stopColor="#f59e0b" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </span>
-                  {' '}who help candidates qualify for{' '}
-                  <span className="font-bold text-black relative">
-                    top global AI training opportunities
-                  </span>
-                </p>
+                    {' '}who help you qualify for{' '}
+                    <span className="font-black text-gray-900">top global AI training opportunities</span>
+                  </p>
+                </div>
               </div>
 
               {/* Enhanced Trust Badges */}
@@ -332,37 +334,40 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Enhanced CTA Buttons */}
-              <div className={`flex justify-center pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
-                <button
-                  onClick={() => router.push('/register?type=candidate')}
-                  className="group relative bg-gradient-to-r from-black via-gray-900 to-black text-white px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10 flex items-center justify-center space-x-3">
-                    <Rocket className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce-subtle" />
-                    <span>Find an Agent Now</span>
-                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform duration-300" />
-                  </span>
-                </button>
-              </div>
+              {/* Modern CTA Section */}
+              <div className={`pt-4 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
+                <div className="relative inline-block">
+                  {/* Glow Effect */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 rounded-full blur-2xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
 
-              {/* Enhanced Trust Indicators */}
-              <div className={`pt-8 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
-                <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-600 font-medium">
-                  <div className="flex items-center space-x-1.5">
+                  <button
+                    onClick={() => router.push('/register?type=candidate')}
+                    className="relative group bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 text-white px-12 sm:px-16 py-6 sm:py-7 rounded-full font-black text-lg sm:text-xl transition-all duration-500 hover:shadow-2xl hover:scale-110 overflow-hidden"
+                  >
+                    {/* Animated Shine Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+
+                    <span className="relative z-10 flex items-center justify-center space-x-3">
+                      <Rocket className="w-6 h-6 sm:w-7 sm:h-7 animate-bounce-subtle" />
+                      <span className="tracking-wide">Find an Agent Now</span>
+                      <ArrowRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-2 transition-transform duration-300" />
+                    </span>
+                  </button>
+                </div>
+
+                {/* Trust Indicators Below Button */}
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                  <div className="flex items-center space-x-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-green-200">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>No credit card required</span>
+                    <span className="text-sm font-semibold text-gray-700">No credit card</span>
                   </div>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex items-center space-x-1.5">
+                  <div className="flex items-center space-x-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-200">
                     <Clock className="w-4 h-4 text-blue-600" />
-                    <span>Start in 2 minutes</span>
+                    <span className="text-sm font-semibold text-gray-700">2-min setup</span>
                   </div>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex items-center space-x-1.5">
+                  <div className="flex items-center space-x-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-purple-200">
                     <Headphones className="w-4 h-4 text-purple-600" />
-                    <span>24/7 support</span>
+                    <span className="text-sm font-semibold text-gray-700">24/7 support</span>
                   </div>
                 </div>
               </div>
