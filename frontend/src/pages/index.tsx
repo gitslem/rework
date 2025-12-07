@@ -376,7 +376,7 @@ export default function Home() {
         </section>
 
         {/* Platform Badges */}
-        <section id="platforms" className="py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-100/60 via-blue-50/40 to-pink-50/40">
+        <section id="platforms" className="py-16 px-6 lg:px-8 bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/40">
           <div className="max-w-6xl mx-auto">
             <p className="text-center text-xs font-bold text-gray-600 mb-8 tracking-widest uppercase animate-fade-in">
               Trusted Platforms We Work With
@@ -529,7 +529,7 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-blue-100/50 via-purple-50/40 to-pink-100/50">
+        <section id="how-it-works" className="py-24 px-6 lg:px-8 bg-gradient-to-br from-stone-100 via-amber-50/40 to-orange-50/30">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
@@ -565,7 +565,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-pink-100/50 via-purple-50/40 to-blue-100/50">
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/40 via-amber-50 to-yellow-50/50">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
@@ -815,7 +815,7 @@ export default function Home() {
         </section>
 
         {/* Trust Badges Slider */}
-        <section className="py-12 bg-gradient-to-br from-blue-100/50 via-purple-50/40 to-pink-100/50 border-t border-purple-200/50 overflow-hidden">
+        <section className="py-12 bg-gradient-to-br from-stone-100 via-amber-50/50 to-orange-50/40 border-t border-amber-200/50 overflow-hidden">
           <style jsx>{`
             @keyframes scroll {
               0% {
