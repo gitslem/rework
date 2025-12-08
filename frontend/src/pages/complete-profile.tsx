@@ -161,9 +161,9 @@ export default function CompleteProfile() {
       const sanitizedLastName = sanitizeName(formData.lastName);
       const fileExtension = idCardFile.name.split('.').pop() || 'jpg';
 
-      // Use candidate name in file path: id-cards/firstName_lastName_uid.extension
+      // Use candidate name in file path: id-cards/{userId}/firstName_lastName_uid.extension
       const idCardFileName = `${sanitizedFirstName}_${sanitizedLastName}_${user.uid}.${fileExtension}`;
-      const idCardRef = ref(storage, `id-cards/${idCardFileName}`);
+      const idCardRef = ref(storage, `id-cards/${user.uid}/${idCardFileName}`);
       await uploadBytes(idCardRef, idCardFile);
       idCardUrl = await getDownloadURL(idCardRef);
       setUploadingIdCard(false);
