@@ -63,8 +63,9 @@ export default function CompleteProfile() {
               } else {
                 router.push('/candidate-dashboard');
               }
-              return;
             }
+            // Page will unmount during redirect, but set loading false anyway for consistency
+            return;
           }
         }
 

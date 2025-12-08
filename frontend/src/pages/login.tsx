@@ -36,6 +36,10 @@ export default function Login() {
             } else {
               router.push('/candidate-dashboard');
             }
+          } else {
+            // User exists but no user document - redirect to complete profile
+            console.warn('User authenticated but no user document found, redirecting to complete profile');
+            router.push('/complete-profile');
           }
         } catch (err) {
           console.error('Error checking user role:', err);
