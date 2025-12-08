@@ -112,6 +112,10 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Clear Next.js cache
+        working-directory: frontend
+        run: rm -rf .next
+
       - name: Build Next.js application
         working-directory: frontend
         env:
