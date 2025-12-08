@@ -179,6 +179,13 @@ export default function CompleteProfile() {
         bio: formData.bio || '',
         location: `${formData.city}, ${formData.country}`,
         avatarURL: user.photoURL || '',
+        phone: '', // Initialize empty, can be updated later in profile settings
+        socialLinks: {
+          linkedin: '',
+          twitter: '',
+          facebook: '',
+          instagram: ''
+        },
         // Contact method for verification (Telegram or WhatsApp)
         contactMethodType: formData.contactMethodType,
         contactMethodValue: formData.contactMethodValue,
