@@ -162,11 +162,13 @@ export default function CandidateDashboard() {
             setProjectNotificationCount(projectNotifs.length);
           });
 
-          setLoading(false);
-
           // Cleanup subscription on unmount
           return () => unsubscribe();
         }
+
+        // CRITICAL FIX: Always set loading to false, even for non-approved users
+        // Otherwise they get stuck on "Loading your dashboard..." forever
+        setLoading(false);
       });
     } catch (error) {
       console.error('Error loading profile:', error);
