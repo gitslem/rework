@@ -142,6 +142,10 @@ export default function CandidateDashboard() {
         setIsApproved(approved);
 
         // Load agents if approved - FIXED: Pass userId explicitly
+        // CRITICAL FIX: Set loading to false BEFORE any returns
+        // Must be done for both approved and non-approved users
+        setLoading(false);
+
         if (approved) {
           await loadAgents(db, firebaseUser.uid);
           await loadMessages(db, firebaseUser.uid);
@@ -165,10 +169,6 @@ export default function CandidateDashboard() {
           // Cleanup subscription on unmount
           return () => unsubscribe();
         }
-
-        // CRITICAL FIX: Always set loading to false, even for non-approved users
-        // Otherwise they get stuck on "Loading your dashboard..." forever
-        setLoading(false);
       });
     } catch (error) {
       console.error('Error loading profile:', error);
