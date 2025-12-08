@@ -459,9 +459,14 @@ export default function CandidateDashboard() {
   };
 
   const formatDate = (timestamp: any) => {
-    if (!timestamp) return 'Recently';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    try {
+      if (!timestamp) return 'Recently';
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Recently';
+    }
   };
 
   if (loading) {
@@ -540,14 +545,14 @@ export default function CandidateDashboard() {
                   <User className="w-5 h-5 text-gray-400 mt-1" />
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                    <p className="text-gray-900 font-semibold text-lg">{profile.firstName} {profile.lastName}</p>
+                    <p className="text-gray-900 font-semibold text-lg">{profile.firstName || ''} {profile.lastName || ''}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-gray-400 mt-1" />
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Email</p>
-                    <p className="text-gray-900 font-semibold text-lg">{profile.email}</p>
+                    <p className="text-gray-900 font-semibold text-lg">{profile.email || 'Not provided'}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -561,7 +566,7 @@ export default function CandidateDashboard() {
                   <MapPin className="w-5 h-5 text-gray-400 mt-1" />
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Location</p>
-                    <p className="text-gray-900 font-semibold text-lg">{profile.location}</p>
+                    <p className="text-gray-900 font-semibold text-lg">{profile.location || 'Not provided'}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -583,7 +588,7 @@ export default function CandidateDashboard() {
               {profile.bio && (
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Bio</h3>
-                  <p className="text-gray-700 leading-relaxed">{profile.bio}</p>
+                  <p className="text-gray-700 leading-relaxed">{profile.bio || ''}</p>
                 </div>
               )}
             </div>
@@ -726,11 +731,11 @@ export default function CandidateDashboard() {
 
                 <div className="hidden md:flex items-center gap-3 pl-3 border-l border-gray-200">
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-900">{profile.firstName} {profile.lastName}</p>
+                    <p className="text-sm font-semibold text-gray-900">{profile.firstName || ''} {profile.lastName || ''}</p>
                     <p className="text-xs text-gray-500">Candidate</p>
                   </div>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                    {profile.firstName[0]}{profile.lastName[0]}
+                    {(profile.firstName?.[0] || '?').toUpperCase()}{(profile.lastName?.[0] || '?').toUpperCase()}
                   </div>
                 </div>
               </div>
@@ -851,7 +856,7 @@ export default function CandidateDashboard() {
                 <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl p-6 md:p-8 text-white shadow-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {profile.firstName}! 👋</h1>
+                      <h1 className="text-3xl md:text-4xl font-bold mb-2">Welcome back, {profile.firstName || 'User'}! 👋</h1>
                       <p className="text-lg text-blue-100">Your account is active. Let's achieve your goals together!</p>
                     </div>
                     <div className="hidden lg:block">
@@ -941,7 +946,7 @@ export default function CandidateDashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                        <p className="text-gray-900 font-semibold">{profile.firstName} {profile.lastName}</p>
+                        <p className="text-gray-900 font-semibold">{profile.firstName || ''} {profile.lastName || ''}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
