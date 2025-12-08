@@ -11,7 +11,7 @@ import {
   Briefcase, Plus, Search, Filter, Grid3x3, LayoutList, Calendar,
   DollarSign, Clock, User, Users, TrendingUp, MoreVertical, Edit,
   Trash2, Eye, CheckCircle, Circle, AlertCircle, XCircle, ArrowLeft,
-  Tag, MessageSquare, Paperclip, BarChart3, FolderOpen, Star, Menu, X, Bell
+  Tag, MessageSquare, Paperclip, BarChart3, FolderOpen, Star, Menu, X, Bell, Loader2
 } from 'lucide-react';
 import { candidateProjectsAPI } from '../lib/api';
 import { subscribeToNotifications, markNotificationAsRead } from '../lib/firebase/firestore';
@@ -43,6 +43,7 @@ export default function CandidateProjectsNew() {
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any | null>(null);
   const [connectedCandidates, setConnectedCandidates] = useState<any[]>([]);
+  const [creatingProject, setCreatingProject] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Notification states
@@ -289,6 +290,7 @@ export default function CandidateProjectsNew() {
   const createProject = async (projectData: any) => {
     if (!user) return;
 
+    setCreatingProject(true);
     try {
       const projectRef = await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
@@ -312,6 +314,8 @@ export default function CandidateProjectsNew() {
     } catch (err: any) {
       console.error('Error creating project:', err);
       alert('Failed to create project: ' + err.message);
+    } finally {
+      setCreatingProject(false);
     }
   };
 
@@ -776,6 +780,7 @@ export default function CandidateProjectsNew() {
             onClose={() => setShowProjectModal(false)}
             onSubmit={createProject}
             connectedCandidates={connectedCandidates}
+            isLoading={creatingProject}
           />
         )}
       </div>
@@ -1014,7 +1019,7 @@ function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, 
 }
 
 // Create Project Modal
-function CreateProjectModal({ onClose, onSubmit, connectedCandidates }: any) {
+function CreateProjectModal({ onClose, onSubmit, connectedCandidates, isLoading }: any) {
   const [formData, setFormData] = useState({
     candidate_id: '',
     candidate_name: '',
@@ -1162,16 +1167,24 @@ function CreateProjectModal({ onClose, onSubmit, connectedCandidates }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+              disabled={isLoading}
+              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={!formData.candidate_id || !formData.title}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+              disabled={!formData.candidate_id || !formData.title || isLoading}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30 inline-flex items-center justify-center"
             >
-              Create Project
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Project'
+              )}
             </button>
           </div>
         </form>
