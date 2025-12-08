@@ -180,8 +180,14 @@ export default function AuthCallback() {
         avatarURL: firebaseUser.photoURL || '',
         location: '',
         phone: '',
-        website: '',
-        linkedin: '',
+        socialLinks: {
+          linkedin: '',
+          twitter: '',
+          facebook: '',
+          instagram: ''
+        },
+        verificationStatus: 'pending',
+        isVerified: false,
         totalEarnings: 0,
         completedProjects: 0,
         averageRating: 0,
