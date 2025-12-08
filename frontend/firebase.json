@@ -24,6 +24,9 @@
       }
     ]
   },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
   "storage": [
     {
       "bucket": "remote-works.appspot.com",
