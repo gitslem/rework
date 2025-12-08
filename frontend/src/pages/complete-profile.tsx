@@ -70,8 +70,12 @@ export default function CompleteProfile() {
 
         setLoading(false);
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking auth:', error);
+      const errorMessage = typeof error?.message === 'string'
+        ? error.message
+        : 'Failed to load profile. Please refresh the page.';
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -161,23 +165,29 @@ export default function CompleteProfile() {
       const sanitizedLastName = sanitizeName(formData.lastName);
       const fileExtension = idCardFile.name.split('.').pop() || 'jpg';
 
+      // Validate user.uid is a string
+      const userUid = String(user?.uid || '');
+      if (!userUid) {
+        throw new Error('User ID is missing. Please try logging in again.');
+      }
+
       // Use candidate name in file path: id-cards/{userId}/firstName_lastName_uid.extension
-      const idCardFileName = `${sanitizedFirstName}_${sanitizedLastName}_${user.uid}.${fileExtension}`;
-      const idCardRef = ref(storage, `id-cards/${user.uid}/${idCardFileName}`);
+      const idCardFileName = `${sanitizedFirstName}_${sanitizedLastName}_${userUid}.${fileExtension}`;
+      const idCardRef = ref(storage, `id-cards/${userUid}/${idCardFileName}`);
       await uploadBytes(idCardRef, idCardFile);
       idCardUrl = await getDownloadURL(idCardRef);
       setUploadingIdCard(false);
 
       // Create or update profile
-      await setDoc(doc(db, 'profiles', user.uid), {
-        uid: user.uid,
+      await setDoc(doc(db, 'profiles', userUid), {
+        uid: userUid,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        displayName: `${formData.firstName} ${formData.lastName}`, // Full name for easy admin identification
+        displayName: `${String(formData.firstName)} ${String(formData.lastName)}`, // Full name for easy admin identification
         country: formData.country,
         city: formData.city,
         bio: formData.bio || '',
-        location: `${formData.city}, ${formData.country}`,
+        location: `${String(formData.city)}, ${String(formData.country)}`,
         avatarURL: user.photoURL || '',
         phone: '', // Initialize empty, can be updated later in profile settings
         socialLinks: {
@@ -213,7 +223,7 @@ export default function CompleteProfile() {
       setShowSuccess(true);
 
       // Determine redirect based on user role
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      const userDoc = await getDoc(doc(db, 'users', userUid));
       const redirectPath = userDoc.exists() && userDoc.data().role === 'agent'
         ? '/agent-dashboard'
         : '/candidate-dashboard';
@@ -224,8 +234,31 @@ export default function CompleteProfile() {
       }, 2000);
     } catch (error: any) {
       console.error('Error creating profile:', error);
-      // Ensure error is always a string, never an object
-      const errorMessage = error?.message || error?.toString?.() || 'Failed to create profile. Please try again.';
+
+      // CRITICAL FIX: Ensure error is ALWAYS a string, never an object
+      let errorMessage = 'Failed to create profile. Please try again.';
+
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.message) {
+        // Check if message is a string, not an object
+        if (typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if (error.code && typeof error.code === 'string') {
+          // Firebase errors often have a code property
+          errorMessage = `Error: ${error.code}`;
+        }
+      } else if (error?.toString && typeof error.toString === 'function') {
+        try {
+          const stringified = error.toString();
+          if (stringified && stringified !== '[object Object]') {
+            errorMessage = stringified;
+          }
+        } catch (e) {
+          // Use default message
+        }
+      }
+
       setError(errorMessage);
       setSubmitting(false);
       setUploadingIdCard(false);
@@ -478,12 +511,12 @@ export default function CompleteProfile() {
                       {idCardPreview ? (
                         <div className="relative w-full">
                           <img src={idCardPreview} alt="ID Card Preview" className="max-h-48 mx-auto rounded" />
-                          <p className="text-sm text-gray-600 mt-2 text-center">{idCardFile?.name}</p>
+                          <p className="text-sm text-gray-600 mt-2 text-center">{String(idCardFile?.name || '')}</p>
                         </div>
                       ) : idCardFile ? (
                         <div className="text-center">
                           <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-600">{idCardFile.name}</p>
+                          <p className="text-sm text-gray-600">{String(idCardFile.name || '')}</p>
                         </div>
                       ) : (
                         <>
