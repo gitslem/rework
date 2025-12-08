@@ -27,8 +27,8 @@ firebase projects:list >/dev/null 2>&1 || {
 # Deploy Storage rules
 echo ""
 echo "Deploying Firebase Storage security rules..."
-cd frontend
-firebase deploy --only storage:rules --project remote-worksio
+cd frontend || exit 1
+firebase deploy --only storage --project remote-works
 
 if [ $? -eq 0 ]; then
     echo ""
