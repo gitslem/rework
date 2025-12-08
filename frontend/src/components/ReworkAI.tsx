@@ -225,6 +225,18 @@ export default function ReworkAI() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // CRITICAL FIX: All hooks MUST be called before any conditional returns
+  // This fixes React error #300 during page navigation
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen && !isMinimized && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen, isMinimized]);
+
   // Hide ReworkAI on profile/dashboard pages
   const hideOnPages = [
     '/candidate-dashboard',
@@ -245,16 +257,6 @@ export default function ReworkAI() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    if (isOpen && !isMinimized && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen, isMinimized]);
 
   const findBestAnswer = (query: string): string | null => {
     const lowerQuery = query.toLowerCase();
