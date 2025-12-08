@@ -224,7 +224,9 @@ export default function CompleteProfile() {
       }, 2000);
     } catch (error: any) {
       console.error('Error creating profile:', error);
-      setError(error.message || 'Failed to create profile. Please try again.');
+      // Ensure error is always a string, never an object
+      const errorMessage = error?.message || error?.toString?.() || 'Failed to create profile. Please try again.';
+      setError(errorMessage);
       setSubmitting(false);
       setUploadingIdCard(false);
     }
