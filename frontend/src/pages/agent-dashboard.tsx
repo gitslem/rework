@@ -439,7 +439,33 @@ export default function AgentDashboard() {
       const db = getFirebaseFirestore();
 
       // Get or create conversation ID
-      const conversationId = selectedMessage.conversationId || selectedMessage.id;
+      // Sort IDs to ensure same conversation ID regardless of who initiated
+      const ids = [user.uid, selectedMessage.senderId].sort();
+      const conversationId = selectedMessage.conversationId || `conv_${ids[0]}_${ids[1]}`;
+
+      // If this is a new conversation, update the connection with the conversationId
+      if (!selectedMessage.conversationId) {
+        try {
+          const existingConnectionQuery = query(
+            collection(db, 'connections'),
+            where('agentId', '==', user.uid),
+            where('candidateId', '==', selectedMessage.senderId)
+          );
+          const existingConnectionSnapshot = await getDocs(existingConnectionQuery);
+
+          if (!existingConnectionSnapshot.empty) {
+            const existingConnectionDoc = existingConnectionSnapshot.docs[0];
+            await updateDoc(doc(db, 'connections', existingConnectionDoc.id), {
+              conversationId: conversationId,
+              updatedAt: Timestamp.now()
+            });
+            console.log(`Connection updated with conversationId: ${conversationId}`);
+          }
+        } catch (queryError: any) {
+          console.error('Error updating connection with conversationId:', queryError);
+          // Don't fail the message send if connection update fails
+        }
+      }
 
       // Send reply - use original subject without adding "Re:"
       await addDoc(collection(db, 'messages'), {
@@ -457,7 +483,7 @@ export default function AgentDashboard() {
       });
 
       // Mark original as read if unread
-      if (selectedMessage.status === 'unread') {
+      if (selectedMessage.status === 'unread' && selectedMessage.id !== 'new') {
         await updateDoc(doc(db, 'messages', selectedMessage.id), {
           status: 'read',
           updatedAt: Timestamp.now()
