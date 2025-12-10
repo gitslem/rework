@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import {
   Users, DollarSign, Star, TrendingUp, Settings, MessageSquare, LogOut,
@@ -119,6 +119,9 @@ export default function AgentDashboard() {
   const [workingHoursEnd, setWorkingHoursEnd] = useState('17:00');
   const [workingDays, setWorkingDays] = useState<string[]>(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']);
 
+  // Ref to track if we've processed query params
+  const queryParamsProcessedRef = useRef(false);
+
   const availablePlatforms = [
     'Outlier AI',
     'Alignerr',
@@ -138,8 +141,11 @@ export default function AgentDashboard() {
 
   // Handle URL query parameters for navigation from connections page
   useEffect(() => {
-    if (router.isReady) {
+    if (router.isReady && !queryParamsProcessedRef.current) {
       const { tab, conversationId, newMessage, candidateId, candidateName } = router.query;
+
+      console.log('[Agent Dashboard] Query params:', { tab, conversationId, newMessage, candidateId, candidateName });
+      console.log('[Agent Dashboard] User loaded:', !!user, 'Profile loaded:', !!profile);
 
       // Switch to messages tab if specified
       if (tab === 'messages') {
@@ -147,8 +153,12 @@ export default function AgentDashboard() {
 
         // Handle new message composition when no conversation exists
         if (newMessage === 'true' && candidateId && typeof candidateId === 'string') {
+          console.log('[Agent Dashboard] New message requested for candidate:', candidateId);
+
           // Wait for user and profile to be loaded before creating new message
           if (user && profile) {
+            console.log('[Agent Dashboard] User and profile loaded, creating new message object');
+
             // Create a temporary message object for composing new message
             const candidateNameStr = (typeof candidateName === 'string' ? candidateName : '') || 'Candidate';
             const newMessageObj: Message = {
@@ -165,11 +175,16 @@ export default function AgentDashboard() {
               type: 'general',
               conversationId: undefined
             };
+
+            console.log('[Agent Dashboard] Setting selected message and showing modal');
             setSelectedMessage(newMessageObj);
             setShowMessageModal(true);
 
-            // Clear query parameters after successfully handling
+            // Mark as processed and clear query parameters
+            queryParamsProcessedRef.current = true;
             router.replace('/agent-dashboard', undefined, { shallow: true });
+          } else {
+            console.log('[Agent Dashboard] Waiting for user and profile to load...');
           }
         }
         // Open specific conversation if conversationId is provided
@@ -179,12 +194,14 @@ export default function AgentDashboard() {
             setSelectedMessage(message);
             setShowMessageModal(true);
 
-            // Clear query parameters after successfully handling
+            // Mark as processed and clear query parameters
+            queryParamsProcessedRef.current = true;
             router.replace('/agent-dashboard', undefined, { shallow: true });
           }
         }
         // If no new message or conversationId, just clear params
         else if (newMessage !== 'true' && !conversationId) {
+          queryParamsProcessedRef.current = true;
           router.replace('/agent-dashboard', undefined, { shallow: true });
         }
       }
@@ -1619,7 +1636,11 @@ export default function AgentDashboard() {
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-gray-900">Message from {selectedMessage.senderName}</h3>
+                <h3 className="text-2xl font-bold text-gray-900">
+                  {selectedMessage.id === 'new'
+                    ? `New Message to ${selectedMessage.recipientName}`
+                    : `Message from ${selectedMessage.senderName}`}
+                </h3>
                 {selectedMessage.saved && (
                   <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
                     <Bookmark className="w-3 h-3" />
@@ -1628,43 +1649,50 @@ export default function AgentDashboard() {
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleToggleSaveMessage(selectedMessage)}
-                  className={`p-2 rounded-lg transition-colors ${selectedMessage.saved ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                  title={selectedMessage.saved ? 'Unsave message' : 'Save message'}
-                >
-                  <Bookmark className={`w-5 h-5 ${selectedMessage.saved ? 'fill-current' : ''}`} />
-                </button>
+                {selectedMessage.id !== 'new' && (
+                  <button
+                    onClick={() => handleToggleSaveMessage(selectedMessage)}
+                    className={`p-2 rounded-lg transition-colors ${selectedMessage.saved ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                    title={selectedMessage.saved ? 'Unsave message' : 'Save message'}
+                  >
+                    <Bookmark className={`w-5 h-5 ${selectedMessage.saved ? 'fill-current' : ''}`} />
+                  </button>
+                )}
                 <button onClick={() => { setShowMessageModal(false); setSelectedMessage(null); setReplyText(''); }} className="text-gray-500 hover:text-gray-700">
                   <X className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <div className="flex justify-between items-start mb-3">
-                <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
-                <p className="text-sm text-gray-500">
-                  {selectedMessage.createdAt?.toDate?.()?.toLocaleString() || 'Recently'}
-                </p>
+            {/* Only show original message for replies, not for new messages */}
+            {selectedMessage.id !== 'new' && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <div className="flex justify-between items-start mb-3">
+                  <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
+                  <p className="text-sm text-gray-500">
+                    {selectedMessage.createdAt?.toDate?.()?.toLocaleString() || 'Recently'}
+                  </p>
+                </div>
+                <p className="font-medium text-gray-900 mb-2">{selectedMessage.subject}</p>
+                <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
               </div>
-              <p className="font-medium text-gray-900 mb-2">{selectedMessage.subject}</p>
-              <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
-            </div>
+            )}
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Your Reply</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {selectedMessage.id === 'new' ? 'Your Message' : 'Your Reply'}
+              </label>
               <textarea
                 value={replyText}
                 onChange={(e) => setReplyText(e.target.value)}
                 rows={5}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Type your reply here..."
+                placeholder={selectedMessage.id === 'new' ? 'Type your message here...' : 'Type your reply here...'}
               />
             </div>
 
             <div className="flex gap-3">
-              {selectedMessage.status === 'unread' && selectedMessage.type === 'service_request' && (
+              {selectedMessage.status === 'unread' && selectedMessage.type === 'service_request' && selectedMessage.id !== 'new' && (
                 <>
                   <button
                     onClick={() => handleAcceptRequest(selectedMessage)}
@@ -1695,7 +1723,7 @@ export default function AgentDashboard() {
                 ) : (
                   <>
                     <Send className="w-5 h-5" />
-                    Send Reply
+                    {selectedMessage.id === 'new' ? 'Send Message' : 'Send Reply'}
                   </>
                 )}
               </button>
