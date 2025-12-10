@@ -174,7 +174,8 @@ export default function AgentConnections() {
         query: {
           tab: 'messages',
           conversationId: connection.conversationId,
-          candidateId: connection.candidateId
+          candidateId: connection.candidateId,
+          candidateName: connection.candidateName
         }
       });
     } else {

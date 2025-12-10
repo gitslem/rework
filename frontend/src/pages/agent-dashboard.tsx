@@ -188,15 +188,54 @@ export default function AgentDashboard() {
           }
         }
         // Open specific conversation if conversationId is provided
-        else if (conversationId && typeof conversationId === 'string' && messages.length > 0) {
+        else if (conversationId && typeof conversationId === 'string') {
+          console.log('[Agent Dashboard] Conversation ID provided:', conversationId);
+
+          // Try to find an existing message in this conversation
           const message = messages.find(m => m.conversationId === conversationId || m.id === conversationId);
+
           if (message) {
+            console.log('[Agent Dashboard] Found existing message in conversation');
             setSelectedMessage(message);
             setShowMessageModal(true);
 
             // Mark as processed and clear query parameters
             queryParamsProcessedRef.current = true;
             router.replace('/agent-dashboard', undefined, { shallow: true });
+          } else {
+            // No messages found in this conversation (likely deleted)
+            // Create a new message if we have candidateId and user/profile are loaded
+            console.log('[Agent Dashboard] No messages found in conversation (may have been deleted)');
+
+            if (candidateId && typeof candidateId === 'string' && user && profile) {
+              console.log('[Agent Dashboard] Creating new message for existing conversation');
+
+              const candidateNameStr = (typeof candidateName === 'string' ? candidateName : '') || 'Candidate';
+              const newMessageObj: Message = {
+                id: 'new',
+                senderId: user.uid,
+                senderName: `${profile.firstName} ${profile.lastName}`,
+                senderEmail: user.email || '',
+                recipientId: candidateId,
+                recipientName: candidateNameStr,
+                message: '',
+                subject: `Message to ${candidateNameStr}`,
+                status: 'unread',
+                createdAt: new Date(),
+                type: 'general',
+                conversationId: conversationId // Use existing conversation ID
+              };
+
+              console.log('[Agent Dashboard] Opening new message modal for existing conversation');
+              setSelectedMessage(newMessageObj);
+              setShowMessageModal(true);
+
+              // Mark as processed and clear query parameters
+              queryParamsProcessedRef.current = true;
+              router.replace('/agent-dashboard', undefined, { shallow: true });
+            } else {
+              console.log('[Agent Dashboard] Waiting for candidateId, user, or profile...');
+            }
           }
         }
         // If no new message or conversationId, just clear params
