@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthStore } from '@/lib/authStore';
 import { getFirebaseFirestore } from '@/lib/firebase/config';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, doc, getDoc } from 'firebase/firestore';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   Users, Mail, MessageSquare, Calendar, Search, ArrowLeft, Home,
-  Settings, LogOut, User, UserCheck, Bell
+  Settings, LogOut, User, UserCheck, Bell, MapPin, FileText
 } from 'lucide-react';
 
 interface Connection {
@@ -22,6 +22,10 @@ interface Connection {
   status: string;
   createdAt: any;
   updatedAt?: any;
+  // Candidate profile data
+  candidateLocation?: string;
+  candidateBio?: string;
+  candidatePhone?: string;
 }
 
 export default function AgentConnections() {
@@ -122,12 +126,31 @@ export default function AgentConnections() {
       const connectionsSnapshot = await getDocs(connectionsQuery);
       const connectionsList: Connection[] = [];
 
-      connectionsSnapshot.forEach((doc) => {
-        connectionsList.push({
-          id: doc.id,
-          ...doc.data()
-        } as Connection);
-      });
+      // Fetch each connection with candidate profile data
+      for (const connectionDoc of connectionsSnapshot.docs) {
+        const connectionData = connectionDoc.data();
+        const connection: Connection = {
+          id: connectionDoc.id,
+          ...connectionData
+        } as Connection;
+
+        // Fetch candidate profile data
+        try {
+          const candidateProfileRef = doc(db, 'profiles', connectionData.candidateId);
+          const candidateProfileSnap = await getDoc(candidateProfileRef);
+
+          if (candidateProfileSnap.exists()) {
+            const profileData = candidateProfileSnap.data();
+            connection.candidateLocation = profileData.location || profileData.city || '';
+            connection.candidateBio = profileData.bio || '';
+            connection.candidatePhone = profileData.phone || '';
+          }
+        } catch (profileError) {
+          console.error('Error fetching candidate profile:', profileError);
+        }
+
+        connectionsList.push(connection);
+      }
 
       // Sort by most recent first
       connectionsList.sort((a, b) => {
@@ -144,8 +167,23 @@ export default function AgentConnections() {
   };
 
   const handleMessage = (connection: Connection) => {
-    // Navigate to agent dashboard messages tab
-    router.push('/agent-dashboard');
+    // Navigate to agent dashboard messages tab with conversation ID
+    if (connection.conversationId) {
+      router.push({
+        pathname: '/agent-dashboard',
+        query: {
+          tab: 'messages',
+          conversationId: connection.conversationId,
+          candidateId: connection.candidateId
+        }
+      });
+    } else {
+      // If no conversation ID exists yet, just go to messages tab
+      router.push({
+        pathname: '/agent-dashboard',
+        query: { tab: 'messages' }
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -304,12 +342,28 @@ export default function AgentConnections() {
                       <h3 className="text-lg font-bold text-gray-900 mb-1 truncate">
                         {connection.candidateName}
                       </h3>
-                      <p className="text-sm text-gray-600 truncate flex items-center gap-1">
+                      <p className="text-sm text-gray-600 truncate flex items-center gap-1 mb-1">
                         <Mail className="w-4 h-4 flex-shrink-0" />
                         {connection.candidateEmail}
                       </p>
+                      {connection.candidateLocation && (
+                        <p className="text-sm text-gray-600 flex items-center gap-1">
+                          <MapPin className="w-4 h-4 flex-shrink-0 text-amber-600" />
+                          {connection.candidateLocation}
+                        </p>
+                      )}
                     </div>
                   </div>
+
+                  {/* Bio */}
+                  {connection.candidateBio && (
+                    <div className="mb-4">
+                      <div className="flex items-start gap-2 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                        <FileText className="w-4 h-4 flex-shrink-0 text-amber-600 mt-0.5" />
+                        <p className="line-clamp-2">{connection.candidateBio}</p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Connection Info */}
                   <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
