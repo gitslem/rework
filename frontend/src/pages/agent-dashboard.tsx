@@ -854,6 +854,28 @@ export default function AgentDashboard() {
               <div className="flex justify-between items-center h-16 md:h-20">
                 <Logo showText={false} onClick={() => router.push('/')} />
                 <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => router.push('/candidate-projects')}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all relative"
+                    title="Projects"
+                  >
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden md:inline">Projects</span>
+                    {projectNotificationCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                        {projectNotificationCount}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => router.push('/agent-connections')}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                    title="Connected Candidates"
+                  >
+                    <Users className="w-5 h-5" />
+                    <span className="hidden md:inline">Candidates</span>
+                  </button>
+                  <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block"></div>
                   <div className="relative">
                     <button
                       onClick={() => setShowNotificationPanel(!showNotificationPanel)}
@@ -870,7 +892,7 @@ export default function AgentDashboard() {
 
                     {/* Notification Dropdown Panel */}
                     {showNotificationPanel && (
-                      <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                      <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
                         <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
                           <h3 className="font-semibold text-gray-900">Notifications</h3>
                           <button
@@ -956,29 +978,6 @@ export default function AgentDashboard() {
                       </div>
                     )}
                   </div>
-
-                  <button
-                    onClick={() => router.push('/candidate-projects')}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all relative"
-                    title="Projects"
-                  >
-                    <FileText className="w-5 h-5" />
-                    <span className="hidden md:inline">Projects</span>
-                    {projectNotificationCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                        {projectNotificationCount}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => router.push('/agent-connections')}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
-                    title="Connected Candidates"
-                  >
-                    <Users className="w-5 h-5" />
-                    <span className="hidden md:inline">Candidates</span>
-                  </button>
-                  <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block"></div>
                   <button
                     onClick={() => router.push('/profile-settings')}
                     className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
@@ -1083,6 +1082,49 @@ export default function AgentDashboard() {
             <div className="flex justify-between items-center h-16 md:h-20">
               <Logo showText={false} onClick={() => router.push('/')} size="sm" />
               <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  title="Profile"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="hidden md:inline">Profile</span>
+                </button>
+                <button
+                  onClick={() => router.push('/candidate-projects')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all relative"
+                  title="Projects"
+                >
+                  <FileText className="w-5 h-5" />
+                  <span className="hidden md:inline">Projects</span>
+                  {projectNotificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {projectNotificationCount}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={() => router.push('/agent-connections')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  title="Connected Candidates"
+                >
+                  <Users className="w-5 h-5" />
+                  <span className="hidden md:inline">Candidates</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('messages')}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
+                  title="Messages"
+                >
+                  <MessageSquare className="w-5 h-5" />
+                  <span className="hidden md:inline">Messages</span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+                <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block"></div>
                 <div className="relative">
                   <button
                     onClick={() => setShowNotificationPanel(!showNotificationPanel)}
@@ -1099,7 +1141,7 @@ export default function AgentDashboard() {
 
                   {/* Notification Dropdown Panel - Reusing same component */}
                   {showNotificationPanel && (
-                    <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                    <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
                       <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
                         <h3 className="font-semibold text-gray-900">Notifications</h3>
                         <button
@@ -1180,50 +1222,6 @@ export default function AgentDashboard() {
                     </div>
                   )}
                 </div>
-
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all ${activeTab === 'overview' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
-                  title="Profile"
-                >
-                  <User className="w-5 h-5" />
-                  <span className="hidden md:inline">Profile</span>
-                </button>
-                <button
-                  onClick={() => router.push('/candidate-projects')}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all relative"
-                  title="Projects"
-                >
-                  <FileText className="w-5 h-5" />
-                  <span className="hidden md:inline">Projects</span>
-                  {projectNotificationCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {projectNotificationCount}
-                    </span>
-                  )}
-                </button>
-                <button
-                  onClick={() => router.push('/agent-connections')}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
-                  title="Connected Candidates"
-                >
-                  <Users className="w-5 h-5" />
-                  <span className="hidden md:inline">Candidates</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('messages')}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${activeTab === 'messages' ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100'}`}
-                  title="Messages"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  <span className="hidden md:inline">Messages</span>
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-                <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block"></div>
                 <button
                   onClick={() => router.push('/profile-settings')}
                   className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"

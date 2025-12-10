@@ -629,109 +629,7 @@ export default function CandidateDashboard() {
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <button
-                    onClick={() => setShowNotificationPanel(!showNotificationPanel)}
-                    className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <Bell className="w-5 h-5 text-gray-600" />
-                    {notificationCount > 0 && (
-                      <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                        {notificationCount}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Notification Dropdown Panel */}
-                  {showNotificationPanel && (
-                    <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
-                      <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
-                        <h3 className="font-semibold text-gray-900">Notifications</h3>
-                        <button
-                          onClick={() => setShowNotificationPanel(false)}
-                          className="text-gray-400 hover:text-gray-600"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      <div className="overflow-y-auto flex-1">
-                        {notifications.length === 0 ? (
-                          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                            <Bell className="w-12 h-12 text-gray-300 mb-3" />
-                            <p className="text-gray-500 font-medium">No notifications</p>
-                            <p className="text-sm text-gray-400 mt-1">You're all caught up!</p>
-                          </div>
-                        ) : (
-                          <div className="divide-y divide-gray-100">
-                            {notifications.map((notification) => (
-                              <div
-                                key={notification.id}
-                                onClick={async () => {
-                                  // Mark as read
-                                  if (!notification.isRead) {
-                                    await markNotificationAsRead(notification.id);
-                                  }
-
-                                  // Navigate based on notification type
-                                  if (notification.projectId) {
-                                    router.push(`/candidate-projects?project=${notification.projectId}`);
-                                  } else if (notification.link) {
-                                    router.push(notification.link);
-                                  }
-
-                                  setShowNotificationPanel(false);
-                                }}
-                                className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                  !notification.isRead ? 'bg-blue-50/50' : ''
-                                }`}
-                              >
-                                <div className="flex gap-3">
-                                  <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
-                                    !notification.isRead ? 'bg-blue-500' : 'bg-gray-300'
-                                  }`}></div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-sm font-medium text-gray-900 ${
-                                      !notification.isRead ? 'font-semibold' : ''
-                                    }`}>
-                                      {notification.title}
-                                    </p>
-                                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                                      {notification.message}
-                                    </p>
-                                    <p className="text-xs text-gray-400 mt-1">
-                                      {notification.createdAt?.toDate?.() ?
-                                        new Date(notification.createdAt.toDate()).toLocaleString() :
-                                        'Just now'}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {notifications.length > 0 && (
-                        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-                          <button
-                            onClick={async () => {
-                              // Mark all as read
-                              for (const notif of notifications.filter(n => !n.isRead)) {
-                                await markNotificationAsRead(notif.id);
-                              }
-                            }}
-                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                          >
-                            Mark all as read
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="hidden md:flex items-center gap-3 pl-3 border-l border-gray-200">
+                <div className="hidden md:flex items-center gap-3">
                   <div className="text-right">
                     <p className="text-sm font-semibold text-gray-900">{profile.firstName || ''} {profile.lastName || ''}</p>
                     <p className="text-xs text-gray-500">Candidate</p>
@@ -824,6 +722,109 @@ export default function CandidateDashboard() {
                     </span>
                   )}
                 </button>
+
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNotificationPanel(!showNotificationPanel)}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all"
+                  >
+                    <Bell className="w-5 h-5" />
+                    <span className="font-medium">Notifications</span>
+                    {notificationCount > 0 && (
+                      <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white">
+                        {notificationCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notification Dropdown Panel */}
+                  {showNotificationPanel && (
+                    <div className="fixed left-64 top-auto bottom-auto w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                      <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
+                        <h3 className="font-semibold text-gray-900">Notifications</h3>
+                        <button
+                          onClick={() => setShowNotificationPanel(false)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      <div className="overflow-y-auto flex-1">
+                        {notifications.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                            <Bell className="w-12 h-12 text-gray-300 mb-3" />
+                            <p className="text-gray-500 font-medium">No notifications</p>
+                            <p className="text-sm text-gray-400 mt-1">You're all caught up!</p>
+                          </div>
+                        ) : (
+                          <div className="divide-y divide-gray-100">
+                            {notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                onClick={async () => {
+                                  // Mark as read
+                                  if (!notification.isRead) {
+                                    await markNotificationAsRead(notification.id);
+                                  }
+
+                                  // Navigate based on notification type
+                                  if (notification.projectId) {
+                                    router.push(`/candidate-projects?project=${notification.projectId}`);
+                                  } else if (notification.link) {
+                                    router.push(notification.link);
+                                  }
+
+                                  setShowNotificationPanel(false);
+                                }}
+                                className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                  !notification.isRead ? 'bg-blue-50/50' : ''
+                                }`}
+                              >
+                                <div className="flex gap-3">
+                                  <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                                    !notification.isRead ? 'bg-blue-500' : 'bg-gray-300'
+                                  }`}></div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className={`text-sm font-medium text-gray-900 ${
+                                      !notification.isRead ? 'font-semibold' : ''
+                                    }`}>
+                                      {notification.title}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                                      {notification.message}
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      {notification.createdAt?.toDate?.() ?
+                                        new Date(notification.createdAt.toDate()).toLocaleString() :
+                                        'Just now'}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {notifications.length > 0 && (
+                        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                          <button
+                            onClick={async () => {
+                              // Mark all as read
+                              for (const notif of notifications.filter(n => !n.isRead)) {
+                                await markNotificationAsRead(notif.id);
+                              }
+                            }}
+                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            Mark all as read
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <button
                   onClick={() => {
