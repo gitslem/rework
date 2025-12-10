@@ -136,6 +136,30 @@ export default function AgentDashboard() {
     checkAuthAndLoadProfile();
   }, []);
 
+  // Handle URL query parameters for navigation from connections page
+  useEffect(() => {
+    if (router.isReady && messages.length > 0) {
+      const { tab, conversationId } = router.query;
+
+      // Switch to messages tab if specified
+      if (tab === 'messages') {
+        setActiveTab('messages');
+
+        // Open specific conversation if conversationId is provided
+        if (conversationId && typeof conversationId === 'string') {
+          const message = messages.find(m => m.conversationId === conversationId || m.id === conversationId);
+          if (message) {
+            setSelectedMessage(message);
+            setShowMessageModal(true);
+          }
+        }
+
+        // Clear query parameters after handling
+        router.replace('/agent-dashboard', undefined, { shallow: true });
+      }
+    }
+  }, [router.isReady, router.query, messages]);
+
   const checkAuthAndLoadProfile = async () => {
     try {
       const auth = getFirebaseAuth();
