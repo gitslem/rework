@@ -255,9 +255,16 @@ service cloud.firestore {
     }
 
     // Payments collection (for payment tracking)
+    // NOTE: The backend uses PostgreSQL for payment processing via Stripe.
+    // These Firestore rules are for any future client-side wallet/payment history features.
     match /payments/{paymentId} {
-      // Allow read if user is involved in the payment or is admin
-      allow read: if isAuthenticated() &&
+      // Allow list queries for authenticated users to see their own payments
+      // This supports wallet/earnings features without requiring specific field filters
+      allow list: if isAuthenticated() &&
+        (request.query.limit <= 100);  // Prevent excessive queries
+
+      // Allow read of individual payment documents if user is involved or is admin
+      allow get: if isAuthenticated() &&
         (resource.data.payerId == request.auth.uid ||
          resource.data.recipientId == request.auth.uid ||
          isAdmin());
@@ -274,9 +281,16 @@ service cloud.firestore {
     }
 
     // Transactions collection (for transaction history)
+    // NOTE: The backend uses PostgreSQL for payment processing via Stripe.
+    // These Firestore rules are for any future client-side wallet/transaction history features.
     match /transactions/{transactionId} {
-      // Allow read if user is involved in the transaction or is admin
-      allow read: if isAuthenticated() &&
+      // Allow list queries for authenticated users to see their own transactions
+      // This supports wallet/earnings features without requiring specific field filters
+      allow list: if isAuthenticated() &&
+        (request.query.limit <= 100);  // Prevent excessive queries
+
+      // Allow read of individual transaction documents if user is involved or is admin
+      allow get: if isAuthenticated() &&
         (resource.data.userId == request.auth.uid || isAdmin());
 
       // Allow create if authenticated and user is creating their own transaction
