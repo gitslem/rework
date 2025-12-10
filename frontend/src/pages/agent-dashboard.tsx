@@ -820,6 +820,14 @@ export default function AgentDashboard() {
                       </span>
                     )}
                   </button>
+                  <button
+                    onClick={() => router.push('/agent-connections')}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                    title="Connected Candidates"
+                  >
+                    <Users className="w-5 h-5" />
+                    <span className="hidden md:inline">Candidates</span>
+                  </button>
                   <div className="h-8 w-px bg-gray-300 mx-2 hidden md:block"></div>
                   <button
                     onClick={() => router.push('/profile-settings')}
@@ -1043,6 +1051,14 @@ export default function AgentDashboard() {
                       {projectNotificationCount}
                     </span>
                   )}
+                </button>
+                <button
+                  onClick={() => router.push('/agent-connections')}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
+                  title="Connected Candidates"
+                >
+                  <Users className="w-5 h-5" />
+                  <span className="hidden md:inline">Candidates</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('messages')}
