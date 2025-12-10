@@ -147,24 +147,30 @@ export default function AgentDashboard() {
 
         // Handle new message composition when no conversation exists
         if (newMessage === 'true' && candidateId && typeof candidateId === 'string') {
-          // Create a temporary message object for composing new message
-          const candidateNameStr = (typeof candidateName === 'string' ? candidateName : '') || 'Candidate';
-          const newMessageObj: Message = {
-            id: 'new',
-            senderId: user?.uid || '',
-            senderName: profile ? `${profile.firstName} ${profile.lastName}` : '',
-            senderEmail: user?.email || '',
-            recipientId: candidateId,
-            recipientName: candidateNameStr,
-            message: '',
-            subject: `Message to ${candidateNameStr}`,
-            status: 'unread',
-            createdAt: new Date(),
-            type: 'general',
-            conversationId: undefined
-          };
-          setSelectedMessage(newMessageObj);
-          setShowMessageModal(true);
+          // Wait for user and profile to be loaded before creating new message
+          if (user && profile) {
+            // Create a temporary message object for composing new message
+            const candidateNameStr = (typeof candidateName === 'string' ? candidateName : '') || 'Candidate';
+            const newMessageObj: Message = {
+              id: 'new',
+              senderId: user.uid,
+              senderName: `${profile.firstName} ${profile.lastName}`,
+              senderEmail: user.email || '',
+              recipientId: candidateId,
+              recipientName: candidateNameStr,
+              message: '',
+              subject: `Message to ${candidateNameStr}`,
+              status: 'unread',
+              createdAt: new Date(),
+              type: 'general',
+              conversationId: undefined
+            };
+            setSelectedMessage(newMessageObj);
+            setShowMessageModal(true);
+
+            // Clear query parameters after successfully handling
+            router.replace('/agent-dashboard', undefined, { shallow: true });
+          }
         }
         // Open specific conversation if conversationId is provided
         else if (conversationId && typeof conversationId === 'string' && messages.length > 0) {
@@ -172,11 +178,15 @@ export default function AgentDashboard() {
           if (message) {
             setSelectedMessage(message);
             setShowMessageModal(true);
+
+            // Clear query parameters after successfully handling
+            router.replace('/agent-dashboard', undefined, { shallow: true });
           }
         }
-
-        // Clear query parameters after handling
-        router.replace('/agent-dashboard', undefined, { shallow: true });
+        // If no new message or conversationId, just clear params
+        else if (newMessage !== 'true' && !conversationId) {
+          router.replace('/agent-dashboard', undefined, { shallow: true });
+        }
       }
     }
   }, [router.isReady, router.query, messages, user, profile]);
