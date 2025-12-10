@@ -138,15 +138,35 @@ export default function AgentDashboard() {
 
   // Handle URL query parameters for navigation from connections page
   useEffect(() => {
-    if (router.isReady && messages.length > 0) {
-      const { tab, conversationId } = router.query;
+    if (router.isReady) {
+      const { tab, conversationId, newMessage, candidateId, candidateName } = router.query;
 
       // Switch to messages tab if specified
       if (tab === 'messages') {
         setActiveTab('messages');
 
+        // Handle new message composition when no conversation exists
+        if (newMessage === 'true' && candidateId && typeof candidateId === 'string') {
+          // Create a temporary message object for composing new message
+          const newMessageObj: Message = {
+            id: 'new',
+            senderId: user?.uid || '',
+            senderName: profile ? `${profile.firstName} ${profile.lastName}` : '',
+            senderEmail: user?.email || '',
+            recipientId: candidateId,
+            recipientName: (typeof candidateName === 'string' ? candidateName : '') || 'Candidate',
+            message: '',
+            subject: '',
+            status: 'unread',
+            createdAt: new Date(),
+            type: 'general',
+            conversationId: undefined
+          };
+          setSelectedMessage(newMessageObj);
+          setShowMessageModal(true);
+        }
         // Open specific conversation if conversationId is provided
-        if (conversationId && typeof conversationId === 'string') {
+        else if (conversationId && typeof conversationId === 'string' && messages.length > 0) {
           const message = messages.find(m => m.conversationId === conversationId || m.id === conversationId);
           if (message) {
             setSelectedMessage(message);
@@ -158,7 +178,7 @@ export default function AgentDashboard() {
         router.replace('/agent-dashboard', undefined, { shallow: true });
       }
     }
-  }, [router.isReady, router.query, messages]);
+  }, [router.isReady, router.query, messages, user, profile]);
 
   const checkAuthAndLoadProfile = async () => {
     try {

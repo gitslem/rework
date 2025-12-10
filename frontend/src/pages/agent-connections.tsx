@@ -6,7 +6,7 @@ import { collection, query, where, getDocs, orderBy, doc, getDoc } from 'firebas
 import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
-  Users, Mail, MessageSquare, Calendar, Search, ArrowLeft, Home,
+  Users, MessageSquare, Calendar, Search, ArrowLeft, Home,
   Settings, LogOut, User, UserCheck, Bell, MapPin, FileText
 } from 'lucide-react';
 
@@ -167,7 +167,7 @@ export default function AgentConnections() {
   };
 
   const handleMessage = (connection: Connection) => {
-    // Navigate to agent dashboard messages tab with conversation ID
+    // Navigate to agent dashboard messages tab with conversation or candidate info
     if (connection.conversationId) {
       router.push({
         pathname: '/agent-dashboard',
@@ -178,10 +178,15 @@ export default function AgentConnections() {
         }
       });
     } else {
-      // If no conversation ID exists yet, just go to messages tab
+      // If no conversation exists yet, pass candidate info to create new message
       router.push({
         pathname: '/agent-dashboard',
-        query: { tab: 'messages' }
+        query: {
+          tab: 'messages',
+          candidateId: connection.candidateId,
+          candidateName: connection.candidateName,
+          newMessage: 'true'
+        }
       });
     }
   };
@@ -342,10 +347,6 @@ export default function AgentConnections() {
                       <h3 className="text-lg font-bold text-gray-900 mb-1 truncate">
                         {connection.candidateName}
                       </h3>
-                      <p className="text-sm text-gray-600 truncate flex items-center gap-1 mb-1">
-                        <Mail className="w-4 h-4 flex-shrink-0" />
-                        {connection.candidateEmail}
-                      </p>
                       {connection.candidateLocation && (
                         <p className="text-sm text-gray-600 flex items-center gap-1">
                           <MapPin className="w-4 h-4 flex-shrink-0 text-amber-600" />
