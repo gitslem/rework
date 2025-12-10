@@ -52,7 +52,8 @@ export default function AgentConnections() {
 
   const checkAuthAndLoadConnections = async () => {
     try {
-      const auth = (await import('firebase/auth')).getAuth();
+      const { getFirebaseAuth } = await import('@/lib/firebase/config');
+      const auth = getFirebaseAuth();
       const { onAuthStateChanged } = await import('firebase/auth');
 
       onAuthStateChanged(auth, async (firebaseUser) => {
