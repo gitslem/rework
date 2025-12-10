@@ -23,19 +23,19 @@ export default function AgentInfo() {
       icon: <Target className="w-8 h-8" />,
       title: "Establish Your Brand",
       description: "Create a professional profile showcasing your success metrics and platform mastery",
-      color: "from-gray-800 to-black"
+      color: "from-orange-500 to-red-500"
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: "Control Your Revenue",
       description: "Set your rates and choose between upfront payments or recurring revenue share",
-      color: "from-amber-600 to-yellow-600"
+      color: "from-green-500 to-emerald-500"
     },
     {
       icon: <Briefcase className="w-8 h-8" />,
       title: "Scale Your Business",
       description: "Serve multiple clients across various platforms using efficient workflow tools",
-      color: "from-gray-700 to-gray-900"
+      color: "from-purple-500 to-pink-500"
     }
   ];
 
@@ -401,14 +401,14 @@ export default function AgentInfo() {
           {activeTab === 'tips' && (
             <div className="space-y-8">
               {/* Header */}
-              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
+              <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-amber-500 p-3 rounded-xl">
                     <Lightbulb className="w-8 h-8 text-white" />
                   </div>
-                  <h2 className="text-3xl font-bold text-black">7 Essential Strategies for Professional Success</h2>
+                  <h2 className="text-3xl font-bold text-gray-900">7 Essential Strategies for Professional Success</h2>
                 </div>
-                <p className="text-gray-800 text-lg">
+                <p className="text-gray-700 text-lg">
                   These proven methodologies will help you establish a thriving consulting practice, differentiate your services,
                   and build a sustainable business in the platform approval industry.
                 </p>
@@ -418,20 +418,20 @@ export default function AgentInfo() {
               {successTips.map((tip, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-amber-400 transition-all"
+                  className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:shadow-xl transition-all"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="bg-amber-100 rounded-full p-3 flex-shrink-0">
                       <Star className="w-6 h-6 text-amber-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-black mb-2">{tip.title}</h3>
-                      <p className="text-gray-700 text-lg leading-relaxed mb-4">{tip.description}</p>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{tip.title}</h3>
+                      <p className="text-gray-600 text-lg leading-relaxed mb-4">{tip.description}</p>
                       <div className="space-y-2">
                         {tip.tips.map((item, idx) => (
-                          <div key={idx} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                          <div key={idx} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg">
                             <ChevronRight className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                            <p className="text-gray-800">{item}</p>
+                            <p className="text-gray-700">{item}</p>
                           </div>
                         ))}
                       </div>
