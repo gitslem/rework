@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuthStore } from '@/lib/authStore';
+import { getFirebaseFirestore } from '@/lib/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 import Head from 'next/head';
 import {
   Globe2,
@@ -85,15 +87,31 @@ export default function ProjectDetail() {
   const [proofs, setProofs] = useState<Proof[]>([]);
   const [loadingProofs, setLoadingProofs] = useState(false);
   const [canViewProofs, setCanViewProofs] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       fetchProject();
       if (isAuthenticated) {
         checkApplication();
+        fetchUserRole();
       }
     }
   }, [id, isAuthenticated]);
+
+  const fetchUserRole = async () => {
+    if (!user?.uid) return;
+
+    try {
+      const db = getFirebaseFirestore();
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists()) {
+        setUserRole(userDoc.data().role || null);
+      }
+    } catch (error) {
+      console.error('Error fetching user role:', error);
+    }
+  };
 
   useEffect(() => {
     // Check if user is project owner
@@ -314,11 +332,24 @@ export default function ProjectDetail() {
               </div>
               <div className="flex items-center space-x-6">
                 <button
-                  onClick={() => router.push('/projects')}
+                  onClick={() => {
+                    // Navigate back to user's profile if authenticated, otherwise to projects
+                    if (isAuthenticated && userRole) {
+                      if (userRole === 'agent') {
+                        router.push('/agent-info');
+                      } else if (userRole === 'candidate') {
+                        router.push('/candidate-info');
+                      } else {
+                        router.push('/projects');
+                      }
+                    } else {
+                      router.push('/projects');
+                    }
+                  }}
                   className="text-accent-gray-600 hover:text-primary-500 transition font-medium flex items-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  All Projects
+                  {isAuthenticated && userRole ? 'Back to Profile' : 'All Projects'}
                 </button>
                 {isAuthenticated ? (
                   <button onClick={() => router.push('/dashboard')} className="btn-primary">

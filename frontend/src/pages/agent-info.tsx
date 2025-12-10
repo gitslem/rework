@@ -150,27 +150,27 @@ export default function AgentInfo() {
         </nav>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-16 border-b-4 border-amber-500">
+        <div className="bg-gradient-to-r from-amber-600 to-yellow-600 text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Professional Agent Resource Center
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-amber-100 max-w-3xl mx-auto">
               Master the business of platform approval consulting. Build your client base, scale your practice, and maximize your professional earnings.
             </p>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white border-b-2 border-gray-200">
+        <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex gap-8">
               <button
                 onClick={() => setActiveTab('learn')}
-                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-4 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors ${
                   activeTab === 'learn'
-                    ? 'border-amber-500 text-black'
-                    : 'border-transparent text-gray-600 hover:text-black'
+                    ? 'border-amber-600 text-amber-600'
+                    : 'border-transparent text-gray-600 hover:text-amber-600'
                 }`}
               >
                 <BookOpen className="w-5 h-5" />
@@ -178,10 +178,10 @@ export default function AgentInfo() {
               </button>
               <button
                 onClick={() => setActiveTab('tips')}
-                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-4 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-colors ${
                   activeTab === 'tips'
-                    ? 'border-amber-500 text-black'
-                    : 'border-transparent text-gray-600 hover:text-black'
+                    ? 'border-amber-600 text-amber-600'
+                    : 'border-transparent text-gray-600 hover:text-amber-600'
                 }`}
               >
                 <Lightbulb className="w-5 h-5" />
@@ -197,20 +197,20 @@ export default function AgentInfo() {
           {activeTab === 'learn' && (
             <div className="space-y-12">
               {/* What is Remote-Works for Agents */}
-              <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200">
-                <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
+              <section className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border border-amber-200 shadow-md">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                   <Globe className="w-8 h-8 text-amber-600" />
                   What is Remote-Works for Agents?
                 </h2>
                 <div className="prose prose-lg max-w-none">
-                  <p className="text-gray-800 leading-relaxed mb-4">
+                  <p className="text-gray-700 leading-relaxed mb-4">
                     Remote-Works is a <strong className="text-amber-600">professional marketplace</strong> designed specifically for
                     experienced agents who specialize in remote work platform approvals. As a verified agent, you'll leverage this
                     platform to monetize your expertise in navigating complex approval processes across 20+ platforms including
                     TELUS Digital, OneForma, Outlier AI, Appen, DataAnnotation, and many others.
                   </p>
-                  <p className="text-gray-800 leading-relaxed">
-                    This is your opportunity to build a <strong className="text-black">scalable consulting business</strong>. Connect
+                  <p className="text-gray-700 leading-relaxed">
+                    This is your opportunity to build a <strong className="text-amber-700">scalable consulting business</strong>. Connect
                     with candidates who need your specialized knowledge, set your own pricing structure, choose your service delivery
                     model, and grow a sustainable income stream by helping others succeed in the remote work economy.
                   </p>
@@ -219,28 +219,28 @@ export default function AgentInfo() {
 
               {/* Key Features Grid */}
               <section>
-                <h2 className="text-3xl font-bold text-black mb-8 text-center">
+                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
                   Why Be an Agent on Remote-Works?
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {features.map((feature, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border-2 border-gray-200 hover:border-amber-400 hover:scale-105 transform duration-300"
+                      className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all border border-gray-200 hover:scale-105 transform duration-300"
                     >
                       <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${feature.color} rounded-xl text-white mb-4`}>
                         {feature.icon}
                       </div>
-                      <h3 className="text-xl font-bold text-black mb-2">{feature.title}</h3>
-                      <p className="text-gray-700">{feature.description}</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
+                      <p className="text-gray-600">{feature.description}</p>
                     </div>
                   ))}
                 </div>
               </section>
 
               {/* How It Works for Agents */}
-              <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                <h2 className="text-3xl font-bold text-black mb-8 flex items-center gap-3">
+              <section className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+                <h2 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-3">
                   <Target className="w-8 h-8 text-amber-600" />
                   Your Path to Professional Success
                 </h2>
@@ -281,9 +281,9 @@ export default function AgentInfo() {
                       <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg">
                         <span className="text-xl font-bold text-white">{item.step}</span>
                       </div>
-                      <div className="flex-1 bg-gray-50 rounded-xl p-6 border-2 border-gray-200">
-                        <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
-                        <p className="text-gray-700 leading-relaxed">{item.description}</p>
+                      <div className="flex-1 bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+                        <p className="text-gray-600 leading-relaxed">{item.description}</p>
                       </div>
                     </div>
                   ))}
@@ -293,86 +293,86 @@ export default function AgentInfo() {
               {/* Pricing Models for Agents */}
               <section className="grid md:grid-cols-2 gap-8">
                 {/* One-Time Fee */}
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-300">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border-2 border-green-200 shadow-md">
                   <div className="flex items-center gap-3 mb-4">
                     <DollarSign className="w-8 h-8 text-green-600" />
-                    <h3 className="text-2xl font-bold text-black">Project-Based Fee Structure</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">Project-Based Fee Structure</h3>
                   </div>
-                  <p className="text-gray-800 mb-6">
+                  <p className="text-gray-700 mb-6">
                     Charge fixed consulting fees per platform approval. Ideal for transactional client relationships with clear deliverables.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Set competitive rates based on platform complexity ($100-$200 per approval)</p>
+                      <p className="text-gray-700">Set competitive rates based on platform complexity ($100-$200 per approval)</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Create premium packages for multi-platform approvals</p>
+                      <p className="text-gray-700">Create premium packages for multi-platform approvals</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Receive upfront payment ensuring immediate cash flow</p>
+                      <p className="text-gray-700">Receive upfront payment ensuring immediate cash flow</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Define clear project scope and success metrics</p>
+                      <p className="text-gray-700">Define clear project scope and success metrics</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Revenue Share */}
-                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-300">
+                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-8 border-2 border-amber-200 shadow-md">
                   <div className="flex items-center gap-3 mb-4">
                     <TrendingUp className="w-8 h-8 text-amber-600" />
-                    <h3 className="text-2xl font-bold text-black">Revenue Share Partnership</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">Revenue Share Partnership</h3>
                   </div>
-                  <p className="text-gray-800 mb-6">
+                  <p className="text-gray-700 mb-6">
                     Build long-term client partnerships with ongoing passive income streams. Perfect for scaling your consulting practice.
                   </p>
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">No upfront cost reduces client acquisition barriers</p>
+                      <p className="text-gray-700">No upfront cost reduces client acquisition barriers</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Negotiate 50/50 split or custom percentage based on involvement</p>
+                      <p className="text-gray-700">Negotiate 50/50 split or custom percentage based on involvement</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Option to manage client projects for complete service delivery</p>
+                      <p className="text-gray-700">Option to manage client projects for complete service delivery</p>
                     </div>
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
-                      <p className="text-gray-800">Generate recurring monthly income from active client portfolios</p>
+                      <p className="text-gray-700">Generate recurring monthly income from active client portfolios</p>
                     </div>
                   </div>
                 </div>
               </section>
 
               {/* Platform Expertise */}
-              <section className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                <h2 className="text-3xl font-bold text-black mb-6 flex items-center gap-3">
+              <section className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+                <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                   <Briefcase className="w-8 h-8 text-amber-600" />
                   Platform Specializations
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                   {workTypes.map((work, index) => (
-                    <div key={index} className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 text-center hover:shadow-md transition-all border-2 border-amber-200">
+                    <div key={index} className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-4 text-center hover:shadow-md transition-all border border-amber-200">
                       <div className="bg-white rounded-lg p-3 w-fit mx-auto mb-2">
                         <div className="text-amber-600">
                           {work.icon}
                         </div>
                       </div>
-                      <p className="font-semibold text-black text-sm">{work.name}</p>
+                      <p className="font-semibold text-gray-900 text-sm">{work.name}</p>
                     </div>
                   ))}
                 </div>
               </section>
 
               {/* Supported Platforms */}
-              <section className="bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 text-white border-2 border-amber-500">
+              <section className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-white shadow-lg">
                 <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                   <Shield className="w-8 h-8 text-amber-500" />
                   Monetize Your Platform Expertise
@@ -441,14 +441,14 @@ export default function AgentInfo() {
               ))}
 
               {/* Call to Action */}
-              <div className="bg-gradient-to-r from-gray-900 to-black rounded-2xl p-8 text-white text-center border-2 border-amber-500">
+              <div className="bg-gradient-to-r from-amber-600 to-yellow-600 rounded-2xl p-8 text-white text-center shadow-lg">
                 <h3 className="text-3xl font-bold mb-4">Ready to Launch Your Consulting Practice?</h3>
-                <p className="text-xl text-gray-300 mb-6">
+                <p className="text-xl text-amber-100 mb-6">
                   Join elite agents who have built profitable businesses helping clients succeed on remote work platforms
                 </p>
                 <button
                   onClick={() => router.push('/agent-dashboard')}
-                  className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-amber-600 hover:to-yellow-600 transition-all inline-flex items-center gap-2 shadow-lg"
+                  className="bg-white text-amber-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-100 transition-all inline-flex items-center gap-2"
                 >
                   Go to Dashboard
                   <ArrowRight className="w-5 h-5" />
