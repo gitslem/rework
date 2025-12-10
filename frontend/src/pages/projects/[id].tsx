@@ -104,7 +104,7 @@ export default function ProjectDetail() {
 
     try {
       const db = getFirebaseFirestore();
-      const userDoc = await getDoc(doc(db, 'users', user.id));
+      const userDoc = await getDoc(doc(db, 'users', String(user.id)));
       if (userDoc.exists()) {
         setUserRole(userDoc.data().role || null);
       }
