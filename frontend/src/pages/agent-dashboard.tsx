@@ -148,15 +148,16 @@ export default function AgentDashboard() {
         // Handle new message composition when no conversation exists
         if (newMessage === 'true' && candidateId && typeof candidateId === 'string') {
           // Create a temporary message object for composing new message
+          const candidateNameStr = (typeof candidateName === 'string' ? candidateName : '') || 'Candidate';
           const newMessageObj: Message = {
             id: 'new',
             senderId: user?.uid || '',
             senderName: profile ? `${profile.firstName} ${profile.lastName}` : '',
             senderEmail: user?.email || '',
             recipientId: candidateId,
-            recipientName: (typeof candidateName === 'string' ? candidateName : '') || 'Candidate',
+            recipientName: candidateNameStr,
             message: '',
-            subject: '',
+            subject: `Message to ${candidateNameStr}`,
             status: 'unread',
             createdAt: new Date(),
             type: 'general',
@@ -438,9 +439,17 @@ export default function AgentDashboard() {
       setSendingReply(true);
       const db = getFirebaseFirestore();
 
+      // Determine if this is a new message or a reply
+      const isNewMessage = selectedMessage.id === 'new';
+
+      // For new messages, recipient is in recipientId field
+      // For replies, recipient is the original sender
+      const recipientId = isNewMessage ? selectedMessage.recipientId : selectedMessage.senderId;
+      const recipientName = isNewMessage ? selectedMessage.recipientName : selectedMessage.senderName;
+
       // Get or create conversation ID
       // Sort IDs to ensure same conversation ID regardless of who initiated
-      const ids = [user.uid, selectedMessage.senderId].sort();
+      const ids = [user.uid, recipientId].sort();
       const conversationId = selectedMessage.conversationId || `conv_${ids[0]}_${ids[1]}`;
 
       // If this is a new conversation, update the connection with the conversationId
@@ -449,7 +458,7 @@ export default function AgentDashboard() {
           const existingConnectionQuery = query(
             collection(db, 'connections'),
             where('agentId', '==', user.uid),
-            where('candidateId', '==', selectedMessage.senderId)
+            where('candidateId', '==', recipientId)
           );
           const existingConnectionSnapshot = await getDocs(existingConnectionQuery);
 
@@ -467,19 +476,24 @@ export default function AgentDashboard() {
         }
       }
 
-      // Send reply - use original subject without adding "Re:"
+      // Determine subject - for new messages use a default, for replies use original
+      const subject = isNewMessage
+        ? (selectedMessage.subject || 'New Message')
+        : selectedMessage.subject.replace(/^(Re:\s*)+/g, '');
+
+      // Send message
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
         senderName: `${profile?.firstName} ${profile?.lastName}`,
-        recipientId: selectedMessage.senderId,
-        recipientName: selectedMessage.senderName,
+        recipientId: recipientId,
+        recipientName: recipientName,
         message: replyText,
-        subject: selectedMessage.subject.replace(/^(Re:\s*)+/g, ''), // Remove any existing "Re:" prefixes
+        subject: subject,
         status: 'unread',
         createdAt: Timestamp.now(),
         type: 'general',
         conversationId: conversationId,
-        isReply: true
+        isReply: !isNewMessage
       });
 
       // Mark original as read if unread
@@ -490,7 +504,7 @@ export default function AgentDashboard() {
         });
       }
 
-      alert('Reply sent successfully!');
+      alert(isNewMessage ? 'Message sent successfully!' : 'Reply sent successfully!');
       setReplyText('');
       setShowMessageModal(false);
       setSelectedMessage(null);
@@ -498,8 +512,8 @@ export default function AgentDashboard() {
       // Refresh messages
       await loadMessages(db, user.uid);
     } catch (error: any) {
-      console.error('Error sending reply:', error);
-      alert('Failed to send reply: ' + error.message);
+      console.error('Error sending message:', error);
+      alert('Failed to send message: ' + error.message);
     } finally {
       setSendingReply(false);
     }
