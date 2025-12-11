@@ -1,7 +1,7 @@
 /**
- * Cleanup Page: Delete all old notifications
+ * Cleanup Page: Delete all old notifications and projects
  *
- * This page allows admin users to delete all notifications created before today.
+ * This page allows admin users to delete all notifications and projects created before today.
  * Navigate to /cleanup-notifications to use this tool.
  */
 
@@ -10,12 +10,20 @@ import { collection, query, where, getDocs, writeBatch, Timestamp } from 'fireba
 import { getDb } from '@/lib/firebase/config';
 import { Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 
+interface Stats {
+  notifications: { found: number; deleted: number };
+  projects: { found: number; deleted: number };
+}
+
 export default function CleanupNotifications() {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [stats, setStats] = useState<{ found: number; deleted: number }>({ found: 0, deleted: 0 });
+  const [stats, setStats] = useState<Stats>({
+    notifications: { found: 0, deleted: 0 },
+    projects: { found: 0, deleted: 0 }
+  });
 
   const deleteOldNotifications = async () => {
     try {
@@ -23,61 +31,141 @@ export default function CleanupNotifications() {
       setStatus('Starting cleanup...');
       setError('');
       setSuccess('');
-      setStats({ found: 0, deleted: 0 });
+      setStats({
+        notifications: { found: 0, deleted: 0 },
+        projects: { found: 0, deleted: 0 }
+      });
 
       const db = getDb();
 
       // Get start of today (2025-12-11)
       const todayStart = new Date('2025-12-11T00:00:00Z');
+      const todayTimestamp = Timestamp.fromDate(todayStart);
+
+      // ============ DELETE OLD NOTIFICATIONS ============
       setStatus(`Querying notifications before ${todayStart.toISOString()}...`);
 
-      // Query all notifications created before today
       const notificationsRef = collection(db, 'notifications');
       const oldNotificationsQuery = query(
         notificationsRef,
-        where('createdAt', '<', Timestamp.fromDate(todayStart))
+        where('createdAt', '<', todayTimestamp)
       );
 
-      const snapshot = await getDocs(oldNotificationsQuery);
+      const notifSnapshot = await getDocs(oldNotificationsQuery);
 
-      if (snapshot.empty) {
-        setSuccess('No old notifications found. Database is already clean!');
-        setIsLoading(false);
-        return;
-      }
+      let notifStats = { found: notifSnapshot.size, deleted: 0 };
+      setStats({ notifications: notifStats, projects: { found: 0, deleted: 0 } });
 
-      setStats({ found: snapshot.size, deleted: 0 });
-      setStatus(`Found ${snapshot.size} old notifications. Deleting...`);
+      if (!notifSnapshot.empty) {
+        setStatus(`Found ${notifSnapshot.size} old notifications. Deleting...`);
 
-      // Delete in batches of 500 (Firestore limit)
-      const batchSize = 500;
-      let deletedCount = 0;
-      let batch = writeBatch(db);
-      let batchCount = 0;
+        // Delete in batches of 500 (Firestore limit)
+        const batchSize = 500;
+        let batch = writeBatch(db);
+        let batchCount = 0;
 
-      for (const doc of snapshot.docs) {
-        batch.delete(doc.ref);
-        batchCount++;
+        for (const doc of notifSnapshot.docs) {
+          batch.delete(doc.ref);
+          batchCount++;
 
-        // Commit batch when it reaches 500 operations
-        if (batchCount === batchSize) {
-          await batch.commit();
-          deletedCount += batchCount;
-          setStats({ found: snapshot.size, deleted: deletedCount });
-          setStatus(`Deleted ${deletedCount} / ${snapshot.size} notifications...`);
-          batch = writeBatch(db);
-          batchCount = 0;
+          if (batchCount === batchSize) {
+            await batch.commit();
+            notifStats.deleted += batchCount;
+            setStats({ notifications: notifStats, projects: { found: 0, deleted: 0 } });
+            setStatus(`Deleted ${notifStats.deleted} / ${notifSnapshot.size} notifications...`);
+            batch = writeBatch(db);
+            batchCount = 0;
+          }
         }
+
+        if (batchCount > 0) {
+          await batch.commit();
+          notifStats.deleted += batchCount;
+          setStats({ notifications: notifStats, projects: { found: 0, deleted: 0 } });
+        }
+
+        setStatus(`✓ Deleted ${notifStats.deleted} notifications`);
       }
 
-      // Commit remaining items in the batch
-      if (batchCount > 0) {
-        await batch.commit();
-        deletedCount += batchCount;
+      // ============ DELETE OLD PROJECTS ============
+      setStatus('Querying old projects...');
+
+      const projectsRef = collection(db, 'candidate_projects');
+      const oldProjectsQuery = query(
+        projectsRef,
+        where('created_at', '<', todayTimestamp)
+      );
+
+      const projectSnapshot = await getDocs(oldProjectsQuery);
+
+      let projStats = { found: projectSnapshot.size, deleted: 0 };
+      setStats({ notifications: notifStats, projects: projStats });
+
+      if (!projectSnapshot.empty) {
+        setStatus(`Found ${projectSnapshot.size} old projects. Deleting...`);
+
+        let batch = writeBatch(db);
+        let batchCount = 0;
+        const batchSize = 500;
+
+        for (const doc of projectSnapshot.docs) {
+          const projectId = doc.id;
+
+          // Delete the project
+          batch.delete(doc.ref);
+          batchCount++;
+
+          // Delete related project updates
+          const updatesQuery = query(
+            collection(db, 'project_updates'),
+            where('projectId', '==', projectId)
+          );
+          const updatesSnapshot = await getDocs(updatesQuery);
+          updatesSnapshot.forEach((updateDoc) => {
+            batch.delete(updateDoc.ref);
+            batchCount++;
+          });
+
+          // Delete related project actions
+          const actionsQuery = query(
+            collection(db, 'project_actions'),
+            where('projectId', '==', projectId)
+          );
+          const actionsSnapshot = await getDocs(actionsQuery);
+          actionsSnapshot.forEach((actionDoc) => {
+            batch.delete(actionDoc.ref);
+            batchCount++;
+          });
+
+          if (batchCount >= batchSize) {
+            await batch.commit();
+            projStats.deleted++;
+            setStats({ notifications: notifStats, projects: projStats });
+            setStatus(`Deleted ${projStats.deleted} / ${projectSnapshot.size} projects...`);
+            batch = writeBatch(db);
+            batchCount = 0;
+          }
+        }
+
+        if (batchCount > 0) {
+          await batch.commit();
+          projStats.deleted = projectSnapshot.size;
+          setStats({ notifications: notifStats, projects: projStats });
+        }
+
+        setStatus(`✓ Deleted ${projStats.deleted} projects`);
       }
 
-      setStats({ found: snapshot.size, deleted: deletedCount });
-      setSuccess(`Successfully deleted ${deletedCount} old notifications! Starting fresh from today.`);
+      // ============ CLEANUP COMPLETE ============
+      const totalDeleted = notifStats.deleted + projStats.deleted;
+      if (totalDeleted === 0) {
+        setSuccess('No old data found. Database is already clean!');
+      } else {
+        setSuccess(
+          `Successfully deleted ${notifStats.deleted} notifications and ${projStats.deleted} projects! Starting fresh from today.`
+        );
+      }
+
       setStatus('');
       setIsLoading(false);
 
@@ -95,7 +183,7 @@ export default function CleanupNotifications() {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="flex items-center gap-3 mb-6">
             <Trash2 className="w-8 h-8 text-red-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Cleanup Old Notifications</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Cleanup Old Data</h1>
           </div>
 
           <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -104,22 +192,39 @@ export default function CleanupNotifications() {
               <div>
                 <h3 className="font-semibold text-yellow-800 mb-1">Warning</h3>
                 <p className="text-sm text-yellow-700">
-                  This will permanently delete all notifications created before <strong>December 11, 2025</strong>.
+                  This will permanently delete all <strong>notifications AND projects</strong> created before <strong>December 11, 2025</strong>.
                   This action cannot be undone.
                 </p>
               </div>
             </div>
           </div>
 
-          {stats.found > 0 && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-blue-900">Notifications Found:</span>
-                <span className="text-lg font-bold text-blue-600">{stats.found}</span>
+          {(stats.notifications.found > 0 || stats.projects.found > 0) && (
+            <div className="mb-6 space-y-3">
+              {/* Notifications Stats */}
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="text-sm font-semibold text-blue-900 mb-2">Notifications</h4>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-blue-900">Found:</span>
+                  <span className="text-lg font-bold text-blue-600">{stats.notifications.found}</span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-sm font-medium text-blue-900">Deleted:</span>
+                  <span className="text-lg font-bold text-green-600">{stats.notifications.deleted}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center mt-2">
-                <span className="text-sm font-medium text-blue-900">Deleted:</span>
-                <span className="text-lg font-bold text-green-600">{stats.deleted}</span>
+
+              {/* Projects Stats */}
+              <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                <h4 className="text-sm font-semibold text-purple-900 mb-2">Projects</h4>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-purple-900">Found:</span>
+                  <span className="text-lg font-bold text-purple-600">{stats.projects.found}</span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-sm font-medium text-purple-900">Deleted:</span>
+                  <span className="text-lg font-bold text-green-600">{stats.projects.deleted}</span>
+                </div>
               </div>
             </div>
           )}
@@ -178,7 +283,7 @@ export default function CleanupNotifications() {
                 Deleting...
               </span>
             ) : (
-              'Delete All Old Notifications'
+              'Delete All Old Data (Notifications & Projects)'
             )}
           </button>
 
@@ -186,9 +291,10 @@ export default function CleanupNotifications() {
             <h3 className="font-semibold text-gray-700 mb-2">What this does:</h3>
             <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
               <li>Deletes all notifications created before December 11, 2025</li>
-              <li>Removes notifications for both agents and candidates</li>
-              <li>Clears the notification history to start fresh</li>
-              <li>Does not affect current projects or messages</li>
+              <li>Deletes all projects created before December 11, 2025</li>
+              <li>Removes project updates and actions for deleted projects</li>
+              <li>Clears history for both agents and candidates</li>
+              <li>Does NOT affect messages or user accounts</li>
             </ul>
           </div>
         </div>
