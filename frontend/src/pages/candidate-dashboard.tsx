@@ -424,6 +424,18 @@ export default function CandidateDashboard() {
 
       await addDoc(collection(db, 'messages'), messageData);
 
+      // Create notification for agent
+      await addDoc(collection(db, 'notifications'), {
+        userId: selectedAgent.id,
+        type: 'new_message',
+        title: 'New Service Request',
+        message: `${profile?.firstName} ${profile?.lastName} sent you a service request: ${trimmedMessage.substring(0, 100)}${trimmedMessage.length > 100 ? '...' : ''}`,
+        link: '/agent-dashboard?tab=messages',
+        conversationId: conversationId,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
       alert('Message sent successfully! The agent will contact you soon.');
       setShowMessageModal(false);
       setMessageText('');
@@ -739,7 +751,7 @@ export default function CandidateDashboard() {
 
                   {/* Notification Dropdown Panel */}
                   {showNotificationPanel && (
-                    <div className="fixed left-64 top-auto bottom-auto w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                    <div className="fixed left-1/2 -translate-x-1/2 lg:left-64 lg:translate-x-0 top-20 w-[calc(100vw-1rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
                       <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
                         <h3 className="font-semibold text-gray-900">Notifications</h3>
                         <button
