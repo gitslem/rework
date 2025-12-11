@@ -103,10 +103,13 @@ export default function CandidateProjectsNew() {
     const unsubscribe = onSnapshot(
       projectsQuery,
       (snapshot) => {
-        const projectsList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const projectsList = snapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          // Filter out deleted projects
+          .filter((project: any) => project.isDeleted !== true);
         setProjects(projectsList);
         calculateStats(projectsList);
         setLoading(false);
