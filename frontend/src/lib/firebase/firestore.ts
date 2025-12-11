@@ -417,13 +417,21 @@ export const subscribeToNotifications = (
     limit(50)
   );
 
-  return onSnapshot(q, (querySnapshot) => {
-    const notifications: Notification[] = [];
-    querySnapshot.forEach((doc) => {
-      notifications.push({ ...doc.data(), id: doc.id } as Notification);
-    });
-    callback(notifications);
-  });
+  return onSnapshot(
+    q,
+    (querySnapshot) => {
+      console.log('🔔 Firestore onSnapshot triggered! Docs:', querySnapshot.size);
+      const notifications: Notification[] = [];
+      querySnapshot.forEach((doc) => {
+        console.log('📄 Notification doc:', doc.id, doc.data());
+        notifications.push({ ...doc.data(), id: doc.id } as Notification);
+      });
+      callback(notifications);
+    },
+    (error) => {
+      console.error('❌ Notification subscription error:', error);
+    }
+  );
 };
 
 // ============ ADMIN ============
