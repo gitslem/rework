@@ -562,6 +562,18 @@ export default function AgentDashboard() {
         isReply: !isNewMessage
       });
 
+      // Create notification for recipient
+      await addDoc(collection(db, 'notifications'), {
+        userId: recipientId,
+        type: 'new_message',
+        title: isNewMessage ? 'New Message' : 'New Reply',
+        message: `${profile?.firstName} ${profile?.lastName} sent you a message: ${replyText.substring(0, 100)}${replyText.length > 100 ? '...' : ''}`,
+        link: '/candidate-dashboard?tab=messages',
+        conversationId: conversationId,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
       // Mark original as read if unread
       if (selectedMessage.status === 'unread' && selectedMessage.id !== 'new') {
         await updateDoc(doc(db, 'messages', selectedMessage.id), {
@@ -892,7 +904,7 @@ export default function AgentDashboard() {
 
                     {/* Notification Dropdown Panel */}
                     {showNotificationPanel && (
-                      <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                      <div className="fixed sm:absolute left-1/2 sm:left-auto -translate-x-1/2 sm:translate-x-0 right-auto sm:right-0 mt-2 w-[calc(100vw-1rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
                         <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
                           <h3 className="font-semibold text-gray-900">Notifications</h3>
                           <button
@@ -1141,7 +1153,7 @@ export default function AgentDashboard() {
 
                   {/* Notification Dropdown Panel - Reusing same component */}
                   {showNotificationPanel && (
-                    <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
+                    <div className="fixed sm:absolute left-1/2 sm:left-auto -translate-x-1/2 sm:translate-x-0 right-auto sm:right-0 mt-2 w-[calc(100vw-1rem)] sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
                       <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
                         <h3 className="font-semibold text-gray-900">Notifications</h3>
                         <button

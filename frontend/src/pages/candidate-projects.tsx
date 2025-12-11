@@ -721,6 +721,10 @@ export default function CandidateProjectsPage() {
     }
 
     try {
+      // Get project details before deletion for notification
+      const projectDoc = await getDoc(doc(getDb(), PROJECTS_COLLECTION, projectId));
+      const projectData = projectDoc.data();
+
       // Delete project document
       await deleteDoc(doc(getDb(), PROJECTS_COLLECTION, projectId));
 
@@ -741,6 +745,18 @@ export default function CandidateProjectsPage() {
       const actionsSnapshot = await getDocs(actionsQuery);
       const actionDeletePromises = actionsSnapshot.docs.map(doc => deleteDoc(doc.ref));
       await Promise.all(actionDeletePromises);
+
+      // Create notification for candidate about project deletion
+      if (projectData && projectData.candidate_id) {
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: projectData.candidate_id,
+          type: 'project_deleted',
+          title: 'Project Deleted',
+          message: `Project "${projectData.title}" has been deleted by your agent`,
+          isRead: false,
+          createdAt: Timestamp.now()
+        });
+      }
 
       setSelectedProject(null);
       alert('Project deleted successfully');
