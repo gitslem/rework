@@ -894,7 +894,7 @@ export default function Home() {
           <div className="relative">
             <div className="flex logo-scroll-animation">
               {/* First set of logos */}
-              <div className="flex items-center space-x-16 px-8 md:space-x-16 space-x-8">
+              <div className="flex items-center space-x-8 md:space-x-16 px-8">
                 {/* PayPal */}
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
@@ -1004,7 +1004,7 @@ export default function Home() {
               </div>
 
               {/* Duplicate set for seamless loop */}
-              <div className="flex items-center space-x-16 px-8 md:space-x-16 space-x-8">
+              <div className="flex items-center space-x-8 md:space-x-16 px-8">
                 {/* PayPal */}
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
