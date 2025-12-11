@@ -131,17 +131,17 @@ service cloud.firestore {
 
     // Notifications collection
     match /notifications/{notificationId} {
-      // Allow read if notification belongs to the user
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Allow read if notification belongs to the user or user is admin
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
 
       // Allow create if authenticated (any user can create notifications for others)
       allow create: if isAuthenticated();
 
-      // Allow update if notification belongs to the user
-      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Allow update if notification belongs to the user or user is admin
+      allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
 
-      // Allow delete if notification belongs to the user
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Allow delete if notification belongs to the user or user is admin
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     // Messages collection
