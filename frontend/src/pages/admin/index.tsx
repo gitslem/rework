@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
-import { Shield, Users, CheckCircle, Clock, AlertCircle, ArrowRight, Briefcase } from 'lucide-react';
+import { Shield, Users, CheckCircle, Clock, AlertCircle, ArrowRight, Briefcase, Trash2 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -155,7 +155,7 @@ export default function AdminLogin() {
           </div>
 
           {/* Quick Actions */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             <button
               onClick={() => router.push('/admin/agents')}
               className="bg-white border-2 border-gray-200 rounded-2xl p-8 text-left hover:border-black transition-all group"
@@ -223,6 +223,23 @@ export default function AdminLogin() {
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </div>
             </button>
+
+            <button
+              onClick={() => router.push('/cleanup-notifications')}
+              className="bg-white border-2 border-red-200 rounded-2xl p-8 text-left hover:border-red-500 transition-all group"
+            >
+              <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Trash2 className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-black mb-2">Cleanup Data</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Delete old notifications and projects
+              </p>
+              <div className="flex items-center text-red-600 font-semibold text-sm">
+                Manage Cleanup
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
           </div>
 
           {/* Instructions */}
@@ -254,6 +271,15 @@ export default function AdminLogin() {
                   <li>• Reassign projects between agents</li>
                   <li>• Filter by status and platform</li>
                   <li>• Track project statistics</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-black mb-2">Data Cleanup</h3>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• Delete old notifications in bulk</li>
+                  <li>• Remove outdated projects</li>
+                  <li>• Clean up database storage</li>
+                  <li>• Separate options for notifications/projects</li>
                 </ul>
               </div>
             </div>
