@@ -4,7 +4,8 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Mail, Calendar,
-  Award, Filter, Search, X, Shield, AlertCircle, Users, Star, Trash2, FileText
+  Award, Filter, Search, X, Shield, AlertCircle, Users, Star, Trash2, FileText,
+  Tag, Save, Plus, RotateCcw, AlertTriangle
 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -21,6 +22,11 @@ interface CandidateWithProfile extends UserType {
     phone?: string;
   };
   assignedAgents?: string[];
+  categories?: string[];
+  rejectionReason?: string;
+  rejectedAt?: Timestamp;
+  rejectedBy?: string;
+  isRejected?: boolean;
 }
 
 interface Agent {
@@ -31,6 +37,16 @@ interface Agent {
   verified: boolean;
 }
 
+interface SavedFilter {
+  id: string;
+  name: string;
+  filters: {
+    status: string;
+    location: string;
+    categories: string[];
+  };
+}
+
 export default function AdminCandidates() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -38,10 +54,31 @@ export default function AdminCandidates() {
   const [candidates, setCandidates] = useState<CandidateWithProfile[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
+  const [locationFilter, setLocationFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateWithProfile | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [availableAgents, setAvailableAgents] = useState<Agent[]>([]);
   const [selectedAgentId, setSelectedAgentId] = useState<string>('');
+
+  // Category management
+  const [availableCategories, setAvailableCategories] = useState<string[]>([
+    'Priority', 'High Potential', 'Needs Follow-up', 'Interview Ready', 'New Candidate'
+  ]);
+  const [newCategory, setNewCategory] = useState('');
+  const [showCategoryInput, setShowCategoryInput] = useState(false);
+  const [editingCategories, setEditingCategories] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  // Saved filters
+  const [savedFilters, setSavedFilters] = useState<SavedFilter[]>([]);
+  const [showSaveFilterModal, setShowSaveFilterModal] = useState(false);
+  const [filterName, setFilterName] = useState('');
+
+  // Rejection
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [candidateToReject, setCandidateToReject] = useState<string | null>(null);
 
   useEffect(() => {
     checkAdminAccess();
@@ -50,8 +87,82 @@ export default function AdminCandidates() {
   useEffect(() => {
     if (isAdmin) {
       fetchCandidates();
+      loadSavedFilters();
+      loadAvailableCategories();
     }
   }, [filter, isAdmin]);
+
+  const loadSavedFilters = () => {
+    try {
+      const saved = localStorage.getItem('adminCandidateFilters');
+      if (saved) {
+        setSavedFilters(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading saved filters:', error);
+    }
+  };
+
+  const loadAvailableCategories = () => {
+    try {
+      const saved = localStorage.getItem('adminCandidateCategories');
+      if (saved) {
+        setAvailableCategories(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const saveFilterGroup = () => {
+    if (!filterName.trim()) {
+      alert('Please enter a filter name');
+      return;
+    }
+
+    const newFilter: SavedFilter = {
+      id: Date.now().toString(),
+      name: filterName,
+      filters: {
+        status: filter,
+        location: locationFilter,
+        categories: categoryFilter
+      }
+    };
+
+    const updated = [...savedFilters, newFilter];
+    setSavedFilters(updated);
+    localStorage.setItem('adminCandidateFilters', JSON.stringify(updated));
+    setFilterName('');
+    setShowSaveFilterModal(false);
+    alert('Filter saved successfully!');
+  };
+
+  const applySavedFilter = (savedFilter: SavedFilter) => {
+    setFilter(savedFilter.filters.status as any);
+    setLocationFilter(savedFilter.filters.location);
+    setCategoryFilter(savedFilter.filters.categories);
+  };
+
+  const deleteSavedFilter = (filterId: string) => {
+    if (!confirm('Delete this saved filter?')) return;
+    const updated = savedFilters.filter(f => f.id !== filterId);
+    setSavedFilters(updated);
+    localStorage.setItem('adminCandidateFilters', JSON.stringify(updated));
+  };
+
+  const addCategory = () => {
+    if (!newCategory.trim()) return;
+    if (availableCategories.includes(newCategory.trim())) {
+      alert('This category already exists');
+      return;
+    }
+    const updated = [...availableCategories, newCategory.trim()];
+    setAvailableCategories(updated);
+    localStorage.setItem('adminCandidateCategories', JSON.stringify(updated));
+    setNewCategory('');
+    setShowCategoryInput(false);
+  };
 
   const checkAdminAccess = async () => {
     try {
@@ -92,9 +203,19 @@ export default function AdminCandidates() {
       for (const userDoc of usersSnapshot.docs) {
         const userData = userDoc.data() as UserType;
 
+        // Determine if this candidate is "rejected"
+        const isRejected = (userData as any).isRejected === true;
+
         // Apply filter
-        if (filter === 'pending' && userData.isCandidateApproved) continue;
-        if (filter === 'approved' && !userData.isCandidateApproved) continue;
+        if (filter === 'rejected') {
+          if (!isRejected) continue;
+        } else if (filter === 'pending') {
+          if (isRejected || userData.isCandidateApproved) continue;
+        } else if (filter === 'approved') {
+          if (isRejected || !userData.isCandidateApproved) continue;
+        } else if (filter === 'all') {
+          // Show all except explicitly filter logic
+        }
 
         // Try to get profile data if exists
         const profileDoc = await getDoc(doc(db, 'profiles', userData.uid));
@@ -102,7 +223,7 @@ export default function AdminCandidates() {
 
         candidateList.push({
           ...userData,
-          ...profileData, // Spread all profile data to include contactMethodType, contactMethodValue, idCardUrl, etc.
+          ...profileData,
           profile: {
             firstName: profileData.firstName,
             lastName: profileData.lastName,
@@ -111,7 +232,12 @@ export default function AdminCandidates() {
             country: profileData.country,
             phone: profileData.phone,
           },
-          assignedAgents: (userData as any).assignedAgents || []
+          assignedAgents: (userData as any).assignedAgents || [],
+          categories: (userData as any).categories || [],
+          rejectionReason: (userData as any).rejectionReason,
+          rejectedAt: (userData as any).rejectedAt,
+          rejectedBy: (userData as any).rejectedBy,
+          isRejected: isRejected
         });
       }
 
@@ -134,6 +260,10 @@ export default function AdminCandidates() {
       await updateDoc(doc(db, 'users', candidateUid), {
         isCandidateApproved: true,
         candidateApprovedAt: Timestamp.now(),
+        isRejected: false,
+        rejectionReason: null,
+        rejectedAt: null,
+        rejectedBy: null,
         updatedAt: Timestamp.now(),
       });
 
@@ -156,9 +286,52 @@ export default function AdminCandidates() {
     }
   };
 
-  const handleReject = async (candidateUid: string) => {
-    const reason = prompt('Please provide a reason for rejection (optional):');
-    if (reason === null) return; // User clicked cancel
+  const openRejectModal = (candidateUid: string) => {
+    setCandidateToReject(candidateUid);
+    setRejectReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleReject = async () => {
+    if (!candidateToReject) return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Update users collection
+      await updateDoc(doc(db, 'users', candidateToReject), {
+        isCandidateApproved: false,
+        isRejected: true,
+        rejectionReason: rejectReason,
+        rejectedAt: Timestamp.now(),
+        rejectedBy: 'admin',
+        updatedAt: Timestamp.now(),
+      });
+
+      // Also update profiles collection for consistency
+      await updateDoc(doc(db, 'profiles', candidateToReject), {
+        isVerified: false,
+        verificationStatus: 'rejected',
+        updatedAt: Timestamp.now(),
+      });
+
+      alert('Candidate rejected.');
+      setShowRejectModal(false);
+      setCandidateToReject(null);
+      setRejectReason('');
+      setSelectedCandidate(null);
+      fetchCandidates();
+    } catch (error: any) {
+      console.error('Error rejecting candidate:', error);
+      alert('Failed to reject candidate: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnreject = async (candidateUid: string) => {
+    if (!confirm('Are you sure you want to unreject this candidate? They will be moved back to pending status.')) return;
 
     try {
       setActionLoading(true);
@@ -167,22 +340,51 @@ export default function AdminCandidates() {
       // Update users collection
       await updateDoc(doc(db, 'users', candidateUid), {
         isCandidateApproved: false,
+        isRejected: false,
+        rejectionReason: null,
+        rejectedAt: null,
+        rejectedBy: null,
         updatedAt: Timestamp.now(),
       });
 
-      // Also update profiles collection for consistency
+      // Also update profiles collection
       await updateDoc(doc(db, 'profiles', candidateUid), {
         isVerified: false,
-        verificationStatus: 'rejected',
+        verificationStatus: 'pending',
         updatedAt: Timestamp.now(),
       });
 
-      alert('Candidate rejected.');
+      alert('Candidate moved back to pending status.');
       setSelectedCandidate(null);
       fetchCandidates();
     } catch (error: any) {
-      console.error('Error rejecting candidate:', error);
-      alert('Failed to reject candidate: ' + error.message);
+      console.error('Error unrejecting candidate:', error);
+      alert('Failed to unreject candidate: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateCategories = async () => {
+    if (!selectedCandidate) return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      await updateDoc(doc(db, 'users', selectedCandidate.uid), {
+        categories: selectedCategories,
+        updatedAt: Timestamp.now(),
+      });
+
+      alert('Categories updated successfully!');
+      setEditingCategories(false);
+      fetchCandidates();
+      // Update selected candidate
+      setSelectedCandidate({ ...selectedCandidate, categories: selectedCategories });
+    } catch (error: any) {
+      console.error('Error updating categories:', error);
+      alert('Failed to update categories: ' + error.message);
     } finally {
       setActionLoading(false);
     }
@@ -334,14 +536,32 @@ export default function AdminCandidates() {
     }
   }, [isAdmin, selectedCandidate]);
 
+  // Get unique locations
+  const uniqueLocations = Array.from(
+    new Set(
+      candidates
+        .filter(c => c.profile?.city && c.profile?.country)
+        .map(c => `${c.profile?.city}, ${c.profile?.country}`)
+    )
+  ).sort();
+
   const filteredCandidates = candidates.filter(candidate => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       candidate.email.toLowerCase().includes(searchLower) ||
       candidate.displayName?.toLowerCase().includes(searchLower) ||
       candidate.profile?.firstName?.toLowerCase().includes(searchLower) ||
-      candidate.profile?.lastName?.toLowerCase().includes(searchLower)
-    );
+      candidate.profile?.lastName?.toLowerCase().includes(searchLower);
+
+    // Location filter
+    const matchesLocation = locationFilter === 'all' ||
+      `${candidate.profile?.city}, ${candidate.profile?.country}` === locationFilter;
+
+    // Category filter
+    const matchesCategory = categoryFilter.length === 0 ||
+      categoryFilter.some(cat => candidate.categories?.includes(cat));
+
+    return matchesSearch && matchesLocation && matchesCategory;
   });
 
   if (loading) {
@@ -387,20 +607,48 @@ export default function AdminCandidates() {
             <p className="text-gray-600">Review and approve candidate registrations</p>
           </div>
 
+          {/* Saved Filters */}
+          {savedFilters.length > 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-black text-sm">Quick Filters</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {savedFilters.map(sf => (
+                  <div key={sf.id} className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-lg px-3 py-1">
+                    <button
+                      onClick={() => applySavedFilter(sf)}
+                      className="text-sm font-medium text-blue-700 hover:text-blue-800"
+                    >
+                      {sf.name}
+                    </button>
+                    <button
+                      onClick={() => deleteSavedFilter(sf.id)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Filters and Search */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col gap-4">
               {/* Filter Tabs */}
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 overflow-x-auto">
                 {[
                   { value: 'all', label: 'All' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
+                  { value: 'rejected', label: 'Rejected' }
                 ].map(tab => (
                   <button
                     key={tab.value}
                     onClick={() => setFilter(tab.value as any)}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
                       filter === tab.value
                         ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -411,18 +659,104 @@ export default function AdminCandidates() {
                 ))}
               </div>
 
-              {/* Search */}
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by name or email..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                  />
+              {/* Search and Filters Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Search */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search by name or email..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
                 </div>
+
+                {/* Location Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                  <select
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  >
+                    <option value="all">All Locations</option>
+                    {uniqueLocations.map(loc => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+                  <div className="relative">
+                    <select
+                      multiple
+                      value={categoryFilter}
+                      onChange={(e) => {
+                        const selected = Array.from(e.target.selectedOptions, option => option.value);
+                        setCategoryFilter(selected);
+                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      size={1}
+                    >
+                      <option value="">All Categories</option>
+                      {availableCategories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Filters Display */}
+              {(categoryFilter.length > 0 || locationFilter !== 'all') && (
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="text-sm text-gray-600">Active filters:</span>
+                  {locationFilter !== 'all' && (
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {locationFilter}
+                      <button onClick={() => setLocationFilter('all')} className="hover:text-purple-900">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {categoryFilter.map(cat => (
+                    <span key={cat} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
+                      <Tag className="w-3 h-3" />
+                      {cat}
+                      <button onClick={() => setCategoryFilter(categoryFilter.filter(c => c !== cat))} className="hover:text-blue-900">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  <button
+                    onClick={() => {
+                      setLocationFilter('all');
+                      setCategoryFilter([]);
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium"
+                  >
+                    Clear all
+                  </button>
+                </div>
+              )}
+
+              {/* Save Current Filter */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowSaveFilterModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                >
+                  <Save className="w-4 h-4" />
+                  Save Current Filters
+                </button>
               </div>
             </div>
 
@@ -434,7 +768,7 @@ export default function AdminCandidates() {
               </div>
               <div className="bg-yellow-50 rounded-lg p-4">
                 <div className="text-2xl font-bold text-yellow-700">
-                  {candidates.filter(c => !c.isCandidateApproved).length}
+                  {candidates.filter(c => !c.isCandidateApproved && !c.isRejected).length}
                 </div>
                 <div className="text-xs text-gray-600 mt-1">Pending Approval</div>
               </div>
@@ -444,11 +778,11 @@ export default function AdminCandidates() {
                 </div>
                 <div className="text-xs text-gray-600 mt-1">Approved</div>
               </div>
-              <div className="bg-blue-50 rounded-lg p-4">
-                <div className="text-2xl font-bold text-blue-700">
-                  {candidates.filter(c => c.isActive).length}
+              <div className="bg-red-50 rounded-lg p-4">
+                <div className="text-2xl font-bold text-red-700">
+                  {candidates.filter(c => c.isRejected).length}
                 </div>
-                <div className="text-xs text-gray-600 mt-1">Active Users</div>
+                <div className="text-xs text-gray-600 mt-1">Rejected</div>
               </div>
             </div>
           </div>
@@ -487,11 +821,13 @@ export default function AdminCandidates() {
                           <p className="text-sm text-gray-600">{candidate.email}</p>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          candidate.isCandidateApproved
+                          candidate.isRejected
+                            ? 'bg-red-100 text-red-800'
+                            : candidate.isCandidateApproved
                             ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {candidate.isCandidateApproved ? 'Approved' : 'Pending'}
+                          {candidate.isRejected ? 'Rejected' : (candidate.isCandidateApproved ? 'Approved' : 'Pending')}
                         </span>
                       </div>
 
@@ -512,12 +848,24 @@ export default function AdminCandidates() {
                         </div>
                       </div>
 
+                      {/* Categories */}
+                      {candidate.categories && candidate.categories.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {candidate.categories.map(category => (
+                            <span key={category} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
+                              <Tag className="w-3 h-3" />
+                              {category}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       {candidate.profile?.bio && (
                         <p className="mt-3 text-sm text-gray-700 line-clamp-2">{candidate.profile.bio}</p>
                       )}
                     </div>
 
-                    {!candidate.isCandidateApproved && (
+                    {!candidate.isCandidateApproved && !candidate.isRejected && (
                       <div className="flex space-x-2 ml-4">
                         <button
                           onClick={(e) => {
@@ -533,13 +881,29 @@ export default function AdminCandidates() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleReject(candidate.uid);
+                            openRejectModal(candidate.uid);
                           }}
                           disabled={actionLoading}
                           className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
                           title="Reject"
                         >
                           <XCircle className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
+
+                    {candidate.isRejected && (
+                      <div className="flex space-x-2 ml-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUnreject(candidate.uid);
+                          }}
+                          disabled={actionLoading}
+                          className="p-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50"
+                          title="Unreject (Move to Pending)"
+                        >
+                          <RotateCcw className="w-5 h-5" />
                         </button>
                       </div>
                     )}
@@ -552,8 +916,8 @@ export default function AdminCandidates() {
 
         {/* Detail Modal */}
         {selectedCandidate && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto my-8">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-black">Candidate Details</h2>
                 <button
@@ -606,6 +970,118 @@ export default function AdminCandidates() {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* Category Management */}
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-bold text-black flex items-center gap-2">
+                      <Tag className="w-5 h-5" />
+                      Categories
+                    </h3>
+                    {!editingCategories ? (
+                      <button
+                        onClick={() => {
+                          setSelectedCategories(selectedCandidate.categories || []);
+                          setEditingCategories(true);
+                        }}
+                        className="px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
+                      >
+                        Edit Categories
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleUpdateCategories}
+                          disabled={actionLoading}
+                          className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingCategories(false)}
+                          disabled={actionLoading}
+                          className="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {editingCategories ? (
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {availableCategories.map(cat => (
+                          <button
+                            key={cat}
+                            onClick={() => {
+                              if (selectedCategories.includes(cat)) {
+                                setSelectedCategories(selectedCategories.filter(c => c !== cat));
+                              } else {
+                                setSelectedCategories([...selectedCategories, cat]);
+                              }
+                            }}
+                            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                              selectedCategories.includes(cat)
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-white text-purple-600 border border-purple-300 hover:border-purple-600'
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                      </div>
+
+                      {showCategoryInput ? (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            placeholder="New category name..."
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            onKeyPress={(e) => e.key === 'Enter' && addCategory()}
+                          />
+                          <button
+                            onClick={addCategory}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                          >
+                            Add
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowCategoryInput(false);
+                              setNewCategory('');
+                            }}
+                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setShowCategoryInput(true)}
+                          className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 font-medium"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Create New Category
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCandidate.categories && selectedCandidate.categories.length > 0 ? (
+                        selectedCandidate.categories.map(cat => (
+                          <span key={cat} className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">
+                            {cat}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">No categories assigned</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Bio */}
@@ -662,12 +1138,18 @@ export default function AdminCandidates() {
                   )}
                 </div>
 
-                {/* Approval Status */}
+                {/* Approval/Rejection Status */}
                 <div className={`p-4 rounded-lg ${
-                  selectedCandidate.isCandidateApproved ? 'bg-green-50 border border-green-200' : 'bg-yellow-50 border border-yellow-200'
+                  selectedCandidate.isRejected
+                    ? 'bg-red-50 border border-red-200'
+                    : selectedCandidate.isCandidateApproved
+                    ? 'bg-green-50 border border-green-200'
+                    : 'bg-yellow-50 border border-yellow-200'
                 }`}>
                   <h4 className="font-semibold mb-2">
-                    {selectedCandidate.isCandidateApproved ? (
+                    {selectedCandidate.isRejected ? (
+                      <span className="text-red-900">Rejected Candidate</span>
+                    ) : selectedCandidate.isCandidateApproved ? (
                       <span className="text-green-900">Approved Candidate</span>
                     ) : (
                       <span className="text-yellow-900">Pending Approval</span>
@@ -677,6 +1159,17 @@ export default function AdminCandidates() {
                     <p className="text-sm text-gray-700">
                       Approved on: {selectedCandidate.candidateApprovedAt.toDate().toLocaleString()}
                     </p>
+                  )}
+                  {selectedCandidate.isRejected && selectedCandidate.rejectionReason && (
+                    <>
+                      <p className="text-sm text-red-700 mt-2 font-medium">Rejection Reason:</p>
+                      <p className="text-sm text-red-600">{selectedCandidate.rejectionReason}</p>
+                      {selectedCandidate.rejectedAt && (
+                        <p className="text-xs text-red-600 mt-1">
+                          Rejected on: {selectedCandidate.rejectedAt.toDate().toLocaleString()}
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 
@@ -756,7 +1249,7 @@ export default function AdminCandidates() {
                 </div>
 
                 {/* Actions */}
-                {!selectedCandidate.isCandidateApproved && (
+                {!selectedCandidate.isCandidateApproved && !selectedCandidate.isRejected && (
                   <div className="flex space-x-4 pt-4 border-t border-gray-200">
                     <button
                       onClick={() => handleApprove(selectedCandidate.uid)}
@@ -767,12 +1260,25 @@ export default function AdminCandidates() {
                       Approve Candidate
                     </button>
                     <button
-                      onClick={() => handleReject(selectedCandidate.uid)}
+                      onClick={() => openRejectModal(selectedCandidate.uid)}
                       disabled={actionLoading}
                       className="flex-1 bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center"
                     >
                       <XCircle className="w-5 h-5 mr-2" />
                       Reject
+                    </button>
+                  </div>
+                )}
+
+                {selectedCandidate.isRejected && (
+                  <div className="flex space-x-4 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={() => handleUnreject(selectedCandidate.uid)}
+                      disabled={actionLoading}
+                      className="flex-1 bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center justify-center"
+                    >
+                      <RotateCcw className="w-5 h-5 mr-2" />
+                      Unreject (Move to Pending)
                     </button>
                   </div>
                 )}
@@ -790,6 +1296,136 @@ export default function AdminCandidates() {
                   <p className="text-xs text-gray-500 mt-2 text-center">
                     This will permanently delete the account. They will need to re-register.
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reject Modal */}
+        {showRejectModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-black">Reject Candidate</h2>
+                <button
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setCandidateToReject(null);
+                    setRejectReason('');
+                  }}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rejection Reason (Optional)
+                  </label>
+                  <textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="Explain why this candidate is being rejected..."
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowRejectModal(false);
+                      setCandidateToReject(null);
+                      setRejectReason('');
+                    }}
+                    disabled={actionLoading}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleReject}
+                    disabled={actionLoading}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    {actionLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Rejecting...
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Reject Candidate
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Save Filter Modal */}
+        {showSaveFilterModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-black">Save Filter Group</h2>
+                <button
+                  onClick={() => {
+                    setShowSaveFilterModal(false);
+                    setFilterName('');
+                  }}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Filter Group Name
+                  </label>
+                  <input
+                    type="text"
+                    value={filterName}
+                    onChange={(e) => setFilterName(e.target.value)}
+                    placeholder="e.g., High Priority Candidates"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Current Filters:</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>Status: <span className="font-medium">{filter}</span></li>
+                    <li>Location: <span className="font-medium">{locationFilter === 'all' ? 'All' : locationFilter}</span></li>
+                    <li>Categories: <span className="font-medium">{categoryFilter.length === 0 ? 'All' : categoryFilter.join(', ')}</span></li>
+                  </ul>
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowSaveFilterModal(false);
+                      setFilterName('');
+                    }}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveFilterGroup}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Filter
+                  </button>
                 </div>
               </div>
             </div>

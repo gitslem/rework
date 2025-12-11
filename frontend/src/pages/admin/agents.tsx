@@ -4,7 +4,8 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Briefcase, Monitor,
-  Mail, Phone, Globe, Calendar, Award, Filter, Search, X, ArrowLeft, Trash2
+  Mail, Phone, Globe, Calendar, Award, Filter, Search, X, ArrowLeft, Trash2,
+  Tag, Save, Plus, RotateCcw, AlertTriangle
 } from 'lucide-react';
 import { getFirebaseFirestore } from '@/lib/firebase/config';
 import { collection, query, where, getDocs, doc, updateDoc, getDoc, Timestamp, deleteDoc } from 'firebase/firestore';
@@ -15,6 +16,20 @@ interface AgentApplication extends Profile {
     email: string;
     createdAt: Timestamp;
   };
+  categories?: string[];
+  rejectionReason?: string;
+  rejectedAt?: Timestamp;
+  rejectedBy?: string;
+}
+
+interface SavedFilter {
+  id: string;
+  name: string;
+  filters: {
+    status: string;
+    location: string;
+    categories: string[];
+  };
 }
 
 export default function AdminAgents() {
@@ -23,6 +38,8 @@ export default function AdminAgents() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'verified' | 'rejected'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
+  const [locationFilter, setLocationFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<AgentApplication | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [editingStats, setEditingStats] = useState(false);
@@ -35,9 +52,102 @@ export default function AdminAgents() {
     responseTime: '< 24 hours'
   });
 
+  // Category management
+  const [availableCategories, setAvailableCategories] = useState<string[]>([
+    'Priority', 'High Potential', 'Needs Follow-up', 'Top Performer', 'New Agent'
+  ]);
+  const [newCategory, setNewCategory] = useState('');
+  const [showCategoryInput, setShowCategoryInput] = useState(false);
+  const [editingCategories, setEditingCategories] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  // Saved filters
+  const [savedFilters, setSavedFilters] = useState<SavedFilter[]>([]);
+  const [showSaveFilterModal, setShowSaveFilterModal] = useState(false);
+  const [filterName, setFilterName] = useState('');
+
+  // Rejection
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [agentToReject, setAgentToReject] = useState<string | null>(null);
+
   useEffect(() => {
     fetchApplications();
+    loadSavedFilters();
+    loadAvailableCategories();
   }, [filter]);
+
+  const loadSavedFilters = () => {
+    try {
+      const saved = localStorage.getItem('adminAgentFilters');
+      if (saved) {
+        setSavedFilters(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading saved filters:', error);
+    }
+  };
+
+  const loadAvailableCategories = () => {
+    try {
+      const saved = localStorage.getItem('adminAgentCategories');
+      if (saved) {
+        setAvailableCategories(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const saveFilterGroup = () => {
+    if (!filterName.trim()) {
+      alert('Please enter a filter name');
+      return;
+    }
+
+    const newFilter: SavedFilter = {
+      id: Date.now().toString(),
+      name: filterName,
+      filters: {
+        status: filter,
+        location: locationFilter,
+        categories: categoryFilter
+      }
+    };
+
+    const updated = [...savedFilters, newFilter];
+    setSavedFilters(updated);
+    localStorage.setItem('adminAgentFilters', JSON.stringify(updated));
+    setFilterName('');
+    setShowSaveFilterModal(false);
+    alert('Filter saved successfully!');
+  };
+
+  const applySavedFilter = (savedFilter: SavedFilter) => {
+    setFilter(savedFilter.filters.status as any);
+    setLocationFilter(savedFilter.filters.location);
+    setCategoryFilter(savedFilter.filters.categories);
+  };
+
+  const deleteSavedFilter = (filterId: string) => {
+    if (!confirm('Delete this saved filter?')) return;
+    const updated = savedFilters.filter(f => f.id !== filterId);
+    setSavedFilters(updated);
+    localStorage.setItem('adminAgentFilters', JSON.stringify(updated));
+  };
+
+  const addCategory = () => {
+    if (!newCategory.trim()) return;
+    if (availableCategories.includes(newCategory.trim())) {
+      alert('This category already exists');
+      return;
+    }
+    const updated = [...availableCategories, newCategory.trim()];
+    setAvailableCategories(updated);
+    localStorage.setItem('adminAgentCategories', JSON.stringify(updated));
+    setNewCategory('');
+    setShowCategoryInput(false);
+  };
 
   const fetchApplications = async () => {
     try {
@@ -59,16 +169,32 @@ export default function AdminAgents() {
         if (profileDoc.exists()) {
           const profileData = profileDoc.data() as Profile;
 
+          // Determine if this agent is "rejected"
+          const isRejected = profileData.agentVerificationStatus === 'rejected' ||
+                           (userData as any).isRejected === true;
+
           // Filter by verification status if needed
-          if (filter === 'all' || profileData.agentVerificationStatus === filter) {
-            apps.push({
-              ...profileData,
-              user: {
-                email: userData.email,
-                createdAt: userData.createdAt,
-              }
-            });
+          if (filter === 'rejected') {
+            if (!isRejected) continue;
+          } else if (filter === 'all') {
+            // Show all
+          } else {
+            // For pending/verified, exclude rejected
+            if (isRejected) continue;
+            if (profileData.agentVerificationStatus !== filter) continue;
           }
+
+          apps.push({
+            ...profileData,
+            user: {
+              email: userData.email,
+              createdAt: userData.createdAt,
+            },
+            categories: (userData as any).categories || [],
+            rejectionReason: (userData as any).rejectionReason || profileData.agentRejectedReason,
+            rejectedAt: (userData as any).rejectedAt,
+            rejectedBy: (userData as any).rejectedBy
+          });
         }
       }
 
@@ -94,10 +220,14 @@ export default function AdminAgents() {
         updatedAt: Timestamp.now(),
       });
 
-      // Also update user document - set isAgentApproved for agents
+      // Also update user document - set isAgentApproved for agents and clear rejection
       await updateDoc(doc(db, 'users', agentUid), {
         isAgentApproved: true,
         agentApprovedAt: Timestamp.now(),
+        isRejected: false,
+        rejectionReason: null,
+        rejectedAt: null,
+        rejectedBy: null,
         updatedAt: Timestamp.now(),
       });
 
@@ -112,27 +242,76 @@ export default function AdminAgents() {
     }
   };
 
-  const handleReject = async (agentUid: string) => {
-    const reason = prompt('Please provide a reason for rejection:');
-    if (!reason) return;
+  const openRejectModal = (agentUid: string) => {
+    setAgentToReject(agentUid);
+    setRejectReason('');
+    setShowRejectModal(true);
+  };
+
+  const handleReject = async () => {
+    if (!agentToReject) return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      await updateDoc(doc(db, 'profiles', agentToReject), {
+        agentVerificationStatus: 'rejected',
+        isAgentApproved: false,
+        agentRejectedReason: rejectReason,
+        updatedAt: Timestamp.now(),
+      });
+
+      await updateDoc(doc(db, 'users', agentToReject), {
+        isRejected: true,
+        rejectionReason: rejectReason,
+        rejectedAt: Timestamp.now(),
+        rejectedBy: 'admin',
+        updatedAt: Timestamp.now(),
+      });
+
+      alert('Agent rejected.');
+      setShowRejectModal(false);
+      setAgentToReject(null);
+      setRejectReason('');
+      setSelectedAgent(null);
+      fetchApplications();
+    } catch (error: any) {
+      console.error('Error rejecting agent:', error);
+      alert('Failed to reject agent: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnreject = async (agentUid: string) => {
+    if (!confirm('Are you sure you want to unreject this agent? They will be moved back to pending status.')) return;
 
     try {
       setActionLoading(true);
       const db = getFirebaseFirestore();
 
       await updateDoc(doc(db, 'profiles', agentUid), {
-        agentVerificationStatus: 'rejected',
+        agentVerificationStatus: 'pending',
         isAgentApproved: false,
-        agentRejectedReason: reason,
+        agentRejectedReason: null,
         updatedAt: Timestamp.now(),
       });
 
-      alert('Agent rejected.');
+      await updateDoc(doc(db, 'users', agentUid), {
+        isRejected: false,
+        rejectionReason: null,
+        rejectedAt: null,
+        rejectedBy: null,
+        updatedAt: Timestamp.now(),
+      });
+
+      alert('Agent moved back to pending status.');
       setSelectedAgent(null);
       fetchApplications();
     } catch (error: any) {
-      console.error('Error rejecting agent:', error);
-      alert('Failed to reject agent: ' + error.message);
+      console.error('Error unrejecting agent:', error);
+      alert('Failed to unreject agent: ' + error.message);
     } finally {
       setActionLoading(false);
     }
@@ -207,11 +386,57 @@ export default function AdminAgents() {
     }
   };
 
-  const filteredApplications = applications.filter(app =>
-    app.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleUpdateCategories = async () => {
+    if (!selectedAgent) return;
+
+    try {
+      setActionLoading(true);
+      const db = getFirebaseFirestore();
+
+      await updateDoc(doc(db, 'users', selectedAgent.uid), {
+        categories: selectedCategories,
+        updatedAt: Timestamp.now(),
+      });
+
+      alert('Categories updated successfully!');
+      setEditingCategories(false);
+      fetchApplications();
+      // Update selected agent
+      setSelectedAgent({ ...selectedAgent, categories: selectedCategories });
+    } catch (error: any) {
+      console.error('Error updating categories:', error);
+      alert('Failed to update categories: ' + error.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Get unique locations
+  const uniqueLocations = Array.from(
+    new Set(
+      applications
+        .filter(app => app.city && app.country)
+        .map(app => `${app.city}, ${app.country}`)
+    )
+  ).sort();
+
+  const filteredApplications = applications.filter(app => {
+    // Search filter
+    const matchesSearch =
+      app.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.user.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Location filter
+    const matchesLocation = locationFilter === 'all' ||
+      `${app.city}, ${app.country}` === locationFilter;
+
+    // Category filter
+    const matchesCategory = categoryFilter.length === 0 ||
+      categoryFilter.some(cat => app.categories?.includes(cat));
+
+    return matchesSearch && matchesLocation && matchesCategory;
+  });
 
   return (
     <>
@@ -254,11 +479,38 @@ export default function AdminAgents() {
             <p className="text-gray-600">Review and manage agent verification requests</p>
           </div>
 
+          {/* Saved Filters */}
+          {savedFilters.length > 0 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-black text-sm">Quick Filters</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {savedFilters.map(sf => (
+                  <div key={sf.id} className="flex items-center gap-1 bg-blue-50 border border-blue-200 rounded-lg px-3 py-1">
+                    <button
+                      onClick={() => applySavedFilter(sf)}
+                      className="text-sm font-medium text-blue-700 hover:text-blue-800"
+                    >
+                      {sf.name}
+                    </button>
+                    <button
+                      onClick={() => deleteSavedFilter(sf.id)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Filters and Search */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col gap-4">
               {/* Filter Tabs */}
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 overflow-x-auto">
                 {[
                   { value: 'all', label: 'All' },
                   { value: 'pending', label: 'Pending' },
@@ -268,7 +520,7 @@ export default function AdminAgents() {
                   <button
                     key={tab.value}
                     onClick={() => setFilter(tab.value as any)}
-                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all whitespace-nowrap ${
                       filter === tab.value
                         ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -279,18 +531,104 @@ export default function AdminAgents() {
                 ))}
               </div>
 
-              {/* Search */}
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search by name or email..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                  />
+              {/* Search and Filters Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Search */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder="Search by name or email..."
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
                 </div>
+
+                {/* Location Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                  <select
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                  >
+                    <option value="all">All Locations</option>
+                    {uniqueLocations.map(loc => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
+                  <div className="relative">
+                    <select
+                      multiple
+                      value={categoryFilter}
+                      onChange={(e) => {
+                        const selected = Array.from(e.target.selectedOptions, option => option.value);
+                        setCategoryFilter(selected);
+                      }}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      size={1}
+                    >
+                      <option value="">All Categories</option>
+                      {availableCategories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Filters Display */}
+              {(categoryFilter.length > 0 || locationFilter !== 'all') && (
+                <div className="flex flex-wrap gap-2 items-center">
+                  <span className="text-sm text-gray-600">Active filters:</span>
+                  {locationFilter !== 'all' && (
+                    <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {locationFilter}
+                      <button onClick={() => setLocationFilter('all')} className="hover:text-purple-900">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {categoryFilter.map(cat => (
+                    <span key={cat} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
+                      <Tag className="w-3 h-3" />
+                      {cat}
+                      <button onClick={() => setCategoryFilter(categoryFilter.filter(c => c !== cat))} className="hover:text-blue-900">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                  <button
+                    onClick={() => {
+                      setLocationFilter('all');
+                      setCategoryFilter([]);
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium"
+                  >
+                    Clear all
+                  </button>
+                </div>
+              )}
+
+              {/* Save Current Filter */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowSaveFilterModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                >
+                  <Save className="w-4 h-4" />
+                  Save Current Filters
+                </button>
               </div>
             </div>
           </div>
@@ -349,6 +687,18 @@ export default function AdminAgents() {
                         </div>
                       </div>
 
+                      {/* Categories */}
+                      {app.categories && app.categories.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {app.categories.map(category => (
+                            <span key={category} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full flex items-center gap-1">
+                              <Tag className="w-3 h-3" />
+                              {category}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="mt-3 flex flex-wrap gap-2">
                         {app.platformsExperience?.slice(0, 3).map(platform => (
                           <span key={platform} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
@@ -379,13 +729,29 @@ export default function AdminAgents() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleReject(app.uid);
+                            openRejectModal(app.uid);
                           }}
                           disabled={actionLoading}
                           className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
                           title="Reject"
                         >
                           <XCircle className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
+
+                    {app.agentVerificationStatus === 'rejected' && (
+                      <div className="flex space-x-2 ml-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUnreject(app.uid);
+                          }}
+                          disabled={actionLoading}
+                          className="p-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50"
+                          title="Unreject (Move to Pending)"
+                        >
+                          <RotateCcw className="w-5 h-5" />
                         </button>
                       </div>
                     )}
@@ -398,8 +764,8 @@ export default function AdminAgents() {
 
         {/* Detail Modal */}
         {selectedAgent && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto my-8">
               <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-black">Agent Details</h2>
                 <button
@@ -432,6 +798,118 @@ export default function AdminAgents() {
                       <p className="font-medium">{selectedAgent.city}, {selectedAgent.country}</p>
                     </div>
                   </div>
+                </div>
+
+                {/* Category Management */}
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-bold text-black flex items-center gap-2">
+                      <Tag className="w-5 h-5" />
+                      Categories
+                    </h3>
+                    {!editingCategories ? (
+                      <button
+                        onClick={() => {
+                          setSelectedCategories(selectedAgent.categories || []);
+                          setEditingCategories(true);
+                        }}
+                        className="px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
+                      >
+                        Edit Categories
+                      </button>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleUpdateCategories}
+                          disabled={actionLoading}
+                          className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingCategories(false)}
+                          disabled={actionLoading}
+                          className="px-3 py-1 bg-gray-500 text-white text-sm rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {editingCategories ? (
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {availableCategories.map(cat => (
+                          <button
+                            key={cat}
+                            onClick={() => {
+                              if (selectedCategories.includes(cat)) {
+                                setSelectedCategories(selectedCategories.filter(c => c !== cat));
+                              } else {
+                                setSelectedCategories([...selectedCategories, cat]);
+                              }
+                            }}
+                            className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                              selectedCategories.includes(cat)
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-white text-purple-600 border border-purple-300 hover:border-purple-600'
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                      </div>
+
+                      {showCategoryInput ? (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            placeholder="New category name..."
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            onKeyPress={(e) => e.key === 'Enter' && addCategory()}
+                          />
+                          <button
+                            onClick={addCategory}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                          >
+                            Add
+                          </button>
+                          <button
+                            onClick={() => {
+                              setShowCategoryInput(false);
+                              setNewCategory('');
+                            }}
+                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setShowCategoryInput(true)}
+                          className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 font-medium"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Create New Category
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedAgent.categories && selectedAgent.categories.length > 0 ? (
+                        selectedAgent.categories.map(cat => (
+                          <span key={cat} className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full">
+                            {cat}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">No categories assigned</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Bio */}
@@ -701,7 +1179,7 @@ export default function AdminAgents() {
                       Approve Agent
                     </button>
                     <button
-                      onClick={() => handleReject(selectedAgent.uid)}
+                      onClick={() => openRejectModal(selectedAgent.uid)}
                       disabled={actionLoading}
                       className="flex-1 bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center"
                     >
@@ -711,11 +1189,33 @@ export default function AdminAgents() {
                   </div>
                 )}
 
-                {selectedAgent.agentVerificationStatus === 'rejected' && selectedAgent.agentRejectedReason && (
-                  <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-                    <h4 className="font-semibold text-red-900 mb-2">Rejection Reason:</h4>
-                    <p className="text-sm text-red-700">{selectedAgent.agentRejectedReason}</p>
-                  </div>
+                {selectedAgent.agentVerificationStatus === 'rejected' && (
+                  <>
+                    {selectedAgent.rejectionReason && (
+                      <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                        <h4 className="font-semibold text-red-900 mb-2 flex items-center gap-2">
+                          <AlertTriangle className="w-5 h-5" />
+                          Rejection Reason:
+                        </h4>
+                        <p className="text-sm text-red-700">{selectedAgent.rejectionReason}</p>
+                        {selectedAgent.rejectedAt && (
+                          <p className="text-xs text-red-600 mt-2">
+                            Rejected on: {selectedAgent.rejectedAt.toDate().toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex space-x-4 pt-4 border-t border-gray-200">
+                      <button
+                        onClick={() => handleUnreject(selectedAgent.uid)}
+                        disabled={actionLoading}
+                        className="flex-1 bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center justify-center"
+                      >
+                        <RotateCcw className="w-5 h-5 mr-2" />
+                        Unreject (Move to Pending)
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 {/* Delete Action - Available for all agents */}
@@ -731,6 +1231,136 @@ export default function AdminAgents() {
                   <p className="text-xs text-gray-500 mt-2 text-center">
                     This will permanently delete the account. They will need to re-register.
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reject Modal */}
+        {showRejectModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-black">Reject Agent</h2>
+                <button
+                  onClick={() => {
+                    setShowRejectModal(false);
+                    setAgentToReject(null);
+                    setRejectReason('');
+                  }}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rejection Reason (Optional)
+                  </label>
+                  <textarea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="Explain why this agent is being rejected..."
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  />
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowRejectModal(false);
+                      setAgentToReject(null);
+                      setRejectReason('');
+                    }}
+                    disabled={actionLoading}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleReject}
+                    disabled={actionLoading}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    {actionLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Rejecting...
+                      </>
+                    ) : (
+                      <>
+                        <XCircle className="w-4 h-4 mr-2" />
+                        Reject Agent
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Save Filter Modal */}
+        {showSaveFilterModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-black">Save Filter Group</h2>
+                <button
+                  onClick={() => {
+                    setShowSaveFilterModal(false);
+                    setFilterName('');
+                  }}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Filter Group Name
+                  </label>
+                  <input
+                    type="text"
+                    value={filterName}
+                    onChange={(e) => setFilterName(e.target.value)}
+                    placeholder="e.g., High Priority Agents"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+
+                <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Current Filters:</h4>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>Status: <span className="font-medium">{filter}</span></li>
+                    <li>Location: <span className="font-medium">{locationFilter === 'all' ? 'All' : locationFilter}</span></li>
+                    <li>Categories: <span className="font-medium">{categoryFilter.length === 0 ? 'All' : categoryFilter.join(', ')}</span></li>
+                  </ul>
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowSaveFilterModal(false);
+                      setFilterName('');
+                    }}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveFilterGroup}
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Filter
+                  </button>
                 </div>
               </div>
             </div>
