@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Logo from '@/components/Logo';
 import {
   Briefcase, Search, Filter, ArrowLeft, User, Users, Calendar,
-  MapPin, DollarSign, X, RefreshCw, CheckCircle, AlertCircle, Eye
+  MapPin, DollarSign, X, RefreshCw, CheckCircle, AlertCircle, Eye, Trash2, RotateCcw
 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -28,6 +28,9 @@ interface Project {
   updated_at: Timestamp;
   deadline?: Timestamp;
   tags?: string[];
+  isDeleted?: boolean;
+  deletedAt?: Timestamp;
+  deletedBy?: string;
   [key: string]: any;
 }
 
@@ -48,10 +51,14 @@ export default function AdminProjects() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [platformFilter, setPlatformFilter] = useState<string>('all');
+  const [showDeleted, setShowDeleted] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showReassignModal, setShowReassignModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [reassignLoading, setReassignLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     checkAdminAccess();
@@ -62,7 +69,7 @@ export default function AdminProjects() {
       fetchProjects();
       fetchAgents();
     }
-  }, [isAdmin]);
+  }, [isAdmin, showDeleted]);
 
   const checkAdminAccess = async () => {
     try {
@@ -122,6 +129,11 @@ export default function AdminProjects() {
 
       for (const projectDoc of projectsSnapshot.docs) {
         const projectData = projectDoc.data() as Project;
+
+        // Filter deleted/non-deleted based on showDeleted
+        const isDeleted = projectData.isDeleted === true;
+        if (showDeleted && !isDeleted) continue;
+        if (!showDeleted && isDeleted) continue;
 
         // Fetch agent profile for name
         let agentName = 'Unknown Agent';
@@ -265,6 +277,63 @@ export default function AdminProjects() {
     }
   };
 
+  const openDeleteModal = (project: Project) => {
+    setProjectToDelete(project);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteProject = async () => {
+    if (!projectToDelete) return;
+
+    try {
+      setDeleteLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Soft delete - mark as deleted
+      await updateDoc(doc(db, 'candidate_projects', projectToDelete.id), {
+        isDeleted: true,
+        deletedAt: Timestamp.now(),
+        deletedBy: 'admin',
+        updated_at: Timestamp.now()
+      });
+
+      alert('Project deleted successfully!');
+      setShowDeleteModal(false);
+      setProjectToDelete(null);
+      fetchProjects(); // Refresh projects list
+    } catch (error: any) {
+      console.error('Error deleting project:', error);
+      alert('Failed to delete project: ' + error.message);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleRestoreProject = async (projectId: string) => {
+    if (!confirm('Are you sure you want to restore this project?')) return;
+
+    try {
+      setDeleteLoading(true);
+      const db = getFirebaseFirestore();
+
+      // Restore - remove deleted flags
+      await updateDoc(doc(db, 'candidate_projects', projectId), {
+        isDeleted: false,
+        deletedAt: null,
+        deletedBy: null,
+        updated_at: Timestamp.now()
+      });
+
+      alert('Project restored successfully!');
+      fetchProjects(); // Refresh projects list
+    } catch (error: any) {
+      console.error('Error restoring project:', error);
+      alert('Failed to restore project: ' + error.message);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     const colors: any = {
       active: 'bg-green-100 text-green-800 border-green-200',
@@ -285,6 +354,22 @@ export default function AdminProjects() {
   // Get unique platforms and statuses for filters
   const uniquePlatforms = Array.from(new Set(projects.map(p => p.platform).filter(Boolean)));
   const uniqueStatuses = Array.from(new Set(projects.map(p => p.status).filter(Boolean)));
+
+  // Count deleted projects
+  const allProjectsCount = async () => {
+    try {
+      const db = getFirebaseFirestore();
+      const projectsSnapshot = await getDocs(collection(db, 'candidate_projects'));
+      return {
+        total: projectsSnapshot.size,
+        deleted: projectsSnapshot.docs.filter(doc => doc.data().isDeleted === true).length,
+        active: projectsSnapshot.docs.filter(doc => !doc.data().isDeleted).length
+      };
+    } catch (error) {
+      console.error('Error counting projects:', error);
+      return { total: 0, deleted: 0, active: 0 };
+    }
+  };
 
   // Filter projects
   const filteredProjects = projects.filter(project => {
@@ -352,11 +437,11 @@ export default function AdminProjects() {
               <Briefcase className="w-8 h-8" />
               Project Management
             </h1>
-            <p className="text-gray-600">View and reassign projects between agents</p>
+            <p className="text-gray-600">View, manage, and delete projects</p>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -371,7 +456,7 @@ export default function AdminProjects() {
                 <div>
                   <p className="text-gray-600 text-sm">Active Projects</p>
                   <p className="text-3xl font-bold text-green-600 mt-1">
-                    {projects.filter(p => p.status === 'active').length}
+                    {projects.filter(p => p.status === 'active' && !p.isDeleted).length}
                   </p>
                 </div>
                 <CheckCircle className="w-10 h-10 text-green-500" />
@@ -382,7 +467,7 @@ export default function AdminProjects() {
                 <div>
                   <p className="text-gray-600 text-sm">Pending Projects</p>
                   <p className="text-3xl font-bold text-yellow-600 mt-1">
-                    {projects.filter(p => p.status === 'pending').length}
+                    {projects.filter(p => p.status === 'pending' && !p.isDeleted).length}
                   </p>
                 </div>
                 <AlertCircle className="w-10 h-10 text-yellow-500" />
@@ -395,6 +480,41 @@ export default function AdminProjects() {
                   <p className="text-3xl font-bold text-purple-600 mt-1">{agents.length}</p>
                 </div>
                 <Users className="w-10 h-10 text-purple-500" />
+              </div>
+            </div>
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 text-sm">Deleted Projects</p>
+                  <p className="text-3xl font-bold text-red-600 mt-1">
+                    {projects.filter(p => p.isDeleted).length}
+                  </p>
+                </div>
+                <Trash2 className="w-10 h-10 text-red-500" />
+              </div>
+            </div>
+          </div>
+
+          {/* Show/Hide Deleted Toggle */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showDeleted}
+                    onChange={(e) => setShowDeleted(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Show Deleted Projects Only
+                  </span>
+                </label>
+                {showDeleted && (
+                  <span className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                    Viewing Deleted Projects
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -477,7 +597,9 @@ export default function AdminProjects() {
               {filteredProjects.map((project) => (
                 <div
                   key={project.id}
-                  className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+                  className={`bg-white rounded-lg border p-6 hover:shadow-lg transition-shadow ${
+                    project.isDeleted ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                  }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -486,6 +608,11 @@ export default function AdminProjects() {
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(project.status)}`}>
                           {project.status}
                         </span>
+                        {project.isDeleted && (
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                            DELETED
+                          </span>
+                        )}
                       </div>
 
                       {project.description && (
@@ -543,6 +670,12 @@ export default function AdminProjects() {
                         )}
                       </div>
 
+                      {project.isDeleted && project.deletedAt && (
+                        <div className="mt-3 text-xs text-red-600">
+                          Deleted on: {formatDate(project.deletedAt)} by {project.deletedBy || 'admin'}
+                        </div>
+                      )}
+
                       {project.tags && project.tags.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-2">
                           {project.tags.map((tag: string, index: number) => (
@@ -558,23 +691,43 @@ export default function AdminProjects() {
                     </div>
 
                     <div className="flex space-x-2 ml-4">
-                      <button
-                        onClick={() => {
-                          setSelectedProject(project);
-                          setShowReassignModal(true);
-                        }}
-                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                        title="Reassign Project"
-                      >
-                        <RefreshCw className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => router.push(`/candidate-projects?project=${project.id}`)}
-                        className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                        title="View Project"
-                      >
-                        <Eye className="w-5 h-5" />
-                      </button>
+                      {!project.isDeleted ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setShowReassignModal(true);
+                            }}
+                            className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                            title="Reassign Project"
+                          >
+                            <RefreshCw className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => router.push(`/candidate-projects?project=${project.id}`)}
+                            className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                            title="View Project"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(project)}
+                            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                            title="Delete Project"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleRestoreProject(project.id)}
+                          disabled={deleteLoading}
+                          className="p-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50"
+                          title="Restore Project"
+                        >
+                          <RotateCcw className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -664,6 +817,75 @@ export default function AdminProjects() {
                       <>
                         <RefreshCw className="w-4 h-4 mr-2" />
                         Reassign Project
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Modal */}
+        {showDeleteModal && projectToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-black">Delete Project</h2>
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setProjectToDelete(null);
+                  }}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                      <Trash2 className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-black">Delete this project?</h3>
+                      <p className="text-sm text-gray-600">{projectToDelete.title}</p>
+                    </div>
+                  </div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-sm text-red-800">
+                      <strong>Warning:</strong> This will mark the project as deleted. You can restore it later from the deleted projects view.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      setProjectToDelete(null);
+                    }}
+                    disabled={deleteLoading}
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteProject}
+                    disabled={deleteLoading}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    {deleteLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete Project
                       </>
                     )}
                   </button>
