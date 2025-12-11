@@ -423,6 +423,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Gradient Transition: Light to Dark */}
+        <div className="h-32 bg-gradient-to-b from-orange-50/30 via-purple-900/50 to-slate-900"></div>
+
         {/* Stats Section with Animated Remote Work Icons */}
         <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
           {/* Animated Background - Remote Work Icons */}
@@ -607,6 +610,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Gradient Transition: Dark to Light */}
+        <div className="h-32 bg-gradient-to-b from-slate-900 via-purple-900/50 to-orange-50/30"></div>
+
         {/* Features Section */}
         <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
           {/* Subtle background decoration */}
@@ -662,6 +668,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Gradient Transition: Light to Dark */}
+        <div className="h-32 bg-gradient-to-b from-orange-50/30 via-indigo-900/50 to-slate-900"></div>
 
         {/* Testimonials Section - Slider */}
         <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 text-white overflow-hidden">
@@ -745,6 +754,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Gradient Transition: Dark Indigo to Dark Purple */}
+        <div className="h-24 bg-gradient-to-b from-slate-900 via-purple-900 to-slate-800"></div>
 
         {/* Newsletter Section - Work From Home Theme */}
         <section className="relative py-24 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900">
@@ -889,8 +901,11 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Gradient Transition: Dark to Light */}
+        <div className="h-32 bg-gradient-to-b from-slate-900 via-purple-900/50 to-orange-50/30"></div>
+
         {/* Trust Badges Slider */}
-        <section className="py-12 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 border-t border-amber-200/30 overflow-hidden">
+        <section className="py-12 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
           <div className="relative">
             <div className="flex items-center space-x-8 md:space-x-16 logo-scroll-animation">
                 {/* PayPal */}
