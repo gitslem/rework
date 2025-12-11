@@ -260,7 +260,7 @@
 /* Adjusted animation speed for mobile devices */
 @media (max-width: 768px) {
   .logo-scroll-animation {
-    animation: logoScroll 20s linear infinite;
+    animation: logoScroll 50s linear infinite;
   }
 }
 
