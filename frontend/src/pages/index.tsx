@@ -665,10 +665,65 @@ export default function Home() {
 
         {/* Testimonials Section - Slider */}
         <section className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden opacity-5" style={{ pointerEvents: 'none' }}>
-            <div className="absolute top-20 left-20 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 right-20 w-64 h-64 bg-blue-500 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+          {/* Animated Background - Success & Remote Work Icons */}
+          <div className="absolute inset-0 overflow-hidden opacity-10" style={{ pointerEvents: 'none' }}>
+            {/* Floating Icons Row 1 - Top */}
+            <div className="absolute top-10 left-10 animate-float" style={{ animationDelay: '0s', animationDuration: '7s' }}>
+              <Star className="w-16 h-16 text-yellow-400" />
+            </div>
+            <div className="absolute top-20 right-20 animate-float" style={{ animationDelay: '1s', animationDuration: '9s' }}>
+              <Award className="w-14 h-14 text-amber-500" />
+            </div>
+            <div className="absolute top-32 left-1/4 animate-float" style={{ animationDelay: '2s', animationDuration: '11s' }}>
+              <BadgeCheck className="w-12 h-12 text-purple-500" />
+            </div>
+
+            {/* Floating Icons Row 2 */}
+            <div className="absolute top-48 right-1/3 animate-float" style={{ animationDelay: '0.5s', animationDuration: '8s' }}>
+              <TrendingUp className="w-18 h-18 text-green-500" />
+            </div>
+            <div className="absolute top-56 left-16 animate-float" style={{ animationDelay: '1.5s', animationDuration: '10s' }}>
+              <MessageSquare className="w-14 h-14 text-blue-500" />
+            </div>
+            <div className="absolute top-64 right-1/4 animate-float" style={{ animationDelay: '2.5s', animationDuration: '12s' }}>
+              <CheckCircle className="w-16 h-16 text-green-600" />
+            </div>
+
+            {/* Floating Icons Row 3 - Middle */}
+            <div className="absolute top-1/2 left-12 animate-float" style={{ animationDelay: '1s', animationDuration: '9s' }}>
+              <Laptop className="w-14 h-14 text-gray-500" />
+            </div>
+            <div className="absolute top-1/2 right-16 animate-float" style={{ animationDelay: '2s', animationDuration: '13s' }}>
+              <Sparkles className="w-12 h-12 text-purple-600" />
+            </div>
+            <div className="absolute top-1/3 left-1/2 animate-float" style={{ animationDelay: '3s', animationDuration: '10s' }}>
+              <Rocket className="w-20 h-20 text-indigo-500" />
+            </div>
+
+            {/* Floating Icons Row 4 - Bottom */}
+            <div className="absolute bottom-20 left-1/4 animate-float" style={{ animationDelay: '0.5s', animationDuration: '11s' }}>
+              <Users className="w-14 h-14 text-blue-600" />
+            </div>
+            <div className="absolute bottom-32 right-1/3 animate-float" style={{ animationDelay: '1.5s', animationDuration: '8s' }}>
+              <Coffee className="w-16 h-16 text-amber-600" />
+            </div>
+            <div className="absolute bottom-16 left-20 animate-float" style={{ animationDelay: '2.5s', animationDuration: '12s' }}>
+              <Target className="w-12 h-12 text-red-500" />
+            </div>
+            <div className="absolute bottom-24 right-20 animate-float" style={{ animationDelay: '3.5s', animationDuration: '9s' }}>
+              <Globe className="w-18 h-18 text-cyan-500" />
+            </div>
+
+            {/* Additional Smaller Icons for Depth */}
+            <div className="absolute top-1/4 right-1/2 animate-float" style={{ animationDelay: '4s', animationDuration: '14s' }}>
+              <Briefcase className="w-10 h-10 text-gray-600" />
+            </div>
+            <div className="absolute bottom-1/3 left-1/3 animate-float" style={{ animationDelay: '0.8s', animationDuration: '7s' }}>
+              <HomeIcon className="w-10 h-10 text-blue-400" />
+            </div>
+            <div className="absolute top-3/4 right-1/4 animate-float" style={{ animationDelay: '1.8s', animationDuration: '10s' }}>
+              <Zap className="w-10 h-10 text-yellow-500" />
+            </div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
