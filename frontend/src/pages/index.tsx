@@ -245,7 +245,7 @@ export default function Home() {
         </nav>
 
         {/* Hero Section - Clean Milkish Design with Professional Animations */}
-        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30">
+        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-white">
           {/* Subtle Background Decoration */}
           <div className="absolute inset-0 overflow-hidden opacity-40">
             {/* Animated gradient orbs */}
@@ -379,7 +379,7 @@ export default function Home() {
         </section>
 
         {/* Platform Badges */}
-        <section id="platforms" className="py-20 px-6 lg:px-8 bg-gradient-to-br from-amber-50 via-orange-50/30 to-yellow-50/40 relative overflow-hidden">
+        <section id="platforms" className="py-20 px-6 lg:px-8 bg-white relative overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-orange-200/30 rounded-full blur-3xl"></div>
@@ -423,69 +423,66 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Gradient Transition: Light to Dark */}
-        <div className="h-32 bg-gradient-to-b from-orange-50/30 via-purple-900/50 to-slate-900"></div>
-
         {/* Stats Section with Animated Remote Work Icons */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden">
+        <section className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
           {/* Animated Background - Remote Work Icons */}
           <div className="absolute inset-0 overflow-hidden opacity-10" style={{ pointerEvents: 'none' }}>
             {/* Floating Icons Row 1 */}
             <div className="absolute top-10 left-10 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
-              <Laptop className="w-16 h-16 text-white" />
+              <Laptop className="w-16 h-16 text-gray-400" />
             </div>
             <div className="absolute top-20 right-20 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
-              <Coffee className="w-14 h-14 text-white" />
+              <Coffee className="w-14 h-14 text-gray-400" />
             </div>
             <div className="absolute top-32 left-1/4 animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}>
-              <Wifi className="w-12 h-12 text-white" />
+              <Wifi className="w-12 h-12 text-gray-400" />
             </div>
 
             {/* Floating Icons Row 2 */}
             <div className="absolute top-48 right-1/3 animate-float" style={{ animationDelay: '0.5s', animationDuration: '9s' }}>
-              <Monitor className="w-18 h-18 text-white" />
+              <Monitor className="w-18 h-18 text-gray-400" />
             </div>
             <div className="absolute top-56 left-16 animate-float" style={{ animationDelay: '1.5s', animationDuration: '11s' }}>
-              <Headphones className="w-14 h-14 text-white" />
+              <Headphones className="w-14 h-14 text-gray-400" />
             </div>
             <div className="absolute top-64 right-1/4 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
-              <Globe className="w-16 h-16 text-white" />
+              <Globe className="w-16 h-16 text-gray-400" />
             </div>
 
             {/* Floating Icons Row 3 - Middle */}
             <div className="absolute top-1/2 left-12 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
-              <Code className="w-14 h-14 text-white" />
+              <Code className="w-14 h-14 text-gray-400" />
             </div>
             <div className="absolute top-1/2 right-16 animate-float" style={{ animationDelay: '2s', animationDuration: '14s' }}>
-              <Lightbulb className="w-12 h-12 text-white" />
+              <Lightbulb className="w-12 h-12 text-gray-400" />
             </div>
             <div className="absolute top-1/3 left-1/2 animate-float" style={{ animationDelay: '3s', animationDuration: '11s' }}>
-              <HomeIcon className="w-20 h-20 text-white" />
+              <HomeIcon className="w-20 h-20 text-gray-400" />
             </div>
 
             {/* Floating Icons Row 4 - Bottom */}
             <div className="absolute bottom-20 left-1/4 animate-float" style={{ animationDelay: '0.5s', animationDuration: '12s' }}>
-              <Database className="w-14 h-14 text-white" />
+              <Database className="w-14 h-14 text-gray-400" />
             </div>
             <div className="absolute bottom-32 right-1/3 animate-float" style={{ animationDelay: '1.5s', animationDuration: '9s' }}>
-              <Server className="w-16 h-16 text-white" />
+              <Server className="w-16 h-16 text-gray-400" />
             </div>
             <div className="absolute bottom-16 left-20 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
-              <Smartphone className="w-12 h-12 text-white" />
+              <Smartphone className="w-12 h-12 text-gray-400" />
             </div>
             <div className="absolute bottom-24 right-20 animate-float" style={{ animationDelay: '3.5s', animationDuration: '10s' }}>
-              <Rocket className="w-18 h-18 text-white" />
+              <Rocket className="w-18 h-18 text-gray-400" />
             </div>
 
             {/* Additional Smaller Icons for Depth */}
             <div className="absolute top-1/4 right-1/2 animate-float" style={{ animationDelay: '4s', animationDuration: '15s' }}>
-              <Zap className="w-10 h-10 text-white" />
+              <Zap className="w-10 h-10 text-gray-400" />
             </div>
             <div className="absolute bottom-1/3 left-1/3 animate-float" style={{ animationDelay: '0.8s', animationDuration: '8s' }}>
-              <Star className="w-10 h-10 text-white" />
+              <Star className="w-10 h-10 text-gray-400" />
             </div>
             <div className="absolute top-3/4 right-1/4 animate-float" style={{ animationDelay: '1.8s', animationDuration: '11s' }}>
-              <Target className="w-10 h-10 text-white" />
+              <Target className="w-10 h-10 text-gray-400" />
             </div>
           </div>
 
@@ -493,14 +490,14 @@ export default function Home() {
           <div className="max-w-6xl mx-auto relative z-10">
             {/* Section Header */}
             <div className="text-center mb-16">
-              <div className="inline-flex items-center space-x-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-white border-opacity-20 mb-6">
-                <TrendingUp className="w-5 h-5 text-white" />
-                <span className="text-white text-sm font-semibold">Our Impact</span>
+              <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-purple-200 mb-6">
+                <TrendingUp className="w-5 h-5 text-purple-600" />
+                <span className="text-gray-800 text-sm font-semibold">Our Impact</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
                 Trusted by Remote Workers Worldwide
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Join thousands of successful remote workers who found their dream opportunities through our platform
               </p>
             </div>
@@ -516,26 +513,26 @@ export default function Home() {
                   {/* Icon Container with Glow Effect */}
                   <div className="relative inline-flex items-center justify-center mb-6">
                     {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition-all duration-500"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
 
                     {/* Icon */}
                     <div
-                      className="relative w-20 h-20 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg border-2 border-white border-opacity-30 rounded-2xl flex items-center justify-center shadow-2xl hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
+                      className="relative w-20 h-20 bg-gradient-to-br from-purple-50 to-amber-50 backdrop-filter backdrop-blur-lg border-2 border-purple-200 rounded-2xl flex items-center justify-center shadow-lg hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
                       style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
                     >
-                      <div className="text-white group-hover:scale-110 transition-transform duration-300">
+                      <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
                         {stat.icon}
                       </div>
                     </div>
                   </div>
 
                   {/* Number with Gradient */}
-                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-white via-gray-200 to-gray-300 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
                     {stat.number}
                   </div>
 
                   {/* Label */}
-                  <div className="text-sm md:text-base text-gray-300 font-semibold tracking-wide uppercase group-hover:text-white transition-colors duration-300">
+                  <div className="text-sm md:text-base text-gray-600 font-semibold tracking-wide uppercase group-hover:text-black transition-colors duration-300">
                     {stat.label}
                   </div>
 
@@ -548,13 +545,13 @@ export default function Home() {
 
           {/* Decorative Grid Pattern Overlay */}
           <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+            backgroundImage: 'linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px)',
             backgroundSize: '50px 50px'
           }}></div>
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
+        <section id="how-it-works" className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
@@ -610,11 +607,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Gradient Transition: Dark to Light */}
-        <div className="h-32 bg-gradient-to-b from-slate-900 via-purple-900/50 to-orange-50/30"></div>
-
         {/* Features Section */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
+        <section className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
           {/* Subtle background decoration */}
           <div className="absolute top-10 right-10 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-10 left-10 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
@@ -669,11 +663,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Gradient Transition: Light to Dark */}
-        <div className="h-32 bg-gradient-to-b from-orange-50/30 via-indigo-900/50 to-slate-900"></div>
-
         {/* Testimonials Section - Slider */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 text-white overflow-hidden">
+        <section className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
           {/* Animated background elements */}
           <div className="absolute inset-0 overflow-hidden opacity-5" style={{ pointerEvents: 'none' }}>
             <div className="absolute top-20 left-20 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-float"></div>
@@ -682,14 +673,14 @@ export default function Home() {
 
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 mb-6 animate-fade-in">
-                <Star className="w-5 h-5 text-yellow-400" />
-                <span className="text-sm font-semibold text-white">Testimonials</span>
+              <div className="inline-flex items-center space-x-2 bg-yellow-50 backdrop-blur-sm px-6 py-3 rounded-full border border-yellow-200 mb-6 animate-fade-in">
+                <Star className="w-5 h-5 text-yellow-600" />
+                <span className="text-sm font-semibold text-gray-800">Testimonials</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 animate-fade-in-up">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 text-black animate-fade-in-up">
                 Success Stories
               </h2>
-              <p className="text-xl text-gray-400 animate-fade-in-up stagger-1">
+              <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
                 Join thousands who found success with our AI-powered platform
               </p>
             </div>
@@ -698,22 +689,22 @@ export default function Home() {
             <div className="relative">
               {/* Testimonial Card */}
               <div className="max-w-4xl mx-auto">
-                <div className="bg-gray-900/50 backdrop-blur-xl rounded-2xl p-12 border border-gray-800 transition-all duration-500 hover:border-gray-700 hover:shadow-2xl animate-fade-in-scale">
+                <div className="bg-gradient-to-br from-purple-50 to-amber-50 backdrop-blur-xl rounded-2xl p-12 border-2 border-purple-200 transition-all duration-500 hover:border-purple-400 hover:shadow-2xl animate-fade-in-scale">
                   <div className="flex gap-1 mb-8 justify-center">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400 animate-pulse" style={{ animationDelay: `${i * 0.1}s` }} />
+                      <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500 animate-pulse" style={{ animationDelay: `${i * 0.1}s` }} />
                     ))}
                   </div>
-                  <p className="text-white text-xl leading-relaxed mb-8 text-center transition-all duration-500">
+                  <p className="text-gray-800 text-xl leading-relaxed mb-8 text-center transition-all duration-500 font-medium">
                     "{testimonials[currentTestimonial].quote}"
                   </p>
                   <div className="flex items-center justify-center">
-                    <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center font-bold text-lg border-2 border-white/20 shadow-lg transition-transform duration-300 hover:scale-110">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center font-bold text-lg text-white border-2 border-purple-300 shadow-lg transition-transform duration-300 hover:scale-110">
                       {testimonials[currentTestimonial].author[0]}
                     </div>
                     <div className="ml-4 text-left">
-                      <div className="font-bold text-base">{testimonials[currentTestimonial].author}</div>
-                      <div className="text-sm text-gray-400">{testimonials[currentTestimonial].role}</div>
+                      <div className="font-bold text-base text-black">{testimonials[currentTestimonial].author}</div>
+                      <div className="text-sm text-gray-600">{testimonials[currentTestimonial].role}</div>
                     </div>
                   </div>
                 </div>
@@ -723,10 +714,10 @@ export default function Home() {
               <div className="flex items-center justify-center gap-4 mt-8 animate-fade-in">
                 <button
                   onClick={() => setCurrentTestimonial((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
-                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:scale-110 transition-all duration-300 flex items-center justify-center hover:shadow-xl"
+                  className="w-12 h-12 rounded-full bg-white border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-400 hover:scale-110 transition-all duration-300 flex items-center justify-center hover:shadow-xl"
                   aria-label="Previous testimonial"
                 >
-                  <ChevronLeft className="w-6 h-6 text-white" />
+                  <ChevronLeft className="w-6 h-6 text-purple-600" />
                 </button>
 
                 {/* Dots Indicator */}
@@ -736,7 +727,7 @@ export default function Home() {
                       key={index}
                       onClick={() => setCurrentTestimonial(index)}
                       className={`h-2 rounded-full transition-all duration-500 hover:scale-125 ${
-                        currentTestimonial === index ? 'bg-white w-8' : 'bg-gray-600 w-2'
+                        currentTestimonial === index ? 'bg-purple-600 w-8' : 'bg-gray-300 w-2'
                       }`}
                       aria-label={`Go to testimonial ${index + 1}`}
                     />
@@ -745,21 +736,18 @@ export default function Home() {
 
                 <button
                   onClick={() => setCurrentTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
-                  className="w-12 h-12 rounded-full bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:scale-110 transition-all duration-300 flex items-center justify-center hover:shadow-xl"
+                  className="w-12 h-12 rounded-full bg-white border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-400 hover:scale-110 transition-all duration-300 flex items-center justify-center hover:shadow-xl"
                   aria-label="Next testimonial"
                 >
-                  <ChevronRight className="w-6 h-6 text-white" />
+                  <ChevronRight className="w-6 h-6 text-purple-600" />
                 </button>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Gradient Transition: Dark Indigo to Dark Purple */}
-        <div className="h-24 bg-gradient-to-b from-slate-900 via-purple-900 to-slate-800"></div>
-
         {/* Newsletter Section - Work From Home Theme */}
-        <section className="relative py-24 px-6 lg:px-8 overflow-hidden bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900">
+        <section className="relative py-24 px-6 lg:px-8 overflow-hidden bg-slate-900">
           {/* Work From Home Background Illustrations */}
           <div className="absolute inset-0 -z-10 overflow-hidden">
             {/* Floating shapes representing work-from-home elements */}
@@ -901,11 +889,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Gradient Transition: Dark to Light */}
-        <div className="h-32 bg-gradient-to-b from-slate-900 via-purple-900/50 to-orange-50/30"></div>
-
         {/* Trust Badges Slider */}
-        <section className="py-12 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 overflow-hidden">
+        <section className="py-12 bg-white overflow-hidden">
           <div className="relative">
             <div className="flex items-center space-x-8 md:space-x-16 logo-scroll-animation">
                 {/* PayPal */}
