@@ -241,3 +241,29 @@
 .transition-smooth {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Logo Scroll Animation for Trust Badges */
+@keyframes logoScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-scroll-animation {
+  animation: logoScroll 25s linear infinite;
+  will-change: transform;
+}
+
+/* Faster animation on mobile devices */
+@media (max-width: 768px) {
+  .logo-scroll-animation {
+    animation: logoScroll 12s linear infinite;
+  }
+}
+
+.logo-scroll-animation:hover {
+  animation-play-state: paused;
+}

@@ -891,30 +891,6 @@ export default function Home() {
 
         {/* Trust Badges Slider */}
         <section className="py-12 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 border-t border-amber-200/30 overflow-hidden">
-          <style jsx>{`
-            @keyframes logoScroll {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(-50%);
-              }
-            }
-            .logo-scroll-animation {
-              animation: logoScroll 40s linear infinite;
-              will-change: transform;
-            }
-            /* Faster animation on mobile devices */
-            @media (max-width: 768px) {
-              .logo-scroll-animation {
-                animation: logoScroll 20s linear infinite;
-              }
-            }
-            .logo-scroll-animation:hover {
-              animation-play-state: paused;
-            }
-          `}</style>
-
           <div className="relative">
             <div className="flex logo-scroll-animation">
               {/* First set of logos */}

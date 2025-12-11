@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { collection, query, where, getDocs, writeBatch, Timestamp } from 'firebase/firestore';
-import { getDb } from '@/lib/firebase/config';
+import { getFirebaseFirestore } from '@/lib/firebase/config';
 import { Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface Stats {
@@ -36,7 +36,7 @@ export default function CleanupNotifications() {
         projects: { found: 0, deleted: 0 }
       });
 
-      const db = getDb();
+      const db = getFirebaseFirestore();
 
       // Get start of today (2025-12-11)
       const todayStart = new Date('2025-12-11T00:00:00Z');
@@ -112,7 +112,7 @@ export default function CleanupNotifications() {
         projects: { found: 0, deleted: 0 }
       });
 
-      const db = getDb();
+      const db = getFirebaseFirestore();
 
       // Get start of today (2025-12-11)
       const todayStart = new Date('2025-12-11T00:00:00Z');
