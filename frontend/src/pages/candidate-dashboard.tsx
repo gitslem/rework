@@ -152,9 +152,13 @@ export default function CandidateDashboard() {
           await loadProjectsCount(db, firebaseUser.uid);
 
           // Subscribe to real-time notifications
+          console.log('🔔 Subscribing to notifications for user:', firebaseUser.uid);
           const unsubscribe = subscribeToNotifications(firebaseUser.uid, (notifs) => {
+            console.log('🔔 Notification callback triggered! Total notifications:', notifs.length);
+            console.log('📋 Notifications:', notifs);
             setNotifications(notifs);
             const unreadNotifs = notifs.filter(n => !n.isRead);
+            console.log('🔔 Unread notifications:', unreadNotifs.length, unreadNotifs);
             setNotificationCount(unreadNotifs.length);
 
             // Count project-related notifications
@@ -163,6 +167,7 @@ export default function CandidateDashboard() {
               n.type === 'action_status_changed' ||
               n.projectId
             );
+            console.log('📊 Project notifications:', projectNotifs.length, projectNotifs);
             setProjectNotificationCount(projectNotifs.length);
           });
 

@@ -317,9 +317,13 @@ export default function AgentDashboard() {
         await loadMessages(db, firebaseUser.uid);
 
         // Subscribe to real-time notifications
+        console.log('🔔 [Agent] Subscribing to notifications for user:', firebaseUser.uid);
         const unsubscribe = subscribeToNotifications(firebaseUser.uid, (notifs) => {
+          console.log('🔔 [Agent] Notification callback triggered! Total:', notifs.length);
+          console.log('📋 [Agent] Notifications:', notifs);
           setNotifications(notifs);
           const unreadNotifs = notifs.filter(n => !n.isRead);
+          console.log('🔔 [Agent] Unread notifications:', unreadNotifs.length, unreadNotifs);
           setNotificationCount(unreadNotifs.length);
 
           // Count project-related notifications
@@ -328,6 +332,7 @@ export default function AgentDashboard() {
             n.type === 'action_status_changed' ||
             n.projectId
           );
+          console.log('📊 [Agent] Project notifications:', projectNotifs.length, projectNotifs);
           setProjectNotificationCount(projectNotifs.length);
         });
 

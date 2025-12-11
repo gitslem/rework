@@ -345,7 +345,8 @@ export default function CandidateProjectsPage() {
       });
 
       // Create notification for candidate
-      await addDoc(collection(getDb(), 'notifications'), {
+      console.log('🔔 Creating notification for candidate:', projectData.candidate_id);
+      const notificationRef = await addDoc(collection(getDb(), 'notifications'), {
         userId: projectData.candidate_id,
         type: 'project_created',
         title: 'New Project Assigned',
@@ -354,6 +355,7 @@ export default function CandidateProjectsPage() {
         isRead: false,
         createdAt: Timestamp.now()
       });
+      console.log('✅ Notification created with ID:', notificationRef.id);
 
       // Send email notification
       try {
