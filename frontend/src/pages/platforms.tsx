@@ -198,7 +198,7 @@ export default function Platforms() {
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              <Logo size="md" showText={true} />
+              <Logo size="md" showText={false} />
               <div className="flex items-center space-x-4">
                 <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium text-sm">
                   Back to Home

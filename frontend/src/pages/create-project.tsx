@@ -44,6 +44,9 @@ export default function CreateProject() {
   ];
 
   const handleGenerateBrief = async () => {
+    // Prevent multiple simultaneous submissions
+    if (loading) return;
+
     if (!rawDescription || rawDescription.length < 20) {
       setError('Please provide a detailed description (at least 20 characters)');
       return;
@@ -86,7 +89,8 @@ export default function CreateProject() {
   };
 
   const handlePostProject = async () => {
-    if (!aiBrief) return;
+    // Prevent multiple simultaneous submissions
+    if (!aiBrief || loading) return;
 
     setLoading(true);
     setError('');

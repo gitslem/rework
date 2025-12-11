@@ -892,9 +892,7 @@ export default function Home() {
         {/* Trust Badges Slider */}
         <section className="py-12 bg-gradient-to-br from-orange-50/30 via-amber-50/20 to-yellow-50/30 border-t border-amber-200/30 overflow-hidden">
           <div className="relative">
-            <div className="flex logo-scroll-animation">
-              {/* First set of logos */}
-              <div className="flex items-center space-x-8 md:space-x-16 px-8">
+            <div className="flex items-center space-x-8 md:space-x-16 logo-scroll-animation">
                 {/* PayPal */}
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
@@ -1001,10 +999,8 @@ export default function Home() {
                     <text x="20" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#10B981">Mercor</text>
                   </svg>
                 </div>
-              </div>
 
               {/* Duplicate set for seamless loop */}
-              <div className="flex items-center space-x-8 md:space-x-16 px-8">
                 {/* PayPal */}
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <svg width="100" height="32" viewBox="0 0 100 32" fill="none">
@@ -1111,7 +1107,6 @@ export default function Home() {
                     <text x="20" y="22" fontFamily="Arial, sans-serif" fontSize="17" fontWeight="bold" fill="#10B981">Mercor</text>
                   </svg>
                 </div>
-              </div>
             </div>
           </div>
         </section>
