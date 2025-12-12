@@ -947,7 +947,7 @@ export default function Home() {
         {/* Trust Badges Slider */}
         <section className="py-12 bg-white overflow-hidden">
           <div className="relative">
-            <div className="flex items-center gap-8 md:gap-16 logo-scroll-animation">
+            <div className="flex items-center logo-scroll-animation">
               {/* First set */}
               <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
