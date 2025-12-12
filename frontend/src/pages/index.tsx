@@ -947,136 +947,110 @@ export default function Home() {
         {/* Trust Badges Slider */}
         <section className="py-12 bg-white overflow-hidden">
           <div className="relative">
-            <div className="flex items-center space-x-8 md:space-x-16 logo-scroll-animation">
-                {/* Company names - First set */}
+            <div className="flex items-center gap-8 md:gap-16 logo-scroll-animation">
+              {/* First set */}
+              <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">PayPal</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">TELUS Digital</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">OneForma</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Google</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Scale AI</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Outlier</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Appen</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Alignerr</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Handshake</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Mindrift</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Lionbridge</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Mercor</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">RWS</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Welocalize</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Clickworker</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">DataAnnotation</span>
                 </div>
+              </div>
 
               {/* Duplicate set for seamless loop */}
+              <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">PayPal</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">TELUS Digital</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">OneForma</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Google</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Scale AI</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Outlier</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Appen</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Alignerr</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Handshake</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Mindrift</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Lionbridge</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Mercor</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">RWS</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Welocalize</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">Clickworker</span>
                 </div>
-
                 <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-xl font-bold text-gray-700">DataAnnotation</span>
                 </div>
+              </div>
             </div>
           </div>
         </section>

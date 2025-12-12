@@ -253,14 +253,14 @@
 }
 
 .logo-scroll-animation {
-  animation: logoScroll 15s linear infinite;
+  animation: logoScroll 20s linear infinite;
   will-change: transform;
 }
 
-/* Adjusted animation speed for mobile devices */
+/* Adjusted animation speed for mobile devices - very fast */
 @media (max-width: 768px) {
   .logo-scroll-animation {
-    animation: logoScroll 8s linear infinite;
+    animation: logoScroll 10s linear infinite;
   }
 }
 
