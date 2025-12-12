@@ -1018,8 +1018,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Duplicate set for seamless loop */}
-              <div className="flex items-center gap-12 md:gap-16 flex-shrink-0 logo-set">
+              {/* Second set for seamless loop */}
+              <div className="flex items-center gap-12 md:gap-16 flex-shrink-0 logo-set" aria-hidden="true">
                 <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
                   <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">PayPal</span>
                 </div>
