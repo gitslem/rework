@@ -194,7 +194,11 @@ export default function CandidateDashboard() {
       );
 
       const projectsSnapshot = await getDocs(projectsQuery);
-      setProjectsCount(projectsSnapshot.size);
+      // Filter out deleted projects
+      const activeProjectsCount = projectsSnapshot.docs.filter(
+        doc => doc.data().isDeleted !== true
+      ).length;
+      setProjectsCount(activeProjectsCount);
     } catch (error) {
       console.error('Error loading projects count:', error);
       setProjectsCount(0);

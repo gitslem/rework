@@ -164,13 +164,40 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  const handleBack = () => {
-    if (userRole === 'agent') {
-      router.push('/agent-dashboard');
-    } else if (userRole === 'candidate') {
-      router.push('/candidate-dashboard');
-    } else {
-      router.push('/dashboard');
+  const handleBack = async () => {
+    try {
+      // Ensure userRole is loaded before navigating
+      if (!userRole && user) {
+        const db = getFirebaseFirestore();
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const role = userData.role || '';
+
+          if (role === 'agent') {
+            await router.push('/agent-dashboard');
+          } else if (role === 'candidate') {
+            await router.push('/candidate-dashboard');
+          } else {
+            await router.push('/dashboard');
+          }
+          return;
+        }
+      }
+
+      // Navigate based on userRole
+      if (userRole === 'agent') {
+        await router.push('/agent-dashboard');
+      } else if (userRole === 'candidate') {
+        await router.push('/candidate-dashboard');
+      } else {
+        await router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback navigation
+      window.location.href = userRole === 'agent' ? '/agent-dashboard' :
+                             userRole === 'candidate' ? '/candidate-dashboard' : '/dashboard';
     }
   };
 
