@@ -252,18 +252,19 @@
   }
 }
 
-.logo-scroll-animation {
-  animation: logoScroll 20s linear infinite;
+.logo-scroll-animation-wrapper {
+  animation: logoScroll 60s linear infinite;
   will-change: transform;
+  display: flex;
 }
 
-/* Adjusted animation speed for mobile devices - very fast */
+/* Adjusted animation speed for mobile devices - slower to show all logos */
 @media (max-width: 768px) {
-  .logo-scroll-animation {
-    animation: logoScroll 10s linear infinite;
+  .logo-scroll-animation-wrapper {
+    animation: logoScroll 40s linear infinite;
   }
 }
 
-.logo-scroll-animation:hover {
+.logo-scroll-animation-wrapper:hover {
   animation-play-state: paused;
 }

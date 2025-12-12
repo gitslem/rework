@@ -112,22 +112,26 @@ export default function Home() {
     {
       quote: "Got approved on Outlier within a week after struggling for months. Best decision I made.",
       author: "Sarah J.",
-      role: "Data Annotator"
+      role: "Data Annotator",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces"
     },
     {
       quote: "This platform transformed my business. The secure payment system gives everyone peace of mind.",
       author: "Michael C.",
-      role: "Verified Agent"
+      role: "Verified Agent",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
     },
     {
       quote: "My agent knew exactly what platforms look for. Got approved on 3 services in 2 weeks.",
       author: "Priya S.",
-      role: "AI Trainer"
+      role: "AI Trainer",
+      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=faces"
     },
     {
       quote: "The AI-powered assistance made the application process so smooth. Started earning within days!",
       author: "David L.",
-      role: "Content Moderator"
+      role: "Content Moderator",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces"
     }
   ];
 
@@ -754,8 +758,22 @@ export default function Home() {
                     "{testimonials[currentTestimonial].quote}"
                   </p>
                   <div className="flex items-center justify-center">
-                    <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center font-bold text-lg text-white border-2 border-purple-300 shadow-lg transition-transform duration-300 hover:scale-110">
-                      {testimonials[currentTestimonial].author[0]}
+                    <div className="relative w-14 h-14 rounded-full border-2 border-purple-300 shadow-lg transition-transform duration-300 hover:scale-110 overflow-hidden">
+                      <img
+                        src={testimonials[currentTestimonial].avatar}
+                        alt={testimonials[currentTestimonial].author}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to gradient with initial if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.className = 'relative w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center font-bold text-lg text-white border-2 border-purple-300 shadow-lg transition-transform duration-300 hover:scale-110';
+                            parent.innerHTML = testimonials[currentTestimonial].author[0];
+                          }
+                        }}
+                      />
                     </div>
                     <div className="ml-4 text-left">
                       <div className="font-bold text-base text-black">{testimonials[currentTestimonial].author}</div>
@@ -947,108 +965,108 @@ export default function Home() {
         {/* Trust Badges Slider */}
         <section className="py-12 bg-white overflow-hidden">
           <div className="relative">
-            <div className="flex items-center logo-scroll-animation">
+            <div className="flex items-center logo-scroll-animation-wrapper">
               {/* First set */}
-              <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">PayPal</span>
+              <div className="flex items-center gap-12 md:gap-16 flex-shrink-0 logo-set">
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">PayPal</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">TELUS Digital</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">TELUS Digital</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">OneForma</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">OneForma</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Google</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Google</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Scale AI</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Scale AI</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Outlier</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Outlier</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Appen</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Appen</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Alignerr</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Alignerr</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Handshake</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Handshake</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Mindrift</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Mindrift</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Lionbridge</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Lionbridge</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Mercor</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Mercor</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">RWS</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">RWS</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Welocalize</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Welocalize</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Clickworker</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Clickworker</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">DataAnnotation</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">DataAnnotation</span>
                 </div>
               </div>
 
               {/* Duplicate set for seamless loop */}
-              <div className="flex items-center gap-8 md:gap-16 flex-shrink-0">
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">PayPal</span>
+              <div className="flex items-center gap-12 md:gap-16 flex-shrink-0 logo-set">
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">PayPal</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">TELUS Digital</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">TELUS Digital</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">OneForma</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">OneForma</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Google</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Google</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Scale AI</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Scale AI</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Outlier</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Outlier</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Appen</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Appen</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Alignerr</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Alignerr</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Handshake</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Handshake</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Mindrift</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Mindrift</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Lionbridge</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Lionbridge</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Mercor</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Mercor</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">RWS</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">RWS</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Welocalize</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Welocalize</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">Clickworker</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">Clickworker</span>
                 </div>
-                <div className="flex-shrink-0 w-32 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
-                  <span className="text-xl font-bold text-gray-700">DataAnnotation</span>
+                <div className="flex-shrink-0 w-40 h-20 flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100">
+                  <span className="text-lg md:text-xl font-bold text-gray-700 whitespace-nowrap">DataAnnotation</span>
                 </div>
               </div>
             </div>
