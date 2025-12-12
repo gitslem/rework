@@ -253,15 +253,15 @@
 }
 
 .logo-scroll-animation-wrapper {
-  animation: logoScroll 60s linear infinite;
+  animation: logoScroll 40s linear infinite;
   will-change: transform;
   display: flex;
 }
 
-/* Adjusted animation speed for mobile devices - slower to show all logos */
+/* Faster animation for mobile with tighter spacing */
 @media (max-width: 768px) {
   .logo-scroll-animation-wrapper {
-    animation: logoScroll 40s linear infinite;
+    animation: logoScroll 30s linear infinite;
   }
 }
 
