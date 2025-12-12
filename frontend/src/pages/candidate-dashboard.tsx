@@ -646,7 +646,7 @@ export default function CandidateDashboard() {
                 >
                   <Menu className="w-6 h-6 text-gray-600" />
                 </button>
-                <Logo showText={true} onClick={() => router.push('/')} size="sm" />
+                <Logo showText={false} onClick={() => router.push('/')} size="sm" />
               </div>
 
               <div className="flex items-center gap-3">
