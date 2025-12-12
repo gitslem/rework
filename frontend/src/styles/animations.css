@@ -242,29 +242,48 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Logo Scroll Animation for Trust Badges */
-@keyframes logoScroll {
-  0% {
+/* Logo Scroll Animation for Trust Badges - Fixed to show ALL logos */
+@keyframes logoScrollInfinite {
+  from {
     transform: translateX(0);
   }
-  100% {
-    transform: translateX(-50%);
+  to {
+    /* Move by width of one complete set (16 logos + gaps) */
+    /* Mobile: 16×128px + 15×24px = 2048px + 360px = 2408px */
+    /* Desktop: 16×144px + 15×32px = 2304px + 480px = 2784px */
+    transform: translateX(calc(-2408px)); /* Mobile calculation */
+  }
+}
+
+@media (min-width: 769px) {
+  @keyframes logoScrollInfinite {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-2784px)); /* Desktop calculation */
+    }
   }
 }
 
 .logo-scroll-animation-wrapper {
-  animation: logoScroll 40s linear infinite;
+  display: inline-flex;
+  animation: logoScrollInfinite 50s linear infinite;
   will-change: transform;
-  display: flex;
 }
 
-/* Faster animation for mobile with tighter spacing */
+/* Slightly faster on mobile but still shows all logos */
 @media (max-width: 768px) {
   .logo-scroll-animation-wrapper {
-    animation: logoScroll 30s linear infinite;
+    animation-duration: 40s;
   }
 }
 
 .logo-scroll-animation-wrapper:hover {
   animation-play-state: paused;
+}
+
+.logo-set {
+  display: inline-flex;
+  flex-shrink: 0;
 }
