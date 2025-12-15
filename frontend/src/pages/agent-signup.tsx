@@ -547,8 +547,20 @@ export default function AgentSignup() {
   return (
     <>
       <Head>
-        <title>Become an Agent - RemoteWorks</title>
-        <meta name="description" content="Join RemoteWorks as a verified agent and help candidates get approved for AI training projects." />
+        <title>Become an Agent - Help Others Get Remote AI Jobs | Rework Partner Program</title>
+        <meta name="description" content="Join Rework as a verified agent and earn by helping professionals get approved for Outlier, Appen, Welocalize, TELUS Digital & RWS. Flexible income opportunity. Remote agent jobs. Partner with the leading AI training platform." />
+        <meta name="keywords" content="become an agent, remote agent jobs, work from home agent, AI training agent, platform verification agent, remote work consultant, side income remote, agent partner program" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/agent-signup" />
+        <meta property="og:title" content="Become a Rework Agent - Remote Income Opportunity" />
+        <meta property="og:description" content="Join as a verified agent and help professionals get approved for AI training platforms. Flexible remote work." />
+        <meta property="og:site_name" content="Rework" />
+
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/agent-signup" />
       </Head>
 
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">

@@ -189,8 +189,49 @@ export default function Platforms() {
   return (
     <>
       <Head>
-        <title>All Platforms - Rework</title>
-        <meta name="description" content="Explore all 20+ platforms we help you get approved for. Sign up on Rework and access Outlier, Alignerr, OneForma, Appen, and more." />
+        <title>20+ Remote AI Training Platforms | Outlier, Appen, Welocalize, TELUS Digital, RWS - Rework</title>
+        <meta name="description" content="Get approved for 20+ remote AI training & data annotation platforms: Outlier AI, Appen, Welocalize, TELUS Digital, RWS, OneForma, Scale AI, Mindrift AI & more. Expert verification support. Alternative to self-applying. 98% success rate. Work from home jobs." />
+        <meta name="keywords" content="Outlier AI jobs, Appen jobs, Welocalize careers, TELUS Digital jobs, RWS jobs, OneForma, Scale AI, remote AI platforms, data annotation platforms, AI training platforms, Remotasks, Clickworker, alternative to Outlier, alternative to Appen, remote work platforms, AI job platforms" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/platforms" />
+        <meta property="og:title" content="20+ Remote AI Platforms - Outlier, Appen, Welocalize & More" />
+        <meta property="og:description" content="Get approved for Outlier, Appen, Welocalize, TELUS Digital, RWS & 15+ more platforms. 98% success rate." />
+        <meta property="og:site_name" content="Rework" />
+
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Remote AI Training Platforms Directory - Rework" />
+        <meta name="twitter:description" content="Outlier, Appen, Welocalize, TELUS Digital, RWS + 15 more. Get approved with 98% success rate." />
+
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/platforms" />
+
+        {/* Structured Data - ItemList */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              "name": "Remote AI Training & Data Annotation Platforms",
+              "description": "List of AI training and data annotation platforms supported by Rework",
+              "numberOfItems": 20,
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Outlier AI" },
+                { "@type": "ListItem", "position": 2, "name": "Appen" },
+                { "@type": "ListItem", "position": 3, "name": "Welocalize" },
+                { "@type": "ListItem", "position": 4, "name": "TELUS Digital" },
+                { "@type": "ListItem", "position": 5, "name": "RWS" },
+                { "@type": "ListItem", "position": 6, "name": "OneForma" },
+                { "@type": "ListItem", "position": 7, "name": "Scale AI" },
+                { "@type": "ListItem", "position": 8, "name": "Alignerr" }
+              ]
+            })
+          }}
+        />
       </Head>
 
       <div className="min-h-screen bg-white">

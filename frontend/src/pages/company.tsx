@@ -84,8 +84,47 @@ export default function Company() {
   return (
     <>
       <Head>
-        <title>For Companies - Partner with Remote-Works</title>
-        <meta name="description" content="Scale your workforce with Remote-Works. Access pre-qualified talent, reduce recruitment costs, and deploy teams faster than ever before." />
+        <title>For Companies - Hire Pre-Approved Remote AI Talent | Rework Enterprise Solutions</title>
+        <meta name="description" content="Scale your AI training & data annotation teams with Rework. Access 27,000+ pre-qualified professionals approved for Outlier, Appen, Welocalize, TELUS Digital & RWS. Reduce recruitment costs by 80%. Deploy teams in 24 hours. B2B workforce solutions for AI companies." />
+        <meta name="keywords" content="hire AI trainers, data annotation workforce, remote AI team, AI training talent, data labeling team, outsource AI training, AI workforce solutions, machine learning annotators, hire remote data scientists, AI training recruitment, enterprise AI solutions" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/company" />
+        <meta property="og:title" content="Hire Pre-Approved AI Training & Data Annotation Teams - Rework" />
+        <meta property="og:description" content="Access 27,000+ pre-qualified professionals. Deploy teams in 24 hours. 98% approval rate. Enterprise workforce solutions." />
+        <meta property="og:site_name" content="Rework" />
+
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Rework for Companies - Enterprise AI Workforce Solutions" />
+        <meta name="twitter:description" content="Hire pre-approved AI training & data annotation professionals. 24hr deployment. 27,000+ talent pool." />
+
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/company" />
+
+        {/* Structured Data - Service */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Service",
+              "name": "Rework Enterprise Workforce Solutions",
+              "description": "Pre-qualified AI training and data annotation workforce for companies",
+              "provider": {
+                "@type": "Organization",
+                "name": "Rework"
+              },
+              "areaServed": "Worldwide",
+              "audience": {
+                "@type": "BusinessAudience",
+                "audienceType": "AI Training Companies, Data Annotation Firms, Tech Startups"
+              }
+            })
+          }}
+        />
       </Head>
 
       <div className="min-h-screen bg-white">

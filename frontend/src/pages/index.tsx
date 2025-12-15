@@ -224,8 +224,65 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>RemoteWorks - Get Approved for AI Training Projects</title>
-        <meta name="description" content="Connect with verified agents who help you get approved for projects on Outlier, Alignerr, OneForma, and more. 98% success rate." />
+        <title>Rework - Remote AI Training Jobs | Get Approved for Outlier, Appen, Welocalize & More</title>
+        <meta name="description" content="Get approved for remote AI training and data annotation jobs on Outlier, Appen, Welocalize, TELUS Digital, RWS & 20+ platforms. Expert verification support. 98% success rate. Work from home with $4k+ avg monthly income." />
+        <meta name="keywords" content="remote work, AI training jobs, data annotation jobs, remote AI jobs, work from home, Outlier alternative, Appen alternative, Welocalize jobs, TELUS Digital jobs, RWS jobs, remote data labeling, machine learning jobs, AI training platform, remote work opportunities, data annotation platform" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/" />
+        <meta property="og:title" content="Rework - Get Approved for Remote AI Training & Data Annotation Jobs" />
+        <meta property="og:description" content="Join 27,000+ professionals earning $4k+ monthly on Outlier, Appen, Welocalize & more. 98% approval success rate." />
+        <meta property="og:site_name" content="Rework" />
+
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Rework - Remote AI Training & Data Annotation Jobs" />
+        <meta name="twitter:description" content="Get approved for remote AI jobs on Outlier, Appen, Welocalize & 20+ platforms. 98% success rate." />
+
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/" />
+        <meta name="author" content="Rework" />
+
+        {/* Structured Data - Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Rework",
+              "url": "https://rework.com",
+              "description": "Remote work enablement platform connecting professionals with AI training and data annotation opportunities",
+              "sameAs": [],
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.9",
+                "reviewCount": "27000",
+                "bestRating": "5"
+              }
+            })
+          }}
+        />
+
+        {/* Structured Data - WebSite */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Rework",
+              "url": "https://rework.com",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://rework.com/platforms?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
+        />
       </Head>
 
       <div className="min-h-screen bg-white">
