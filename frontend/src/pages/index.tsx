@@ -750,62 +750,112 @@ export default function Home() {
         </section>
 
         {/* For Employers Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-6xl mx-auto">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white via-purple-50/30 to-amber-50/30 overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Gradient Orbs */}
+            <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-purple-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
+            <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-br from-purple-300/15 to-yellow-300/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+
+            {/* Floating Icons */}
+            <div className="absolute top-20 right-1/4 animate-float" style={{ animationDuration: '6s', animationDelay: '0s' }}>
+              <Users className="w-12 h-12 text-purple-300/40" />
+            </div>
+            <div className="absolute bottom-32 left-1/3 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+              <Building2 className="w-16 h-16 text-amber-300/40" />
+            </div>
+            <div className="absolute top-1/3 right-1/3 animate-float" style={{ animationDuration: '9s', animationDelay: '0.5s' }}>
+              <Sparkles className="w-10 h-10 text-purple-400/30" />
+            </div>
+            <div className="absolute bottom-1/4 left-1/4 animate-float" style={{ animationDuration: '8s', animationDelay: '1.5s' }}>
+              <Zap className="w-14 h-14 text-amber-400/30" />
+            </div>
+
+            {/* Geometric Shapes */}
+            <div className="absolute top-40 left-20 w-20 h-20 border-2 border-purple-300/20 rounded-lg rotate-12 animate-spin-slow"></div>
+            <div className="absolute bottom-40 right-40 w-24 h-24 border-2 border-amber-300/20 rounded-full animate-pulse"></div>
+            <div className="absolute top-1/2 right-20 w-16 h-16 bg-gradient-to-br from-purple-200/10 to-amber-200/10 rounded-lg rotate-45 animate-float" style={{ animationDuration: '11s' }}></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center space-x-2 bg-blue-50 backdrop-blur-sm px-6 py-3 rounded-full border border-blue-200 mb-6 animate-fade-in">
-                <Building2 className="w-5 h-5 text-blue-600" />
-                <span className="text-sm font-semibold text-gray-700">For Employers</span>
+              <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-purple-200 mb-6 animate-fade-in shadow-lg">
+                <Building2 className="w-5 h-5 text-purple-600" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">For Employers</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
-                Hire Verified Remote Talent
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-black mb-6 animate-fade-in-up">
+                Hire Verified
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
+                  Remote Talent
+                </span>
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 Remote-Works.io helps employers access pre-screened, verified professionals ready for remote work.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
-                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                  <BadgeCheck className="w-7 h-7 text-white" />
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                <div className="relative inline-flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    <BadgeCheck className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Pre-verified Talent Pool</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors">Pre-verified Talent Pool</h3>
                 <p className="text-gray-600 leading-relaxed">Access professionals who have completed identity, skill, and eligibility verification.</p>
+                <div className="mt-6 w-0 h-1 bg-gradient-to-r from-purple-600 to-amber-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
               </div>
 
-              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
-                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                  <Zap className="w-7 h-7 text-white" />
+              <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border-2 border-gray-200 hover:border-amber-500 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                <div className="relative inline-flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-purple-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-amber-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    <Zap className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Reduced Onboarding Friction</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-amber-600 transition-colors">Reduced Onboarding Friction</h3>
                 <p className="text-gray-600 leading-relaxed">Hire candidates who are already prepared and understand remote work expectations.</p>
+                <div className="mt-6 w-0 h-1 bg-gradient-to-r from-amber-500 to-purple-600 group-hover:w-full transition-all duration-500 rounded-full"></div>
               </div>
 
-              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
-                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                  <Globe className="w-7 h-7 text-white" />
+              <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                <div className="relative inline-flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-yellow-500 rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-purple-600 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    <Globe className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Global Reach</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors">Global Reach</h3>
                 <p className="text-gray-600 leading-relaxed">Connect with qualified remote professionals from around the world.</p>
+                <div className="mt-6 w-0 h-1 bg-gradient-to-r from-purple-600 to-yellow-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
               </div>
 
-              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
-                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                  <Shield className="w-7 h-7 text-white" />
+              <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border-2 border-gray-200 hover:border-amber-500 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2">
+                <div className="relative inline-flex items-center justify-center mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-purple-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-all duration-500"></div>
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-amber-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    <Shield className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Fraud-Prevention Checks</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-amber-600 transition-colors">Fraud-Prevention Checks</h3>
                 <p className="text-gray-600 leading-relaxed">All professionals undergo verification to ensure authenticity and credibility.</p>
+                <div className="mt-6 w-0 h-1 bg-gradient-to-r from-amber-500 to-purple-600 group-hover:w-full transition-all duration-500 rounded-full"></div>
               </div>
             </div>
 
-            <div className="text-center mt-12">
+            <div className="text-center">
               <button
                 onClick={() => router.push('/company')}
-                className="bg-blue-600 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-blue-700 transition-all hover:shadow-xl hover:scale-105 inline-flex items-center space-x-3"
+                className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 text-white px-12 py-6 rounded-full font-bold text-lg transition-all duration-500 hover:shadow-2xl hover:scale-105 inline-flex items-center space-x-3 overflow-hidden"
               >
-                <span>Post Opportunities or Request Talent</span>
-                <ArrowRight className="w-5 h-5" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-gray-900 to-black opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <span className="relative z-10 flex items-center space-x-3">
+                  <Building2 className="w-6 h-6 animate-bounce-subtle" />
+                  <span>Post Opportunities or Request Talent</span>
+                  <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
+                </span>
               </button>
             </div>
           </div>
