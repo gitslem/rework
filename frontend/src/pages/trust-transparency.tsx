@@ -6,7 +6,7 @@ import {
   FileCheck, Eye, Award, BadgeCheck, Search, Ban,
   TrendingUp, Users, Verified, ShieldCheck, Heart,
   Target, Lightbulb, Scale, Fingerprint, Bell, Database,
-  ArrowRight, Mail, Phone
+  ArrowRight, Mail, Phone, X
 } from 'lucide-react';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
@@ -189,8 +189,8 @@ export default function TrustTransparency() {
   return (
     <>
       <Head>
-        <title>Trust & Transparency | RemoteWorks</title>
-        <meta name="description" content="Learn about our commitment to trust, transparency, and security. Discover how we protect our community from scams and verify every agent." />
+        <title>Trust & Transparency | Remote-Works.io</title>
+        <meta name="description" content="Complete transparency about our role, services, and commitments. Learn what we do, what we don't do, and how we protect our community while maintaining ethical standards." />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -235,8 +235,8 @@ export default function TrustTransparency() {
                 Trust & Transparency
               </h1>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed">
-                Building a safe, transparent, and trustworthy platform for candidates and agents.
-                Learn how we protect our community and maintain the highest standards.
+                Complete honesty about our role, services, and limitations. Learn what we do, what we don't do,
+                and how we maintain ethical standards while protecting our community.
               </p>
             </div>
           </div>
@@ -265,6 +265,137 @@ export default function TrustTransparency() {
                   <p className="text-gray-600 leading-relaxed">{value.description}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Transparency & Commitment Section */}
+        <section className="py-20 bg-gradient-to-b from-amber-50 via-white to-amber-50">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-amber-50 backdrop-blur-sm px-6 py-3 rounded-full border border-amber-200 mb-6">
+                <Shield className="w-5 h-5 text-amber-600" />
+                <span className="text-sm font-semibold text-gray-700">Transparency & Trust</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Our Commitment to Transparency
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                We believe in complete honesty about our role, services, and limitations. Here's what you need to know about working with Remote-Works.io.
+              </p>
+            </div>
+
+            <div className="max-w-5xl mx-auto space-y-6">
+              {/* What We Don't Do */}
+              <div className="bg-white border-2 border-amber-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                      <X className="w-7 h-7 text-red-600" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Remote-Works.io does not sell jobs</h3>
+                    <p className="text-gray-700 leading-relaxed text-lg">
+                      We provide career enablement and recruitment support—we don't sell employment. We are a platform that helps professionals prepare and connect with opportunities offered by third-party companies.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border-2 border-amber-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                      <X className="w-7 h-7 text-red-600" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">We do not guarantee approvals or placements</h3>
+                    <p className="text-gray-700 leading-relaxed text-lg">
+                      Success depends on third-party company requirements and individual qualifications. We provide support and guidance, but final hiring decisions are always made by the respective companies and platforms.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border-2 border-amber-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                      <X className="w-7 h-7 text-red-600" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">We do not represent ourselves as an employer</h3>
+                    <p className="text-gray-700 leading-relaxed text-lg">
+                      We are an independent platform connecting professionals with opportunities. All employment relationships, work assignments, payments, and contracts are directly between you and the hiring companies—not with Remote-Works.io.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* What We Do */}
+              <div className="bg-gradient-to-r from-amber-100 to-amber-50 border-2 border-amber-300 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                      <CheckCircle className="w-7 h-7 text-green-600" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">We provide career enablement and recruitment support</h3>
+                    <p className="text-gray-700 leading-relaxed text-lg">
+                      Our role is to help you prepare comprehensive profiles, complete necessary verifications, receive structured onboarding and guidance, and connect with legitimate remote work opportunities offered by third-party companies and platforms.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Important Disclaimer */}
+              <div className="bg-blue-50 border-2 border-blue-300 rounded-2xl p-8 mt-8 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <AlertTriangle className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Important Notice</h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      <strong>All opportunities are subject to third-party company requirements and availability.</strong> Remote-Works.io is an independent platform providing career enablement and recruitment support services. We are not affiliated with, endorsed by, or acting on behalf of any third-party company unless explicitly stated in writing.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Principles */}
+            <div className="mt-16 max-w-5xl mx-auto">
+              <div className="bg-white rounded-2xl p-10 border-2 border-gray-200 shadow-lg">
+                <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Operating Principles</h3>
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Eye className="w-8 h-8 text-amber-600" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg">Full Transparency</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed">Clear communication about our role, services, and what we can and cannot do</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <ShieldCheck className="w-8 h-8 text-amber-600" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg">No False Promises</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed">Realistic expectations and honest guidance throughout your journey</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Heart className="w-8 h-8 text-amber-600" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg">Ethical Support</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed">Professional career enablement services focused on your long-term success</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -418,23 +549,23 @@ export default function TrustTransparency() {
         <section className="py-20 bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white">
           <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
             <Shield className="w-16 h-16 mx-auto mb-6 text-white" />
-            <h2 className="text-4xl font-bold mb-6">Join Our Trusted Community</h2>
+            <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Start your journey with confidence. Connect with verified agents and begin earning with complete peace of mind.
+              Join Remote-Works.io with complete transparency and confidence. Verify your profile, prepare for applications, and connect with legitimate remote work opportunities.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => router.push('/register?type=candidate')}
                 className="bg-white text-black px-8 py-4 rounded-lg hover:bg-gray-100 transition-all font-semibold inline-flex items-center justify-center space-x-2"
               >
-                <span>Get Started as Candidate</span>
+                <span>Get Started as a Professional</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
               <button
-                onClick={() => router.push('/agent-signup')}
+                onClick={() => router.push('/company')}
                 className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-black transition-all font-semibold inline-flex items-center justify-center space-x-2"
               >
-                <span>Become an Agent</span>
+                <span>For Employers</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             </div>
