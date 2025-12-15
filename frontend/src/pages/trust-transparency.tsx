@@ -189,7 +189,7 @@ export default function TrustTransparency() {
   return (
     <>
       <Head>
-        <title>Trust & Transparency | Remote-Works.io</title>
+        <title>Trust & Transparency | Rework</title>
         <meta name="description" content="Complete transparency about our role, services, and commitments. Learn what we do, what we don't do, and how we protect our community while maintaining ethical standards." />
       </Head>
 
@@ -281,7 +281,7 @@ export default function TrustTransparency() {
                 Our Commitment to Transparency
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                We believe in complete honesty about our role, services, and limitations. Here's what you need to know about working with Remote-Works.io.
+                We believe in complete honesty about our role, services, and limitations. Here's what you need to know about working with Rework.
               </p>
             </div>
 
@@ -295,7 +295,7 @@ export default function TrustTransparency() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Remote-Works.io does not sell jobs</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">Rework does not sell jobs</h3>
                     <p className="text-gray-700 leading-relaxed text-lg">
                       We provide career enablement and recruitment support—we don't sell employment. We are a platform that helps professionals prepare and connect with opportunities offered by third-party companies.
                     </p>
@@ -329,7 +329,7 @@ export default function TrustTransparency() {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-3">We do not represent ourselves as an employer</h3>
                     <p className="text-gray-700 leading-relaxed text-lg">
-                      We are an independent platform connecting professionals with opportunities. All employment relationships, work assignments, payments, and contracts are directly between you and the hiring companies—not with Remote-Works.io.
+                      We are an independent platform connecting professionals with opportunities. All employment relationships, work assignments, payments, and contracts are directly between you and the hiring companies—not with Rework.
                     </p>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export default function TrustTransparency() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-3">Important Notice</h3>
                     <p className="text-gray-700 leading-relaxed">
-                      <strong>All opportunities are subject to third-party company requirements and availability.</strong> Remote-Works.io is an independent platform providing career enablement and recruitment support services. We are not affiliated with, endorsed by, or acting on behalf of any third-party company unless explicitly stated in writing.
+                      <strong>All opportunities are subject to third-party company requirements and availability.</strong> Rework is an independent platform providing career enablement and recruitment support services. We are not affiliated with, endorsed by, or acting on behalf of any third-party company unless explicitly stated in writing.
                     </p>
                   </div>
                 </div>
@@ -551,7 +551,7 @@ export default function TrustTransparency() {
             <Shield className="w-16 h-16 mx-auto mb-6 text-white" />
             <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              Join Remote-Works.io with complete transparency and confidence. Verify your profile, prepare for applications, and connect with legitimate remote work opportunities.
+              Join Rework with complete transparency and confidence. Verify your profile, prepare for applications, and connect with legitimate remote work opportunities.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
