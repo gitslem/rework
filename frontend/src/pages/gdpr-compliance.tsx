@@ -223,7 +223,7 @@ export default function GDPRCompliance() {
         </nav>
 
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 text-white py-20 overflow-hidden">
+        <section className="relative bg-gradient-to-br from-purple-900 via-purple-800 to-amber-900 text-white py-20 overflow-hidden">
           <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
 
@@ -265,7 +265,7 @@ export default function GDPRCompliance() {
                   key={index}
                   className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-amber-500 rounded-xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform">
                     {principle.icon}
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{principle.title}</h3>
@@ -308,12 +308,12 @@ export default function GDPRCompliance() {
               ))}
             </div>
 
-            <div className="mt-12 bg-blue-50 border-2 border-blue-200 rounded-2xl p-8 text-center">
-              <Book className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+            <div className="mt-12 bg-purple-50 border-2 border-purple-200 rounded-2xl p-8 text-center">
+              <Book className="w-12 h-12 text-purple-600 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Need Help Exercising Your Rights?</h3>
               <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
                 Our Data Protection Officer is here to help. Contact us at{' '}
-                <a href="mailto:dpo@remote-works.io" className="text-blue-600 hover:text-blue-700 font-semibold">
+                <a href="mailto:dpo@remote-works.io" className="text-purple-600 hover:text-purple-700 font-semibold">
                   dpo@remote-works.io
                 </a>{' '}
                 to exercise any of your rights or ask questions about our data practices.
@@ -375,7 +375,7 @@ export default function GDPRCompliance() {
                   className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group"
                 >
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-amber-500 rounded-lg flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform">
                       {measure.icon}
                     </div>
                     <div>
@@ -471,8 +471,8 @@ export default function GDPRCompliance() {
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-8">
-                <Mail className="w-12 h-12 text-blue-600 mb-4" />
+              <div className="bg-gradient-to-br from-purple-50 to-amber-50 border-2 border-purple-200 rounded-2xl p-8">
+                <Mail className="w-12 h-12 text-purple-600 mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Contact Our DPO</h3>
                 <p className="text-gray-700 mb-6 leading-relaxed">
                   Have questions about your data or our GDPR compliance? Our Data Protection Officer is here to help.
@@ -508,7 +508,7 @@ export default function GDPRCompliance() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 text-white">
+        <section className="py-20 bg-gradient-to-br from-purple-900 via-purple-800 to-amber-900 text-white">
           <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
             <Shield className="w-16 h-16 mx-auto mb-6 text-white" />
             <h2 className="text-4xl font-bold mb-6">Your Privacy, Our Priority</h2>

@@ -18,74 +18,74 @@ export default function FAQ() {
       category: "Getting Started",
       faqs: [
         {
-          question: "What is Remote-Works?",
-          answer: "Remote-Works is a marketplace that connects candidates with verified agents who help them get approved for projects on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, and more. Our agents have proven track records and provide personalized guidance to maximize your chances of approval."
+          question: "What is Rework?",
+          answer: "Rework is a remote work enablement and recruitment platform that helps professionals prepare, verify, and connect with legitimate remote work opportunities. We provide profile verification, application readiness support, and access to vetted opportunities on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, and 20+ more. We are not an employer—all hiring decisions are made by third-party companies."
         },
         {
           question: "How do I sign up?",
-          answer: "Click 'Get Started' on our homepage and choose whether you want to sign up as a candidate or agent. Fill out your profile information and wait for admin approval (usually 24-48 hours). Once approved, candidates can browse agents and agents can start accepting clients."
+          answer: "Click 'Get Started' on our homepage and create your professional profile. Complete the verification process including identity, skill, and eligibility checks. Once verified, you'll gain access to remote work opportunities from trusted platforms. The verification process typically takes 24-48 hours."
         },
         {
-          question: "Is there a fee to join?",
-          answer: "Signing up is completely free for both candidates and agents. Candidates only pay when they hire an agent, and agents only pay a small platform fee when they complete a successful placement."
+          question: "Is the platform free to use?",
+          answer: "Yes! Creating an account and accessing the platform is completely free. There are no hidden fees or mandatory charges. Optional career support services (like profile optimization or application readiness review) are available for purchase if you choose to use them, but they're not required to access opportunities."
         },
         {
-          question: "How long does admin approval take?",
-          answer: "Admin approval typically takes 24-48 hours. We review each profile to ensure quality and authenticity. You'll receive an email notification once your account is approved."
+          question: "How long does verification take?",
+          answer: "The verification process typically takes 24-48 hours. We review your identity, skills, and eligibility to ensure you meet platform standards. You'll receive an email notification once your verification is complete and you can start accessing opportunities."
         }
       ]
     },
     {
-      category: "For Candidates",
+      category: "For Professionals",
       faqs: [
         {
-          question: "How much do agents charge?",
-          answer: "Agent fees vary based on the service and platform. Most agents charge between $50-$200, but you only pay if you get approved. Each agent's profile lists their specific rates for different platforms."
+          question: "How much does it cost to access opportunities?",
+          answer: "Accessing the platform and opportunities is completely free. Optional career support services (profile optimization, application readiness review, skill assessment guidance) are available for purchase if you choose to use them, with prices varying by service. These services are not required—they're just additional support if you want extra help."
         },
         {
-          question: "What's the success rate?",
-          answer: "Our verified agents have a 98% success rate in getting candidates approved. We only work with agents who have proven track records and consistently deliver results."
+          question: "What's the success rate for platform approvals?",
+          answer: "Professionals who complete our verification process and follow platform guidelines have a 98% success rate in securing opportunities. We ensure your profile meets platform standards and requirements before you apply, significantly increasing your chances of approval."
         },
         {
-          question: "How do I choose an agent?",
-          answer: "Browse agent profiles to see their specializations, success rates, reviews, and pricing. Look for agents who specialize in the platforms you're interested in and have high ratings from previous clients."
+          question: "How do I access remote work opportunities?",
+          answer: "After completing verification, browse available opportunities that match your skills and interests. Each opportunity listing shows platform requirements, expected income, and application details. You apply directly through our platform, and we help ensure your application meets all requirements."
         },
         {
-          question: "What if I don't get approved?",
-          answer: "Most agents offer a money-back guarantee if you don't get approved. This is specified in their profile. You can also work with the agent to reapply or try a different platform."
+          question: "Do you guarantee job placement?",
+          answer: "No. We provide career enablement and recruitment support, not employment guarantees. We help you prepare application-ready profiles and connect you with opportunities, but all hiring decisions are made by the third-party companies and platforms based on their specific requirements."
         },
         {
-          question: "How long does the approval process take?",
-          answer: "Once you hire an agent, they typically help you prepare and submit your application within 3-7 days. Platform approval times vary, but most take 1-2 weeks to review applications."
+          question: "How long does it take to start working?",
+          answer: "After verification (24-48 hours), you can immediately start applying to opportunities. Platform approval times vary—most take 1-2 weeks to review applications. Once approved by the platform, you can typically start working right away."
         },
         {
-          question: "Can I hire multiple agents?",
-          answer: "Yes! You can hire different agents for different platforms. For example, one agent might specialize in Outlier while another excels at Alignerr approvals."
+          question: "Can I apply to multiple platforms?",
+          answer: "Yes! You can apply to as many platforms as you'd like. Many professionals work across multiple platforms simultaneously to maximize their income. We support 20+ platforms including Outlier, Alignerr, OneForma, Appen, and more."
         }
       ]
     },
     {
-      category: "For Agents",
+      category: "For Employers",
       faqs: [
         {
-          question: "How do I become a verified agent?",
-          answer: "Sign up as an agent and complete your profile with details about your experience and success rate. Provide evidence of successful placements (testimonials, screenshots, etc.). Our team will review your application and verify your credentials within 48 hours."
+          question: "How can my company use Rework to find talent?",
+          answer: "Rework helps employers access pre-screened, verified professionals ready for remote work. You can post opportunities or request talent that matches your specific requirements. All professionals have completed identity, skill, and eligibility verification before being added to our talent pool."
         },
         {
-          question: "What's the platform fee?",
-          answer: "We charge a 15% platform fee on successful placements. This covers payment processing, security, and platform maintenance. There are no upfront fees or monthly subscriptions."
+          question: "What types of professionals are available?",
+          answer: "Our platform includes professionals skilled in AI training, data annotation, content moderation, software development, and other remote work roles. All professionals are verified and have experience with remote work platforms and digital collaboration."
         },
         {
-          question: "How do I get paid?",
-          answer: "Payments are held in escrow until the candidate is approved for the platform. Once approval is confirmed, funds are released to your account within 3-5 business days. You can withdraw to your bank account or PayPal."
+          question: "How are professionals vetted?",
+          answer: "Every professional completes comprehensive verification including identity checks, skill assessments, and eligibility reviews. This ensures authenticity and credibility. Professionals also receive application readiness training to understand remote work expectations."
         },
         {
-          question: "Can I set my own prices?",
-          answer: "Yes! You have full control over your pricing for each platform you support. We recommend competitive rates based on market research, but the final decision is yours."
+          question: "What's the process for hiring through Rework?",
+          answer: "Post your opportunity or specific talent requirements on our platform. Browse pre-verified professional profiles or receive recommendations. Connect with candidates directly for interviews. All hiring decisions and employment relationships are between you and the professional."
         },
         {
-          question: "How do I attract more clients?",
-          answer: "Build a strong profile with detailed service descriptions, maintain a high success rate, collect positive reviews, respond quickly to inquiries, and specialize in specific platforms to become a go-to expert."
+          question: "Is there a fee for employers?",
+          answer: "Contact our sales team for employer pricing and partnership options. We offer flexible plans based on your hiring volume and needs. Visit our For Employers page or contact support for more information."
         }
       ]
     },
@@ -93,24 +93,24 @@ export default function FAQ() {
       category: "Payments & Security",
       faqs: [
         {
-          question: "How does payment work?",
-          answer: "Candidates pay upfront, and funds are held in secure escrow. When the candidate gets approved for the platform, the funds are released to the agent. If approval doesn't happen (and the agent offers a guarantee), funds are refunded to the candidate."
+          question: "How does payment work for optional services?",
+          answer: "The platform is free to use. If you choose to purchase optional career support services (profile optimization, application readiness review, etc.), payment is processed securely through trusted payment processors. You only pay for the specific services you choose to use."
         },
         {
           question: "Is my payment information secure?",
-          answer: "Yes. We use industry-standard encryption and work with trusted payment processors (Stripe, PayPal). We never store your full credit card information on our servers."
+          answer: "Yes. We use industry-standard encryption and work with trusted payment processors including Stripe and PayPal. We never store your full credit card information on our servers. All transactions are encrypted and secure."
         },
         {
           question: "What payment methods do you accept?",
-          answer: "We accept all major credit cards, debit cards, and PayPal. Payment options may vary by region."
+          answer: "We accept all major credit cards, debit cards, and PayPal for optional service purchases. Payment options may vary by region. The platform itself requires no payment."
         },
         {
-          question: "Can I get a refund?",
-          answer: "Refund policies depend on the agent's guarantee. Most agents offer full refunds if you don't get approved. Check the agent's profile for their specific refund policy."
+          question: "What is your refund policy?",
+          answer: "Refund policies for optional career support services are clearly stated before purchase. Contact our support team if you have any issues with a service. Platform access is always free, so no refund is needed for basic features."
         },
         {
           question: "How is my personal data protected?",
-          answer: "We use enterprise-grade security, including SSL encryption, secure databases, and regular security audits. We never sell your data to third parties. See our Privacy Policy for details."
+          answer: "We use enterprise-grade security including SSL encryption, secure databases, GDPR compliance, and regular security audits. We never sell your data to third parties. All verification data is stored securely and used only for platform access. See our Privacy Policy and GDPR Compliance pages for details."
         }
       ]
     },
@@ -118,24 +118,24 @@ export default function FAQ() {
       category: "Platform Features",
       faqs: [
         {
-          question: "Can I message agents before hiring?",
-          answer: "Yes! You can message agents to ask questions and discuss your situation before making a commitment. This helps ensure you find the right fit."
+          question: "Can I contact support before signing up?",
+          answer: "Yes! Our support team is available 24/7 via email and live chat during business hours (9 AM - 6 PM EST). We're happy to answer questions about verification, opportunities, or any platform features before you create an account."
         },
         {
-          question: "How do reviews work?",
-          answer: "After a service is completed, both candidates and agents can leave reviews. Reviews are verified and help build trust in our community. High ratings help agents attract more clients."
+          question: "How does the verification process work?",
+          answer: "After signing up, you'll complete identity verification (government ID), skill assessment (relevant to your expertise), and eligibility review (platform-specific requirements). This ensures all professionals meet quality standards and helps increase approval rates for opportunities."
         },
         {
-          question: "What if I have a dispute with an agent?",
-          answer: "Contact our support team immediately. We'll mediate the dispute and, if necessary, issue refunds or take action against agents who violate our terms of service."
+          question: "What if I have an issue with an opportunity or platform?",
+          answer: "Contact our support team immediately. While we don't control hiring decisions (those are made by third-party companies), we can help mediate issues, provide guidance, and ensure your experience on our platform is positive."
         },
         {
           question: "Is there customer support?",
-          answer: "Yes! We offer 24/7 email support and live chat during business hours (9 AM - 6 PM EST). Premium users get priority support with faster response times."
+          answer: "Yes! We offer 24/7 email support and live chat during business hours (9 AM - 6 PM EST). All users receive the same high-quality support with fast response times."
         },
         {
-          question: "Can I update my profile after creating it?",
-          answer: "Absolutely! You can update your profile, skills, services, and pricing at any time. Some changes (like adding new platform specializations for agents) may require re-verification."
+          question: "Can I update my profile after verification?",
+          answer: "Absolutely! You can update your profile, skills, and experience at any time. Significant changes may require re-verification to ensure your profile remains accurate and you continue to meet platform standards."
         }
       ]
     },
@@ -143,20 +143,20 @@ export default function FAQ() {
       category: "Supported Platforms",
       faqs: [
         {
-          question: "Which platforms do you support?",
-          answer: "Our agents help with Outlier AI, Alignerr, OneForma, Appen, RWS, Mindrift AI, TELUS Digital, and 20+ other AI training and remote work platforms. New platforms are added regularly based on demand."
+          question: "Which platforms do you connect with?",
+          answer: "We connect professionals with opportunities on 20+ platforms including Outlier AI, Alignerr, OneForma, Appen, RWS, Mindrift AI, TELUS Digital, Scale AI, and many more AI training and remote work platforms. New platforms are added regularly based on demand and verification standards."
         },
         {
-          question: "Do I need to know which platform I want?",
-          answer: "No! Many candidates aren't sure which platform is best for them. Agents can help you choose based on your skills, experience, and goals."
+          question: "Do I need to know which platform I want to work on?",
+          answer: "No! Many professionals aren't sure which platform is best for them. Our platform provides guidance and recommendations based on your skills, experience, location, and career goals. You can browse all available opportunities and choose what fits best."
         },
         {
-          question: "Can agents help with multiple platforms?",
-          answer: "Yes! Many agents specialize in multiple platforms. Check their profile to see which services they offer."
+          question: "Can I work on multiple platforms at once?",
+          answer: "Yes! Many professionals work across multiple platforms simultaneously to maximize income and opportunities. Our average user earns $4k+ monthly by working on multiple platforms. There's no restriction on how many you can join."
         },
         {
           question: "What if my desired platform isn't listed?",
-          answer: "Contact our support team! We're constantly adding new platforms based on user requests. We may already have agents who support it or can help you find a solution."
+          answer: "Contact our support team! We're constantly adding new platforms based on user requests and verification standards. We may already be in the process of adding it or can help you find similar opportunities."
         }
       ]
     }
@@ -173,8 +173,8 @@ export default function FAQ() {
   return (
     <>
       <Head>
-        <title>FAQ - Frequently Asked Questions | Remote-Works</title>
-        <meta name="description" content="Find answers to common questions about Remote-Works, our agent marketplace, payments, security, and how to get started." />
+        <title>FAQ - Frequently Asked Questions | Rework</title>
+        <meta name="description" content="Find answers to common questions about Rework, our remote work enablement platform, verification process, opportunities, payments, security, and how to get started." />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -231,7 +231,7 @@ export default function FAQ() {
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Find answers to common questions about Remote-Works
+                Find answers to common questions about Rework
               </p>
 
               {/* Search Bar */}
