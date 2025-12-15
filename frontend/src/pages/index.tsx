@@ -423,8 +423,31 @@ export default function Home() {
         </section>
 
         {/* What We Do - Clarity Section */}
-        <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
-          <div className="max-w-6xl mx-auto">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+            {/* Floating Icons - Mission & Clarity Theme */}
+            <div className="absolute top-20 left-16 animate-float" style={{ animationDuration: '7s', animationDelay: '0s' }}>
+              <Target className="w-20 h-20 text-purple-400" />
+            </div>
+            <div className="absolute top-40 right-20 animate-float" style={{ animationDuration: '9s', animationDelay: '1s' }}>
+              <Lightbulb className="w-16 h-16 text-amber-400" />
+            </div>
+            <div className="absolute bottom-32 left-1/4 animate-float" style={{ animationDuration: '11s', animationDelay: '2s' }}>
+              <Shield className="w-18 h-18 text-purple-500" />
+            </div>
+            <div className="absolute top-1/2 right-1/4 animate-float" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
+              <CheckCircle className="w-14 h-14 text-green-500" />
+            </div>
+            <div className="absolute bottom-20 right-16 animate-float" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
+              <BadgeCheck className="w-16 h-16 text-purple-600" />
+            </div>
+            {/* Gradient Orbs */}
+            <div className="absolute top-10 right-1/3 w-64 h-64 bg-gradient-to-br from-purple-300/20 to-amber-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-10 left-1/3 w-72 h-72 bg-gradient-to-br from-amber-300/20 to-purple-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-200 mb-6 animate-fade-in">
                 <Target className="w-5 h-5 text-purple-600" />
@@ -444,31 +467,36 @@ export default function Home() {
                   We support professionals by providing profile verification, application readiness, and access to vetted remote opportunities offered by third-party companies and platforms.
                 </p>
               </div>
-
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-8 shadow-lg">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <Shield className="w-8 h-8 text-amber-600" />
-                  </div>
-                  <div className="space-y-3">
-                    <p className="text-lg text-gray-800 leading-relaxed">
-                      <strong>We are not an employer and do not guarantee job placement.</strong>
-                    </p>
-                    <p className="text-base text-gray-700 leading-relaxed">
-                      All hiring decisions are made by the respective third-party companies.
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </section>
 
         {/* Platform Badges */}
         <section id="platforms" className="py-20 px-6 lg:px-8 bg-white relative overflow-hidden">
-          {/* Subtle background decoration */}
-          <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-72 h-72 bg-orange-200/30 rounded-full blur-3xl"></div>
+          {/* Animated Background Elements - Platform & Connection Theme */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Gradient Orbs */}
+            <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-amber-300/30 to-orange-300/30 rounded-full blur-3xl animate-float" style={{ animationDuration: '10s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-br from-orange-300/30 to-amber-300/30 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-br from-purple-300/20 to-amber-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '1s' }}></div>
+
+            {/* Floating Platform/Connection Icons */}
+            <div className="absolute top-20 left-20 animate-float opacity-10" style={{ animationDuration: '8s', animationDelay: '0s' }}>
+              <Globe className="w-16 h-16 text-purple-500" />
+            </div>
+            <div className="absolute top-32 right-24 animate-float opacity-10" style={{ animationDuration: '9s', animationDelay: '1s' }}>
+              <Layers className="w-14 h-14 text-amber-500" />
+            </div>
+            <div className="absolute bottom-28 left-1/4 animate-float opacity-10" style={{ animationDuration: '11s', animationDelay: '2s' }}>
+              <Briefcase className="w-18 h-18 text-orange-500" />
+            </div>
+            <div className="absolute bottom-20 right-1/3 animate-float opacity-10" style={{ animationDuration: '10s', animationDelay: '0.5s' }}>
+              <Building2 className="w-16 h-16 text-purple-600" />
+            </div>
+            <div className="absolute top-1/2 left-16 animate-float opacity-10" style={{ animationDuration: '13s', animationDelay: '1.5s' }}>
+              <Sparkles className="w-12 h-12 text-amber-600" />
+            </div>
+          </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
@@ -638,9 +666,33 @@ export default function Home() {
 
         {/* How It Works Section */}
         <section id="how-it-works" className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
-          {/* Subtle background decoration */}
-          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }}></div>
+          {/* Animated Background Elements - Process/Workflow Theme */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Gradient Orbs */}
+            <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-300/20 to-blue-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '10s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-300/20 to-yellow-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '3s' }}></div>
+            <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-to-br from-purple-200/15 to-amber-200/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '1.5s' }}></div>
+
+            {/* Floating Process/Workflow Icons */}
+            <div className="absolute top-24 right-20 animate-float opacity-10" style={{ animationDuration: '8s', animationDelay: '0s' }}>
+              <ArrowRight className="w-16 h-16 text-purple-500" />
+            </div>
+            <div className="absolute top-1/3 left-16 animate-float opacity-10" style={{ animationDuration: '9s', animationDelay: '1s' }}>
+              <UserCheck className="w-18 h-18 text-blue-500" />
+            </div>
+            <div className="absolute bottom-32 right-1/3 animate-float opacity-10" style={{ animationDuration: '11s', animationDelay: '2s' }}>
+              <FileCheck className="w-14 h-14 text-green-500" />
+            </div>
+            <div className="absolute top-1/2 right-12 animate-float opacity-10" style={{ animationDuration: '10s', animationDelay: '0.5s' }}>
+              <Rocket className="w-20 h-20 text-amber-500" />
+            </div>
+            <div className="absolute bottom-20 left-1/4 animate-float opacity-10" style={{ animationDuration: '13s', animationDelay: '1.5s' }}>
+              <CheckCircle className="w-16 h-16 text-purple-600" />
+            </div>
+            <div className="absolute top-40 left-1/3 animate-float opacity-10" style={{ animationDuration: '12s', animationDelay: '2.5s' }}>
+              <Target className="w-12 h-12 text-amber-600" />
+            </div>
+          </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
@@ -695,9 +747,36 @@ export default function Home() {
 
         {/* Features Section */}
         <section className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
-          {/* Subtle background decoration */}
-          <div className="absolute top-10 right-10 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute bottom-10 left-10 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+          {/* Animated Background Elements - Features/Benefits Theme */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Gradient Orbs */}
+            <div className="absolute top-10 right-10 w-80 h-80 bg-gradient-to-br from-yellow-300/20 to-amber-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '11s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-10 left-10 w-80 h-80 bg-gradient-to-br from-orange-300/20 to-red-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '13s', animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-br from-purple-300/15 to-pink-300/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '15s', animationDelay: '1s' }}></div>
+
+            {/* Floating Features/Benefits Icons */}
+            <div className="absolute top-20 left-20 animate-float opacity-10" style={{ animationDuration: '9s', animationDelay: '0s' }}>
+              <Star className="w-16 h-16 text-yellow-500" />
+            </div>
+            <div className="absolute top-40 right-24 animate-float opacity-10" style={{ animationDuration: '10s', animationDelay: '1s' }}>
+              <Award className="w-18 h-18 text-amber-500" />
+            </div>
+            <div className="absolute bottom-32 left-1/4 animate-float opacity-10" style={{ animationDuration: '12s', animationDelay: '2s' }}>
+              <TrendingUp className="w-14 h-14 text-green-500" />
+            </div>
+            <div className="absolute bottom-24 right-1/3 animate-float opacity-10" style={{ animationDuration: '11s', animationDelay: '0.5s' }}>
+              <Sparkles className="w-20 h-20 text-purple-500" />
+            </div>
+            <div className="absolute top-1/2 right-16 animate-float opacity-10" style={{ animationDuration: '14s', animationDelay: '1.5s' }}>
+              <BadgeCheck className="w-16 h-16 text-purple-600" />
+            </div>
+            <div className="absolute top-1/3 left-1/3 animate-float opacity-10" style={{ animationDuration: '13s', animationDelay: '2.5s' }}>
+              <Zap className="w-14 h-14 text-yellow-600" />
+            </div>
+            <div className="absolute bottom-40 right-20 animate-float opacity-10" style={{ animationDuration: '10s', animationDelay: '3s' }}>
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+          </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-16">
@@ -857,56 +936,6 @@ export default function Home() {
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
               </button>
-            </div>
-          </div>
-        </section>
-
-        {/* Testimonials Section - Slider */}
-        <section className="py-24 px-6 lg:px-8 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center space-x-2 bg-gray-50 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 mb-6 animate-fade-in">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <span className="text-sm font-semibold text-gray-700">Optional Services</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
-                Optional Career Support Services
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Some professionals choose optional services such as:
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all">
-                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
-                  <FileCheck className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Profile Optimization</h3>
-                <p className="text-gray-600">Enhance your profile to meet platform standards and requirements.</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all">
-                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
-                  <Search className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Application Readiness Review</h3>
-                <p className="text-gray-600">Get feedback on your application materials before submission.</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all">
-                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
-                  <Award className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">Skill Assessment Guidance</h3>
-                <p className="text-gray-600">Prepare for skill assessments with structured guidance.</p>
-              </div>
-            </div>
-
-            <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6 mt-12 max-w-4xl mx-auto">
-              <p className="text-base text-gray-700 text-center leading-relaxed">
-                <strong>Note:</strong> These services do not influence hiring decisions and are not required to access opportunities.
-              </p>
             </div>
           </div>
         </section>
