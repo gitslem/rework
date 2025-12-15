@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   Target, Users, Shield, Heart, CheckCircle, Menu, X,
   UserPlus, BadgeCheck, TrendingUp, ArrowRight, DollarSign, Briefcase,
-  Star, Award, Globe, Zap, MessageSquare
+  Star, Award, Globe, Zap, MessageSquare, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 export default function About() {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   const values = [
     {
@@ -129,6 +130,15 @@ export default function About() {
     { year: "2024", event: "Platform Partnerships", description: "Established direct communication channels with compliance teams at major AI training platforms to better understand their evolving requirements." },
     { year: "2025", event: "400+ Agents, 27K+ Approvals", description: "Network grew to 400+ verified agents across 35 countries. Facilitated 27,000+ successful platform approvals, with candidates now earning $3K+ monthly on average." }
   ];
+
+  // Auto-play testimonials slider
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev === trustpilotReviews.length - 1 ? 0 : prev + 1));
+    }, 5000); // Change testimonial every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const renderStars = (rating: number) => {
     return (
@@ -389,28 +399,66 @@ export default function About() {
               <p className="text-lg text-gray-600">Verified customer reviews from our community</p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {trustpilotReviews.map((review, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-500"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    {renderStars(review.rating)}
-                    {review.verified && (
-                      <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-semibold">
-                        Verified
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">{review.title}</h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">{review.review}</p>
-                  <div className="border-t border-gray-200 pt-4">
-                    <p className="font-semibold text-gray-900">{review.author}</p>
-                    <p className="text-sm text-gray-500">{review.date}</p>
-                  </div>
+            {/* Testimonial Slider */}
+            <div className="relative max-w-4xl mx-auto">
+              {/* Main Testimonial Card */}
+              <div className="bg-white rounded-3xl p-10 md:p-12 shadow-2xl border-2 border-gray-100 hover:border-green-500 transition-all duration-500">
+                <div className="flex items-center justify-between mb-6">
+                  {renderStars(trustpilotReviews[currentTestimonial].rating)}
+                  {trustpilotReviews[currentTestimonial].verified && (
+                    <span className="bg-green-100 text-green-700 text-sm px-4 py-2 rounded-full font-semibold flex items-center gap-2">
+                      <BadgeCheck className="w-4 h-4" />
+                      Verified
+                    </span>
+                  )}
                 </div>
-              ))}
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                  {trustpilotReviews[currentTestimonial].title}
+                </h3>
+                <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                  "{trustpilotReviews[currentTestimonial].review}"
+                </p>
+                <div className="border-t border-gray-200 pt-6">
+                  <p className="text-xl font-bold text-gray-900">
+                    {trustpilotReviews[currentTestimonial].author}
+                  </p>
+                  <p className="text-gray-500 mt-1">
+                    {trustpilotReviews[currentTestimonial].date}
+                  </p>
+                </div>
+              </div>
+
+              {/* Navigation Buttons */}
+              <button
+                onClick={() => setCurrentTestimonial((prev) => (prev === 0 ? trustpilotReviews.length - 1 : prev - 1))}
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-16 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-gray-200 hover:border-green-500 flex items-center justify-center transition-all hover:scale-110 group"
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-green-600" />
+              </button>
+              <button
+                onClick={() => setCurrentTestimonial((prev) => (prev === trustpilotReviews.length - 1 ? 0 : prev + 1))}
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-16 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-gray-200 hover:border-green-500 flex items-center justify-center transition-all hover:scale-110 group"
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-green-600" />
+              </button>
+
+              {/* Dot Indicators */}
+              <div className="flex justify-center gap-2 mt-8">
+                {trustpilotReviews.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentTestimonial(index)}
+                    className={`transition-all duration-300 rounded-full ${
+                      index === currentTestimonial
+                        ? 'w-8 h-3 bg-gradient-to-r from-green-500 to-green-600'
+                        : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to testimonial ${index + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
