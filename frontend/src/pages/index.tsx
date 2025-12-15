@@ -36,7 +36,7 @@ export default function Home() {
 
   const stats = [
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
-    { number: "$3k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
+    { number: "$4k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
     { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
     { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
   ];
@@ -143,25 +143,25 @@ export default function Home() {
       quote: "Got approved on Outlier within a week after struggling for months. Best decision I made.",
       author: "Sarah J.",
       role: "Data Annotator",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces"
     },
     {
       quote: "This platform transformed my business. The secure payment system gives everyone peace of mind.",
       author: "Michael C.",
       role: "Verified Agent",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces"
     },
     {
       quote: "My agent knew exactly what platforms look for. Got approved on 3 services in 2 weeks.",
       author: "Priya S.",
       role: "AI Trainer",
-      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=faces"
     },
     {
       quote: "The AI-powered assistance made the application process so smooth. Started earning within days!",
       author: "David L.",
       role: "Content Moderator",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces"
     }
   ];
 
@@ -322,7 +322,7 @@ export default function Home() {
               {/* Enhanced Subheadline with Clean Background */}
               <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                 <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
-                  Remote-Works.io helps{' '}
+                  Rework helps{' '}
                   <span className="relative inline-block group">
                     <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
                       professionals prepare, verify, and connect
@@ -454,14 +454,14 @@ export default function Home() {
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
-                What is Remote-Works.io?
+                What is Rework?
               </h2>
             </div>
 
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
                 <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                  <strong>Remote-Works.io is a remote work enablement and recruitment platform.</strong>
+                  <strong>Rework is a remote work enablement and recruitment platform.</strong>
                 </p>
                 <p className="text-lg text-gray-700 leading-relaxed mb-4">
                   We support professionals by providing profile verification, application readiness, and access to vetted remote opportunities offered by third-party companies and platforms.
@@ -787,7 +787,7 @@ export default function Home() {
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
                 Why Professionals Choose
                 <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                  Remote-Works.io
+                  Rework
                 </span>
               </h2>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
@@ -830,31 +830,59 @@ export default function Home() {
 
         {/* For Employers Section */}
         <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white via-purple-50/30 to-amber-50/30 overflow-hidden">
-          {/* Animated Background Elements */}
+          {/* Animated Background Elements - AI Projects & Remote Work Theme */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Gradient Orbs */}
-            <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
-            <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-purple-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
+            <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
             <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-br from-purple-300/15 to-yellow-300/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+            <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-gradient-to-br from-blue-300/15 to-purple-300/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '3s' }}></div>
 
-            {/* Floating Icons */}
-            <div className="absolute top-20 right-1/4 animate-float" style={{ animationDuration: '6s', animationDelay: '0s' }}>
-              <Users className="w-12 h-12 text-purple-300/40" />
+            {/* Floating AI & Remote Work Icons */}
+            {/* AI & Tech Icons */}
+            <div className="absolute top-20 right-1/4 animate-float opacity-15" style={{ animationDuration: '6s', animationDelay: '0s' }}>
+              <Bot className="w-16 h-16 text-purple-500" />
             </div>
-            <div className="absolute bottom-32 left-1/3 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
-              <Building2 className="w-16 h-16 text-amber-300/40" />
+            <div className="absolute top-1/3 left-20 animate-float opacity-15" style={{ animationDuration: '9s', animationDelay: '0.5s' }}>
+              <Code className="w-14 h-14 text-blue-500" />
             </div>
-            <div className="absolute top-1/3 right-1/3 animate-float" style={{ animationDuration: '9s', animationDelay: '0.5s' }}>
-              <Sparkles className="w-10 h-10 text-purple-400/30" />
+            <div className="absolute bottom-32 right-24 animate-float opacity-15" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+              <Database className="w-18 h-18 text-purple-600" />
             </div>
-            <div className="absolute bottom-1/4 left-1/4 animate-float" style={{ animationDuration: '8s', animationDelay: '1.5s' }}>
-              <Zap className="w-14 h-14 text-amber-400/30" />
+            <div className="absolute top-1/2 right-16 animate-float opacity-15" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
+              <Server className="w-14 h-14 text-amber-500" />
             </div>
 
-            {/* Geometric Shapes */}
+            {/* Remote Work Icons */}
+            <div className="absolute top-40 left-1/3 animate-float opacity-15" style={{ animationDuration: '8s', animationDelay: '2s' }}>
+              <Laptop className="w-16 h-16 text-gray-600" />
+            </div>
+            <div className="absolute bottom-40 left-1/4 animate-float opacity-15" style={{ animationDuration: '11s', animationDelay: '2.5s' }}>
+              <Monitor className="w-20 h-20 text-purple-400" />
+            </div>
+            <div className="absolute bottom-24 right-1/3 animate-float opacity-15" style={{ animationDuration: '9s', animationDelay: '3s' }}>
+              <Wifi className="w-12 h-12 text-blue-400" />
+            </div>
+            <div className="absolute top-1/4 right-1/3 animate-float opacity-15" style={{ animationDuration: '13s', animationDelay: '0.8s' }}>
+              <Headphones className="w-14 h-14 text-amber-600" />
+            </div>
+
+            {/* Collaboration Icons */}
+            <div className="absolute bottom-1/4 left-1/3 animate-float opacity-15" style={{ animationDuration: '8s', animationDelay: '1.5s' }}>
+              <Users className="w-14 h-14 text-purple-500" />
+            </div>
+            <div className="absolute top-1/3 right-20 animate-float opacity-15" style={{ animationDuration: '12s', animationDelay: '2.2s' }}>
+              <Building2 className="w-16 h-16 text-amber-500" />
+            </div>
+            <div className="absolute bottom-1/2 right-1/2 animate-float opacity-15" style={{ animationDuration: '10s', animationDelay: '3.5s' }}>
+              <Globe className="w-12 h-12 text-blue-600" />
+            </div>
+
+            {/* Geometric Shapes - Tech Theme */}
             <div className="absolute top-40 left-20 w-20 h-20 border-2 border-purple-300/20 rounded-lg rotate-12 animate-spin-slow"></div>
-            <div className="absolute bottom-40 right-40 w-24 h-24 border-2 border-amber-300/20 rounded-full animate-pulse"></div>
-            <div className="absolute top-1/2 right-20 w-16 h-16 bg-gradient-to-br from-purple-200/10 to-amber-200/10 rounded-lg rotate-45 animate-float" style={{ animationDuration: '11s' }}></div>
+            <div className="absolute bottom-40 right-40 w-24 h-24 border-2 border-blue-300/20 rounded-lg rotate-45 animate-spin-slow" style={{ animationDuration: '20s' }}></div>
+            <div className="absolute top-1/2 right-20 w-16 h-16 bg-gradient-to-br from-purple-200/10 to-blue-200/10 rounded-lg rotate-45 animate-float" style={{ animationDuration: '11s' }}></div>
+            <div className="absolute top-2/3 left-1/4 w-12 h-12 border-2 border-amber-300/20 rounded-full animate-pulse"></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
@@ -870,7 +898,7 @@ export default function Home() {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Remote-Works.io helps employers access pre-screened, verified professionals ready for remote work.
+                Rework helps employers access pre-screened, verified professionals ready for remote work.
               </p>
             </div>
 
