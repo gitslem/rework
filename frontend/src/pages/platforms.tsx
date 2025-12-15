@@ -163,7 +163,7 @@ export default function Platforms() {
     }
   ];
 
-  const whyRemoteWorks = [
+  const whyRework = [
     {
       stat: '20+',
       label: 'Platforms Supported',
@@ -180,7 +180,7 @@ export default function Platforms() {
       description: 'Get matched with an agent and start within 24 hours'
     },
     {
-      stat: '$3k+',
+      stat: '$4k+',
       label: 'Avg. Monthly Income',
       description: 'Candidates earn on average across multiple platforms'
     }
@@ -189,8 +189,8 @@ export default function Platforms() {
   return (
     <>
       <Head>
-        <title>All Platforms - Remote-Works</title>
-        <meta name="description" content="Explore all 20+ platforms we help you get approved for. Sign up on Remote-Works and access Outlier, Alignerr, OneForma, Appen, and more." />
+        <title>All Platforms - Rework</title>
+        <meta name="description" content="Explore all 20+ platforms we help you get approved for. Sign up on Rework and access Outlier, Alignerr, OneForma, Appen, and more." />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -238,7 +238,7 @@ export default function Platforms() {
             </h1>
 
             <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              Why apply to platforms one by one? Sign up on <span className="font-bold text-black">Remote-Works</span> and get expert help to get approved on all major remote work platforms. Start earning extra cash across multiple platforms today.
+              Why apply to platforms one by one? Sign up on <span className="font-bold text-black">Rework</span> and get expert help to get approved on all major remote work platforms. Start earning extra cash across multiple platforms today.
             </p>
 
             <div className="flex justify-center gap-4 mb-8">
@@ -326,7 +326,7 @@ export default function Platforms() {
           </div>
         </section>
 
-        {/* Why Remote-Works Stats */}
+        {/* Why Rework Stats */}
         <section className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute inset-0 opacity-10">
@@ -337,7 +337,7 @@ export default function Platforms() {
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Remote-Works is #1 for Remote Gigs
+                Why Rework is #1 for Remote Gigs
               </h2>
               <p className="text-lg text-gray-200">
                 The most efficient way to maximize your remote earning potential
@@ -345,7 +345,7 @@ export default function Platforms() {
             </div>
 
             <div className="grid md:grid-cols-4 gap-8">
-              {whyRemoteWorks.map((item, index) => (
+              {whyRework.map((item, index) => (
                 <div key={index} className="text-center group hover:scale-105 transition-transform">
                   <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
                     {item.stat}

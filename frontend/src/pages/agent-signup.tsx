@@ -6,7 +6,7 @@ import { signInWithGoogle, handleRedirectResult } from '@/lib/firebase/auth';
 import { getFirebaseAuth, getFirebaseFirestore, isFirebaseConfigured } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
-import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle, AlertCircle, Building2, Users, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, Check, User, MapPin, Briefcase, Globe, FileText, MessageSquare, Loader, CheckCircle, AlertCircle, Building2, Users, Phone, Mail, Upload, Camera, Shield as ShieldIcon } from 'lucide-react';
 
 export default function AgentSignup() {
   const router = useRouter();
@@ -32,6 +32,11 @@ export default function AgentSignup() {
     bio: '',
     whyAgent: '',
   });
+
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const [selfieFile, setSelfieFile] = useState<File | null>(null);
+  const [idPreview, setIdPreview] = useState<string>('');
+  const [selfiePreview, setSelfiePreview] = useState<string>('');
 
   const [companyFormData, setCompanyFormData] = useState({
     companyName: '',
@@ -253,6 +258,54 @@ export default function AgentSignup() {
     }
   };
 
+  const handleIdFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('ID file size must be less than 5MB');
+        return;
+      }
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('ID file must be an image');
+        return;
+      }
+      setIdFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setIdPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+    }
+  };
+
+  const handleSelfieFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Selfie file size must be less than 5MB');
+        return;
+      }
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Selfie file must be an image');
+        return;
+      }
+      setSelfieFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelfiePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError('');
+    }
+  };
+
   const handleCompanyChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setCompanyFormData({
       ...companyFormData,
@@ -329,10 +382,24 @@ export default function AgentSignup() {
       return;
     }
 
+    // Validate ID and selfie uploads
+    if (!idFile) {
+      setError('Please upload your government-issued ID');
+      return;
+    }
+
+    if (!selfieFile) {
+      setError('Please upload a selfie with your ID');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       const db = getFirebaseFirestore();
+
+      // Note: In a production environment, you would upload idFile and selfieFile to Firebase Storage
+      // and save the download URLs. For now, we'll save file metadata.
 
       // Create or update profile
       await setDoc(doc(db, 'profiles', user.uid), {
@@ -360,6 +427,17 @@ export default function AgentSignup() {
         averageRating: 0,
         totalReviews: 0,
         specializations: [],
+        // Verification documents metadata
+        verificationDocuments: {
+          idFileName: idFile.name,
+          idFileSize: idFile.size,
+          idFileType: idFile.type,
+          selfieFileName: selfieFile.name,
+          selfieFileSize: selfieFile.size,
+          selfieFileType: selfieFile.type,
+          uploadedAt: serverTimestamp(),
+          // In production, add: idFileURL and selfieFileURL after uploading to Firebase Storage
+        },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       }, { merge: true });
@@ -1062,6 +1140,103 @@ export default function AgentSignup() {
                   <p className="text-xs text-gray-500 mt-1">
                     Minimum 50 characters • {formData.whyAgent.length}/50
                   </p>
+                </div>
+
+                {/* Verification Documents Section */}
+                <div className="pt-6 border-t-2 border-gray-200">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center">
+                      <ShieldIcon className="w-5 h-5 mr-2 text-purple-600" />
+                      Verification Documents
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      For security and trust, we require government-issued ID verification for all agents.
+                    </p>
+                  </div>
+
+                  {/* ID Upload */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Upload className="w-4 h-4 inline mr-1" />
+                      Government-Issued ID <span className="text-red-500">*</span>
+                    </label>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Upload a clear photo of your government-issued ID (passport, driver's license, or national ID card). Max size: 5MB
+                    </p>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        id="idFile"
+                        accept="image/*"
+                        onChange={handleIdFileChange}
+                        className="hidden"
+                        required
+                      />
+                      <label
+                        htmlFor="idFile"
+                        className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-black transition-all bg-gray-50 hover:bg-gray-100"
+                      >
+                        {idPreview ? (
+                          <div className="text-center">
+                            <img src={idPreview} alt="ID Preview" className="max-h-40 mx-auto mb-3 rounded" />
+                            <p className="text-sm font-medium text-green-600 flex items-center justify-center">
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              ID Uploaded - Click to change
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">{idFile?.name}</p>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <Upload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-gray-700">Click to upload your ID</p>
+                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Selfie with ID Upload */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <Camera className="w-4 h-4 inline mr-1" />
+                      Selfie with ID <span className="text-red-500">*</span>
+                    </label>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Upload a selfie of yourself holding your ID next to your face. Ensure both your face and ID are clearly visible. Max size: 5MB
+                    </p>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        id="selfieFile"
+                        accept="image/*"
+                        onChange={handleSelfieFileChange}
+                        className="hidden"
+                        required
+                      />
+                      <label
+                        htmlFor="selfieFile"
+                        className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-black transition-all bg-gray-50 hover:bg-gray-100"
+                      >
+                        {selfiePreview ? (
+                          <div className="text-center">
+                            <img src={selfiePreview} alt="Selfie Preview" className="max-h-40 mx-auto mb-3 rounded" />
+                            <p className="text-sm font-medium text-green-600 flex items-center justify-center">
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              Selfie Uploaded - Click to change
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">{selfieFile?.name}</p>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <Camera className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-gray-700">Click to upload selfie with ID</p>
+                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Submit Button */}
