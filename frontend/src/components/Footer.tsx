@@ -195,9 +195,15 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Bottom Section */}
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-600 text-sm">
+          {/* Disclaimer Section */}
+          <div className="border-t border-gray-800 mt-12 pt-8">
+            <div className="bg-gray-900 rounded-lg p-6 mb-6">
+              <p className="text-gray-400 text-sm leading-relaxed text-center">
+                <strong className="text-gray-300">Legal Disclaimer:</strong> Remote-Works.io is an independent platform providing career enablement and recruitment support services.
+                We are not affiliated with, endorsed by, or acting on behalf of any third-party company unless explicitly stated in writing.
+              </p>
+            </div>
+            <p className="text-gray-600 text-sm text-center">
               © {new Date().getFullYear()} Remote-Works. All rights reserved.
             </p>
           </div>

@@ -88,23 +88,23 @@ export default function Home() {
   const howItWorks = [
     {
       step: "01",
-      title: "Create Account",
-      description: "Sign up and complete your profile with skills and preferences."
+      title: "Create & Verify Your Profile",
+      description: "Professionals create a profile and complete identity, skill, and eligibility verification."
     },
     {
       step: "02",
-      title: "Get Approved",
-      description: "Admin reviews your profile for quality assurance (24-48 hours)."
+      title: "Get Application-Ready",
+      description: "We help ensure profiles meet platform standards through structured onboarding, guidance, and optional career support services."
     },
     {
       step: "03",
-      title: "Browse AI Assistants",
-      description: "Find AI-powered assistants specializing in your platforms of interest."
+      title: "Access Remote Opportunities",
+      description: "Verified professionals may gain access to legitimate remote opportunities offered by external companies and platforms."
     },
     {
       step: "04",
-      title: "Start Earning",
-      description: "Work with your agent to get approved and begin earning."
+      title: "Work Directly With the Hiring Platform",
+      description: "All work, payments, contracts, and task assignments are handled directly by the hiring company."
     }
   ];
 
@@ -280,21 +280,22 @@ export default function Home() {
               {/* Enhanced Main Headline with Professional Animations */}
               <div className="space-y-4">
                 <h1 className={`text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-black leading-[1.1] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
-                  <span className="block">Get Approved for</span>
+                  <span className="block">Access Verified</span>
                   <span className="block mt-3 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent animate-gradient relative">
-                    AI Training Projects
+                    Remote Work Opportunities
                     <div className="absolute -inset-2 bg-gradient-to-r from-purple-600/10 via-amber-500/10 to-yellow-500/10 blur-2xl -z-10 animate-pulse"></div>
                   </span>
+                  <span className="block mt-3 text-5xl sm:text-6xl lg:text-7xl">— The Right Way</span>
                 </h1>
               </div>
 
               {/* Enhanced Subheadline with Clean Background */}
               <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                 <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
-                  Connect with verified{' '}
+                  Remote-Works.io helps{' '}
                   <span className="relative inline-block group">
                     <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
-                      onboarding specialists
+                      professionals prepare, verify, and connect
                     </span>
                     <svg className="absolute -bottom-1 left-0 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
                       <path d="M0,3 Q50,6 100,3" stroke="url(#gradient-underline)" strokeWidth="3" fill="none" strokeLinecap="round"/>
@@ -306,9 +307,9 @@ export default function Home() {
                       </defs>
                     </svg>
                   </span>
-                  {' '}who help candidates qualify for{' '}
+                  {' '}with legitimate remote work opportunities across{' '}
                   <span className="font-bold text-black relative">
-                    top global AI training opportunities
+                    global digital work platforms
                   </span>
                 </p>
               </div>
@@ -345,7 +346,7 @@ export default function Home() {
               </div>
 
               {/* Enhanced CTA Buttons with Professional Animations */}
-              <div className={`flex justify-center pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
+              <div className={`flex flex-col sm:flex-row justify-center gap-4 pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
                 <button
                   onClick={() => router.push('/register?type=candidate')}
                   className="group relative bg-gradient-to-r from-black via-gray-900 to-black text-white px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
@@ -353,8 +354,17 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   <span className="relative z-10 flex items-center justify-center space-x-3">
                     <Rocket className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce-subtle" />
-                    <span>Find an Agent Now</span>
+                    <span>Get Started as a Professional</span>
                     <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform duration-300" />
+                  </span>
+                </button>
+                <button
+                  onClick={() => router.push('/company')}
+                  className="group relative bg-white border-2 border-black text-black px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center justify-center space-x-3">
+                    <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <span>For Employers</span>
                   </span>
                 </button>
               </div>
@@ -375,6 +385,48 @@ export default function Home() {
                   <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
                     <Headphones className="w-4 h-4 text-purple-600" />
                     <span>24/7 support</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* What We Do - Clarity Section */}
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-200 mb-6 animate-fade-in">
+                <Target className="w-5 h-5 text-purple-600" />
+                <span className="text-sm font-semibold text-gray-700">Our Mission</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
+                What is Remote-Works.io?
+              </h2>
+            </div>
+
+            <div className="max-w-4xl mx-auto space-y-8">
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
+                <p className="text-xl text-gray-700 leading-relaxed mb-6">
+                  <strong>Remote-Works.io is a remote work enablement and recruitment platform.</strong>
+                </p>
+                <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                  We support professionals by providing profile verification, application readiness, and access to vetted remote opportunities offered by third-party companies and platforms.
+                </p>
+              </div>
+
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <Shield className="w-8 h-8 text-amber-600" />
+                  </div>
+                  <div className="space-y-3">
+                    <p className="text-lg text-gray-800 leading-relaxed">
+                      <strong>We are not an employer and do not guarantee job placement.</strong>
+                    </p>
+                    <p className="text-base text-gray-700 leading-relaxed">
+                      All hiring decisions are made by the respective third-party companies.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -570,7 +622,7 @@ export default function Home() {
                 How It Works
               </h2>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
-                Four simple steps to get approved and start earning
+                Your path to verified remote work opportunities
               </p>
             </div>
 
@@ -663,6 +715,254 @@ export default function Home() {
                   <div className="mt-6 w-0 h-1 bg-gradient-to-r from-purple-600 to-amber-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* For Professionals Section */}
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-purple-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-200 mb-6 animate-fade-in">
+                <UserCheck className="w-5 h-5 text-purple-600" />
+                <span className="text-sm font-semibold text-gray-700">For Professionals</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
+                Why Professionals Choose Remote-Works.io
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="flex items-center space-x-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-gray-900">Access to Verified Opportunities</h3>
+                </div>
+                <p className="text-gray-600 text-sm">Connect with legitimate remote work opportunities from trusted platforms</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="flex items-center space-x-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-gray-900">Transparent Onboarding</h3>
+                </div>
+                <p className="text-gray-600 text-sm">Clear, structured process with no hidden requirements or misleading claims</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="flex items-center space-x-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-gray-900">No False Promises</h3>
+                </div>
+                <p className="text-gray-600 text-sm">We don't guarantee jobs or approvals—we provide support and access</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="flex items-center space-x-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-gray-900">Optional Career Support</h3>
+                </div>
+                <p className="text-gray-600 text-sm">Choose from optional services to enhance your application readiness</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="flex items-center space-x-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-gray-900">Long-term Career Growth</h3>
+                </div>
+                <p className="text-gray-600 text-sm">Focus on building sustainable remote careers, not quick fixes</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="flex items-center space-x-3 mb-3">
+                  <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg font-bold text-gray-900">Full Control</h3>
+                </div>
+                <p className="text-gray-600 text-sm">You work directly with hiring platforms—we just help you get there</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* For Employers Section */}
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-blue-50 backdrop-blur-sm px-6 py-3 rounded-full border border-blue-200 mb-6 animate-fade-in">
+                <Building2 className="w-5 h-5 text-blue-600" />
+                <span className="text-sm font-semibold text-gray-700">For Employers</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
+                Hire Verified Remote Talent
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Remote-Works.io helps employers access pre-screened, verified professionals ready for remote work.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
+                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                  <BadgeCheck className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Pre-verified Talent Pool</h3>
+                <p className="text-gray-600 leading-relaxed">Access professionals who have completed identity, skill, and eligibility verification.</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
+                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                  <Zap className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Reduced Onboarding Friction</h3>
+                <p className="text-gray-600 leading-relaxed">Hire candidates who are already prepared and understand remote work expectations.</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
+                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                  <Globe className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Global Reach</h3>
+                <p className="text-gray-600 leading-relaxed">Connect with qualified remote professionals from around the world.</p>
+              </div>
+
+              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover:border-blue-500 transition-all">
+                <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                  <Shield className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Fraud-Prevention Checks</h3>
+                <p className="text-gray-600 leading-relaxed">All professionals undergo verification to ensure authenticity and credibility.</p>
+              </div>
+            </div>
+
+            <div className="text-center mt-12">
+              <button
+                onClick={() => router.push('/company')}
+                className="bg-blue-600 text-white px-10 py-5 rounded-full font-bold text-lg hover:bg-blue-700 transition-all hover:shadow-xl hover:scale-105 inline-flex items-center space-x-3"
+              >
+                <span>Post Opportunities or Request Talent</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Transparency & Trust Section */}
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-b from-amber-50 via-white to-amber-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-amber-50 backdrop-blur-sm px-6 py-3 rounded-full border border-amber-200 mb-6 animate-fade-in">
+                <Shield className="w-5 h-5 text-amber-600" />
+                <span className="text-sm font-semibold text-gray-700">Transparency & Trust</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
+                Our Commitment to Transparency
+              </h2>
+            </div>
+
+            <div className="max-w-4xl mx-auto space-y-6">
+              <div className="bg-white border-2 border-amber-200 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <X className="w-8 h-8 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Remote-Works.io does not sell jobs</h3>
+                    <p className="text-gray-600">We provide career enablement and recruitment support—we don't sell employment.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border-2 border-amber-200 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <X className="w-8 h-8 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">We do not guarantee approvals or placements</h3>
+                    <p className="text-gray-600">Success depends on third-party company requirements and individual qualifications.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border-2 border-amber-200 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <X className="w-8 h-8 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">We do not represent ourselves as an employer</h3>
+                    <p className="text-gray-600">We are an independent platform connecting professionals with opportunities.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-amber-100 to-amber-50 border-2 border-amber-300 rounded-2xl p-8 shadow-lg">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">We provide career enablement and recruitment support</h3>
+                    <p className="text-gray-600">Our role is to help you prepare, verify your profile, and connect with legitimate opportunities.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 mt-8">
+                <p className="text-base text-gray-700 text-center leading-relaxed">
+                  <strong>Important:</strong> All opportunities are subject to third-party company requirements and availability.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Optional Paid Services Section */}
+        <section className="py-24 px-6 lg:px-8 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-gray-50 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-200 mb-6 animate-fade-in">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <span className="text-sm font-semibold text-gray-700">Optional Services</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
+                Optional Career Support Services
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Some professionals choose optional services such as:
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
+                  <FileCheck className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Profile Optimization</h3>
+                <p className="text-gray-600">Enhance your profile to meet platform standards and requirements.</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
+                  <Search className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Application Readiness Review</h3>
+                <p className="text-gray-600">Get feedback on your application materials before submission.</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:border-purple-500 transition-all">
+                <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
+                  <Award className="w-6 h-6 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">Skill Assessment Guidance</h3>
+                <p className="text-gray-600">Prepare for skill assessments with structured guidance.</p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6 mt-12 max-w-4xl mx-auto">
+              <p className="text-base text-gray-700 text-center leading-relaxed">
+                <strong>Note:</strong> These services do not influence hiring decisions and are not required to access opportunities.
+              </p>
             </div>
           </div>
         </section>

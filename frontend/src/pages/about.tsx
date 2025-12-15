@@ -16,26 +16,26 @@ export default function About() {
   const values = [
     {
       icon: <Shield className="w-8 h-8" />,
-      title: "Rigorous Verification",
-      description: "Every agent must prove 10+ successful platform approvals, pass identity verification, and maintain a 95%+ success rate to remain active on our platform.",
+      title: "Comprehensive Verification",
+      description: "All professionals complete identity, skill, and eligibility verification to ensure authenticity and credibility before accessing opportunities.",
       color: "bg-black"
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Pay Only When Approved",
-      description: "Most agents work on success-based models or offer free services with revenue sharing. Remote-Works doesn't process payments—you pay agents directly only after getting approved.",
+      title: "No Job Guarantees",
+      description: "We provide career enablement and recruitment support—not employment. All hiring decisions are made by third-party companies based on their requirements.",
       color: "bg-gray-800"
     },
     {
       icon: <Target className="w-8 h-8" />,
-      title: "Quality Over Quantity",
-      description: "We reject 73% of agent applications. Our network is small but mighty—400 exceptional agents who consistently deliver 98% success rates.",
+      title: "Quality Standards",
+      description: "We focus on connecting professionals with legitimate, vetted remote work opportunities offered by reputable third-party companies and platforms.",
       color: "bg-gray-700"
     },
     {
       icon: <Heart className="w-8 h-8" />,
-      title: "Radical Transparency",
-      description: "Every agent shows their real approval stats, response time, and verified reviews. No fake testimonials, no inflated numbers, just honest performance data.",
+      title: "Complete Transparency",
+      description: "Clear communication about our role, services, and limitations. No false promises, no misleading claims—just honest support and realistic expectations.",
       color: "bg-gray-900"
     }
   ];
@@ -43,30 +43,30 @@ export default function About() {
   const expertCategories = [
     {
       icon: <Briefcase className="w-12 h-12" />,
-      title: "Platform Specialists",
-      count: "150+",
-      description: "Experts who specialize in specific platforms like Outlier, Alignerr, OneForma, and TELUS Digital with proven track records of successful approvals.",
+      title: "Profile Verification",
+      count: "Core",
+      description: "Comprehensive identity, skill, and eligibility verification processes to ensure all professionals meet platform standards.",
       color: "from-blue-600 to-cyan-600"
     },
     {
       icon: <MessageSquare className="w-12 h-12" />,
-      title: "Application Consultants",
-      count: "120+",
-      description: "Dedicated consultants who guide candidates through every step of the application process, from profile optimization to interview preparation.",
+      title: "Application Support",
+      count: "Service",
+      description: "Structured onboarding and guidance to help professionals prepare application-ready profiles that meet platform requirements.",
       color: "from-purple-600 to-pink-600"
     },
     {
       icon: <Award className="w-12 h-12" />,
-      title: "Success Coaches",
-      count: "80+",
-      description: "Experienced coaches who help candidates maximize their earning potential across multiple platforms and build sustainable remote careers.",
+      title: "Career Enablement",
+      count: "Focus",
+      description: "Optional career support services including profile optimization, application readiness review, and skill assessment guidance.",
       color: "from-green-600 to-emerald-600"
     },
     {
       icon: <Globe className="w-12 h-12" />,
-      title: "Global Agents",
-      count: "50+",
-      description: "Multi-lingual agents covering 35 countries who understand regional requirements and cultural nuances for international platforms.",
+      title: "Global Opportunities",
+      count: "Access",
+      description: "Connections to verified remote work opportunities offered by third-party companies and platforms worldwide.",
       color: "from-orange-600 to-red-600"
     }
   ];
@@ -194,14 +194,14 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto space-y-6">
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                Empowering Global Talent to
+                Connecting Professionals with
                 <span className="block text-black">
-                  Access AI Training Opportunities
+                  Verified Remote Work Opportunities
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                We've built the world's most trusted marketplace connecting talented individuals with expert agents
-                who specialize in platform approvals. Since 2023, we've helped 27,000+ people break into remote AI training work.
+                Remote-Works.io is a career enablement and recruitment platform helping professionals prepare, verify,
+                and connect with legitimate remote work opportunities across global digital work platforms.
               </p>
             </div>
           </div>
@@ -216,43 +216,43 @@ export default function About() {
                   <span className="bg-gray-100 text-black px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide">Our Mission</span>
                 </div>
                 <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                  Breaking Barriers to Remote Work
+                  Enabling Remote Work Careers
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  The remote work landscape has transformed dramatically, yet accessing premium AI training platforms remains
-                  challenging for talented individuals worldwide. Platform approval rates often hover below 30%—not because of
-                  lack of skills, but due to unfamiliarity with what evaluators seek.
+                  The remote work landscape has transformed dramatically, creating opportunities for professionals worldwide.
+                  However, navigating application requirements, verification processes, and platform standards can be challenging
+                  for individuals seeking legitimate remote work opportunities.
                 </p>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  Remote-Works was created to solve this problem. We've built a trusted ecosystem where verified agents—each
-                  with proven track records of 10+ successful platform approvals—share their expertise to help candidates succeed.
-                  Our rigorous verification process ensures every agent maintains a 95%+ success rate.
+                  Remote-Works.io was created to provide clarity and support. We help professionals prepare comprehensive profiles,
+                  complete necessary verifications, and connect with vetted remote work opportunities offered by third-party companies
+                  and platforms. Our platform focuses on transparency, ethical practices, and realistic expectations.
                 </p>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  <strong>Our mission is clear:</strong> democratize access to remote AI training opportunities by connecting
-                  candidates with expert agents who understand exactly what platforms require. We believe everyone deserves
-                  a fair chance to build a sustainable remote career.
+                  <strong>Our mission is clear:</strong> provide career enablement and recruitment support services that help
+                  professionals access legitimate remote work opportunities. We believe in transparency, ethical practices, and
+                  empowering individuals to build sustainable remote careers.
                 </p>
                 <div className="bg-gray-50 rounded-xl p-6 mb-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-3">Vision for 2026</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Expand to 1,000+ verified agents across 50+ countries, facilitate 100,000 successful platform approvals,
-                    and establish direct partnerships with leading AI training platforms to create a smoother approval ecosystem
-                    that benefits everyone.
+                    Expand our network of verified support specialists, establish direct partnerships with leading remote work
+                    platforms, and create a more transparent ecosystem that connects professionals with legitimate opportunities
+                    while maintaining ethical standards and realistic expectations.
                   </p>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700 font-medium">98% Success Rate (26,460 of 27,000 approvals)</span>
+                    <span className="text-gray-700 font-medium">Comprehensive profile verification process</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700 font-medium">Average 3-7 day approval time</span>
+                    <span className="text-gray-700 font-medium">Structured onboarding and guidance</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700 font-medium">$3K+ average monthly income after approval</span>
+                    <span className="text-gray-700 font-medium">Access to vetted remote opportunities</span>
                   </div>
                 </div>
               </div>
@@ -260,20 +260,20 @@ export default function About() {
                 <div className="bg-black rounded-3xl p-12 text-white shadow-2xl">
                   <div className="space-y-8">
                     <div>
-                      <div className="text-5xl font-bold mb-2">27K+</div>
-                      <div className="text-gray-300">Successful Approvals</div>
+                      <div className="text-5xl font-bold mb-2">2023</div>
+                      <div className="text-gray-300">Founded</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2">98%</div>
-                      <div className="text-gray-300">Success Rate</div>
+                      <div className="text-5xl font-bold mb-2">20+</div>
+                      <div className="text-gray-300">Partner Platforms</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2">400+</div>
-                      <div className="text-gray-300">Verified Agents</div>
+                      <div className="text-5xl font-bold mb-2">Global</div>
+                      <div className="text-gray-300">Reach</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2">35</div>
-                      <div className="text-gray-300">Countries</div>
+                      <div className="text-5xl font-bold mb-2">100%</div>
+                      <div className="text-gray-300">Transparency</div>
                     </div>
                   </div>
                 </div>
@@ -316,10 +316,10 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Meet Our Experts
+                Our Services
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                400+ verified professionals dedicated to your success across 35 countries
+                Comprehensive career enablement and recruitment support for remote professionals
               </p>
             </div>
 
@@ -339,30 +339,30 @@ export default function About() {
               ))}
             </div>
 
-            {/* Expert Qualifications */}
+            {/* Service Principles */}
             <div className="mt-16 bg-gradient-to-br from-gray-50 to-white rounded-3xl p-10 border-2 border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Expert Qualifications</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Commitments</h3>
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                     <BadgeCheck className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">10+ Verified Approvals</h4>
-                  <p className="text-gray-600 text-sm">Every agent must prove successful platform approvals before joining</p>
+                  <h4 className="font-bold text-gray-900 mb-2">Verification First</h4>
+                  <p className="text-gray-600 text-sm">All professionals complete comprehensive verification before accessing opportunities</p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                     <TrendingUp className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">95%+ Success Rate</h4>
-                  <p className="text-gray-600 text-sm">Maintaining high success rates is mandatory to stay active</p>
+                  <h4 className="font-bold text-gray-900 mb-2">No False Promises</h4>
+                  <p className="text-gray-600 text-sm">We provide support and access—not guarantees of approval or employment</p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                     <Shield className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Identity Verified</h4>
-                  <p className="text-gray-600 text-sm">Background checks and identity verification for trust and safety</p>
+                  <h4 className="font-bold text-gray-900 mb-2">Ethical Practices</h4>
+                  <p className="text-gray-600 text-sm">Complete transparency about our role, services, and limitations</p>
                 </div>
               </div>
             </div>
@@ -420,10 +420,10 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Your Journey to Success
+                Your Journey with Remote-Works.io
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                A simple, proven process from signup to earning on multiple platforms
+                A clear, structured process from profile creation to accessing remote work opportunities
               </p>
             </div>
 
@@ -437,9 +437,9 @@ export default function About() {
                       <UserPlus className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">01</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Sign Up</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Create & Verify Profile</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Create your account and complete your profile. Our AI matches you with verified agents who specialize in your target platforms.
+                      Create your account and complete identity, skill, and eligibility verification to access opportunities.
                     </p>
                   </div>
                   {/* Arrow */}
@@ -455,9 +455,9 @@ export default function About() {
                       <BadgeCheck className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">02</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Get Approved</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Get Application-Ready</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Work with your agent to get approved on leading AI training platforms. Most approvals happen within 3-7 days.
+                      Receive structured onboarding and guidance to ensure your profile meets platform standards and requirements.
                     </p>
                   </div>
                   {/* Arrow */}
@@ -473,9 +473,9 @@ export default function About() {
                       <DollarSign className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">03</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Start Earning</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Access Opportunities</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Begin working on AI training projects. Complete tasks and earn money directly from platforms.
+                      Connect with verified remote work opportunities offered by third-party companies and platforms.
                     </p>
                   </div>
                   {/* Arrow */}
@@ -491,28 +491,28 @@ export default function About() {
                       <TrendingUp className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">04</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Scale Income</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Work Directly</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Get approved on multiple platforms, take on diverse projects, and scale to $3K+ monthly income.
+                      All work, payments, contracts, and assignments are handled directly by the hiring company—not by us.
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Model Info */}
+              {/* Service Model Info */}
               <div className="mt-16 bg-gradient-to-r from-gray-900 to-black rounded-3xl p-10 text-white">
                 <div className="grid md:grid-cols-3 gap-8">
                   <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">Free to Join</div>
-                    <p className="text-gray-300 text-sm">No subscription fees or hidden charges to use our platform</p>
+                    <div className="text-3xl font-bold mb-2">Career Enablement</div>
+                    <p className="text-gray-300 text-sm">Profile verification and application readiness support services</p>
                   </div>
                   <div className="text-center border-l border-r border-gray-700 px-4">
-                    <div className="text-3xl font-bold mb-2">Pay After Approval</div>
-                    <p className="text-gray-300 text-sm">Most agents work on success-based fees or revenue sharing models</p>
+                    <div className="text-3xl font-bold mb-2">Not an Employer</div>
+                    <p className="text-gray-300 text-sm">We connect you with opportunities—hiring is done by third-party companies</p>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">Direct Payments</div>
-                    <p className="text-gray-300 text-sm">Pay agents directly—Remote-Works doesn't process any payments</p>
+                    <div className="text-3xl font-bold mb-2">Optional Services</div>
+                    <p className="text-gray-300 text-sm">Additional career support available but not required for access</p>
                   </div>
                 </div>
               </div>
@@ -554,23 +554,23 @@ export default function About() {
         <section className="py-24 bg-black text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Ready to Break Into AI Training Work?
+              Ready to Access Remote Work Opportunities?
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join 27,000+ people who got approved with expert agent guidance. Many agents offer free services with revenue sharing or work on success-based fees—you only pay after getting approved.
+              Join Remote-Works.io to verify your profile, prepare for applications, and connect with legitimate remote work opportunities offered by third-party companies and platforms.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
               <div className="bg-gray-900 rounded-xl p-6">
-                <div className="text-3xl font-bold mb-2">98%</div>
-                <div className="text-gray-400 text-sm">Success rate with our verified agents</div>
+                <div className="text-3xl font-bold mb-2">Verified</div>
+                <div className="text-gray-400 text-sm">Profile verification process</div>
               </div>
               <div className="bg-gray-900 rounded-xl p-6">
-                <div className="text-3xl font-bold mb-2">3-7 days</div>
-                <div className="text-gray-400 text-sm">Average time to platform approval</div>
+                <div className="text-3xl font-bold mb-2">Transparent</div>
+                <div className="text-gray-400 text-sm">No false promises or guarantees</div>
               </div>
               <div className="bg-gray-900 rounded-xl p-6">
-                <div className="text-3xl font-bold mb-2">$3K+</div>
-                <div className="text-gray-400 text-sm">Avg. monthly income after approval</div>
+                <div className="text-3xl font-bold mb-2">Support</div>
+                <div className="text-gray-400 text-sm">Career enablement services</div>
               </div>
             </div>
             <div className="flex justify-center">
@@ -578,7 +578,7 @@ export default function About() {
                 onClick={() => router.push('/register?type=candidate')}
                 className="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-2xl"
               >
-                Get Started as Candidate
+                Get Started as a Professional
               </button>
             </div>
           </div>
