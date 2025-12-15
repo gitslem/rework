@@ -156,8 +156,48 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>About Remote-Works | Connecting Talent with AI Training Opportunities</title>
-        <meta name="description" content="Remote-Works has helped 27,000+ candidates get approved for AI training platforms through our network of 400+ verified agents. 98% success rate. Learn our story." />
+        <title>About Rework | Leading Remote Work Platform for AI Training & Data Annotation Jobs</title>
+        <meta name="description" content="Rework has helped 27,000+ professionals get approved for remote AI training jobs on Outlier, Appen, Welocalize, TELUS Digital, RWS & more. 98% success rate. Join the leading platform for data annotation and machine learning jobs." />
+        <meta name="keywords" content="about rework, remote work platform, AI training jobs, data annotation careers, remote AI opportunities, work from home jobs, machine learning jobs, platform approval service" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/about" />
+        <meta property="og:title" content="About Rework - 27,000+ Professionals Approved for Remote AI Jobs" />
+        <meta property="og:description" content="Learn how Rework helps professionals get approved for remote AI training and data annotation jobs with 98% success rate." />
+        <meta property="og:site_name" content="Rework" />
+
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About Rework - Leading Remote AI Jobs Platform" />
+        <meta name="twitter:description" content="27,000+ approvals. 98% success rate. Get approved for Outlier, Appen, Welocalize & more." />
+
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/about" />
+
+        {/* Structured Data - AboutPage */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "AboutPage",
+              "name": "About Rework",
+              "description": "Rework has helped 27,000+ professionals get approved for remote AI training and data annotation jobs",
+              "mainEntity": {
+                "@type": "Organization",
+                "name": "Rework",
+                "url": "https://rework.com",
+                "foundingDate": "2023",
+                "numberOfEmployees": {
+                  "@type": "QuantitativeValue",
+                  "value": "400+"
+                }
+              }
+            })
+          }}
+        />
       </Head>
 
       <div className="min-h-screen bg-white">

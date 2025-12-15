@@ -49,8 +49,20 @@ export default function Support() {
   return (
     <>
       <Head>
-        <title>Support - Contact Us | Remote-Works</title>
-        <meta name="description" content="Get help from the Remote-Works support team. Contact us via email, live chat, or phone. We're here to help 24/7." />
+        <title>Support - Contact Rework | 24/7 Help for Remote AI Job Applications</title>
+        <meta name="description" content="Get help from the Rework support team for AI training platform applications, verification, and approvals. Contact us via email, live chat, or phone. 24/7 support for Outlier, Appen, Welocalize, TELUS Digital & RWS applications." />
+        <meta name="keywords" content="rework support, AI platform help, remote work support, outlier support, appen help, platform approval help, contact rework" />
+
+        {/* Open Graph Tags */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/support" />
+        <meta property="og:title" content="Rework Support - 24/7 Help Center" />
+        <meta property="og:description" content="Get help with your AI platform applications and approvals. 24/7 support team ready to assist." />
+        <meta property="og:site_name" content="Rework" />
+
+        {/* Additional SEO Tags */}
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/support" />
       </Head>
 
       <div className="min-h-screen bg-white">
