@@ -33,10 +33,10 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* For Candidates */}
+            {/* For Professionals */}
             <div>
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
-                For Candidates
+                For Professionals
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>

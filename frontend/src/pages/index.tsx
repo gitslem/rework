@@ -348,14 +348,14 @@ export default function Home() {
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center space-y-10">
               {/* Enhanced Badge with Typewriter Effect */}
-              <div className={`inline-flex items-center space-x-3 bg-white/90 backdrop-blur-lg px-8 py-4 rounded-full border-2 border-purple-200 shadow-xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group hover:border-purple-400 transition-all duration-500`}>
+              <div className={`flex items-center justify-center mx-auto max-w-max bg-white/90 backdrop-blur-lg px-8 py-4 rounded-full border-2 border-purple-200 shadow-xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group hover:border-purple-400 transition-all duration-500`}>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-amber-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="relative flex items-center space-x-3">
                   <div className="relative">
                     <Bot className="w-5 h-5 text-purple-600 animate-pulse relative z-10" />
                     <div className="absolute inset-0 bg-purple-400 rounded-full blur-md opacity-30"></div>
                   </div>
-                  <span className={`font-bold text-sm sm:text-base tracking-wide bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent ${isVisible ? 'animate-typewriter' : 'opacity-0'}`} style={{
+                  <span className={`font-bold text-sm sm:text-base tracking-wide bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent ${isVisible ? 'animate-typewriter' : 'opacity-0'} whitespace-nowrap`} style={{
                     textShadow: '0 0 20px rgba(147, 51, 234, 0.3), 0 0 30px rgba(245, 158, 11, 0.2)',
                     filter: 'drop-shadow(0 0 10px rgba(147, 51, 234, 0.4))'
                   }}>
