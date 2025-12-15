@@ -67,7 +67,7 @@ export default function Company() {
     { number: "20+", label: "Platforms Covered", description: "Access to major AI training platforms" },
     { number: "98%", label: "Approval Success", description: "Industry-leading success rate" },
     { number: "24hr", label: "Time to Deploy", description: "Fast candidate onboarding" },
-    { number: "1000+", label: "Active Candidates", description: "Growing talent pool" }
+    { number: "27000", label: "Active Candidates", description: "Growing talent pool" }
   ];
 
   const features = [
@@ -93,7 +93,7 @@ export default function Company() {
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              <Logo size="md" showText={true} onClick={() => router.push('/')} />
+              <Logo size="md" showText={false} onClick={() => router.push('/')} />
               <div className="flex items-center space-x-4">
                 <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium text-sm">
                   Back to Home
