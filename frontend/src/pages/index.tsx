@@ -54,34 +54,64 @@ export default function Home() {
 
   const features = [
     {
-      icon: <UserCheck className="w-6 h-6" />,
-      title: "Verified Agents",
-      description: "All agents are thoroughly vetted with proven track records of successful placements."
+      icon: <CheckCircle className="w-6 h-6" />,
+      title: "Access to Verified Opportunities",
+      description: "Connect with legitimate remote work opportunities from trusted platforms."
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "Secure Platform",
-      description: "Direct PayPal payments after successful approval, with flexible options including revenue sharing based on agent preference."
+      title: "Transparent Onboarding",
+      description: "Clear, structured process with no hidden requirements or misleading claims."
     },
     {
-      icon: <MessageSquare className="w-6 h-6" />,
-      title: "Direct Communication",
-      description: "Message agents directly and get personalized guidance throughout the process."
+      icon: <Target className="w-6 h-6" />,
+      title: "No False Promises",
+      description: "We don't guarantee jobs or approvals—we provide support and access."
+    },
+    {
+      icon: <Sparkles className="w-6 h-6" />,
+      title: "Optional Career Support",
+      description: "Choose from optional services to enhance your application readiness."
     },
     {
       icon: <TrendingUp className="w-6 h-6" />,
-      title: "High Success Rate",
-      description: "98% success rate in getting candidates approved for their desired platforms."
+      title: "Long-term Career Growth",
+      description: "Focus on building sustainable remote careers, not quick fixes."
+    },
+    {
+      icon: <UserCheck className="w-6 h-6" />,
+      title: "Full Control",
+      description: "You work directly with hiring platforms—we just help you get there."
+    },
+    {
+      icon: <BadgeCheck className="w-6 h-6" />,
+      title: "Comprehensive Verification",
+      description: "Complete identity, skill, and eligibility verification to access opportunities."
+    },
+    {
+      icon: <MessageSquare className="w-6 h-6" />,
+      title: "Personalized Guidance",
+      description: "Structured onboarding and support throughout your application journey."
+    },
+    {
+      icon: <FileCheck className="w-6 h-6" />,
+      title: "Application-Ready Profiles",
+      description: "Ensure your profile meets platform standards and requirements."
+    },
+    {
+      icon: <Globe className="w-6 h-6" />,
+      title: "Global Platform Access",
+      description: "Connect with remote work opportunities across 20+ trusted platforms worldwide."
     },
     {
       icon: <Clock className="w-6 h-6" />,
-      title: "Fast Approval",
-      description: "Get matched with an agent within 24 hours and start immediately."
+      title: "24/7 Platform Support",
+      description: "Access resources and support whenever you need assistance."
     },
     {
       icon: <Award className="w-6 h-6" />,
-      title: "100% Free to Use",
-      description: "No subscription fees, no hidden charges. Connect with agents and only pay for services after receiving results or approval."
+      title: "Ethical Practices",
+      description: "Complete transparency about our role, services, and limitations—no hidden charges."
     }
   ];
 
@@ -676,21 +706,21 @@ export default function Home() {
                 <span className="text-sm font-semibold text-gray-700">Why Choose Us</span>
               </div>
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-4 animate-fade-in-up">
-                Why Choose
+                Why Professionals Choose
                 <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                  Rework
+                  Remote-Works.io
                 </span>
               </h2>
               <p className="text-xl text-gray-600 animate-fade-in-up stagger-1">
-                The safest, most effective way to get approved
+                Comprehensive career enablement and recruitment support for remote professionals
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`group bg-white/70 backdrop-blur-sm p-8 rounded-2xl hover-lift transition-all duration-500 border-2 border-gray-200 hover:border-purple-500 hover:bg-white animate-fade-in-scale stagger-${(index % 6) + 1} hover:shadow-xl`}
+                  className={`group bg-white/70 backdrop-blur-sm p-6 rounded-2xl hover-lift transition-all duration-500 border-2 border-gray-200 hover:border-purple-500 hover:bg-white animate-fade-in-scale stagger-${(index % 4) + 1} hover:shadow-xl`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {/* Icon with animated background */}
