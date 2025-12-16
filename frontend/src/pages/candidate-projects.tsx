@@ -127,21 +127,32 @@ export default function CandidateProjectsPage() {
           // Filter out deleted projects
           .filter((project: any) => project.isDeleted !== true);
 
-        // Fetch missing agent names for candidates
+        // Fetch agent names from profile for candidates (always fetch to get real names, not Gmail)
         if (userRole === 'candidate') {
           const projectsWithNames = await Promise.all(
             projectsList.map(async (project: any) => {
-              // If agent_name is missing but agent_id exists, fetch it
-              if (!project.agent_name && project.agent_id) {
+              // Always fetch agent name from profile if agent_id exists
+              if (project.agent_id) {
                 try {
-                  const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
-                  if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const profileDoc = await getDoc(doc(getDb(), 'profiles', project.agent_id));
-                    if (profileDoc.exists()) {
-                      const profileData = profileDoc.data();
-                      project.agent_name = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || userData.email?.split('@')[0] || 'Agent';
+                  const profileDoc = await getDoc(doc(getDb(), 'profiles', project.agent_id));
+                  if (profileDoc.exists()) {
+                    const profileData = profileDoc.data();
+                    const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+                    if (fullName) {
+                      project.agent_name = fullName;
                     } else {
+                      // Fallback to user email only if profile has no name
+                      const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
+                      if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        project.agent_name = userData.email?.split('@')[0] || 'Agent';
+                      }
+                    }
+                  } else {
+                    // No profile found, use email from user doc
+                    const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
+                    if (userDoc.exists()) {
+                      const userData = userDoc.data();
                       project.agent_name = userData.email?.split('@')[0] || 'Agent';
                     }
                   }
@@ -388,6 +399,14 @@ export default function CandidateProjectsPage() {
   const createProject = async (projectData: any) => {
     if (!user) return;
 
+    // Prevent duplicate submissions
+    if (loading) {
+      console.log('⚠️ Project creation already in progress, ignoring duplicate call');
+      return;
+    }
+
+    setLoading(true);
+
     try {
       // Get agent user document to fetch name
       const agentDoc = await getDoc(doc(getDb(), 'users', user.uid));
@@ -472,9 +491,11 @@ export default function CandidateProjectsPage() {
       }
 
       setShowProjectModal(false);
+      setLoading(false);
     } catch (err: any) {
       console.error('Error creating project:', err);
       setError(err.message || 'Failed to create project');
+      setLoading(false);
     }
   };
 
@@ -780,10 +801,14 @@ export default function CandidateProjectsPage() {
       const project = projects.find(p => p.id === earningsProjectId);
       if (!project) return;
 
+      // Update earnings with new structure
       await updateDoc(doc(getDb(), PROJECTS_COLLECTION, earningsProjectId), {
         earnings: {
-          weekly: earningsData.weekly || 0,
-          monthly: earningsData.monthly || 0,
+          hourly_rate: earningsData.hourly_rate || 0,
+          payment_type: earningsData.payment_type || 'one_time',
+          percentage: earningsData.percentage || 0,
+          weekly_earned: earningsData.weekly_earned || 0,
+          hours_worked_this_week: earningsData.hours_worked_this_week || 0,
           set_by: user.uid,
           set_at: Timestamp.now(),
           last_updated: Timestamp.now()
@@ -791,16 +816,58 @@ export default function CandidateProjectsPage() {
         updated_at: Timestamp.now()
       });
 
+      // Create in-app notification
       if (project.candidate_id) {
+        const potentialWeekly = (earningsData.hourly_rate || 0) * 40;
+        const candidateShare = earningsData.payment_type === 'percentage'
+          ? earningsData.weekly_earned * (earningsData.percentage / 100)
+          : earningsData.weekly_earned;
+
         await addDoc(collection(getDb(), 'notifications'), {
           userId: project.candidate_id,
           type: 'earnings_updated',
           title: 'Earnings Updated',
-          message: `Your earnings have been set for ${project.title}: $${earningsData.weekly}/week, $${earningsData.monthly}/month`,
+          message: `Your earnings have been set for ${project.title}: $${earningsData.hourly_rate}/hr (Potential: $${potentialWeekly.toFixed(2)}/week)${earningsData.weekly_earned > 0 ? `, Earned this week: $${candidateShare.toFixed(2)}` : ''}`,
           projectId: earningsProjectId,
           isRead: false,
           createdAt: Timestamp.now()
         });
+
+        // Send email notification
+        try {
+          const candidateDoc = await getDoc(doc(getDb(), 'users', project.candidate_id));
+          const candidateData = candidateDoc.data();
+          const candidateEmail = candidateData?.email;
+
+          const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', project.candidate_id));
+          const candidateProfile = candidateProfileDoc.data();
+          const candidateName = candidateProfile?.first_name || candidateData?.email?.split('@')[0] || 'Candidate';
+
+          // Get agent name
+          const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+          const agentProfile = agentProfileDoc.data();
+          const agentName = agentProfile?.first_name && agentProfile?.last_name
+            ? `${agentProfile.first_name} ${agentProfile.last_name}`
+            : user.email?.split('@')[0] || 'Your Agent';
+
+          if (candidateEmail) {
+            const emailData = {
+              candidate_email: candidateEmail,
+              candidate_name: candidateName,
+              agent_name: agentName,
+              project_title: project.title,
+              project_id: earningsProjectId,
+              update_summary: `Earnings updated: $${earningsData.hourly_rate}/hr${earningsData.payment_type === 'percentage' ? ` (${earningsData.percentage}% revenue share)` : ' (one-time fee)'}. Potential weekly: $${potentialWeekly.toFixed(2)}${earningsData.weekly_earned > 0 ? `, This week's earnings: $${candidateShare.toFixed(2)}` : ''}`
+            };
+
+            console.log('📤 Sending earnings update email:', emailData);
+            await candidateProjectsAPI.sendUpdateEmail(emailData);
+            console.log('✅ Earnings email sent successfully');
+          }
+        } catch (emailErr) {
+          console.error('❌ Failed to send earnings email:', emailErr);
+          // Don't fail the update if email fails
+        }
       }
       alert('Earnings set successfully!');
     } catch (err: any) {
@@ -831,6 +898,7 @@ export default function CandidateProjectsPage() {
         updated_at: Timestamp.now()
       });
 
+      // Create in-app notification
       const recipientId = userRole === 'candidate' ? project.agent_id : project.candidate_id;
       await addDoc(collection(getDb(), 'notifications'), {
         userId: recipientId,
@@ -842,6 +910,71 @@ export default function CandidateProjectsPage() {
         isRead: false,
         createdAt: Timestamp.now()
       });
+
+      // Send email notification
+      try {
+        const isCandidate = userRole === 'candidate';
+        const recipientId = isCandidate ? project.agent_id : project.candidate_id;
+        const recipientEmail = isCandidate ? project.agent_email : project.candidate_email;
+
+        // Get requester name
+        const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+        const requesterProfile = requesterProfileDoc.data();
+        const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
+          ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+          : user.email?.split('@')[0] || 'User';
+
+        // Get recipient name
+        let recipientName = 'User';
+        if (recipientId) {
+          const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
+          if (recipientProfileDoc.exists()) {
+            const recipientProfile = recipientProfileDoc.data();
+            recipientName = recipientProfile?.first_name && recipientProfile?.last_name
+              ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
+              : recipientProfile?.first_name || 'User';
+          } else {
+            const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
+            if (recipientUserDoc.exists()) {
+              const recipientUserData = recipientUserDoc.data();
+              recipientName = recipientUserData?.email?.split('@')[0] || 'User';
+            }
+          }
+        }
+
+        // Format scheduled time
+        const scheduledDateTime = new Date(`${scheduleData.date}T${scheduleData.time}`);
+        const scheduledTimeStr = scheduledDateTime.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        });
+
+        if (recipientEmail) {
+          const emailData = {
+            recipient_email: recipientEmail,
+            recipient_name: recipientName,
+            requester_name: requesterName,
+            requester_role: isCandidate ? 'candidate' : 'agent',
+            project_title: project.title,
+            project_id: scheduleProjectId,
+            action_type: 'screen_share',
+            scheduled_time: scheduledTimeStr,
+            duration_minutes: 60, // Default duration
+            description: `Screen sharing session scheduled for ${scheduleData.date} at ${scheduleData.time}`
+          };
+
+          console.log('📤 Sending schedule email:', emailData);
+          await candidateProjectsAPI.sendScheduleEmail(emailData);
+          console.log('✅ Schedule email sent successfully');
+        }
+      } catch (emailErr) {
+        console.error('❌ Failed to send schedule email:', emailErr);
+        // Don't fail the scheduling if email fails
+      }
 
       alert('Screen sharing scheduled successfully!');
     } catch (err: any) {
@@ -863,6 +996,179 @@ export default function CandidateProjectsPage() {
     if (e) e.stopPropagation();
     setScheduleProjectId(projectId);
     setShowScheduleModal(true);
+  };
+
+  const cancelSchedule = async (actionId: string) => {
+    if (!user || !selectedProject) return;
+
+    if (!confirm('Are you sure you want to cancel this scheduled session?')) return;
+
+    try {
+      // Update action status to cancelled
+      await updateDoc(doc(getDb(), ACTIONS_COLLECTION, actionId), {
+        status: 'cancelled',
+        cancelled_by: user.uid,
+        cancelled_at: Timestamp.now(),
+        updated_at: Timestamp.now()
+      });
+
+      const action = projectActions.find(a => a.id === actionId);
+      if (!action) return;
+
+      // Send notification to the other party
+      const recipientId = userRole === 'candidate' ? selectedProject.agent_id : selectedProject.candidate_id;
+      await addDoc(collection(getDb(), 'notifications'), {
+        userId: recipientId,
+        type: 'schedule_cancelled',
+        title: 'Session Cancelled',
+        message: `${userRole === 'candidate' ? 'Candidate' : 'Agent'} has cancelled the scheduled session for ${selectedProject.title}`,
+        projectId: selectedProject.id,
+        actionId: actionId,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
+      // Send email notification
+      try {
+        const isCandidate = userRole === 'candidate';
+        const recipientEmail = isCandidate ? selectedProject.agent_email : selectedProject.candidate_email;
+
+        // Get names
+        const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+        const requesterProfile = requesterProfileDoc.data();
+        const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
+          ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+          : user.email?.split('@')[0] || 'User';
+
+        let recipientName = 'User';
+        if (recipientId) {
+          const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
+          if (recipientProfileDoc.exists()) {
+            const recipientProfile = recipientProfileDoc.data();
+            recipientName = recipientProfile?.first_name && recipientProfile?.last_name
+              ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
+              : recipientProfile?.first_name || 'User';
+          }
+        }
+
+        if (recipientEmail) {
+          const emailData = {
+            candidate_email: recipientEmail,
+            candidate_name: recipientName,
+            agent_name: requesterName,
+            project_title: selectedProject.title,
+            project_id: selectedProject.id,
+            update_summary: `Scheduled ${action.action_type === 'screen_share' ? 'screen sharing' : 'work'} session has been cancelled by ${requesterName}. Session was scheduled for ${action.scheduled_time ? formatDate(action.scheduled_time) : 'TBD'}.`
+          };
+
+          console.log('📤 Sending cancellation email:', emailData);
+          await candidateProjectsAPI.sendUpdateEmail(emailData);
+          console.log('✅ Cancellation email sent successfully');
+        }
+      } catch (emailErr) {
+        console.error('❌ Failed to send cancellation email:', emailErr);
+      }
+
+      alert('Session cancelled successfully!');
+    } catch (err: any) {
+      console.error('Error cancelling session:', err);
+      alert('Failed to cancel session: ' + err.message);
+    }
+  };
+
+  const rescheduleSession = async (actionId: string, newDate: string, newTime: string) => {
+    if (!user || !selectedProject) return;
+
+    try {
+      const action = projectActions.find(a => a.id === actionId);
+      if (!action) return;
+
+      const oldScheduledTime = action.scheduled_time ? formatDate(action.scheduled_time) : 'TBD';
+
+      // Update action with new scheduled time
+      const newDateTime = Timestamp.fromDate(new Date(`${newDate}T${newTime}`));
+      await updateDoc(doc(getDb(), ACTIONS_COLLECTION, actionId), {
+        scheduled_time: newDateTime,
+        rescheduled_by: user.uid,
+        rescheduled_at: Timestamp.now(),
+        previous_scheduled_time: action.scheduled_time,
+        updated_at: Timestamp.now()
+      });
+
+      // Send notification
+      const recipientId = userRole === 'candidate' ? selectedProject.agent_id : selectedProject.candidate_id;
+      await addDoc(collection(getDb(), 'notifications'), {
+        userId: recipientId,
+        type: 'schedule_rescheduled',
+        title: 'Session Rescheduled',
+        message: `${userRole === 'candidate' ? 'Candidate' : 'Agent'} has rescheduled the session for ${selectedProject.title} to ${newDate} at ${newTime}`,
+        projectId: selectedProject.id,
+        actionId: actionId,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
+      // Send email notification
+      try {
+        const isCandidate = userRole === 'candidate';
+        const recipientId = isCandidate ? selectedProject.agent_id : selectedProject.candidate_id;
+        const recipientEmail = isCandidate ? selectedProject.agent_email : selectedProject.candidate_email;
+
+        // Get names
+        const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+        const requesterProfile = requesterProfileDoc.data();
+        const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
+          ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+          : user.email?.split('@')[0] || 'User';
+
+        let recipientName = 'User';
+        if (recipientId) {
+          const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
+          if (recipientProfileDoc.exists()) {
+            const recipientProfile = recipientProfileDoc.data();
+            recipientName = recipientProfile?.first_name && recipientProfile?.last_name
+              ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
+              : recipientProfile?.first_name || 'User';
+          }
+        }
+
+        const scheduledDateTime = new Date(`${newDate}T${newTime}`);
+        const scheduledTimeStr = scheduledDateTime.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZoneName: 'short'
+        });
+
+        if (recipientEmail) {
+          const emailData = {
+            recipient_email: recipientEmail,
+            recipient_name: recipientName,
+            requester_name: requesterName,
+            requester_role: isCandidate ? 'candidate' : 'agent',
+            project_title: selectedProject.title,
+            project_id: selectedProject.id,
+            action_type: action.action_type,
+            scheduled_time: scheduledTimeStr,
+            duration_minutes: action.duration_minutes || 60,
+            description: `Session rescheduled from ${oldScheduledTime} to ${newDate} at ${newTime}`
+          };
+
+          console.log('📤 Sending reschedule email:', emailData);
+          await candidateProjectsAPI.sendScheduleEmail(emailData);
+          console.log('✅ Reschedule email sent successfully');
+        }
+      } catch (emailErr) {
+        console.error('❌ Failed to send reschedule email:', emailErr);
+      }
+
+      alert('Session rescheduled successfully!');
+    } catch (err: any) {
+      console.error('Error rescheduling session:', err);
+      alert('Failed to reschedule session: ' + err.message);
+    }
   };
 
   const deleteProject = async (projectId: string) => {
@@ -1405,6 +1711,8 @@ export default function CandidateProjectsPage() {
             onAddAction={() => setShowActionModal(true)}
             onUpdateActionStatus={updateActionStatus}
             onDeleteProject={deleteProject}
+            onCancelSchedule={cancelSchedule}
+            onRescheduleSession={rescheduleSession}
             getStatusColor={getStatusColor}
             getPriorityColor={getPriorityColor}
             formatDate={formatDate}
@@ -1458,7 +1766,9 @@ export default function CandidateProjectsPage() {
 }
 
 // ProjectDetailModal component (extracted for clarity)
-function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAddUpdate, onAddAction, onUpdateActionStatus, onDeleteProject, getStatusColor, getPriorityColor, formatDate }: any) {
+function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAddUpdate, onAddAction, onUpdateActionStatus, onDeleteProject, onCancelSchedule, onRescheduleSession, getStatusColor, getPriorityColor, formatDate }: any) {
+  const [rescheduleAction, setRescheduleAction] = useState<any>(null);
+  const [rescheduleData, setRescheduleData] = useState({ date: '', time: '' });
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
@@ -1686,6 +1996,18 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
                             >
                               Mark Complete
                             </button>
+                            <button
+                              onClick={() => setRescheduleAction(action)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded transition-colors"
+                            >
+                              Reschedule
+                            </button>
+                            <button
+                              onClick={() => onCancelSchedule(action.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 rounded transition-colors"
+                            >
+                              Cancel
+                            </button>
                           </div>
                         )}
                       </div>
@@ -1750,6 +2072,79 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
             )}
           </div>
         </div>
+
+        {/* Reschedule Modal */}
+        {rescheduleAction && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 flex items-center justify-between rounded-t-2xl">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-6 h-6" />
+                  <h2 className="text-xl font-bold">Reschedule Session</h2>
+                </div>
+                <button
+                  onClick={() => setRescheduleAction(null)}
+                  className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 text-sm text-blue-900 dark:text-blue-300">
+                  <strong>📅 Rescheduling: {rescheduleAction.title}</strong>
+                  <p className="mt-1 text-blue-700 dark:text-blue-400">
+                    Select a new date and time for this session.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                    New Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={rescheduleData.date}
+                    onChange={(e) => setRescheduleData({ ...rescheduleData, date: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                    New Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={rescheduleData.time}
+                    onChange={(e) => setRescheduleData({ ...rescheduleData, time: e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setRescheduleAction(null)}
+                    className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onRescheduleSession(rescheduleAction.id, rescheduleData.date, rescheduleData.time);
+                      setRescheduleAction(null);
+                      setRescheduleData({ date: '', time: '' });
+                    }}
+                    disabled={!rescheduleData.date || !rescheduleData.time}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+                  >
+                    Reschedule
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
