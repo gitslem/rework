@@ -880,7 +880,7 @@ export default function CandidateProjectsNew() {
                   ) : viewMode === 'list' ? (
                     <ListView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} onScheduleClick={handleScheduleClick} onEarningsClick={handleEarningsClick} />
                   ) : (
-                    <KanbanView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
+                    <KanbanView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} onScheduleClick={handleScheduleClick} onEarningsClick={handleEarningsClick} />
                   )}
                 </div>
               ))}
@@ -1112,6 +1112,21 @@ function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
                   Created {formatDate(project.created_at)}
                 </span>
               </div>
+
+              {/* Earnings Display */}
+              {project.earnings && (
+                <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-2 rounded-lg border border-emerald-200 mt-3 w-fit">
+                  <div className="flex items-center text-emerald-700">
+                    <TrendingUp className="w-4 h-4 mr-1.5" />
+                    <span className="font-bold text-sm">${project.earnings.weekly}/wk</span>
+                  </div>
+                  <div className="w-px h-4 bg-emerald-300"></div>
+                  <div className="flex items-center text-teal-700">
+                    <DollarSign className="w-4 h-4 mr-1" />
+                    <span className="font-bold text-sm">${project.earnings.monthly}/mo</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -1153,7 +1168,7 @@ function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
 }
 
 // Kanban View Component
-function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole }: any) {
+function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole, onScheduleClick, onEarningsClick }: any) {
   const statuses = ['pending', 'active', 'on_hold', 'completed'];
   const statusLabels: any = {
     pending: 'Pending',
@@ -1203,11 +1218,55 @@ function KanbanView({ projects, onSelectProject, getStatusIcon, getStatusColor, 
                       ${project.budget.toLocaleString()}
                     </div>
                   )}
+
+                  {/* Earnings Display */}
+                  {project.earnings && (
+                    <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-teal-50 px-2 py-1.5 rounded-lg border border-emerald-200 mb-2">
+                      <div className="flex items-center text-emerald-700">
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                        <span className="font-bold text-xs">${project.earnings.weekly}/wk</span>
+                      </div>
+                      <div className="w-px h-3 bg-emerald-300"></div>
+                      <div className="flex items-center text-teal-700">
+                        <DollarSign className="w-3 h-3 mr-0.5" />
+                        <span className="font-bold text-xs">${project.earnings.monthly}/mo</span>
+                      </div>
+                    </div>
+                  )}
+
                   {project.platform && (
-                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg">
+                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-lg mb-3">
                       {project.platform}
                     </span>
                   )}
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-200">
+                    {/* Earnings Button - Only for agents on active projects */}
+                    {userRole === 'agent' && project.status === 'active' && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEarningsClick(project.id, e);
+                        }}
+                        className="w-full px-2 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg font-medium text-xs hover:bg-emerald-100 transition-colors flex items-center justify-center"
+                      >
+                        <DollarSign className="w-3 h-3 mr-1" />
+                        Set Earnings
+                      </button>
+                    )}
+                    {/* Schedule Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onScheduleClick(project.id, e);
+                      }}
+                      className="w-full px-2 py-1.5 bg-purple-50 text-purple-600 rounded-lg font-medium text-xs hover:bg-purple-100 transition-colors flex items-center justify-center"
+                    >
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Schedule
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
