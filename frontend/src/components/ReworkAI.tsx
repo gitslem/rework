@@ -237,13 +237,24 @@ export default function ReworkAI() {
     }
   }, [isOpen, isMinimized]);
 
-  // Hide ReworkAI on profile/dashboard pages
+  // Hide ReworkAI on all authenticated/logged-in pages
   const hideOnPages = [
     '/candidate-dashboard',
     '/agent-dashboard',
     '/profile-settings',
     '/dashboard',
     '/admin',
+    '/candidate-projects',
+    '/candidate-info',
+    '/agent-connections',
+    '/agent-info',
+    '/agent-screen',
+    '/candidate-screen',
+    '/company-dashboard',
+    '/create-project',
+    '/sandboxes',
+    '/sandbox/',
+    '/candidate-projects-new',
   ];
 
   const currentPath = router.pathname;
