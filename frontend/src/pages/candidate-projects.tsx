@@ -408,10 +408,17 @@ export default function CandidateProjectsPage() {
     setLoading(true);
 
     try {
-      // Get agent user document to fetch name
-      const agentDoc = await getDoc(doc(getDb(), 'users', user.uid));
-      const agentData = agentDoc.exists() ? agentDoc.data() : {};
-      const agentName = agentData.name || user.displayName || user.email?.split('@')[0] || 'Agent';
+      // Get agent real name from profile
+      let agentName = 'Agent';
+      const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+      if (agentProfileDoc.exists()) {
+        const agentProfile = agentProfileDoc.data();
+        agentName = agentProfile?.first_name && agentProfile?.last_name
+          ? `${agentProfile.first_name} ${agentProfile.last_name}`
+          : agentProfile?.first_name || user.email?.split('@')[0] || 'Agent';
+      } else {
+        agentName = user.email?.split('@')[0] || 'Agent';
+      }
 
       const projectRef = await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
@@ -439,26 +446,32 @@ export default function CandidateProjectsPage() {
       try {
         console.log('📧 Preparing to send email notification...');
 
-        // Get agent profile
-        const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
-        const agentProfile = agentProfileDoc.data();
-        const agentName = agentProfile?.firstName && agentProfile?.lastName
-          ? `${agentProfile.firstName} ${agentProfile.lastName}`
-          : user.email?.split('@')[0] || 'Your Agent';
+        // Agent name already fetched above
 
-        console.log('Agent name:', agentName);
-
-        // Get candidate profile
+        // Get candidate email
         const candidateDoc = await getDoc(doc(getDb(), 'users', projectData.candidate_id));
         const candidateData = candidateDoc.data();
         const candidateEmail = candidateData?.email || projectData.candidate_email;
 
+        // Get candidate real name from profile
+        let candidateName = 'Candidate';
+        const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', projectData.candidate_id));
+        if (candidateProfileDoc.exists()) {
+          const candidateProfile = candidateProfileDoc.data();
+          candidateName = candidateProfile?.first_name && candidateProfile?.last_name
+            ? `${candidateProfile.first_name} ${candidateProfile.last_name}`
+            : candidateProfile?.first_name || candidateEmail?.split('@')[0] || 'Candidate';
+        } else {
+          candidateName = candidateEmail?.split('@')[0] || 'Candidate';
+        }
+
         console.log('Candidate email:', candidateEmail);
+        console.log('Candidate name:', candidateName);
 
         if (candidateEmail) {
           const emailData = {
             candidate_email: candidateEmail,
-            candidate_name: projectData.candidate_name || 'Candidate',
+            candidate_name: candidateName,
             agent_name: agentName,
             project_title: projectData.title,
             project_description: projectData.description || '',
@@ -526,12 +539,17 @@ export default function CandidateProjectsPage() {
       try {
         console.log('📧 Preparing to send update email notification...');
 
-        // Get agent profile
+        // Get agent real name from profile
+        let agentName = 'Agent';
         const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
-        const agentProfile = agentProfileDoc.data();
-        const agentName = agentProfile?.firstName && agentProfile?.lastName
-          ? `${agentProfile.firstName} ${agentProfile.lastName}`
-          : user.email?.split('@')[0] || 'Your Agent';
+        if (agentProfileDoc.exists()) {
+          const agentProfile = agentProfileDoc.data();
+          agentName = agentProfile?.first_name && agentProfile?.last_name
+            ? `${agentProfile.first_name} ${agentProfile.last_name}`
+            : agentProfile?.first_name || user.email?.split('@')[0] || 'Agent';
+        } else {
+          agentName = user.email?.split('@')[0] || 'Agent';
+        }
 
         console.log('Agent name:', agentName);
 
@@ -540,9 +558,17 @@ export default function CandidateProjectsPage() {
         const candidateData = candidateDoc.data();
         const candidateEmail = candidateData?.email;
 
+        // Get candidate real name from profile
+        let candidateName = 'Candidate';
         const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
-        const candidateProfile = candidateProfileDoc.data();
-        const candidateName = candidateProfile?.firstName || candidateData?.email?.split('@')[0] || 'Candidate';
+        if (candidateProfileDoc.exists()) {
+          const candidateProfile = candidateProfileDoc.data();
+          candidateName = candidateProfile?.first_name && candidateProfile?.last_name
+            ? `${candidateProfile.first_name} ${candidateProfile.last_name}`
+            : candidateProfile?.first_name || candidateEmail?.split('@')[0] || 'Candidate';
+        } else {
+          candidateName = candidateEmail?.split('@')[0] || 'Candidate';
+        }
 
         console.log('Candidate email:', candidateEmail);
 
@@ -631,8 +657,6 @@ export default function CandidateProjectsPage() {
       // Send email notification for the action
       const isAgent = userRole === 'agent';
       const recipientId = isAgent ? selectedProject.candidate_id : selectedProject.agent_id;
-      const recipientEmail = isAgent ? selectedProject.candidate_email : selectedProject.agent_email;
-      const recipientName = isAgent ? selectedProject.candidate_name : selectedProject.agent_name;
 
       // Send email for scheduled sessions (screen_share or work_session) using dedicated endpoint
       if (actionData.action_type === 'screen_share' || actionData.action_type === 'work_session') {
@@ -640,13 +664,42 @@ export default function CandidateProjectsPage() {
           // Determine recipient based on who created the action
           const isAgent = userRole === 'agent';
           const recipientId = isAgent ? selectedProject.candidate_id : selectedProject.agent_id;
-          const recipientEmail = isAgent ? selectedProject.candidate_email : selectedProject.agent_email;
-          const recipientName = isAgent ? selectedProject.candidate_name : selectedProject.agent_name;
 
-          // Get requester info from Firestore user doc
-          const userDoc = await getDoc(doc(getDb(), 'users', user.uid));
-          const userData = userDoc.data();
-          const requesterName = userData?.displayName || userData?.email || user.email || 'User';
+          // Get recipient email and name from Firestore
+          let recipientEmail = '';
+          let recipientName = 'User';
+
+          if (recipientId) {
+            // Get recipient email from users collection
+            const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
+            if (recipientUserDoc.exists()) {
+              const recipientUserData = recipientUserDoc.data();
+              recipientEmail = recipientUserData?.email || '';
+            }
+
+            // Get recipient real name from profiles
+            const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
+            if (recipientProfileDoc.exists()) {
+              const recipientProfile = recipientProfileDoc.data();
+              recipientName = recipientProfile?.first_name && recipientProfile?.last_name
+                ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
+                : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+            } else {
+              recipientName = recipientEmail?.split('@')[0] || 'User';
+            }
+          }
+
+          // Get requester real name from profile
+          const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+          let requesterName = 'User';
+          if (requesterProfileDoc.exists()) {
+            const requesterProfile = requesterProfileDoc.data();
+            requesterName = requesterProfile?.first_name && requesterProfile?.last_name
+              ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+              : requesterProfile?.first_name || user.email?.split('@')[0] || 'User';
+          } else {
+            requesterName = user.email?.split('@')[0] || 'User';
+          }
 
           // Format scheduled time for email
           let scheduledTimeStr = null;
@@ -689,21 +742,43 @@ export default function CandidateProjectsPage() {
       } else {
         // Send generic action email for all other action types
         try {
+          // Get recipient email and name
+          const isAgent = userRole === 'agent';
+          const recipientId = isAgent ? selectedProject.candidate_id : selectedProject.agent_id;
+
+          let recipientEmail = '';
+          if (recipientId) {
+            const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
+            if (recipientUserDoc.exists()) {
+              const recipientUserData = recipientUserDoc.data();
+              recipientEmail = recipientUserData?.email || '';
+            }
+          }
+
           if (recipientEmail) {
-            // Get requester info
-            const userDoc = await getDoc(doc(getDb(), 'users', user.uid));
-            const userData = userDoc.data();
+            // Get agent real name from profile
+            let agentName = 'Agent';
+            if (selectedProject.agent_id) {
+              const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.agent_id));
+              if (agentProfileDoc.exists()) {
+                const agentProfile = agentProfileDoc.data();
+                agentName = agentProfile?.first_name && agentProfile?.last_name
+                  ? `${agentProfile.first_name} ${agentProfile.last_name}`
+                  : agentProfile?.first_name || 'Agent';
+              }
+            }
 
-            // Get profiles for names
-            const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.agent_id));
-            const agentProfile = agentProfileDoc.data();
-            const agentName = agentProfile?.firstName && agentProfile?.lastName
-              ? `${agentProfile.firstName} ${agentProfile.lastName}`
-              : selectedProject.agent_name || 'Agent';
-
-            const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
-            const candidateProfile = candidateProfileDoc.data();
-            const candidateName = candidateProfile?.firstName || selectedProject.candidate_name || 'Candidate';
+            // Get candidate real name from profile
+            let candidateName = 'Candidate';
+            if (selectedProject.candidate_id) {
+              const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
+              if (candidateProfileDoc.exists()) {
+                const candidateProfile = candidateProfileDoc.data();
+                candidateName = candidateProfile?.first_name && candidateProfile?.last_name
+                  ? `${candidateProfile.first_name} ${candidateProfile.last_name}`
+                  : candidateProfile?.first_name || 'Candidate';
+              }
+            }
 
             const actionSummary = `New action required: ${actionData.title}${actionData.description ? ' - ' + actionData.description.substring(0, 100) : ''}`;
 
