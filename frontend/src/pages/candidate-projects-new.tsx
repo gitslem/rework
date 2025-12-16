@@ -48,6 +48,10 @@ export default function CandidateProjectsNew() {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleProjectId, setScheduleProjectId] = useState<string | null>(null);
   const [schedulingProject, setSchedulingProject] = useState(false);
+  const [showEarningsModal, setShowEarningsModal] = useState(false);
+  const [earningsProjectId, setEarningsProjectId] = useState<string | null>(null);
+  const [settingEarnings, setSettingEarnings] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Notification states
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -60,7 +64,9 @@ export default function CandidateProjectsNew() {
     active: 0,
     pending: 0,
     completed: 0,
-    totalBudget: 0
+    totalBudget: 0,
+    activeEarnings: 0,
+    completedCount: 0
   });
 
   useEffect(() => {
@@ -201,6 +207,13 @@ export default function CandidateProjectsNew() {
   useEffect(() => {
     let filtered = [...projects];
 
+    // Filter by history toggle - only show completed in history view
+    if (showHistory) {
+      filtered = filtered.filter(p => p.status === 'completed');
+    } else {
+      filtered = filtered.filter(p => p.status !== 'completed');
+    }
+
     // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(p => p.status === statusFilter);
@@ -283,12 +296,17 @@ export default function CandidateProjectsNew() {
   const groupedProjects = getGroupedProjects();
 
   const calculateStats = (projectsList: any[]) => {
+    const activeProjects = projectsList.filter(p => p.status === 'active');
+    const completedProjects = projectsList.filter(p => p.status === 'completed');
+
     const stats = {
       total: projectsList.length,
-      active: projectsList.filter(p => p.status === 'active').length,
+      active: activeProjects.length,
       pending: projectsList.filter(p => p.status === 'pending').length,
-      completed: projectsList.filter(p => p.status === 'completed').length,
-      totalBudget: projectsList.reduce((sum, p) => sum + (p.budget || 0), 0)
+      completed: completedProjects.length,
+      totalBudget: projectsList.reduce((sum, p) => sum + (p.budget || 0), 0),
+      activeEarnings: activeProjects.reduce((sum, p) => sum + ((p.earnings?.monthly || 0)), 0),
+      completedCount: completedProjects.length
     };
     setStats(stats);
   };
@@ -375,6 +393,57 @@ export default function CandidateProjectsNew() {
     e.stopPropagation(); // Prevent navigating to project details
     setScheduleProjectId(projectId);
     setShowScheduleModal(true);
+  };
+
+  const setProjectEarnings = async (earningsData: any) => {
+    if (!user || !earningsProjectId) return;
+
+    setSettingEarnings(true);
+    setShowEarningsModal(false); // Close modal immediately
+
+    try {
+      const project = projects.find(p => p.id === earningsProjectId);
+      if (!project) return;
+
+      // Update project with earnings data
+      await updateDoc(doc(getDb(), PROJECTS_COLLECTION, earningsProjectId), {
+        earnings: {
+          weekly: earningsData.weekly || 0,
+          monthly: earningsData.monthly || 0,
+          set_by: user.uid,
+          set_at: Timestamp.now(),
+          last_updated: Timestamp.now()
+        },
+        updated_at: Timestamp.now()
+      });
+
+      // Create notification for candidate
+      if (project.candidate_id) {
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: project.candidate_id,
+          type: 'earnings_updated',
+          title: 'Earnings Updated',
+          message: `Your earnings have been set for ${project.title}: $${earningsData.weekly}/week, $${earningsData.monthly}/month`,
+          projectId: earningsProjectId,
+          isRead: false,
+          createdAt: Timestamp.now()
+        });
+      }
+
+      alert('Earnings set successfully! The candidate has been notified.');
+    } catch (err: any) {
+      console.error('Error setting earnings:', err);
+      alert('Failed to set earnings: ' + err.message);
+    } finally {
+      setSettingEarnings(false);
+      setEarningsProjectId(null);
+    }
+  };
+
+  const handleEarningsClick = (projectId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEarningsProjectId(projectId);
+    setShowEarningsModal(true);
   };
 
   const getStatusIcon = (status: string) => {
@@ -618,46 +687,58 @@ export default function CandidateProjectsNew() {
         )}
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {/* Stats Cards - Modern Design */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          {/* Stats Dashboard - Professional Redesign */}
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-4 sm:p-6 shadow-sm border-2 border-blue-200 hover:shadow-lg transition-all hover:scale-105">
               <div className="flex items-center justify-between mb-2">
-                <Briefcase className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />
+                <Briefcase className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />
+                <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-xs sm:text-sm text-gray-600 mt-1">Total Projects</div>
+              <div className="text-xs sm:text-sm text-blue-700 font-medium mt-1">Total Projects</div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-4 sm:p-6 shadow-sm border-2 border-green-200 hover:shadow-lg transition-all hover:scale-105">
               <div className="flex items-center justify-between mb-2">
-                <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-500" />
+                <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
+                <div className="w-3 h-3 bg-green-600 rounded-full animate-pulse"></div>
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.active}</div>
-              <div className="text-xs sm:text-sm text-gray-600 mt-1">Active</div>
+              <div className="text-xs sm:text-sm text-green-700 font-medium mt-1">Active</div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-4 sm:p-6 shadow-sm border-2 border-yellow-200 hover:shadow-lg transition-all hover:scale-105">
               <div className="flex items-center justify-between mb-2">
-                <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-500" />
+                <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-600" />
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.pending}</div>
-              <div className="text-xs sm:text-sm text-gray-600 mt-1">Pending</div>
+              <div className="text-xs sm:text-sm text-yellow-700 font-medium mt-1">Pending</div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 sm:p-6 shadow-sm border-2 border-purple-200 hover:shadow-lg transition-all hover:scale-105">
               <div className="flex items-center justify-between mb-2">
-                <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500" />
+                <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-gray-900">{stats.completed}</div>
-              <div className="text-xs sm:text-sm text-gray-600 mt-1">Completed</div>
+              <div className="text-xs sm:text-sm text-purple-700 font-medium mt-1">Completed</div>
             </div>
 
-            <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-4 sm:p-6 shadow-sm border border-purple-200 hover:shadow-lg transition-shadow">
+            {userRole === 'agent' && (
+              <div className="bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-4 sm:p-6 shadow-lg border-2 border-emerald-300 hover:shadow-xl transition-all hover:scale-105">
+                <div className="flex items-center justify-between mb-2">
+                  <DollarSign className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-white">${stats.activeEarnings.toLocaleString()}</div>
+                <div className="text-xs sm:text-sm text-emerald-100 font-medium mt-1">Monthly Earnings</div>
+              </div>
+            )}
+
+            <div className="col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-4 sm:p-6 shadow-lg border-2 border-indigo-300 hover:shadow-xl transition-all hover:scale-105">
               <div className="flex items-center justify-between mb-2">
-                <DollarSign className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                <BarChart3 className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               <div className="text-2xl sm:text-3xl font-bold text-white">${stats.totalBudget.toLocaleString()}</div>
-              <div className="text-xs sm:text-sm text-purple-100 mt-1">Total Budget</div>
+              <div className="text-xs sm:text-sm text-indigo-100 font-medium mt-1">Total Value</div>
             </div>
           </div>
 
@@ -743,6 +824,22 @@ export default function CandidateProjectsNew() {
                   <option value="deadline">Sort by Deadline</option>
                 </select>
 
+                {/* History Toggle */}
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold transition-all text-sm ${
+                    showHistory
+                      ? 'bg-purple-600 text-white shadow-lg hover:bg-purple-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+                  }`}
+                >
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="hidden md:inline">
+                    {showHistory ? 'History' : 'Show History'}
+                  </span>
+                  {showHistory && <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs">{stats.completed}</span>}
+                </button>
+
                 {/* View Mode Switcher */}
                 <div className="hidden sm:flex items-center bg-gray-100 rounded-xl p-1">
                   <button
@@ -820,7 +917,7 @@ export default function CandidateProjectsNew() {
 
                   {/* Projects for this group */}
                   {viewMode === 'grid' ? (
-                    <GridView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} onScheduleClick={handleScheduleClick} />
+                    <GridView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} onScheduleClick={handleScheduleClick} onEarningsClick={handleEarningsClick} />
                   ) : viewMode === 'list' ? (
                     <ListView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
                   ) : (
@@ -853,20 +950,33 @@ export default function CandidateProjectsNew() {
             isLoading={schedulingProject}
           />
         )}
+
+        {/* Set Earnings Modal */}
+        {showEarningsModal && (
+          <EarningsModal
+            onClose={() => {
+              setShowEarningsModal(false);
+              setEarningsProjectId(null);
+            }}
+            onSubmit={setProjectEarnings}
+            isLoading={settingEarnings}
+            project={projects.find(p => p.id === earningsProjectId)}
+          />
+        )}
       </div>
     </>
   );
 }
 
 // Grid View Component
-function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole, onScheduleClick }: any) {
+function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole, onScheduleClick, onEarningsClick }: any) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {projects.map((project: any) => (
         <div
           key={project.id}
           onClick={() => router.push(`/candidate-projects?project=${project.id}`)}
-          className="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer overflow-hidden"
+          className="group bg-white rounded-2xl shadow-sm border-2 border-gray-100 hover:shadow-2xl hover:border-blue-300 transition-all duration-300 cursor-pointer overflow-hidden"
         >
           {/* Project Header */}
           <div className="p-5 sm:p-6">
