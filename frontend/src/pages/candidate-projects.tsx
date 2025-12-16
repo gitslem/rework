@@ -16,7 +16,7 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseFirestore, getFirebaseAuth } from '../lib/firebase/config';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { Calendar, Clock, Bell, X } from 'lucide-react';
+import { Calendar, Clock, Bell, X, DollarSign, TrendingUp, Loader2 } from 'lucide-react';
 import {
   CandidateProjectStatus,
   ProjectActionStatus,
@@ -63,6 +63,15 @@ export default function CandidateProjectsPage() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotificationPanel, setShowNotificationPanel] = useState(false);
   const [projectNotificationCount, setProjectNotificationCount] = useState(0);
+
+  // Earnings and Schedule modal states
+  const [showEarningsModal, setShowEarningsModal] = useState(false);
+  const [earningsProjectId, setEarningsProjectId] = useState<string | null>(null);
+  const [settingEarnings, setSettingEarnings] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleProjectId, setScheduleProjectId] = useState<string | null>(null);
+  const [schedulingProject, setSchedulingProject] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Check Firebase authentication and get user role
   useEffect(() => {
@@ -340,9 +349,16 @@ export default function CandidateProjectsPage() {
     if (!user) return;
 
     try {
+      // Get agent user document to fetch name
+      const agentDoc = await getDoc(doc(getDb(), 'users', user.uid));
+      const agentData = agentDoc.exists() ? agentDoc.data() : {};
+      const agentName = agentData.name || user.displayName || user.email?.split('@')[0] || 'Agent';
+
       const projectRef = await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
         agent_id: user.uid,
+        agent_name: agentName,
+        agent_email: user.email,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now()
       });
@@ -713,6 +729,100 @@ export default function CandidateProjectsPage() {
       console.error('Error updating action:', err);
       setError(err.message || 'Failed to update action');
     }
+  };
+
+  const setProjectEarnings = async (earningsData: any) => {
+    if (!user || !earningsProjectId) return;
+    setSettingEarnings(true);
+    setShowEarningsModal(false);
+
+    try {
+      const project = projects.find(p => p.id === earningsProjectId);
+      if (!project) return;
+
+      await updateDoc(doc(getDb(), PROJECTS_COLLECTION, earningsProjectId), {
+        earnings: {
+          weekly: earningsData.weekly || 0,
+          monthly: earningsData.monthly || 0,
+          set_by: user.uid,
+          set_at: Timestamp.now(),
+          last_updated: Timestamp.now()
+        },
+        updated_at: Timestamp.now()
+      });
+
+      if (project.candidate_id) {
+        await addDoc(collection(getDb(), 'notifications'), {
+          userId: project.candidate_id,
+          type: 'earnings_updated',
+          title: 'Earnings Updated',
+          message: `Your earnings have been set for ${project.title}: $${earningsData.weekly}/week, $${earningsData.monthly}/month`,
+          projectId: earningsProjectId,
+          isRead: false,
+          createdAt: Timestamp.now()
+        });
+      }
+      alert('Earnings set successfully!');
+    } catch (err: any) {
+      console.error('Error setting earnings:', err);
+      alert('Failed to set earnings: ' + err.message);
+    } finally {
+      setSettingEarnings(false);
+      setEarningsProjectId(null);
+    }
+  };
+
+  const scheduleScreenSharing = async (scheduleData: any) => {
+    if (!user || !scheduleProjectId) return;
+    setSchedulingProject(true);
+    setShowScheduleModal(false);
+
+    try {
+      const project = projects.find(p => p.id === scheduleProjectId);
+      if (!project) return;
+
+      await updateDoc(doc(getDb(), PROJECTS_COLLECTION, scheduleProjectId), {
+        scheduled_screen_sharing: {
+          date: scheduleData.date,
+          time: scheduleData.time,
+          scheduled_by: user.uid,
+          scheduled_at: Timestamp.now()
+        },
+        updated_at: Timestamp.now()
+      });
+
+      const recipientId = userRole === 'candidate' ? project.agent_id : project.candidate_id;
+      await addDoc(collection(getDb(), 'notifications'), {
+        userId: recipientId,
+        type: 'screen_sharing_scheduled',
+        title: 'Screen Sharing Scheduled',
+        message: `Screen sharing scheduled for ${project.title} on ${scheduleData.date} at ${scheduleData.time}`,
+        projectId: scheduleProjectId,
+        scheduleData: scheduleData,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
+      alert('Screen sharing scheduled successfully!');
+    } catch (err: any) {
+      console.error('Error scheduling:', err);
+      alert('Failed to schedule: ' + err.message);
+    } finally {
+      setSchedulingProject(false);
+      setScheduleProjectId(null);
+    }
+  };
+
+  const handleEarningsClick = (projectId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setEarningsProjectId(projectId);
+    setShowEarningsModal(true);
+  };
+
+  const handleScheduleClick = (projectId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setScheduleProjectId(projectId);
+    setShowScheduleModal(true);
   };
 
   const deleteProject = async (projectId: string) => {
@@ -1158,6 +1268,20 @@ export default function CandidateProjectsPage() {
                     </div>
                   )}
 
+                  {project.earnings && (
+                    <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      <div className="flex items-center text-emerald-700 dark:text-emerald-400">
+                        <TrendingUp className="w-4 h-4 mr-1.5" />
+                        <span className="font-bold text-sm">${project.earnings.weekly}/wk</span>
+                      </div>
+                      <div className="w-px h-4 bg-emerald-300 dark:bg-emerald-700"></div>
+                      <div className="flex items-center text-teal-700 dark:text-teal-400">
+                        <DollarSign className="w-4 h-4 mr-1" />
+                        <span className="font-bold text-sm">${project.earnings.monthly}/mo</span>
+                      </div>
+                    </div>
+                  )}
+
                   {project.deadline && (
                     <div className="flex items-center text-gray-600 dark:text-gray-400">
                       <span className="font-medium mr-2">Deadline:</span>
@@ -1178,6 +1302,28 @@ export default function CandidateProjectsPage() {
                     ))}
                   </div>
                 )}
+
+                {/* Action Buttons */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {userRole === 'agent' && project.status === 'active' && (
+                    <button
+                      onClick={(e) => handleEarningsClick(project.id, e)}
+                      className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium text-sm flex items-center px-3 py-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors border border-emerald-200 dark:border-emerald-800"
+                      title="Set Earnings"
+                    >
+                      <DollarSign className="w-4 h-4 mr-1" />
+                      Set Earnings
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => handleScheduleClick(project.id, e)}
+                    className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium text-sm flex items-center px-3 py-1.5 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors border border-purple-200 dark:border-purple-800"
+                    title="Schedule Screen Sharing"
+                  >
+                    <Calendar className="w-4 h-4 mr-1" />
+                    Schedule
+                  </button>
+                </div>
               </div>
                   ))}
                 </div>
@@ -1224,6 +1370,25 @@ export default function CandidateProjectsPage() {
             onClose={() => setShowProjectModal(false)}
             onSubmit={createProject}
             connectedCandidates={connectedCandidates}
+          />
+        )}
+
+        {/* Earnings Modal */}
+        {showEarningsModal && (
+          <EarningsModal
+            onClose={() => { setShowEarningsModal(false); setEarningsProjectId(null); }}
+            onSubmit={setProjectEarnings}
+            isLoading={settingEarnings}
+            project={projects.find(p => p.id === earningsProjectId)}
+          />
+        )}
+
+        {/* Schedule Modal */}
+        {showScheduleModal && (
+          <ScheduleModal
+            onClose={() => { setShowScheduleModal(false); setScheduleProjectId(null); }}
+            onSubmit={scheduleScreenSharing}
+            isLoading={schedulingProject}
           />
         )}
       </div>
@@ -1950,6 +2115,237 @@ function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               Create Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Schedule Screen Sharing Modal
+function ScheduleModal({ onClose, onSubmit, isLoading }: any) {
+  const [formData, setFormData] = useState({
+    date: '',
+    time: ''
+  });
+
+  // Set minimum date to today
+  const today = new Date().toISOString().split('T')[0];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <div className="flex items-center gap-3">
+            <Calendar className="w-6 h-6" />
+            <h2 className="text-xl font-bold">Schedule Screen Sharing</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 text-sm text-blue-900 dark:text-blue-300">
+            <strong>📅 Schedule a time for screen sharing session</strong>
+            <p className="mt-1 text-blue-700 dark:text-blue-400">The other party will be notified via email and in-app notification.</p>
+          </div>
+
+          {/* Date Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Select Date *
+            </label>
+            <input
+              type="date"
+              required
+              min={today}
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          {/* Time Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Select Time *
+            </label>
+            <input
+              type="time"
+              required
+              value={formData.time}
+              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!formData.date || !formData.time || isLoading}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/30 inline-flex items-center justify-center"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Scheduling...
+                </>
+              ) : (
+                <>
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Schedule Session
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Earnings Modal Component
+function EarningsModal({ onClose, onSubmit, isLoading, project }: any) {
+  const [formData, setFormData] = useState({
+    weekly: project?.earnings?.weekly || 0,
+    monthly: project?.earnings?.monthly || 0
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <div className="flex items-center gap-3">
+            <DollarSign className="w-6 h-6" />
+            <h2 className="text-xl font-bold">Set Project Earnings</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800 rounded-xl p-4 text-sm text-emerald-900 dark:text-emerald-300">
+            <strong>💰 Set earnings for: {project?.title}</strong>
+            <p className="mt-1 text-emerald-700 dark:text-emerald-400">
+              Set weekly and monthly earnings for this active project. The candidate will be notified.
+            </p>
+          </div>
+
+          {/* Weekly Earnings */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Weekly Earnings ($) *
+            </label>
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                value={formData.weekly}
+                onChange={(e) => setFormData({ ...formData, weekly: parseFloat(e.target.value) || 0 })}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                placeholder="Enter weekly earnings"
+              />
+            </div>
+          </div>
+
+          {/* Monthly Earnings */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Monthly Earnings ($) *
+            </label>
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="number"
+                required
+                min="0"
+                step="0.01"
+                value={formData.monthly}
+                onChange={(e) => setFormData({ ...formData, monthly: parseFloat(e.target.value) || 0 })}
+                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                placeholder="Enter monthly earnings"
+              />
+            </div>
+          </div>
+
+          {/* Summary */}
+          {(formData.weekly > 0 || formData.monthly > 0) && (
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Summary:</h4>
+              <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                <div className="flex justify-between">
+                  <span>Weekly:</span>
+                  <span className="font-bold">${formData.weekly.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Monthly:</span>
+                  <span className="font-bold">${formData.monthly.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-gray-300 dark:border-gray-600">
+                  <span className="font-semibold">Yearly Est.:</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">${(formData.monthly * 12).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading || (formData.weekly === 0 && formData.monthly === 0)}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/30 inline-flex items-center justify-center"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Setting...
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="w-5 h-5 mr-2" />
+                  Set Earnings
+                </>
+              )}
             </button>
           </div>
         </form>
