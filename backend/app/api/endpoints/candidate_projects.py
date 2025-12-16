@@ -970,8 +970,18 @@ def create_project_action(
                     if action_data.scheduled_time:
                         scheduled_time_str = action_data.scheduled_time.strftime("%B %d, %Y at %I:%M %p UTC")
 
-                    recipient_name = f"{recipient.profile.first_name} {recipient.profile.last_name}".strip() if recipient.profile and recipient.profile.first_name else recipient.email
-                    requester_name = f"{requester.profile.first_name} {requester.profile.last_name}".strip() if requester.profile and requester.profile.first_name else requester.email
+                    # Get names from profiles, fallback to email username (not full email)
+                    if recipient.profile and recipient.profile.first_name:
+                        recipient_name = f"{recipient.profile.first_name} {recipient.profile.last_name}".strip()
+                    else:
+                        # Fallback to email username (before @) instead of full email
+                        recipient_name = recipient.email.split('@')[0] if recipient.email else "User"
+
+                    if requester.profile and requester.profile.first_name:
+                        requester_name = f"{requester.profile.first_name} {requester.profile.last_name}".strip()
+                    else:
+                        # Fallback to email username (before @) instead of full email
+                        requester_name = requester.email.split('@')[0] if requester.email else "User"
 
                     email_service.send_schedule_request_notification(
                         recipient_email=recipient.email,
