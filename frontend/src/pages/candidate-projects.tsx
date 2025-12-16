@@ -118,7 +118,7 @@ export default function CandidateProjectsPage() {
 
     const unsubscribe = onSnapshot(
       projectsQuery,
-      (snapshot) => {
+      async (snapshot) => {
         const projectsList = snapshot.docs
           .map(doc => ({
             id: doc.id,
@@ -126,7 +126,37 @@ export default function CandidateProjectsPage() {
           }))
           // Filter out deleted projects
           .filter((project: any) => project.isDeleted !== true);
-        setProjects(projectsList);
+
+        // Fetch missing agent names for candidates
+        if (userRole === 'candidate') {
+          const projectsWithNames = await Promise.all(
+            projectsList.map(async (project) => {
+              // If agent_name is missing but agent_id exists, fetch it
+              if (!project.agent_name && project.agent_id) {
+                try {
+                  const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
+                  if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const profileDoc = await getDoc(doc(getDb(), 'profiles', project.agent_id));
+                    if (profileDoc.exists()) {
+                      const profileData = profileDoc.data();
+                      project.agent_name = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || userData.email?.split('@')[0] || 'Agent';
+                    } else {
+                      project.agent_name = userData.email?.split('@')[0] || 'Agent';
+                    }
+                  }
+                } catch (err) {
+                  console.error('Error fetching agent name:', err);
+                }
+              }
+              return project;
+            })
+          );
+          setProjects(projectsWithNames);
+        } else {
+          setProjects(projectsList);
+        }
+
         setLoading(false);
       },
       (err) => {
@@ -283,7 +313,12 @@ export default function CandidateProjectsPage() {
       const totalHours = initialUpdates.reduce((sum, u: any) => sum + (u.hours_completed || 0), 0);
       const totalScreenSharingHours = initialUpdates.reduce((sum, u: any) => sum + (u.screen_sharing_hours || 0), 0);
       const pendingActionsCount = initialActions.filter((a: any) => a.status === 'pending').length;
-      const completedActionsCount = initialActions.filter((a: any) => a.status === 'completed').length;
+      // Exclude completed screen_share and work_session from completed count
+      const completedActionsCount = initialActions.filter((a: any) =>
+        a.status === 'completed' &&
+        a.action_type !== 'screen_share' &&
+        a.action_type !== 'work_session'
+      ).length;
 
       setSelectedProject({
         ...projectData,
@@ -324,7 +359,12 @@ export default function CandidateProjectsPage() {
 
         // Recalculate statistics
         const pendingActionsCount = actions.filter((a: any) => a.status === 'pending').length;
-        const completedActionsCount = actions.filter((a: any) => a.status === 'completed').length;
+        // Exclude completed screen_share and work_session from completed count
+        const completedActionsCount = actions.filter((a: any) =>
+          a.status === 'completed' &&
+          a.action_type !== 'screen_share' &&
+          a.action_type !== 'work_session'
+        ).length;
 
         setSelectedProject((prev: any) => prev ? {
           ...prev,
@@ -1268,17 +1308,36 @@ export default function CandidateProjectsPage() {
                     </div>
                   )}
 
-                  {project.earnings && (
-                    <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                      <div className="flex items-center text-emerald-700 dark:text-emerald-400">
-                        <TrendingUp className="w-4 h-4 mr-1.5" />
-                        <span className="font-bold text-sm">${project.earnings.weekly}/wk</span>
+                  {project.earnings && project.earnings.hourly_rate && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 px-3 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                        <div className="flex items-center text-emerald-700 dark:text-emerald-400">
+                          <DollarSign className="w-4 h-4 mr-1.5" />
+                          <span className="font-bold text-sm">${project.earnings.hourly_rate}/hr</span>
+                        </div>
+                        <div className="w-px h-4 bg-emerald-300 dark:bg-emerald-700"></div>
+                        <div className="flex items-center text-teal-700 dark:text-teal-400">
+                          <TrendingUp className="w-4 h-4 mr-1" />
+                          <span className="font-bold text-sm">${(project.earnings.hourly_rate * 40).toFixed(0)}/wk</span>
+                        </div>
                       </div>
-                      <div className="w-px h-4 bg-emerald-300 dark:bg-emerald-700"></div>
-                      <div className="flex items-center text-teal-700 dark:text-teal-400">
-                        <DollarSign className="w-4 h-4 mr-1" />
-                        <span className="font-bold text-sm">${project.earnings.monthly}/mo</span>
-                      </div>
+                      {project.earnings.weekly_earned > 0 && (
+                        <div className="bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-800">
+                          <div className="text-xs text-blue-700 dark:text-blue-400">
+                            {userRole === 'candidate' ? (
+                              <>
+                                {project.earnings.payment_type === 'percentage' ? (
+                                  <span>💰 Your share: <strong>${(project.earnings.weekly_earned * (project.earnings.percentage || 0) / 100).toFixed(2)}</strong> this week ({project.earnings.percentage}%)</span>
+                                ) : (
+                                  <span>💰 Earned this week: <strong>${project.earnings.weekly_earned.toFixed(2)}</strong></span>
+                                )}
+                              </>
+                            ) : (
+                              <span>💰 Earned this week: <strong>${project.earnings.weekly_earned.toFixed(2)}</strong></span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1315,14 +1374,16 @@ export default function CandidateProjectsPage() {
                       Set Earnings
                     </button>
                   )}
-                  <button
-                    onClick={(e) => handleScheduleClick(project.id, e)}
-                    className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium text-sm flex items-center px-3 py-1.5 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors border border-purple-200 dark:border-purple-800"
-                    title="Schedule Screen Sharing"
-                  >
-                    <Calendar className="w-4 h-4 mr-1" />
-                    Schedule
-                  </button>
+                  {userRole === 'candidate' && (
+                    <button
+                      onClick={(e) => handleScheduleClick(project.id, e)}
+                      className="text-purple-600 hover:text-purple-700 dark:text-purple-400 font-medium text-sm flex items-center px-3 py-1.5 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors border border-purple-200 dark:border-purple-800"
+                      title="Schedule Screen Sharing"
+                    >
+                      <Calendar className="w-4 h-4 mr-1" />
+                      Schedule
+                    </button>
+                  )}
                 </div>
               </div>
                   ))}
@@ -2226,8 +2287,11 @@ function ScheduleModal({ onClose, onSubmit, isLoading }: any) {
 // Earnings Modal Component
 function EarningsModal({ onClose, onSubmit, isLoading, project }: any) {
   const [formData, setFormData] = useState({
-    weekly: project?.earnings?.weekly || 0,
-    monthly: project?.earnings?.monthly || 0
+    hourly_rate: project?.earnings?.hourly_rate || 0,
+    payment_type: project?.earnings?.payment_type || 'one_time', // 'one_time' or 'percentage'
+    percentage: project?.earnings?.percentage || 0,
+    weekly_earned: project?.earnings?.weekly_earned || 0,
+    hours_worked_this_week: project?.earnings?.hours_worked_this_week || 0
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -2235,9 +2299,32 @@ function EarningsModal({ onClose, onSubmit, isLoading, project }: any) {
     onSubmit(formData);
   };
 
+  // Calculate potential weekly earnings based on hourly rate and typical 40-hour week
+  const calculatePotentialWeekly = () => {
+    return formData.hourly_rate * 40;
+  };
+
+  // Calculate potential monthly earnings
+  const calculatePotentialMonthly = () => {
+    return calculatePotentialWeekly() * 4.33; // Average weeks per month
+  };
+
+  // Calculate actual earned this week
+  const calculateActualEarned = () => {
+    return formData.hourly_rate * formData.hours_worked_this_week;
+  };
+
+  // Calculate candidate's share if percentage model
+  const calculateCandidateShare = () => {
+    if (formData.payment_type === 'percentage' && formData.percentage > 0) {
+      return formData.weekly_earned * (formData.percentage / 100);
+    }
+    return formData.weekly_earned;
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div className="flex items-center gap-3">
             <DollarSign className="w-6 h-6" />
@@ -2255,14 +2342,14 @@ function EarningsModal({ onClose, onSubmit, isLoading, project }: any) {
           <div className="bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800 rounded-xl p-4 text-sm text-emerald-900 dark:text-emerald-300">
             <strong>💰 Set earnings for: {project?.title}</strong>
             <p className="mt-1 text-emerald-700 dark:text-emerald-400">
-              Set weekly and monthly earnings for this active project. The candidate will be notified.
+              Set hourly rate and payment structure. Update weekly earnings based on hours worked.
             </p>
           </div>
 
-          {/* Weekly Earnings */}
+          {/* Hourly Rate */}
           <div>
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-              Weekly Earnings ($) *
+              Hourly Rate ($) *
             </label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -2271,51 +2358,155 @@ function EarningsModal({ onClose, onSubmit, isLoading, project }: any) {
                 required
                 min="0"
                 step="0.01"
-                value={formData.weekly}
-                onChange={(e) => setFormData({ ...formData, weekly: parseFloat(e.target.value) || 0 })}
+                value={formData.hourly_rate}
+                onChange={(e) => setFormData({ ...formData, hourly_rate: parseFloat(e.target.value) || 0 })}
                 className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
-                placeholder="Enter weekly earnings"
+                placeholder="Enter hourly rate"
               />
             </div>
           </div>
 
-          {/* Monthly Earnings */}
+          {/* Payment Type */}
           <div>
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-              Monthly Earnings ($) *
+              Payment Structure *
             </label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                value={formData.monthly}
-                onChange={(e) => setFormData({ ...formData, monthly: parseFloat(e.target.value) || 0 })}
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
-                placeholder="Enter monthly earnings"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, payment_type: 'one_time' })}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  formData.payment_type === 'one_time'
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-emerald-300'
+                }`}
+              >
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">One-Time Fee</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Pay full hourly rate</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, payment_type: 'percentage' })}
+                className={`p-4 rounded-xl border-2 transition-all ${
+                  formData.payment_type === 'percentage'
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-emerald-300'
+                }`}
+              >
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">Revenue Share</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Share percentage</div>
+              </button>
             </div>
+          </div>
+
+          {/* Percentage if revenue share */}
+          {formData.payment_type === 'percentage' && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                Candidate's Share (%) *
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={formData.percentage}
+                  onChange={(e) => setFormData({ ...formData, percentage: parseFloat(e.target.value) || 0 })}
+                  className="w-full pl-4 pr-10 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                  placeholder="Enter percentage"
+                />
+                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">%</span>
+              </div>
+            </div>
+          )}
+
+          {/* Weekly Earnings Section - For Agents to Update */}
+          <div className="border-t-2 border-gray-200 dark:border-gray-700 pt-5">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Weekly Earnings Update</h3>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Hours Worked This Week
+                </label>
+                <div className="relative">
+                  <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={formData.hours_worked_this_week}
+                    onChange={(e) => setFormData({ ...formData, hours_worked_this_week: parseFloat(e.target.value) || 0 })}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Total Earned This Week ($)
+                </label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.weekly_earned}
+                    onChange={(e) => setFormData({ ...formData, weekly_earned: parseFloat(e.target.value) || 0 })}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm dark:bg-gray-700 dark:text-white"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {formData.hours_worked_this_week > 0 && (
+              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="text-sm text-blue-900 dark:text-blue-300">
+                  <strong>Auto-calculated: </strong>${calculateActualEarned().toFixed(2)}
+                  <span className="text-xs ml-2">({formData.hours_worked_this_week} hrs × ${formData.hourly_rate}/hr)</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Summary */}
-          {(formData.weekly > 0 || formData.monthly > 0) && (
+          {formData.hourly_rate > 0 && (
             <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Summary:</h4>
-              <div className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Earnings Summary:</h4>
+              <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                 <div className="flex justify-between">
-                  <span>Weekly:</span>
-                  <span className="font-bold">${formData.weekly.toLocaleString()}</span>
+                  <span>Hourly Rate:</span>
+                  <span className="font-bold">${formData.hourly_rate.toFixed(2)}/hr</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Monthly:</span>
-                  <span className="font-bold">${formData.monthly.toLocaleString()}</span>
+                  <span>Potential Weekly (40 hrs):</span>
+                  <span className="font-bold">${calculatePotentialWeekly().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between pt-2 border-t border-gray-300 dark:border-gray-600">
-                  <span className="font-semibold">Yearly Est.:</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">${(formData.monthly * 12).toLocaleString()}</span>
+                <div className="flex justify-between">
+                  <span>Potential Monthly:</span>
+                  <span className="font-bold">${calculatePotentialMonthly().toFixed(2)}</span>
                 </div>
+                {formData.weekly_earned > 0 && (
+                  <>
+                    <div className="border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
+                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                        <span className="font-semibold">Agent Earned This Week:</span>
+                        <span className="font-bold">${formData.weekly_earned.toFixed(2)}</span>
+                      </div>
+                      {formData.payment_type === 'percentage' && (
+                        <div className="flex justify-between text-teal-600 dark:text-teal-400 mt-1">
+                          <span className="font-semibold">Candidate's Share ({formData.percentage}%):</span>
+                          <span className="font-bold">${calculateCandidateShare().toFixed(2)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -2332,7 +2523,7 @@ function EarningsModal({ onClose, onSubmit, isLoading, project }: any) {
             </button>
             <button
               type="submit"
-              disabled={isLoading || (formData.weekly === 0 && formData.monthly === 0)}
+              disabled={isLoading || formData.hourly_rate === 0}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/30 inline-flex items-center justify-center"
             >
               {isLoading ? (
