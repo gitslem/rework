@@ -203,7 +203,7 @@ export default function CandidateProjectsNew() {
     }).filter(Boolean)
   ));
 
-  // Filter and sort projects
+  // Filter and sort projects (Simplified)
   useEffect(() => {
     let filtered = [...projects];
 
@@ -212,11 +212,6 @@ export default function CandidateProjectsNew() {
       filtered = filtered.filter(p => p.status === 'completed');
     } else {
       filtered = filtered.filter(p => p.status !== 'completed');
-    }
-
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(p => p.status === statusFilter);
     }
 
     // Platform filter
@@ -241,7 +236,8 @@ export default function CandidateProjectsNew() {
         p.title?.toLowerCase().includes(query) ||
         p.description?.toLowerCase().includes(query) ||
         p.platform?.toLowerCase().includes(query) ||
-        p.candidate_name?.toLowerCase().includes(query)
+        p.candidate_name?.toLowerCase().includes(query) ||
+        p.agent_name?.toLowerCase().includes(query)
       );
     }
 
@@ -265,31 +261,10 @@ export default function CandidateProjectsNew() {
     });
 
     setFilteredProjects(filtered);
-  }, [projects, statusFilter, platformFilter, assigneeFilter, searchQuery, sortBy]);
+  }, [projects, platformFilter, assigneeFilter, searchQuery, sortBy, showHistory, userRole]);
 
-  // Group projects if grouping is enabled
+  // Simplified - No grouping, just return all filtered projects
   const getGroupedProjects = () => {
-    if (groupBy === 'none') {
-      return { 'All Projects': filteredProjects };
-    }
-
-    if (groupBy === 'assignee') {
-      const grouped: { [key: string]: any[] } = {};
-
-      filteredProjects.forEach(project => {
-        const groupKey = userRole === 'agent'
-          ? (project.candidate_name || project.candidate_id || 'Unknown Candidate')
-          : (project.agent_name || project.agent_id || 'Unassigned Agent');
-
-        if (!grouped[groupKey]) {
-          grouped[groupKey] = [];
-        }
-        grouped[groupKey].push(project);
-      });
-
-      return grouped;
-    }
-
     return { 'All Projects': filteredProjects };
   };
 
@@ -318,9 +293,16 @@ export default function CandidateProjectsNew() {
     setShowProjectModal(false); // Close modal immediately when create button is clicked
 
     try {
+      // Get agent user document to fetch name
+      const agentDoc = await getDoc(doc(getDb(), 'users', user.uid));
+      const agentData = agentDoc.exists() ? agentDoc.data() : {};
+      const agentName = agentData.name || user.displayName || user.email?.split('@')[0] || 'Agent';
+
       const projectRef = await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
         agent_id: user.uid,
+        agent_name: agentName,
+        agent_email: user.email,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now()
       });
@@ -759,20 +741,33 @@ export default function CandidateProjectsNew() {
                 </div>
               </div>
 
-              {/* Filters */}
+              {/* Simplified Filters */}
               <div className="flex flex-wrap items-center gap-3">
-                {/* Status Filter */}
+                {/* Sort Order */}
                 <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
                   className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
                 >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="pending">Pending</option>
-                  <option value="completed">Completed</option>
-                  <option value="on_hold">On Hold</option>
+                  <option value="date">Sort by Date</option>
+                  <option value="name">Sort by Name</option>
+                  <option value="budget">Sort by Budget</option>
+                  <option value="deadline">Sort by Deadline</option>
                 </select>
+
+                {/* Assignee Filter - Show candidates for agents, agents for candidates */}
+                {uniqueAssignees.length > 0 && (
+                  <select
+                    value={assigneeFilter}
+                    onChange={(e) => setAssigneeFilter(e.target.value)}
+                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
+                  >
+                    <option value="all">All {userRole === 'agent' ? 'Candidates' : 'Agents'}</option>
+                    {uniqueAssignees.map(assignee => (
+                      <option key={assignee} value={assignee}>{assignee}</option>
+                    ))}
+                  </select>
+                )}
 
                 {/* Platform Filter */}
                 {uniquePlatforms.length > 0 && (
@@ -787,42 +782,6 @@ export default function CandidateProjectsNew() {
                     ))}
                   </select>
                 )}
-
-                {/* Assignee Filter */}
-                {uniqueAssignees.length > 0 && (
-                  <select
-                    value={assigneeFilter}
-                    onChange={(e) => setAssigneeFilter(e.target.value)}
-                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
-                  >
-                    <option value="all">All {userRole === 'agent' ? 'Candidates' : 'Agents'}</option>
-                    {uniqueAssignees.map(assignee => (
-                      <option key={assignee} value={assignee}>{assignee}</option>
-                    ))}
-                  </select>
-                )}
-
-                {/* Group By */}
-                <select
-                  value={groupBy}
-                  onChange={(e) => setGroupBy(e.target.value as any)}
-                  className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
-                >
-                  <option value="none">No Grouping</option>
-                  <option value="assignee">Group by {userRole === 'agent' ? 'Candidate' : 'Agent'}</option>
-                </select>
-
-                {/* Sort */}
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
-                >
-                  <option value="date">Sort by Date</option>
-                  <option value="name">Sort by Name</option>
-                  <option value="budget">Sort by Budget</option>
-                  <option value="deadline">Sort by Deadline</option>
-                </select>
 
                 {/* History Toggle */}
                 <button
@@ -919,7 +878,7 @@ export default function CandidateProjectsNew() {
                   {viewMode === 'grid' ? (
                     <GridView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} onScheduleClick={handleScheduleClick} onEarningsClick={handleEarningsClick} />
                   ) : viewMode === 'list' ? (
-                    <ListView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
+                    <ListView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} onScheduleClick={handleScheduleClick} onEarningsClick={handleEarningsClick} />
                   ) : (
                     <KanbanView projects={groupProjects} onSelectProject={setSelectedProject} getStatusIcon={getStatusIcon} getStatusColor={getStatusColor} formatDate={formatDate} router={router} userRole={userRole} />
                   )}
@@ -1105,7 +1064,7 @@ function GridView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
 }
 
 // List View Component
-function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole }: any) {
+function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, formatDate, router, userRole, onScheduleClick, onEarningsClick }: any) {
   return (
     <div className="space-y-3">
       {projects.map((project: any) => (
@@ -1155,11 +1114,37 @@ function ListView({ projects, onSelectProject, getStatusIcon, getStatusColor, fo
               </div>
             </div>
 
-            {/* Action Button */}
-            <button className="shrink-0 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-100 transition-colors flex items-center">
-              <Eye className="w-4 h-4 mr-2" />
-              View
-            </button>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Earnings Button - Only for agents on active projects */}
+              {userRole === 'agent' && project.status === 'active' && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEarningsClick(project.id, e);
+                  }}
+                  className="px-3 py-2 bg-emerald-50 text-emerald-600 rounded-lg font-medium text-sm hover:bg-emerald-100 transition-colors flex items-center"
+                >
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  Earnings
+                </button>
+              )}
+              {/* Schedule Button for both agents and candidates */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onScheduleClick(project.id, e);
+                }}
+                className="px-3 py-2 bg-purple-50 text-purple-600 rounded-lg font-medium text-sm hover:bg-purple-100 transition-colors flex items-center"
+              >
+                <Calendar className="w-4 h-4 mr-1" />
+                Schedule
+              </button>
+              <button className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-100 transition-colors flex items-center">
+                <Eye className="w-4 h-4 mr-2" />
+                View
+              </button>
+            </div>
           </div>
         </div>
       ))}
