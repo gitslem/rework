@@ -1264,7 +1264,7 @@ export default function CandidateProjectsPage() {
       if (userRole === 'agent') {
         return p.candidate_name || p.candidate_id;
       } else {
-        return p.agent_name || p.agent_id || 'Unassigned';
+        return p.agent_name || p.agent_id;
       }
     }).filter(Boolean)
   ));
@@ -1291,7 +1291,7 @@ export default function CandidateProjectsPage() {
       filtered = filtered.filter(p => {
         const assigneeName = userRole === 'agent'
           ? (p.candidate_name || p.candidate_id)
-          : (p.agent_name || p.agent_id || 'Unassigned');
+          : (p.agent_name || p.agent_id);
         return assigneeName === assigneeFilter;
       });
     }
@@ -1339,7 +1339,7 @@ export default function CandidateProjectsPage() {
       filtered.forEach(project => {
         const groupKey = userRole === 'agent'
           ? (project.candidate_name || project.candidate_id || 'Unknown Candidate')
-          : (project.agent_name || project.agent_id || 'Unassigned Agent');
+          : (project.agent_name || project.agent_id || 'Agent');
 
         if (!grouped[groupKey]) {
           grouped[groupKey] = [];
@@ -1427,9 +1427,9 @@ export default function CandidateProjectsPage() {
 
         {/* Sorting and Filtering Controls */}
         <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
-            <div className="xl:col-span-2">
+            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Search Projects
               </label>
@@ -1445,7 +1445,7 @@ export default function CandidateProjectsPage() {
             {/* Assignee Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {userRole === 'agent' ? 'Candidate' : 'Agent'}
+                {userRole === 'agent' ? 'Candidates' : 'Agents'}
               </label>
               <select
                 value={assigneeFilter}
@@ -1462,7 +1462,7 @@ export default function CandidateProjectsPage() {
             {/* Platform Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Platform
+                Platforms
               </label>
               <select
                 value={platformFilter}
@@ -1476,38 +1476,6 @@ export default function CandidateProjectsPage() {
               </select>
             </div>
 
-            {/* Group By */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Group By
-              </label>
-              <select
-                value={groupBy}
-                onChange={(e) => setGroupBy(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
-              >
-                <option value="none">No Grouping</option>
-                <option value="assignee">{userRole === 'agent' ? 'By Candidate' : 'By Agent'}</option>
-              </select>
-            </div>
-
-            {/* Sort By */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Sort By
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
-              >
-                <option value="date">Date Created</option>
-                <option value="budget">Budget</option>
-                <option value="deadline">Deadline</option>
-                <option value="platform">Platform</option>
-              </select>
-            </div>
-
             {/* Sort Order */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -1518,8 +1486,8 @@ export default function CandidateProjectsPage() {
                 onChange={(e) => setSortOrder(e.target.value as any)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
               >
-                <option value="desc">Descending</option>
-                <option value="asc">Ascending</option>
+                <option value="desc">Newest First</option>
+                <option value="asc">Oldest First</option>
               </select>
             </div>
           </div>
@@ -1549,24 +1517,8 @@ export default function CandidateProjectsPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-8">
-            {Object.entries(groupedProjects).map(([groupName, groupProjects]) => (
-              <div key={groupName}>
-                {/* Group Header */}
-                {groupBy !== 'none' && (
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm">
-                        {groupProjects.length}
-                      </span>
-                      {groupName}
-                    </h3>
-                  </div>
-                )}
-
-                {/* Projects Grid for this group */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {groupProjects.map((project: any) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedAndFilteredProjects.map((project: any) => (
               <div
                 key={project.id}
                 onClick={() => fetchProjectDetails(project.id)}
@@ -1596,7 +1548,7 @@ export default function CandidateProjectsPage() {
                     <span className="text-blue-600 dark:text-blue-400 font-medium">
                       {userRole === 'agent'
                         ? (project.candidate_name || 'Unknown Candidate')
-                        : (project.agent_name || 'Unassigned')}
+                        : (project.agent_name || 'Agent')}
                     </span>
                   </div>
 
@@ -1690,9 +1642,6 @@ export default function CandidateProjectsPage() {
                       Schedule
                     </button>
                   )}
-                </div>
-              </div>
-                  ))}
                 </div>
               </div>
             ))}
@@ -1900,17 +1849,23 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
             )}
           </div>
 
-          {/* Scheduled Sessions Section */}
-          {actions.filter((action: any) =>
-            (action.action_type === 'screen_share' || action.action_type === 'work_session') &&
-            action.status !== 'completed' &&
-            action.status !== 'cancelled'
-          ).length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <Calendar className="w-5 h-5" />
-                Scheduled Sessions
-              </h3>
+          {/* Scheduled Sessions Section - Always Show */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Scheduled Sessions ({actions.filter((action: any) =>
+                (action.action_type === 'screen_share' || action.action_type === 'work_session') &&
+                action.status !== 'completed' &&
+                action.status !== 'cancelled'
+              ).length})
+            </h3>
+            {actions.filter((action: any) =>
+              (action.action_type === 'screen_share' || action.action_type === 'work_session') &&
+              action.status !== 'completed' &&
+              action.status !== 'cancelled'
+            ).length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400 text-sm">No scheduled sessions yet</p>
+            ) : (
               <div className="space-y-3">
                 {actions
                   .filter((action: any) =>
@@ -2014,8 +1969,8 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
                     </div>
                   ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Actions Section */}
           <div>
