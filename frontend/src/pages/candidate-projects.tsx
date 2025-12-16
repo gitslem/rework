@@ -119,7 +119,7 @@ export default function CandidateProjectsPage() {
     const unsubscribe = onSnapshot(
       projectsQuery,
       async (snapshot) => {
-        const projectsList = snapshot.docs
+        const projectsList: any[] = snapshot.docs
           .map(doc => ({
             id: doc.id,
             ...doc.data()
@@ -130,7 +130,7 @@ export default function CandidateProjectsPage() {
         // Fetch missing agent names for candidates
         if (userRole === 'candidate') {
           const projectsWithNames = await Promise.all(
-            projectsList.map(async (project) => {
+            projectsList.map(async (project: any) => {
               // If agent_name is missing but agent_id exists, fetch it
               if (!project.agent_name && project.agent_id) {
                 try {
