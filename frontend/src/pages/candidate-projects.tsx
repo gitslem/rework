@@ -915,30 +915,35 @@ export default function CandidateProjectsPage() {
       try {
         const isCandidate = userRole === 'candidate';
         const recipientId = isCandidate ? project.agent_id : project.candidate_id;
-        const recipientEmail = isCandidate ? project.agent_email : project.candidate_email;
 
-        // Get requester name
+        // Get requester name from profile
         const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
-        const requesterProfile = requesterProfileDoc.data();
+        const requesterProfile = requesterProfileDoc.exists() ? requesterProfileDoc.data() : null;
         const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
           ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
           : user.email?.split('@')[0] || 'User';
 
-        // Get recipient name
+        // Get recipient email and name
+        let recipientEmail = '';
         let recipientName = 'User';
+
         if (recipientId) {
+          // First get recipient email from users collection
+          const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
+          if (recipientUserDoc.exists()) {
+            const recipientUserData = recipientUserDoc.data();
+            recipientEmail = recipientUserData?.email || '';
+          }
+
+          // Then get recipient real name from profiles
           const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
           if (recipientProfileDoc.exists()) {
             const recipientProfile = recipientProfileDoc.data();
             recipientName = recipientProfile?.first_name && recipientProfile?.last_name
               ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-              : recipientProfile?.first_name || 'User';
+              : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
           } else {
-            const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
-            if (recipientUserDoc.exists()) {
-              const recipientUserData = recipientUserDoc.data();
-              recipientName = recipientUserData?.email?.split('@')[0] || 'User';
-            }
+            recipientName = recipientEmail?.split('@')[0] || 'User';
           }
         }
 
@@ -963,7 +968,7 @@ export default function CandidateProjectsPage() {
             project_id: scheduleProjectId,
             action_type: 'screen_share',
             scheduled_time: scheduledTimeStr,
-            duration_minutes: 60, // Default duration
+            duration_minutes: 60,
             description: `Screen sharing session scheduled for ${scheduleData.date} at ${scheduleData.time}`
           };
 
@@ -1031,23 +1036,35 @@ export default function CandidateProjectsPage() {
       // Send email notification
       try {
         const isCandidate = userRole === 'candidate';
-        const recipientEmail = isCandidate ? selectedProject.agent_email : selectedProject.candidate_email;
 
-        // Get names
+        // Get requester name from profile
         const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
-        const requesterProfile = requesterProfileDoc.data();
+        const requesterProfile = requesterProfileDoc.exists() ? requesterProfileDoc.data() : null;
         const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
           ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
           : user.email?.split('@')[0] || 'User';
 
+        // Get recipient email and name
+        let recipientEmail = '';
         let recipientName = 'User';
+
         if (recipientId) {
+          // First get recipient email from users collection
+          const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
+          if (recipientUserDoc.exists()) {
+            const recipientUserData = recipientUserDoc.data();
+            recipientEmail = recipientUserData?.email || '';
+          }
+
+          // Then get recipient real name from profiles
           const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
           if (recipientProfileDoc.exists()) {
             const recipientProfile = recipientProfileDoc.data();
             recipientName = recipientProfile?.first_name && recipientProfile?.last_name
               ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-              : recipientProfile?.first_name || 'User';
+              : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+          } else {
+            recipientName = recipientEmail?.split('@')[0] || 'User';
           }
         }
 
@@ -1112,23 +1129,35 @@ export default function CandidateProjectsPage() {
       try {
         const isCandidate = userRole === 'candidate';
         const recipientId = isCandidate ? selectedProject.agent_id : selectedProject.candidate_id;
-        const recipientEmail = isCandidate ? selectedProject.agent_email : selectedProject.candidate_email;
 
-        // Get names
+        // Get requester name from profile
         const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
-        const requesterProfile = requesterProfileDoc.data();
+        const requesterProfile = requesterProfileDoc.exists() ? requesterProfileDoc.data() : null;
         const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
           ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
           : user.email?.split('@')[0] || 'User';
 
+        // Get recipient email and name
+        let recipientEmail = '';
         let recipientName = 'User';
+
         if (recipientId) {
+          // First get recipient email from users collection
+          const recipientUserDoc = await getDoc(doc(getDb(), 'users', recipientId));
+          if (recipientUserDoc.exists()) {
+            const recipientUserData = recipientUserDoc.data();
+            recipientEmail = recipientUserData?.email || '';
+          }
+
+          // Then get recipient real name from profiles
           const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
           if (recipientProfileDoc.exists()) {
             const recipientProfile = recipientProfileDoc.data();
             recipientName = recipientProfile?.first_name && recipientProfile?.last_name
               ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-              : recipientProfile?.first_name || 'User';
+              : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+          } else {
+            recipientName = recipientEmail?.split('@')[0] || 'User';
           }
         }
 
