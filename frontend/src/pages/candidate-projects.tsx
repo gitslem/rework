@@ -503,11 +503,12 @@ export default function CandidateProjectsPage() {
         // Don't fail the project creation if email fails
       }
 
+      // Close modal only after successful creation
       setShowProjectModal(false);
-      setLoading(false);
     } catch (err: any) {
       console.error('Error creating project:', err);
       setError(err.message || 'Failed to create project');
+    } finally {
       setLoading(false);
     }
   };
