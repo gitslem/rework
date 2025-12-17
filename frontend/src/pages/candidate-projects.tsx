@@ -16,14 +16,13 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseFirestore, getFirebaseAuth } from '../lib/firebase/config';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { Calendar, Clock, Bell, X, DollarSign, TrendingUp, Loader2 } from 'lucide-react';
+import { Calendar, Clock, X, DollarSign, TrendingUp, Loader2 } from 'lucide-react';
 import {
   CandidateProjectStatus,
   ProjectActionStatus,
   ProjectActionPriority
 } from '../types';
 import { candidateProjectsAPI } from '../lib/api';
-import { subscribeToNotifications, markNotificationAsRead } from '../lib/firebase/firestore';
 
 // Firestore Collections
 const PROJECTS_COLLECTION = 'candidate_projects';
@@ -58,11 +57,6 @@ export default function CandidateProjectsPage() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showActionModal, setShowActionModal] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
-
-  // Notification states
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
-  const [projectNotificationCount, setProjectNotificationCount] = useState(0);
 
   // Earnings and Schedule modal states
   const [showEarningsModal, setShowEarningsModal] = useState(false);
@@ -258,27 +252,6 @@ export default function CandidateProjectsPage() {
 
     fetchConnections();
   }, [user, userRole]);
-
-  // Subscribe to real-time notifications
-  useEffect(() => {
-    if (!user) return;
-
-    const unsubscribe = subscribeToNotifications(user.uid, (notifs) => {
-      setNotifications(notifs);
-
-      // Count project-related notifications
-      const projectNotifs = notifs.filter(n =>
-        !n.isRead && (
-          n.type === 'action_needed' ||
-          n.type === 'action_status_changed' ||
-          n.projectId
-        )
-      );
-      setProjectNotificationCount(projectNotifs.length);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
 
   // Fetch project details with real-time updates
   const fetchProjectDetails = async (projectId: string) => {
