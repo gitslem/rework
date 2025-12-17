@@ -311,10 +311,17 @@ export default function CandidateProjectsNew() {
     setCreatingProject(true);
 
     try {
-      // Get agent user document to fetch name
-      const agentDoc = await getDoc(doc(getDb(), 'users', user.uid));
-      const agentData = agentDoc.exists() ? agentDoc.data() : {};
-      const agentName = agentData.name || user.displayName || user.email?.split('@')[0] || 'Agent';
+      // Get agent name from profile (same logic as display)
+      let agentName = 'Agent';
+      const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+      if (agentProfileDoc.exists()) {
+        const agentProfile = agentProfileDoc.data();
+        agentName = agentProfile?.first_name && agentProfile?.last_name
+          ? `${agentProfile.first_name} ${agentProfile.last_name}`
+          : agentProfile?.first_name || user.email?.split('@')[0] || 'Agent';
+      } else {
+        agentName = user.email?.split('@')[0] || 'Agent';
+      }
 
       const projectRef = await addDoc(collection(getDb(), PROJECTS_COLLECTION), {
         ...projectData,
