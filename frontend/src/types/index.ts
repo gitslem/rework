@@ -210,6 +210,7 @@ export interface ProjectAction {
   id: number;
   project_id: number;
   creator_id: number;
+  creator_name?: string;
   assigned_to_candidate: boolean;
   assigned_to_agent: boolean;
   title: string;

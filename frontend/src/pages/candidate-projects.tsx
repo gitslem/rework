@@ -619,10 +619,23 @@ export default function CandidateProjectsPage() {
     if (!selectedProject || !user) return;
 
     try {
+      // Get creator name from profile
+      let creatorName = 'Unknown';
+      const creatorProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
+      if (creatorProfileDoc.exists()) {
+        const creatorProfile = creatorProfileDoc.data();
+        creatorName = creatorProfile?.first_name && creatorProfile?.last_name
+          ? `${creatorProfile.first_name} ${creatorProfile.last_name}`
+          : creatorProfile?.first_name || user.email?.split('@')[0] || 'Unknown';
+      } else {
+        creatorName = user.email?.split('@')[0] || 'Unknown';
+      }
+
       await addDoc(collection(getDb(), ACTIONS_COLLECTION), {
         ...actionData,
         project_id: selectedProject.id,
         creator_id: user.uid,
+        creator_name: creatorName,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now()
       });
@@ -2029,12 +2042,12 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
 
                           {action.assigned_to_candidate && (
                             <div className="mt-3 bg-white dark:bg-gray-800 p-2 rounded text-xs text-gray-600 dark:text-gray-400">
-                              👤 Assigned to: Candidate
+                              👤 Assigned to: Candidate{action.creator_name ? ` (by ${action.creator_name})` : ''}
                             </div>
                           )}
                           {action.assigned_to_agent && (
                             <div className="mt-3 bg-white dark:bg-gray-800 p-2 rounded text-xs text-gray-600 dark:text-gray-400">
-                              👤 Assigned to: Agent
+                              👤 Assigned to: Agent{action.creator_name ? ` (by ${action.creator_name})` : ''}
                             </div>
                           )}
                         </div>
