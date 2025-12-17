@@ -11,10 +11,9 @@ import {
   Briefcase, Plus, Search, Filter, Grid3x3, LayoutList, Calendar,
   DollarSign, Clock, User, Users, TrendingUp, MoreVertical, Edit,
   Trash2, Eye, CheckCircle, Circle, AlertCircle, XCircle, ArrowLeft,
-  Tag, MessageSquare, Paperclip, BarChart3, FolderOpen, Star, Menu, X, Bell, Loader2
+  Tag, MessageSquare, Paperclip, BarChart3, FolderOpen, Star, Menu, X, Loader2
 } from 'lucide-react';
 import { candidateProjectsAPI } from '../lib/api';
-import { subscribeToNotifications, markNotificationAsRead } from '../lib/firebase/firestore';
 
 // Firestore Collections
 const PROJECTS_COLLECTION = 'candidate_projects';
@@ -53,10 +52,6 @@ export default function CandidateProjectsNew() {
   const [settingEarnings, setSettingEarnings] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Notification states
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
-  const [projectNotificationCount, setProjectNotificationCount] = useState(0);
 
   // Stats
   const [stats, setStats] = useState({
@@ -111,7 +106,7 @@ export default function CandidateProjectsNew() {
 
     const unsubscribe = onSnapshot(
       projectsQuery,
-      (snapshot) => {
+      async (snapshot) => {
         const projectsList = snapshot.docs
           .map(doc => ({
             id: doc.id,
@@ -119,8 +114,49 @@ export default function CandidateProjectsNew() {
           }))
           // Filter out deleted projects
           .filter((project: any) => project.isDeleted !== true);
-        setProjects(projectsList);
-        calculateStats(projectsList);
+
+        // Fetch agent names from profile for candidates (always fetch to get real names, not Gmail)
+        if (userRole === 'candidate') {
+          const projectsWithNames = await Promise.all(
+            projectsList.map(async (project: any) => {
+              // Always fetch agent name from profile if agent_id exists
+              if (project.agent_id) {
+                try {
+                  const profileDoc = await getDoc(doc(getDb(), 'profiles', project.agent_id));
+                  if (profileDoc.exists()) {
+                    const profileData = profileDoc.data();
+                    const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+                    if (fullName) {
+                      project.agent_name = fullName;
+                    } else {
+                      // Fallback to user email only if profile has no name
+                      const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
+                      if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        project.agent_name = userData.email?.split('@')[0] || 'Agent';
+                      }
+                    }
+                  } else {
+                    // No profile found, use email from user doc
+                    const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
+                    if (userDoc.exists()) {
+                      const userData = userDoc.data();
+                      project.agent_name = userData.email?.split('@')[0] || 'Agent';
+                    }
+                  }
+                } catch (err) {
+                  console.error('Error fetching agent name:', err);
+                }
+              }
+              return project;
+            })
+          );
+          setProjects(projectsWithNames);
+          calculateStats(projectsWithNames);
+        } else {
+          setProjects(projectsList);
+          calculateStats(projectsList);
+        }
         setLoading(false);
       },
       (err) => {
@@ -171,26 +207,6 @@ export default function CandidateProjectsNew() {
     fetchConnections();
   }, [user, userRole]);
 
-  // Subscribe to real-time notifications
-  useEffect(() => {
-    if (!user) return;
-
-    const unsubscribe = subscribeToNotifications(user.uid, (notifs) => {
-      setNotifications(notifs);
-
-      // Count project-related notifications
-      const projectNotifs = notifs.filter(n =>
-        !n.isRead && (
-          n.type === 'action_needed' ||
-          n.type === 'action_status_changed' ||
-          n.projectId
-        )
-      );
-      setProjectNotificationCount(projectNotifs.length);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
 
   // Get unique assignees (candidates for agents, agents for candidates)
   const uniqueAssignees = Array.from(new Set(
@@ -505,22 +521,6 @@ export default function CandidateProjectsNew() {
 
               {/* Desktop Actions */}
               <div className="hidden md:flex items-center space-x-3">
-                {/* Notification Bell */}
-                <div className="relative">
-                  <button
-                    onClick={() => setShowNotificationPanel(!showNotificationPanel)}
-                    className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all"
-                    title="Project Notifications"
-                  >
-                    <Bell className="w-5 h-5" />
-                    {projectNotificationCount > 0 && (
-                      <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                        {projectNotificationCount}
-                      </span>
-                    )}
-                  </button>
-                </div>
-
                 {userRole === 'agent' && (
                   <button
                     onClick={() => setShowProjectModal(true)}
@@ -561,112 +561,6 @@ export default function CandidateProjectsNew() {
           </div>
         </header>
 
-        {/* Notification Dropdown Panel */}
-        {showNotificationPanel && (
-          <div className="fixed top-20 right-4 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[500px] overflow-hidden flex flex-col">
-            <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50">
-              <h3 className="font-semibold text-gray-900">Project Notifications</h3>
-              <button
-                onClick={() => setShowNotificationPanel(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="overflow-y-auto flex-1">
-              {notifications.filter(n =>
-                n.type === 'action_needed' ||
-                n.type === 'action_status_changed' ||
-                n.projectId
-              ).length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                  <Bell className="w-12 h-12 text-gray-300 mb-3" />
-                  <p className="text-gray-500 font-medium">No notifications</p>
-                  <p className="text-sm text-gray-400 mt-1">You're all caught up!</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-100">
-                  {notifications
-                    .filter(n =>
-                      n.type === 'action_needed' ||
-                      n.type === 'action_status_changed' ||
-                      n.projectId
-                    )
-                    .map((notification) => (
-                      <div
-                        key={notification.id}
-                        onClick={async () => {
-                          // Mark as read
-                          if (!notification.isRead) {
-                            await markNotificationAsRead(notification.id);
-                          }
-
-                          // Navigate to project if projectId exists
-                          if (notification.projectId) {
-                            router.push(`/candidate-projects?project=${notification.projectId}`);
-                          }
-
-                          setShowNotificationPanel(false);
-                        }}
-                        className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
-                          !notification.isRead ? 'bg-blue-50/50' : ''
-                        }`}
-                      >
-                        <div className="flex gap-3">
-                          <div className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
-                            !notification.isRead ? 'bg-blue-500' : 'bg-gray-300'
-                          }`}></div>
-                          <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium text-gray-900 ${
-                              !notification.isRead ? 'font-semibold' : ''
-                            }`}>
-                              {notification.title}
-                            </p>
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {notification.createdAt?.toDate?.() ?
-                                new Date(notification.createdAt.toDate()).toLocaleString() :
-                                'Just now'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
-
-            {notifications.filter(n =>
-              n.type === 'action_needed' ||
-              n.type === 'action_status_changed' ||
-              n.projectId
-            ).length > 0 && (
-              <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
-                <button
-                  onClick={async () => {
-                    // Mark all project notifications as read
-                    const projectNotifs = notifications.filter(n =>
-                      !n.isRead && (
-                        n.type === 'action_needed' ||
-                        n.type === 'action_status_changed' ||
-                        n.projectId
-                      )
-                    );
-                    for (const notif of projectNotifs) {
-                      await markNotificationAsRead(notif.id);
-                    }
-                  }}
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  Mark all as read
-                </button>
-              </div>
-            )}
-          </div>
-        )}
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Stats Dashboard - Professional Redesign */}
