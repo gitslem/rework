@@ -305,8 +305,10 @@ export default function CandidateProjectsNew() {
   const createProject = async (projectData: any) => {
     if (!user) return;
 
+    // Prevent duplicate submissions
+    if (creatingProject) return;
+
     setCreatingProject(true);
-    setShowProjectModal(false); // Close modal immediately when create button is clicked
 
     try {
       // Get agent user document to fetch name
@@ -334,6 +336,9 @@ export default function CandidateProjectsNew() {
         createdAt: Timestamp.now()
       });
 
+      // Close modal only after successful creation
+      setShowProjectModal(false);
+
     } catch (err: any) {
       console.error('Error creating project:', err);
       alert('Failed to create project: ' + err.message);
@@ -345,8 +350,10 @@ export default function CandidateProjectsNew() {
   const scheduleScreenSharing = async (scheduleData: any) => {
     if (!user || !scheduleProjectId) return;
 
+    // Prevent duplicate submissions
+    if (schedulingProject) return;
+
     setSchedulingProject(true);
-    setShowScheduleModal(false); // Close modal immediately
 
     try {
       const project = projects.find(p => p.id === scheduleProjectId);
@@ -377,13 +384,16 @@ export default function CandidateProjectsNew() {
         createdAt: Timestamp.now()
       });
 
+      // Close modal only after successful scheduling
+      setShowScheduleModal(false);
+      setScheduleProjectId(null);
+
       alert('Screen sharing session scheduled successfully! The agent has been notified.');
     } catch (err: any) {
       console.error('Error scheduling screen sharing:', err);
       alert('Failed to schedule screen sharing: ' + err.message);
     } finally {
       setSchedulingProject(false);
-      setScheduleProjectId(null);
     }
   };
 
@@ -396,8 +406,10 @@ export default function CandidateProjectsNew() {
   const setProjectEarnings = async (earningsData: any) => {
     if (!user || !earningsProjectId) return;
 
+    // Prevent duplicate submissions
+    if (settingEarnings) return;
+
     setSettingEarnings(true);
-    setShowEarningsModal(false); // Close modal immediately
 
     try {
       const project = projects.find(p => p.id === earningsProjectId);
@@ -428,13 +440,16 @@ export default function CandidateProjectsNew() {
         });
       }
 
+      // Close modal only after successful update
+      setShowEarningsModal(false);
+      setEarningsProjectId(null);
+
       alert('Earnings set successfully! The candidate has been notified.');
     } catch (err: any) {
       console.error('Error setting earnings:', err);
       alert('Failed to set earnings: ' + err.message);
     } finally {
       setSettingEarnings(false);
-      setEarningsProjectId(null);
     }
   };
 
