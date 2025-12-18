@@ -298,16 +298,18 @@ def create_candidate_project(
                 send_email = candidate_profile.email_notifications.get("project_created", True)
 
             if send_email:
-                candidate_name = (
-                    candidate_profile.first_name if candidate_profile and candidate_profile.first_name
-                    else candidate.email.split('@')[0]
-                )
+                # Get full names from profiles (first + last name)
+                if candidate_profile and candidate_profile.first_name:
+                    candidate_name = f"{candidate_profile.first_name} {candidate_profile.last_name}".strip()
+                else:
+                    # Fallback to email username (before @) instead of full email
+                    candidate_name = candidate.email.split('@')[0] if candidate.email else "Candidate"
 
-                agent_name = (
-                    f"{agent_profile.first_name} {agent_profile.last_name}".strip()
-                    if agent_profile and agent_profile.first_name
-                    else agent.email.split('@')[0]
-                )
+                if agent_profile and agent_profile.first_name:
+                    agent_name = f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+                else:
+                    # Fallback to email username (before @) instead of full email
+                    agent_name = agent.email.split('@')[0] if agent.email else "Agent"
 
                 # Send email directly
                 logger.info(f"📧 Sending project created email to {candidate.email}")
@@ -337,8 +339,19 @@ def create_candidate_project(
 
     # Create in-app notification for candidate
     try:
+        from app.models.models import Profile
         agent = db.query(User).filter(User.id == new_project.agent_id).first()
-        agent_name = agent.email.split('@')[0] if agent else "Your agent"
+
+        # Get agent's real name from profile
+        if agent:
+            agent_profile = db.query(Profile).filter(Profile.user_id == agent.id).first()
+            if agent_profile and agent_profile.first_name:
+                agent_name = f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+            else:
+                # Fallback to email username (before @)
+                agent_name = agent.email.split('@')[0] if agent.email else "Your agent"
+        else:
+            agent_name = "Your agent"
 
         notification = Notification(
             user_id=new_project.candidate_id,
@@ -559,16 +572,18 @@ def update_candidate_project(
                 send_email = candidate_profile.email_notifications.get(notification_type, True)
 
             if send_email:
-                candidate_name = (
-                    candidate_profile.first_name if candidate_profile and candidate_profile.first_name
-                    else candidate.email.split('@')[0]
-                )
+                # Get full names from profiles (first + last name)
+                if candidate_profile and candidate_profile.first_name:
+                    candidate_name = f"{candidate_profile.first_name} {candidate_profile.last_name}".strip()
+                else:
+                    # Fallback to email username (before @) instead of full email
+                    candidate_name = candidate.email.split('@')[0] if candidate.email else "Candidate"
 
-                agent_name = (
-                    f"{agent_profile.first_name} {agent_profile.last_name}".strip()
-                    if agent_profile and agent_profile.first_name
-                    else agent.email.split('@')[0]
-                )
+                if agent_profile and agent_profile.first_name:
+                    agent_name = f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+                else:
+                    # Fallback to email username (before @) instead of full email
+                    agent_name = agent.email.split('@')[0] if agent.email else "Agent"
 
                 # Send email directly based on update type
                 if status_changed:
@@ -619,8 +634,19 @@ def update_candidate_project(
 
     # Create in-app notification for candidate
     try:
+        from app.models.models import Profile
         agent = db.query(User).filter(User.id == project.agent_id).first()
-        agent_name = agent.email.split('@')[0] if agent else "Your agent"
+
+        # Get agent's real name from profile
+        if agent:
+            agent_profile = db.query(Profile).filter(Profile.user_id == agent.id).first()
+            if agent_profile and agent_profile.first_name:
+                agent_name = f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+            else:
+                # Fallback to email username (before @)
+                agent_name = agent.email.split('@')[0] if agent.email else "Your agent"
+        else:
+            agent_name = "Your agent"
 
         if status_changed:
             new_status = update_data_dict['status'].value if hasattr(update_data_dict['status'], 'value') else str(update_data_dict['status'])
@@ -749,16 +775,18 @@ def create_project_update(
                 send_email = candidate_profile.email_notifications.get("project_updated", True)
 
             if send_email:
-                candidate_name = (
-                    candidate_profile.first_name if candidate_profile and candidate_profile.first_name
-                    else candidate.email.split('@')[0]
-                )
+                # Get full names from profiles (first + last name)
+                if candidate_profile and candidate_profile.first_name:
+                    candidate_name = f"{candidate_profile.first_name} {candidate_profile.last_name}".strip()
+                else:
+                    # Fallback to email username (before @) instead of full email
+                    candidate_name = candidate.email.split('@')[0] if candidate.email else "Candidate"
 
-                agent_name = (
-                    f"{agent_profile.first_name} {agent_profile.last_name}".strip()
-                    if agent_profile and agent_profile.first_name
-                    else agent.email.split('@')[0]
-                )
+                if agent_profile and agent_profile.first_name:
+                    agent_name = f"{agent_profile.first_name} {agent_profile.last_name}".strip()
+                else:
+                    # Fallback to email username (before @) instead of full email
+                    agent_name = agent.email.split('@')[0] if agent.email else "Agent"
 
                 # Send email directly
                 update_text = new_update.update_text or "New progress update added"
