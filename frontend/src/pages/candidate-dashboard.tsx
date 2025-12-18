@@ -280,90 +280,65 @@ export default function CandidateDashboard() {
     }
   };
 
-  const loadConversationMessages = async (conversationId: string, fallbackSenderId?: string, fallbackRecipientId?: string) => {
+  const loadConversationMessages = async (conversationId: string, senderId: string, recipientId: string) => {
     try {
+      console.log(`[Candidate Dashboard] Loading conversation between ${senderId} and ${recipientId}`);
       const db = getFirebaseFirestore();
 
-      // Try to load by conversationId first
-      const conversationQuery = query(
+      // ALWAYS query by sender/recipient pairs (more reliable than conversationId)
+      // Query messages where either:
+      // (senderId == userA AND recipientId == userB) OR (senderId == userB AND recipientId == userA)
+      const query1 = query(
         collection(db, 'messages'),
-        where('conversationId', '==', conversationId),
+        where('senderId', '==', senderId),
+        where('recipientId', '==', recipientId),
         orderBy('createdAt', 'asc')
       );
 
-      let conversationSnapshot = await getDocs(conversationQuery);
+      const query2 = query(
+        collection(db, 'messages'),
+        where('senderId', '==', recipientId),
+        where('recipientId', '==', senderId),
+        orderBy('createdAt', 'asc')
+      );
 
-      // If no messages found with conversationId, try querying by sender/recipient
-      if (conversationSnapshot.empty && fallbackSenderId && fallbackRecipientId) {
-        console.log('[Candidate Dashboard] No messages with conversationId, trying sender/recipient query');
+      console.log('[Candidate Dashboard] Running dual queries for conversation messages...');
+      const [snapshot1, snapshot2] = await Promise.all([
+        getDocs(query1),
+        getDocs(query2)
+      ]);
 
-        // Query messages where either:
-        // (senderId == user AND recipientId == other) OR (senderId == other AND recipientId == user)
-        const query1 = query(
-          collection(db, 'messages'),
-          where('senderId', '==', fallbackSenderId),
-          where('recipientId', '==', fallbackRecipientId),
-          orderBy('createdAt', 'asc')
-        );
+      // Combine and sort by createdAt
+      const allMessages: any[] = [];
+      snapshot1.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
+      snapshot2.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
 
-        const query2 = query(
-          collection(db, 'messages'),
-          where('senderId', '==', fallbackRecipientId),
-          where('recipientId', '==', fallbackSenderId),
-          orderBy('createdAt', 'asc')
-        );
-
-        const [snapshot1, snapshot2] = await Promise.all([
-          getDocs(query1),
-          getDocs(query2)
-        ]);
-
-        // Combine and sort by createdAt
-        const allMessages: any[] = [];
-        snapshot1.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
-        snapshot2.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
-        allMessages.sort((a, b) => {
-          const aTime = a.createdAt?.toMillis?.() || 0;
-          const bTime = b.createdAt?.toMillis?.() || 0;
-          return aTime - bTime;
-        });
-
-        // Update these messages with conversationId for future queries
-        const batch = [];
-        for (const msg of allMessages) {
-          if (!msg.conversationId) {
-            batch.push(
-              updateDoc(doc(db, 'messages', msg.id), {
-                conversationId: conversationId,
-                updatedAt: Timestamp.now()
-              })
-            );
-          }
-        }
-        if (batch.length > 0) {
-          await Promise.all(batch);
-          console.log(`[Candidate Dashboard] Updated ${batch.length} messages with conversationId`);
-        }
-
-        setConversationMessages(allMessages);
-        setSelectedConversationId(conversationId);
-        return;
-      }
-
-      const conversationMessagesList: any[] = [];
-
-      conversationSnapshot.forEach((doc) => {
-        const data = doc.data();
-        conversationMessagesList.push({
-          id: doc.id,
-          ...data
-        });
+      allMessages.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return aTime - bTime;
       });
 
-      setConversationMessages(conversationMessagesList);
+      console.log(`[Candidate Dashboard] Found ${allMessages.length} messages in conversation`);
+
+      // Update messages with conversationId if missing (for future reference)
+      const messagesToUpdate = allMessages.filter(msg => !msg.conversationId);
+      if (messagesToUpdate.length > 0) {
+        console.log(`[Candidate Dashboard] Updating ${messagesToUpdate.length} messages with conversationId`);
+        const updatePromises = messagesToUpdate.map(msg =>
+          updateDoc(doc(db, 'messages', msg.id), {
+            conversationId: conversationId,
+            updatedAt: Timestamp.now()
+          }).catch(err => console.error(`Failed to update message ${msg.id}:`, err))
+        );
+        await Promise.all(updatePromises);
+      }
+
+      setConversationMessages(allMessages);
       setSelectedConversationId(conversationId);
-    } catch (error) {
-      console.error('Error loading conversation messages:', error);
+    } catch (error: any) {
+      console.error('[Candidate Dashboard] Error loading conversation messages:', error);
+      alert(`Failed to load conversation: ${error.message}\n\nPlease check the browser console for details.`);
       setConversationMessages([]);
     }
   };
