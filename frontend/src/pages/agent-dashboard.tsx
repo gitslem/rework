@@ -680,7 +680,9 @@ export default function AgentDashboard() {
       }
 
       // Reload conversation messages to show the new reply
-      await loadConversationMessages(conversationId);
+      const senderId = selectedMessage.senderId || user.uid;
+      const recipientIdForReload = isNewMessage ? selectedMessage.recipientId : selectedMessage.senderId;
+      await loadConversationMessages(conversationId, senderId, recipientIdForReload);
 
       setReplyText('');
       // Don't close the modal or clear selected message - keep the conversation open
