@@ -52,7 +52,7 @@ export default function AdminCandidates() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [candidates, setCandidates] = useState<CandidateWithProfile[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'new_users'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
@@ -213,6 +213,12 @@ export default function AdminCandidates() {
           if (isRejected || userData.isCandidateApproved) continue;
         } else if (filter === 'approved') {
           if (isRejected || !userData.isCandidateApproved) continue;
+        } else if (filter === 'new_users') {
+          // Filter for users who joined in the last 7 days
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const userCreatedAt = userData.createdAt?.toDate?.() || new Date(0);
+          if (userCreatedAt < sevenDaysAgo) continue;
         } else if (filter === 'all') {
           // Show all except explicitly filter logic
         }
@@ -643,7 +649,8 @@ export default function AdminCandidates() {
                   { value: 'all', label: 'All' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
-                  { value: 'rejected', label: 'Rejected' }
+                  { value: 'rejected', label: 'Rejected' },
+                  { value: 'new_users', label: 'New Users (7 days)' }
                 ].map(tab => (
                   <button
                     key={tab.value}
@@ -761,10 +768,23 @@ export default function AdminCandidates() {
             </div>
 
             {/* Stats */}
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="text-2xl font-bold text-black">{candidates.length}</div>
                 <div className="text-xs text-gray-600 mt-1">Total Candidates</div>
+              </div>
+              <div className="bg-blue-50 rounded-lg p-4">
+                <div className="text-2xl font-bold text-blue-700">
+                  {(() => {
+                    const sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                    return candidates.filter(c => {
+                      const createdAt = c.createdAt?.toDate?.() || new Date(0);
+                      return createdAt >= sevenDaysAgo;
+                    }).length;
+                  })()}
+                </div>
+                <div className="text-xs text-gray-600 mt-1">New Users (7d)</div>
               </div>
               <div className="bg-yellow-50 rounded-lg p-4">
                 <div className="text-2xl font-bold text-yellow-700">

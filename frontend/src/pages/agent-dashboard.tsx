@@ -249,6 +249,14 @@ export default function AgentDashboard() {
     }
   }, [router.isReady, router.query, messages, user, profile]);
 
+  // Auto-load conversation messages when message is selected
+  useEffect(() => {
+    if (selectedMessage && selectedMessage.conversationId && showMessageModal) {
+      console.log('[Agent Dashboard] Auto-loading conversation messages for:', selectedMessage.conversationId);
+      loadConversationMessages(selectedMessage.conversationId);
+    }
+  }, [selectedMessage?.conversationId, showMessageModal]);
+
   const checkAuthAndLoadProfile = async () => {
     try {
       const auth = getFirebaseAuth();
