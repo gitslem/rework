@@ -360,31 +360,48 @@ export default function AgentDashboard() {
       const messagesQuery = query(
         collection(db, 'messages'),
         where('recipientId', '==', agentId),
-        limit(50)
+        limit(200) // Increased limit to get more messages for grouping
       );
 
       const messagesSnapshot = await getDocs(messagesQuery);
-      const messagesList: Message[] = [];
-      let unread = 0;
+      const allMessages: Message[] = [];
 
       // Load all messages without any date filtering - unified persistent chat
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
-        messagesList.push({
+        allMessages.push({
           id: doc.id,
           ...data
         } as Message);
-        if (data.status === 'unread') unread++;
       });
 
       // Sort messages by createdAt in JavaScript instead of Firestore
-      messagesList.sort((a, b) => {
+      allMessages.sort((a, b) => {
         const aTime = a.createdAt?.toMillis?.() || 0;
         const bTime = b.createdAt?.toMillis?.() || 0;
         return bTime - aTime; // Descending order (newest first)
       });
 
-      setMessages(messagesList);
+      // Group messages by conversationId and keep only the latest message per conversation
+      const conversationMap = new Map<string, Message>();
+      let unread = 0;
+
+      allMessages.forEach((message) => {
+        const convId = message.conversationId || message.id;
+
+        // Count unread messages
+        if (message.status === 'unread') unread++;
+
+        // Only keep the latest message per conversation
+        if (!conversationMap.has(convId)) {
+          conversationMap.set(convId, message);
+        }
+      });
+
+      // Convert map to array for display
+      const groupedMessages = Array.from(conversationMap.values());
+
+      setMessages(groupedMessages);
       setUnreadCount(unread);
     } catch (error) {
       console.error('Error loading messages:', error);

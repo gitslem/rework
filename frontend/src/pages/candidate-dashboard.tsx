@@ -212,30 +212,48 @@ export default function CandidateDashboard() {
       const messagesQuery = query(
         collection(db, 'messages'),
         where('recipientId', '==', candidateId),
-        limit(50)
+        limit(200) // Increased limit to get more messages for grouping
       );
 
       const messagesSnapshot = await getDocs(messagesQuery);
-      const messagesList: any[] = [];
-      let unread = 0;
+      const allMessages: any[] = [];
 
       // Load all messages without any date filtering - unified persistent chat
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
-        messagesList.push({
+        allMessages.push({
           id: doc.id,
           ...data
         });
-        if (data.status === 'unread') unread++;
       });
 
-      messagesList.sort((a, b) => {
+      // Sort all messages by time (newest first)
+      allMessages.sort((a, b) => {
         const aTime = a.createdAt?.toMillis?.() || 0;
         const bTime = b.createdAt?.toMillis?.() || 0;
         return bTime - aTime;
       });
 
-      setMessages(messagesList);
+      // Group messages by conversationId and keep only the latest message per conversation
+      const conversationMap = new Map<string, any>();
+      let unread = 0;
+
+      allMessages.forEach((message) => {
+        const convId = message.conversationId || message.id;
+
+        // Count unread messages
+        if (message.status === 'unread') unread++;
+
+        // Only keep the latest message per conversation
+        if (!conversationMap.has(convId)) {
+          conversationMap.set(convId, message);
+        }
+      });
+
+      // Convert map to array for display
+      const groupedMessages = Array.from(conversationMap.values());
+
+      setMessages(groupedMessages);
       setUnreadCount(unread);
     } catch (error) {
       console.error('Error loading messages:', error);
