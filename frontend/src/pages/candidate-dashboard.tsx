@@ -100,17 +100,23 @@ export default function CandidateDashboard() {
 
   // Auto-load conversation messages when message is selected
   useEffect(() => {
-    if (selectedMessage && selectedMessage.conversationId && showMessageDetailModal) {
-      console.log('[Candidate Dashboard] Auto-loading conversation messages for:', selectedMessage.conversationId);
+    if (selectedMessage && showMessageDetailModal && user) {
+      // Generate conversationId if it doesn't exist
+      const senderId = selectedMessage.senderId;
+      const recipientId = selectedMessage.recipientId || user.uid;
+      const ids = [senderId, recipientId].sort();
+      const conversationId = selectedMessage.conversationId || `conv_${ids[0]}_${ids[1]}`;
+
+      console.log('[Candidate Dashboard] Auto-loading conversation messages for:', conversationId);
       // Clear previous conversation messages first
       setConversationMessages([]);
-      // Then load new conversation
-      loadConversationMessages(selectedMessage.conversationId);
+      // Then load new conversation with fallback to sender/recipient query
+      loadConversationMessages(conversationId, senderId, recipientId);
     } else if (!showMessageDetailModal) {
       // Clear conversation messages when modal closes
       setConversationMessages([]);
     }
-  }, [selectedMessage?.conversationId, showMessageDetailModal]);
+  }, [selectedMessage?.id, showMessageDetailModal, user]);
 
   const checkAuthAndLoadProfile = async () => {
     try {
@@ -274,16 +280,76 @@ export default function CandidateDashboard() {
     }
   };
 
-  const loadConversationMessages = async (conversationId: string) => {
+  const loadConversationMessages = async (conversationId: string, fallbackSenderId?: string, fallbackRecipientId?: string) => {
     try {
       const db = getFirebaseFirestore();
+
+      // Try to load by conversationId first
       const conversationQuery = query(
         collection(db, 'messages'),
         where('conversationId', '==', conversationId),
         orderBy('createdAt', 'asc')
       );
 
-      const conversationSnapshot = await getDocs(conversationQuery);
+      let conversationSnapshot = await getDocs(conversationQuery);
+
+      // If no messages found with conversationId, try querying by sender/recipient
+      if (conversationSnapshot.empty && fallbackSenderId && fallbackRecipientId) {
+        console.log('[Candidate Dashboard] No messages with conversationId, trying sender/recipient query');
+
+        // Query messages where either:
+        // (senderId == user AND recipientId == other) OR (senderId == other AND recipientId == user)
+        const query1 = query(
+          collection(db, 'messages'),
+          where('senderId', '==', fallbackSenderId),
+          where('recipientId', '==', fallbackRecipientId),
+          orderBy('createdAt', 'asc')
+        );
+
+        const query2 = query(
+          collection(db, 'messages'),
+          where('senderId', '==', fallbackRecipientId),
+          where('recipientId', '==', fallbackSenderId),
+          orderBy('createdAt', 'asc')
+        );
+
+        const [snapshot1, snapshot2] = await Promise.all([
+          getDocs(query1),
+          getDocs(query2)
+        ]);
+
+        // Combine and sort by createdAt
+        const allMessages: any[] = [];
+        snapshot1.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
+        snapshot2.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
+        allMessages.sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() || 0;
+          const bTime = b.createdAt?.toMillis?.() || 0;
+          return aTime - bTime;
+        });
+
+        // Update these messages with conversationId for future queries
+        const batch = [];
+        for (const msg of allMessages) {
+          if (!msg.conversationId) {
+            batch.push(
+              updateDoc(doc(db, 'messages', msg.id), {
+                conversationId: conversationId,
+                updatedAt: Timestamp.now()
+              })
+            );
+          }
+        }
+        if (batch.length > 0) {
+          await Promise.all(batch);
+          console.log(`[Candidate Dashboard] Updated ${batch.length} messages with conversationId`);
+        }
+
+        setConversationMessages(allMessages);
+        setSelectedConversationId(conversationId);
+        return;
+      }
+
       const conversationMessagesList: any[] = [];
 
       conversationSnapshot.forEach((doc) => {
@@ -1353,13 +1419,10 @@ export default function CandidateDashboard() {
                           }).map((message) => (
                             <div
                               key={message.id}
-                              onClick={async () => {
+                              onClick={() => {
                                 setSelectedMessage(message);
                                 setShowMessageDetailModal(true);
-                                // Load all messages in this conversation
-                                if (message.conversationId) {
-                                  await loadConversationMessages(message.conversationId);
-                                }
+                                // useEffect will handle loading conversation messages
                               }}
                               className={`p-4 cursor-pointer transition-all hover:bg-gray-50 ${
                                 selectedMessage?.conversationId === message.conversationId ? 'bg-emerald-50' : ''
