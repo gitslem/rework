@@ -253,7 +253,13 @@ export default function AgentDashboard() {
   useEffect(() => {
     if (selectedMessage && selectedMessage.conversationId && showMessageModal) {
       console.log('[Agent Dashboard] Auto-loading conversation messages for:', selectedMessage.conversationId);
+      // Clear previous conversation messages first
+      setConversationMessages([]);
+      // Then load new conversation
       loadConversationMessages(selectedMessage.conversationId);
+    } else if (!showMessageModal) {
+      // Clear conversation messages when modal closes
+      setConversationMessages([]);
     }
   }, [selectedMessage?.conversationId, showMessageModal]);
 
@@ -1721,33 +1727,10 @@ export default function AgentDashboard() {
                             );
                           })
                         ) : (
-                          <div className="flex justify-start">
-                            <div className="max-w-xs lg:max-w-md bg-white rounded-2xl rounded-tl-sm shadow-md px-4 py-3">
-                              {selectedMessage.subject && (
-                                <p className="text-sm font-semibold text-emerald-600 mb-2">{selectedMessage.subject}</p>
-                              )}
-                              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{selectedMessage.message}</p>
-                              <div className="flex items-center justify-end gap-1 mt-2">
-                                <p className="text-xs text-gray-500">
-                                  {selectedMessage.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
-                                </p>
-                              </div>
-                              {selectedMessage.type === 'service_request' && selectedMessage.status === 'unread' && (
-                                <div className="mt-3 pt-3 border-t border-gray-200 flex flex-wrap gap-2">
-                                  <button
-                                    onClick={() => handleAcceptRequest(selectedMessage)}
-                                    className="flex-1 min-w-[100px] bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold"
-                                  >
-                                    Accept
-                                  </button>
-                                  <button
-                                    onClick={() => handleRejectRequest(selectedMessage)}
-                                    className="flex-1 min-w-[100px] bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 text-sm font-semibold"
-                                  >
-                                    Reject
-                                  </button>
-                                </div>
-                              )}
+                          <div className="flex justify-center items-center h-full">
+                            <div className="bg-white rounded-2xl p-8 shadow-lg">
+                              <Loader className="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4" />
+                              <p className="text-gray-600 text-center">Loading conversation...</p>
                             </div>
                           </div>
                         )}

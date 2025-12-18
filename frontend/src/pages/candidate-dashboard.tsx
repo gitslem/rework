@@ -102,7 +102,13 @@ export default function CandidateDashboard() {
   useEffect(() => {
     if (selectedMessage && selectedMessage.conversationId && showMessageDetailModal) {
       console.log('[Candidate Dashboard] Auto-loading conversation messages for:', selectedMessage.conversationId);
+      // Clear previous conversation messages first
+      setConversationMessages([]);
+      // Then load new conversation
       loadConversationMessages(selectedMessage.conversationId);
+    } else if (!showMessageDetailModal) {
+      // Clear conversation messages when modal closes
+      setConversationMessages([]);
     }
   }, [selectedMessage?.conversationId, showMessageDetailModal]);
 
@@ -1507,17 +1513,10 @@ export default function CandidateDashboard() {
                               );
                             })
                           ) : (
-                            <div className="flex justify-start">
-                              <div className="max-w-xs lg:max-w-md bg-white rounded-2xl rounded-tl-sm shadow-md px-4 py-3">
-                                {selectedMessage.subject && (
-                                  <p className="text-sm font-semibold text-emerald-600 mb-2">{selectedMessage.subject}</p>
-                                )}
-                                <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{selectedMessage.message}</p>
-                                <div className="flex items-center justify-end gap-1 mt-2">
-                                  <p className="text-xs text-gray-500">
-                                    {selectedMessage.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
-                                  </p>
-                                </div>
+                            <div className="flex justify-center items-center h-full">
+                              <div className="bg-white rounded-2xl p-8 shadow-lg">
+                                <Loader className="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4" />
+                                <p className="text-gray-600 text-center">Loading conversation...</p>
                               </div>
                             </div>
                           )}
