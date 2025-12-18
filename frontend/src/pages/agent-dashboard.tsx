@@ -680,9 +680,8 @@ export default function AgentDashboard() {
       }
 
       // Reload conversation messages to show the new reply
-      const senderId = selectedMessage.senderId || user.uid;
-      const recipientIdForReload = isNewMessage ? selectedMessage.recipientId : selectedMessage.senderId;
-      await loadConversationMessages(conversationId, senderId, recipientIdForReload);
+      // Use user.uid and recipientId which were correctly calculated above
+      await loadConversationMessages(conversationId, user.uid, recipientId);
 
       setReplyText('');
       // Don't close the modal or clear selected message - keep the conversation open
@@ -1823,107 +1822,7 @@ export default function AgentDashboard() {
         </div>
       </div>
 
-      {/* Message Detail/Reply Modal */}
-      {showMessageModal && selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-3">
-                <h3 className="text-2xl font-bold text-gray-900">
-                  {selectedMessage.id === 'new'
-                    ? `New Message to ${selectedMessage.recipientName}`
-                    : `Message from ${selectedMessage.senderName}`}
-                </h3>
-                {selectedMessage.saved && (
-                  <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                    <Bookmark className="w-3 h-3" />
-                    Saved
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {selectedMessage.id !== 'new' && (
-                  <button
-                    onClick={() => handleToggleSaveMessage(selectedMessage)}
-                    className={`p-2 rounded-lg transition-colors ${selectedMessage.saved ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                    title={selectedMessage.saved ? 'Unsave message' : 'Save message'}
-                  >
-                    <Bookmark className={`w-5 h-5 ${selectedMessage.saved ? 'fill-current' : ''}`} />
-                  </button>
-                )}
-                <button onClick={() => { setShowMessageModal(false); setSelectedMessage(null); setReplyText(''); }} className="text-gray-500 hover:text-gray-700">
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-
-            {/* Only show original message for replies, not for new messages */}
-            {selectedMessage.id !== 'new' && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <div className="flex justify-between items-start mb-3">
-                  <p className="font-semibold text-gray-900">{selectedMessage.senderName}</p>
-                  <p className="text-sm text-gray-500">
-                    {selectedMessage.createdAt?.toDate?.()?.toLocaleString() || 'Recently'}
-                  </p>
-                </div>
-                <p className="font-medium text-gray-900 mb-2">{selectedMessage.subject}</p>
-                <p className="text-gray-700 whitespace-pre-wrap">{selectedMessage.message}</p>
-              </div>
-            )}
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {selectedMessage.id === 'new' ? 'Your Message' : 'Your Reply'}
-              </label>
-              <textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                rows={5}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder={selectedMessage.id === 'new' ? 'Type your message here...' : 'Type your reply here...'}
-              />
-            </div>
-
-            <div className="flex gap-3">
-              {selectedMessage.status === 'unread' && selectedMessage.type === 'service_request' && selectedMessage.id !== 'new' && (
-                <>
-                  <button
-                    onClick={() => handleAcceptRequest(selectedMessage)}
-                    disabled={saving}
-                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {saving ? 'Processing...' : 'Accept'}
-                  </button>
-                  <button
-                    onClick={() => handleRejectRequest(selectedMessage)}
-                    disabled={saving}
-                    className="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50"
-                  >
-                    {saving ? 'Processing...' : 'Reject'}
-                  </button>
-                </>
-              )}
-              <button
-                onClick={handleSendReply}
-                disabled={sendingReply || !replyText.trim()}
-                className="flex-1 bg-black text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {sendingReply ? (
-                  <>
-                    <Loader className="w-5 h-5 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-5 h-5" />
-                    {selectedMessage.id === 'new' ? 'Send Message' : 'Send Reply'}
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Message Detail/Reply Modal - REMOVED: Using enhanced chat interface instead */}
 
       {/* Enhanced Settings Modal */}
       {showEnhancedSettingsModal && (
