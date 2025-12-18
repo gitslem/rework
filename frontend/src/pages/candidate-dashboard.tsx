@@ -76,8 +76,10 @@ export default function CandidateDashboard() {
 
   // Messages
   const [messages, setMessages] = useState<any[]>([]);
+  const [conversationMessages, setConversationMessages] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [showMessageDetailModal, setShowMessageDetailModal] = useState(false);
   const [replyText, setReplyText] = useState('');
 
@@ -217,20 +219,14 @@ export default function CandidateDashboard() {
       const messagesList: any[] = [];
       let unread = 0;
 
-      const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - 3);
-
+      // Load all messages without any date filtering - unified persistent chat
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
-        const messageDate = data.createdAt?.toDate?.() || new Date(0);
-
-        if (data.saved === true || messageDate >= cutoffDate) {
-          messagesList.push({
-            id: doc.id,
-            ...data
-          });
-          if (data.status === 'unread') unread++;
-        }
+        messagesList.push({
+          id: doc.id,
+          ...data
+        });
+        if (data.status === 'unread') unread++;
       });
 
       messagesList.sort((a, b) => {
@@ -243,6 +239,34 @@ export default function CandidateDashboard() {
       setUnreadCount(unread);
     } catch (error) {
       console.error('Error loading messages:', error);
+    }
+  };
+
+  const loadConversationMessages = async (conversationId: string) => {
+    try {
+      const db = getFirebaseFirestore();
+      const conversationQuery = query(
+        collection(db, 'messages'),
+        where('conversationId', '==', conversationId),
+        orderBy('createdAt', 'asc')
+      );
+
+      const conversationSnapshot = await getDocs(conversationQuery);
+      const conversationMessagesList: any[] = [];
+
+      conversationSnapshot.forEach((doc) => {
+        const data = doc.data();
+        conversationMessagesList.push({
+          id: doc.id,
+          ...data
+        });
+      });
+
+      setConversationMessages(conversationMessagesList);
+      setSelectedConversationId(conversationId);
+    } catch (error) {
+      console.error('Error loading conversation messages:', error);
+      setConversationMessages([]);
     }
   };
 
@@ -350,7 +374,9 @@ export default function CandidateDashboard() {
       setSendingReply(true);
       const db = getFirebaseFirestore();
 
-      const conversationId = selectedMessage.conversationId || selectedMessage.id;
+      // Generate consistent conversationId based on sorted user IDs
+      const ids = [user.uid, selectedMessage.senderId].sort();
+      const conversationId = selectedMessage.conversationId || `conv_${ids[0]}_${ids[1]}`;
 
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
@@ -373,10 +399,11 @@ export default function CandidateDashboard() {
         });
       }
 
-      alert('Reply sent successfully!');
+      // Reload conversation messages to show the new reply
+      await loadConversationMessages(conversationId);
+
       setReplyText('');
-      setShowMessageDetailModal(false);
-      setSelectedMessage(null);
+      // Don't close the modal or clear selected message - keep the conversation open
 
       await loadMessages(db, user.uid);
     } catch (error: any) {
@@ -1294,12 +1321,16 @@ export default function CandidateDashboard() {
                           }).map((message) => (
                             <div
                               key={message.id}
-                              onClick={() => {
+                              onClick={async () => {
                                 setSelectedMessage(message);
                                 setShowMessageDetailModal(true);
+                                // Load all messages in this conversation
+                                if (message.conversationId) {
+                                  await loadConversationMessages(message.conversationId);
+                                }
                               }}
                               className={`p-4 cursor-pointer transition-all hover:bg-gray-50 ${
-                                selectedMessage?.id === message.id ? 'bg-emerald-50' : ''
+                                selectedMessage?.conversationId === message.conversationId ? 'bg-emerald-50' : ''
                               } ${message.status === 'unread' ? 'bg-blue-50/30' : ''}`}
                             >
                               <div className="flex gap-3">
@@ -1392,31 +1423,78 @@ export default function CandidateDashboard() {
                             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d9d9d9' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                           }}
                         >
-                          {/* Date Separator */}
-                          <div className="flex justify-center mb-4">
-                            <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
-                              <p className="text-xs font-medium text-gray-600">
-                                {selectedMessage.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Original Message */}
-                          <div className="flex justify-start">
-                            <div className="max-w-xs lg:max-w-md bg-white rounded-2xl rounded-tl-sm shadow-md px-4 py-3">
-                              {selectedMessage.subject && (
-                                <p className="text-sm font-semibold text-emerald-600 mb-2">{selectedMessage.subject}</p>
-                              )}
-                              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{selectedMessage.message}</p>
-                              <div className="flex items-center justify-end gap-1 mt-2">
-                                <p className="text-xs text-gray-500">
-                                  {selectedMessage.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                          {/* Date Separator for first message */}
+                          {conversationMessages.length > 0 && (
+                            <div className="flex justify-center mb-4">
+                              <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
+                                <p className="text-xs font-medium text-gray-600">
+                                  {conversationMessages[0]?.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
                                 </p>
                               </div>
                             </div>
-                          </div>
+                          )}
 
-                          {/* Reply Messages would appear here */}
+                          {/* Display all messages in the conversation */}
+                          {conversationMessages.length > 0 ? (
+                            conversationMessages.map((msg, index) => {
+                              const isOwnMessage = user && msg.senderId === user.uid;
+                              const showDateSeparator = index > 0 &&
+                                msg.createdAt?.toDate?.()?.toLocaleDateString() !==
+                                conversationMessages[index - 1]?.createdAt?.toDate?.()?.toLocaleDateString();
+
+                              return (
+                                <div key={msg.id}>
+                                  {/* Date separator for new days */}
+                                  {showDateSeparator && (
+                                    <div className="flex justify-center my-4">
+                                      <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
+                                        <p className="text-xs font-medium text-gray-600">
+                                          {msg.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Message bubble */}
+                                  <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-xs lg:max-w-md rounded-2xl shadow-md px-4 py-3 ${
+                                      isOwnMessage
+                                        ? 'bg-emerald-500 text-white rounded-br-sm'
+                                        : 'bg-white text-gray-800 rounded-tl-sm'
+                                    }`}>
+                                      {msg.subject && index === 0 && (
+                                        <p className={`text-sm font-semibold mb-2 ${
+                                          isOwnMessage ? 'text-emerald-100' : 'text-emerald-600'
+                                        }`}>
+                                          {msg.subject}
+                                        </p>
+                                      )}
+                                      <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
+                                      <div className="flex items-center justify-end gap-1 mt-2">
+                                        <p className={`text-xs ${isOwnMessage ? 'text-emerald-100' : 'text-gray-500'}`}>
+                                          {msg.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="flex justify-start">
+                              <div className="max-w-xs lg:max-w-md bg-white rounded-2xl rounded-tl-sm shadow-md px-4 py-3">
+                                {selectedMessage.subject && (
+                                  <p className="text-sm font-semibold text-emerald-600 mb-2">{selectedMessage.subject}</p>
+                                )}
+                                <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{selectedMessage.message}</p>
+                                <div className="flex items-center justify-end gap-1 mt-2">
+                                  <p className="text-xs text-gray-500">
+                                    {selectedMessage.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Reply Input */}

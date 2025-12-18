@@ -97,8 +97,10 @@ export default function AgentDashboard() {
 
   // Messaging
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationMessages, setConversationMessages] = useState<Message[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
@@ -365,24 +367,14 @@ export default function AgentDashboard() {
       const messagesList: Message[] = [];
       let unread = 0;
 
-      // Calculate cutoff date (3 days ago for recent messages)
-      const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - 3);
-
+      // Load all messages without any date filtering - unified persistent chat
       messagesSnapshot.forEach((doc) => {
         const data = doc.data();
-        const messageDate = data.createdAt?.toDate?.() || new Date(0);
-
-        // Only include messages that are either:
-        // 1. Saved, OR
-        // 2. Created within the last 3 days (recent messages only)
-        if (data.saved === true || messageDate >= cutoffDate) {
-          messagesList.push({
-            id: doc.id,
-            ...data
-          } as Message);
-          if (data.status === 'unread') unread++;
-        }
+        messagesList.push({
+          id: doc.id,
+          ...data
+        } as Message);
+        if (data.status === 'unread') unread++;
       });
 
       // Sort messages by createdAt in JavaScript instead of Firestore
@@ -397,6 +389,34 @@ export default function AgentDashboard() {
     } catch (error) {
       console.error('Error loading messages:', error);
       alert('Error loading messages. Please refresh the page.');
+    }
+  };
+
+  const loadConversationMessages = async (conversationId: string) => {
+    try {
+      const db = getFirebaseFirestore();
+      const conversationQuery = query(
+        collection(db, 'messages'),
+        where('conversationId', '==', conversationId),
+        orderBy('createdAt', 'asc')
+      );
+
+      const conversationSnapshot = await getDocs(conversationQuery);
+      const conversationMessagesList: Message[] = [];
+
+      conversationSnapshot.forEach((doc) => {
+        const data = doc.data();
+        conversationMessagesList.push({
+          id: doc.id,
+          ...data
+        } as Message);
+      });
+
+      setConversationMessages(conversationMessagesList);
+      setSelectedConversationId(conversationId);
+    } catch (error) {
+      console.error('Error loading conversation messages:', error);
+      setConversationMessages([]);
     }
   };
 
@@ -587,12 +607,13 @@ export default function AgentDashboard() {
         });
       }
 
-      alert(isNewMessage ? 'Message sent successfully!' : 'Reply sent successfully!');
-      setReplyText('');
-      setShowMessageModal(false);
-      setSelectedMessage(null);
+      // Reload conversation messages to show the new reply
+      await loadConversationMessages(conversationId);
 
-      // Refresh messages
+      setReplyText('');
+      // Don't close the modal or clear selected message - keep the conversation open
+
+      // Refresh messages list
       await loadMessages(db, user.uid);
     } catch (error: any) {
       console.error('Error sending message:', error);
@@ -1490,12 +1511,16 @@ export default function AgentDashboard() {
                         }).map((message) => (
                           <div
                             key={message.id}
-                            onClick={() => {
+                            onClick={async () => {
                               setSelectedMessage(message);
                               setShowMessageModal(true);
+                              // Load all messages in this conversation
+                              if (message.conversationId) {
+                                await loadConversationMessages(message.conversationId);
+                              }
                             }}
                             className={`p-4 cursor-pointer transition-all hover:bg-gray-50 ${
-                              selectedMessage?.id === message.id ? 'bg-emerald-50' : ''
+                              selectedMessage?.conversationId === message.conversationId ? 'bg-emerald-50' : ''
                             } ${message.status === 'unread' ? 'bg-blue-50/30' : ''}`}
                           >
                             <div className="flex gap-3">
@@ -1594,47 +1619,113 @@ export default function AgentDashboard() {
                           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d9d9d9' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
                         }}
                       >
-                        {/* Date Separator */}
-                        <div className="flex justify-center mb-4">
-                          <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
-                            <p className="text-xs font-medium text-gray-600">
-                              {selectedMessage.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Original Message */}
-                        <div className="flex justify-start">
-                          <div className="max-w-xs lg:max-w-md bg-white rounded-2xl rounded-tl-sm shadow-md px-4 py-3">
-                            {selectedMessage.subject && (
-                              <p className="text-sm font-semibold text-emerald-600 mb-2">{selectedMessage.subject}</p>
-                            )}
-                            <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{selectedMessage.message}</p>
-                            <div className="flex items-center justify-end gap-1 mt-2">
-                              <p className="text-xs text-gray-500">
-                                {selectedMessage.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                        {/* Date Separator for first message */}
+                        {conversationMessages.length > 0 && (
+                          <div className="flex justify-center mb-4">
+                            <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
+                              <p className="text-xs font-medium text-gray-600">
+                                {conversationMessages[0]?.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
                               </p>
                             </div>
-                            {selectedMessage.type === 'service_request' && selectedMessage.status === 'unread' && (
-                              <div className="mt-3 pt-3 border-t border-gray-200 flex flex-wrap gap-2">
-                                <button
-                                  onClick={() => handleAcceptRequest(selectedMessage)}
-                                  className="flex-1 min-w-[100px] bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold"
-                                >
-                                  Accept
-                                </button>
-                                <button
-                                  onClick={() => handleRejectRequest(selectedMessage)}
-                                  className="flex-1 min-w-[100px] bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 text-sm font-semibold"
-                                >
-                                  Reject
-                                </button>
-                              </div>
-                            )}
                           </div>
-                        </div>
+                        )}
 
-                        {/* Reply Messages would appear here */}
+                        {/* Display all messages in the conversation */}
+                        {conversationMessages.length > 0 ? (
+                          conversationMessages.map((msg, index) => {
+                            const isOwnMessage = user && msg.senderId === user.uid;
+                            const showDateSeparator = index > 0 &&
+                              msg.createdAt?.toDate?.()?.toLocaleDateString() !==
+                              conversationMessages[index - 1]?.createdAt?.toDate?.()?.toLocaleDateString();
+
+                            // Show Accept/Reject buttons only on first message if it's a service request
+                            const showActionButtons = index === 0 && msg.type === 'service_request' && msg.status === 'unread';
+
+                            return (
+                              <div key={msg.id}>
+                                {/* Date separator for new days */}
+                                {showDateSeparator && (
+                                  <div className="flex justify-center my-4">
+                                    <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
+                                      <p className="text-xs font-medium text-gray-600">
+                                        {msg.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Message bubble */}
+                                <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                                  <div className={`max-w-xs lg:max-w-md rounded-2xl shadow-md px-4 py-3 ${
+                                    isOwnMessage
+                                      ? 'bg-emerald-500 text-white rounded-br-sm'
+                                      : 'bg-white text-gray-800 rounded-tl-sm'
+                                  }`}>
+                                    {msg.subject && index === 0 && (
+                                      <p className={`text-sm font-semibold mb-2 ${
+                                        isOwnMessage ? 'text-emerald-100' : 'text-emerald-600'
+                                      }`}>
+                                        {msg.subject}
+                                      </p>
+                                    )}
+                                    <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
+                                    <div className="flex items-center justify-end gap-1 mt-2">
+                                      <p className={`text-xs ${isOwnMessage ? 'text-emerald-100' : 'text-gray-500'}`}>
+                                        {msg.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                                      </p>
+                                    </div>
+                                    {showActionButtons && (
+                                      <div className="mt-3 pt-3 border-t border-gray-200 flex flex-wrap gap-2">
+                                        <button
+                                          onClick={() => handleAcceptRequest(msg)}
+                                          className="flex-1 min-w-[100px] bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold"
+                                        >
+                                          Accept
+                                        </button>
+                                        <button
+                                          onClick={() => handleRejectRequest(msg)}
+                                          className="flex-1 min-w-[100px] bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 text-sm font-semibold"
+                                        >
+                                          Reject
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="flex justify-start">
+                            <div className="max-w-xs lg:max-w-md bg-white rounded-2xl rounded-tl-sm shadow-md px-4 py-3">
+                              {selectedMessage.subject && (
+                                <p className="text-sm font-semibold text-emerald-600 mb-2">{selectedMessage.subject}</p>
+                              )}
+                              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">{selectedMessage.message}</p>
+                              <div className="flex items-center justify-end gap-1 mt-2">
+                                <p className="text-xs text-gray-500">
+                                  {selectedMessage.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                                </p>
+                              </div>
+                              {selectedMessage.type === 'service_request' && selectedMessage.status === 'unread' && (
+                                <div className="mt-3 pt-3 border-t border-gray-200 flex flex-wrap gap-2">
+                                  <button
+                                    onClick={() => handleAcceptRequest(selectedMessage)}
+                                    className="flex-1 min-w-[100px] bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm font-semibold"
+                                  >
+                                    Accept
+                                  </button>
+                                  <button
+                                    onClick={() => handleRejectRequest(selectedMessage)}
+                                    className="flex-1 min-w-[100px] bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 text-sm font-semibold"
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       {/* Reply Input */}
