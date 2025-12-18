@@ -131,7 +131,7 @@ export default function CandidateProjectsPage() {
                   const profileDoc = await getDoc(doc(getDb(), 'profiles', project.agent_id));
                   if (profileDoc.exists()) {
                     const profileData = profileDoc.data();
-                    const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+                    const fullName = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim();
                     if (fullName) {
                       project.agent_name = fullName;
                     } else {
@@ -386,9 +386,9 @@ export default function CandidateProjectsPage() {
       const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
       if (agentProfileDoc.exists()) {
         const agentProfile = agentProfileDoc.data();
-        agentName = agentProfile?.first_name && agentProfile?.last_name
-          ? `${agentProfile.first_name} ${agentProfile.last_name}`
-          : agentProfile?.first_name || user.email?.split('@')[0] || 'Agent';
+        agentName = agentProfile?.firstName && agentProfile?.lastName
+          ? `${agentProfile.firstName} ${agentProfile.lastName}`
+          : agentProfile?.firstName || user.email?.split('@')[0] || 'Agent';
       } else {
         agentName = user.email?.split('@')[0] || 'Agent';
       }
@@ -749,9 +749,9 @@ export default function CandidateProjectsPage() {
               const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.agent_id));
               if (agentProfileDoc.exists()) {
                 const agentProfile = agentProfileDoc.data();
-                agentName = agentProfile?.first_name && agentProfile?.last_name
-                  ? `${agentProfile.first_name} ${agentProfile.last_name}`
-                  : agentProfile?.first_name || 'Agent';
+                agentName = agentProfile?.firstName && agentProfile?.lastName
+                  ? `${agentProfile.firstName} ${agentProfile.lastName}`
+                  : agentProfile?.firstName || 'Agent';
               }
             }
 
@@ -908,8 +908,8 @@ export default function CandidateProjectsPage() {
           // Get agent name
           const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
           const agentProfile = agentProfileDoc.data();
-          const agentName = agentProfile?.first_name && agentProfile?.last_name
-            ? `${agentProfile.first_name} ${agentProfile.last_name}`
+          const agentName = agentProfile?.firstName && agentProfile?.lastName
+            ? `${agentProfile.firstName} ${agentProfile.lastName}`
             : user.email?.split('@')[0] || 'Your Agent';
 
           if (candidateEmail) {
@@ -1521,24 +1521,29 @@ export default function CandidateProjectsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="project-search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Search Projects
               </label>
               <input
+                id="project-search"
+                name="search"
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by title or description..."
+                autoComplete="off"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
               />
             </div>
 
             {/* Assignee Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="assignee-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {userRole === 'agent' ? 'Candidates' : 'Agents'}
               </label>
               <select
+                id="assignee-filter"
+                name="assignee"
                 value={assigneeFilter}
                 onChange={(e) => setAssigneeFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
@@ -1552,10 +1557,12 @@ export default function CandidateProjectsPage() {
 
             {/* Platform Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="platform-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Platforms
               </label>
               <select
+                id="platform-filter"
+                name="platform"
                 value={platformFilter}
                 onChange={(e) => setPlatformFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
@@ -1569,10 +1576,12 @@ export default function CandidateProjectsPage() {
 
             {/* Sort Order */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="sort-order" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Sort Order
               </label>
               <select
+                id="sort-order"
+                name="sortOrder"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value as any)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm"
