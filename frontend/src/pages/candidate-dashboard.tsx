@@ -98,6 +98,14 @@ export default function CandidateDashboard() {
     checkAuthAndLoadProfile();
   }, []);
 
+  // Auto-load conversation messages when message is selected
+  useEffect(() => {
+    if (selectedMessage && selectedMessage.conversationId && showMessageDetailModal) {
+      console.log('[Candidate Dashboard] Auto-loading conversation messages for:', selectedMessage.conversationId);
+      loadConversationMessages(selectedMessage.conversationId);
+    }
+  }, [selectedMessage?.conversationId, showMessageDetailModal]);
+
   const checkAuthAndLoadProfile = async () => {
     try {
       const auth = getFirebaseAuth();
