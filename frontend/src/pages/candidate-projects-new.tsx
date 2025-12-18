@@ -122,30 +122,49 @@ export default function CandidateProjectsNew() {
               // Always fetch agent name from profile if agent_id exists
               if (project.agent_id) {
                 try {
+                  console.log(`[Agent Name] Fetching profile for agent ${project.agent_id}`);
                   const profileDoc = await getDoc(doc(getDb(), 'profiles', project.agent_id));
+
                   if (profileDoc.exists()) {
                     const profileData = profileDoc.data();
-                    const fullName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim();
+                    console.log(`[Agent Name] Profile data:`, {
+                      first_name: profileData.first_name,
+                      last_name: profileData.last_name,
+                      has_first: !!profileData.first_name,
+                      has_last: !!profileData.last_name
+                    });
+
+                    const firstName = profileData.first_name?.trim() || '';
+                    const lastName = profileData.last_name?.trim() || '';
+                    const fullName = `${firstName} ${lastName}`.trim();
+
+                    console.log(`[Agent Name] Constructed full name: "${fullName}"`);
+
                     if (fullName) {
                       project.agent_name = fullName;
+                      console.log(`[Agent Name] ✅ Using full name: ${fullName}`);
                     } else {
                       // Fallback to user email only if profile has no name
+                      console.log(`[Agent Name] ⚠️ No name in profile, falling back to email`);
                       const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
                       if (userDoc.exists()) {
                         const userData = userDoc.data();
                         project.agent_name = userData.email?.split('@')[0] || 'Agent';
+                        console.log(`[Agent Name] Using email prefix: ${project.agent_name}`);
                       }
                     }
                   } else {
                     // No profile found, use email from user doc
+                    console.log(`[Agent Name] ❌ No profile found for agent ${project.agent_id}`);
                     const userDoc = await getDoc(doc(getDb(), 'users', project.agent_id));
                     if (userDoc.exists()) {
                       const userData = userDoc.data();
                       project.agent_name = userData.email?.split('@')[0] || 'Agent';
+                      console.log(`[Agent Name] Using email prefix (no profile): ${project.agent_name}`);
                     }
                   }
                 } catch (err) {
-                  console.error('Error fetching agent name:', err);
+                  console.error('[Agent Name] ❌ Error fetching agent name:', err);
                 }
               }
               return project;
