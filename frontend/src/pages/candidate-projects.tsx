@@ -68,6 +68,7 @@ export default function CandidateProjectsPage() {
   const [scheduleProjectId, setScheduleProjectId] = useState<string | null>(null);
   const [schedulingProject, setSchedulingProject] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [creatingProject, setCreatingProject] = useState(false);
 
   // Check Firebase authentication and get user role
   useEffect(() => {
@@ -418,12 +419,12 @@ export default function CandidateProjectsPage() {
     if (!user) return;
 
     // Prevent duplicate submissions
-    if (loading) {
+    if (creatingProject) {
       console.log('⚠️ Project creation already in progress, ignoring duplicate call');
       return;
     }
 
-    setLoading(true);
+    setCreatingProject(true);
 
     try {
       // Get agent real name from profile
@@ -527,7 +528,7 @@ export default function CandidateProjectsPage() {
       console.error('Error creating project:', err);
       setError(err.message || 'Failed to create project');
     } finally {
-      setLoading(false);
+      setCreatingProject(false);
     }
   };
 
@@ -1843,6 +1844,7 @@ export default function CandidateProjectsPage() {
             onClose={() => setShowProjectModal(false)}
             onSubmit={createProject}
             connectedCandidates={connectedCandidates}
+            isLoading={creatingProject}
           />
         )}
 
@@ -2557,7 +2559,7 @@ function ActionFormModal({ onClose, onSubmit }: any) {
   );
 }
 
-function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
+function ProjectFormModal({ onClose, onSubmit, connectedCandidates, isLoading }: any) {
   const [formData, setFormData] = useState({
     candidate_id: '',
     candidate_name: '',
@@ -2572,6 +2574,7 @@ function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent multiple submissions
     onSubmit(formData);
   };
 
@@ -2672,15 +2675,32 @@ function ProjectFormModal({ onClose, onSubmit, connectedCandidates }: any) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              disabled={isLoading}
+              className={`px-4 py-2 text-gray-700 dark:text-gray-300 rounded-lg transition-colors ${
+                isLoading
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              disabled={isLoading}
+              className={`px-4 py-2 bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2 ${
+                isLoading
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-blue-700'
+              }`}
             >
-              Create Project
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Creating...</span>
+                </>
+              ) : (
+                'Create Project'
+              )}
             </button>
           </div>
         </form>
