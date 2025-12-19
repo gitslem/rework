@@ -31,6 +31,7 @@ export default function AdminConversations() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     checkAdminAccess();
@@ -195,9 +196,16 @@ export default function AdminConversations() {
       console.log(`Created ${conversationsData.length} conversations`);
       setConversations(conversationsData);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching conversations:', error);
-      alert('Error loading conversations. Please check the console for details.');
+
+      // Check if it's a permissions error
+      if (error?.code === 'permission-denied' || error?.message?.includes('Missing or insufficient permissions')) {
+        setError('Unable to load conversations. Please ensure Firestore security rules have been deployed with admin access to the messages collection. Run: firebase deploy --only firestore:rules');
+      } else {
+        setError(`Error loading conversations: ${error?.message || 'Unknown error'}`);
+      }
+
       setLoading(false);
     }
   };
@@ -297,6 +305,22 @@ export default function AdminConversations() {
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm text-red-800 whitespace-pre-line">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Stats Card */}
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
