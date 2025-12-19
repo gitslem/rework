@@ -477,9 +477,9 @@ export default function CandidateProjectsPage() {
         const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', projectData.candidate_id));
         if (candidateProfileDoc.exists()) {
           const candidateProfile = candidateProfileDoc.data();
-          candidateName = candidateProfile?.first_name && candidateProfile?.last_name
-            ? `${candidateProfile.first_name} ${candidateProfile.last_name}`
-            : candidateProfile?.first_name || candidateEmail?.split('@')[0] || 'Candidate';
+          candidateName = candidateProfile?.firstName && candidateProfile?.lastName
+            ? `${candidateProfile.firstName} ${candidateProfile.lastName}`
+            : candidateProfile?.firstName || candidateEmail?.split('@')[0] || 'Candidate';
         } else {
           candidateName = candidateEmail?.split('@')[0] || 'Candidate';
         }
@@ -564,9 +564,9 @@ export default function CandidateProjectsPage() {
         const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
         if (agentProfileDoc.exists()) {
           const agentProfile = agentProfileDoc.data();
-          agentName = agentProfile?.first_name && agentProfile?.last_name
-            ? `${agentProfile.first_name} ${agentProfile.last_name}`
-            : agentProfile?.first_name || user.email?.split('@')[0] || 'Agent';
+          agentName = agentProfile?.firstName && agentProfile?.lastName
+            ? `${agentProfile.firstName} ${agentProfile.lastName}`
+            : agentProfile?.firstName || user.email?.split('@')[0] || 'Agent';
         } else {
           agentName = user.email?.split('@')[0] || 'Agent';
         }
@@ -583,9 +583,9 @@ export default function CandidateProjectsPage() {
         const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
         if (candidateProfileDoc.exists()) {
           const candidateProfile = candidateProfileDoc.data();
-          candidateName = candidateProfile?.first_name && candidateProfile?.last_name
-            ? `${candidateProfile.first_name} ${candidateProfile.last_name}`
-            : candidateProfile?.first_name || candidateEmail?.split('@')[0] || 'Candidate';
+          candidateName = candidateProfile?.firstName && candidateProfile?.lastName
+            ? `${candidateProfile.firstName} ${candidateProfile.lastName}`
+            : candidateProfile?.firstName || candidateEmail?.split('@')[0] || 'Candidate';
         } else {
           candidateName = candidateEmail?.split('@')[0] || 'Candidate';
         }
@@ -644,9 +644,9 @@ export default function CandidateProjectsPage() {
       const creatorProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
       if (creatorProfileDoc.exists()) {
         const creatorProfile = creatorProfileDoc.data();
-        creatorName = creatorProfile?.first_name && creatorProfile?.last_name
-          ? `${creatorProfile.first_name} ${creatorProfile.last_name}`
-          : creatorProfile?.first_name || user.email?.split('@')[0] || 'Unknown';
+        creatorName = creatorProfile?.firstName && creatorProfile?.lastName
+          ? `${creatorProfile.firstName} ${creatorProfile.lastName}`
+          : creatorProfile?.firstName || user.email?.split('@')[0] || 'Unknown';
       } else {
         creatorName = user.email?.split('@')[0] || 'Unknown';
       }
@@ -714,9 +714,9 @@ export default function CandidateProjectsPage() {
             const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
             if (recipientProfileDoc.exists()) {
               const recipientProfile = recipientProfileDoc.data();
-              recipientName = recipientProfile?.first_name && recipientProfile?.last_name
-                ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-                : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+              recipientName = recipientProfile?.firstName && recipientProfile?.lastName
+                ? `${recipientProfile.firstName} ${recipientProfile.lastName}`
+                : recipientProfile?.firstName || recipientEmail?.split('@')[0] || 'User';
             } else {
               recipientName = recipientEmail?.split('@')[0] || 'User';
             }
@@ -727,9 +727,9 @@ export default function CandidateProjectsPage() {
           let requesterName = 'User';
           if (requesterProfileDoc.exists()) {
             const requesterProfile = requesterProfileDoc.data();
-            requesterName = requesterProfile?.first_name && requesterProfile?.last_name
-              ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
-              : requesterProfile?.first_name || user.email?.split('@')[0] || 'User';
+            requesterName = requesterProfile?.firstName && requesterProfile?.lastName
+              ? `${requesterProfile.firstName} ${requesterProfile.lastName}`
+              : requesterProfile?.firstName || user.email?.split('@')[0] || 'User';
           } else {
             requesterName = user.email?.split('@')[0] || 'User';
           }
@@ -807,9 +807,9 @@ export default function CandidateProjectsPage() {
               const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', selectedProject.candidate_id));
               if (candidateProfileDoc.exists()) {
                 const candidateProfile = candidateProfileDoc.data();
-                candidateName = candidateProfile?.first_name && candidateProfile?.last_name
-                  ? `${candidateProfile.first_name} ${candidateProfile.last_name}`
-                  : candidateProfile?.first_name || 'Candidate';
+                candidateName = candidateProfile?.firstName && candidateProfile?.lastName
+                  ? `${candidateProfile.firstName} ${candidateProfile.lastName}`
+                  : candidateProfile?.firstName || 'Candidate';
               }
             }
 
@@ -949,7 +949,7 @@ export default function CandidateProjectsPage() {
 
           const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', project.candidate_id));
           const candidateProfile = candidateProfileDoc.data();
-          const candidateName = candidateProfile?.first_name || candidateData?.email?.split('@')[0] || 'Candidate';
+          const candidateName = candidateProfile?.firstName || candidateData?.email?.split('@')[0] || 'Candidate';
 
           // Get agent name
           const agentProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
@@ -1027,8 +1027,8 @@ export default function CandidateProjectsPage() {
         // Get requester name from profile
         const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
         const requesterProfile = requesterProfileDoc.exists() ? requesterProfileDoc.data() : null;
-        const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
-          ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+        const requesterName = requesterProfile?.firstName && requesterProfile?.lastName
+          ? `${requesterProfile.firstName} ${requesterProfile.lastName}`
           : user.email?.split('@')[0] || 'User';
 
         // Get recipient email and name
@@ -1047,9 +1047,9 @@ export default function CandidateProjectsPage() {
           const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
           if (recipientProfileDoc.exists()) {
             const recipientProfile = recipientProfileDoc.data();
-            recipientName = recipientProfile?.first_name && recipientProfile?.last_name
-              ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-              : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+            recipientName = recipientProfile?.firstName && recipientProfile?.lastName
+              ? `${recipientProfile.firstName} ${recipientProfile.lastName}`
+              : recipientProfile?.firstName || recipientEmail?.split('@')[0] || 'User';
           } else {
             recipientName = recipientEmail?.split('@')[0] || 'User';
           }
@@ -1148,8 +1148,8 @@ export default function CandidateProjectsPage() {
         // Get requester name from profile
         const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
         const requesterProfile = requesterProfileDoc.exists() ? requesterProfileDoc.data() : null;
-        const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
-          ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+        const requesterName = requesterProfile?.firstName && requesterProfile?.lastName
+          ? `${requesterProfile.firstName} ${requesterProfile.lastName}`
           : user.email?.split('@')[0] || 'User';
 
         // Get recipient email and name
@@ -1168,9 +1168,9 @@ export default function CandidateProjectsPage() {
           const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
           if (recipientProfileDoc.exists()) {
             const recipientProfile = recipientProfileDoc.data();
-            recipientName = recipientProfile?.first_name && recipientProfile?.last_name
-              ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-              : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+            recipientName = recipientProfile?.firstName && recipientProfile?.lastName
+              ? `${recipientProfile.firstName} ${recipientProfile.lastName}`
+              : recipientProfile?.firstName || recipientEmail?.split('@')[0] || 'User';
           } else {
             recipientName = recipientEmail?.split('@')[0] || 'User';
           }
@@ -1241,8 +1241,8 @@ export default function CandidateProjectsPage() {
         // Get requester name from profile
         const requesterProfileDoc = await getDoc(doc(getDb(), 'profiles', user.uid));
         const requesterProfile = requesterProfileDoc.exists() ? requesterProfileDoc.data() : null;
-        const requesterName = requesterProfile?.first_name && requesterProfile?.last_name
-          ? `${requesterProfile.first_name} ${requesterProfile.last_name}`
+        const requesterName = requesterProfile?.firstName && requesterProfile?.lastName
+          ? `${requesterProfile.firstName} ${requesterProfile.lastName}`
           : user.email?.split('@')[0] || 'User';
 
         // Get recipient email and name
@@ -1261,9 +1261,9 @@ export default function CandidateProjectsPage() {
           const recipientProfileDoc = await getDoc(doc(getDb(), 'profiles', recipientId));
           if (recipientProfileDoc.exists()) {
             const recipientProfile = recipientProfileDoc.data();
-            recipientName = recipientProfile?.first_name && recipientProfile?.last_name
-              ? `${recipientProfile.first_name} ${recipientProfile.last_name}`
-              : recipientProfile?.first_name || recipientEmail?.split('@')[0] || 'User';
+            recipientName = recipientProfile?.firstName && recipientProfile?.lastName
+              ? `${recipientProfile.firstName} ${recipientProfile.lastName}`
+              : recipientProfile?.firstName || recipientEmail?.split('@')[0] || 'User';
           } else {
             recipientName = recipientEmail?.split('@')[0] || 'User';
           }
