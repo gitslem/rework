@@ -5,7 +5,7 @@ import Logo from '@/components/Logo';
 import {
   CheckCircle, XCircle, Clock, User, MapPin, Mail, Calendar,
   Award, Filter, Search, X, Shield, AlertCircle, Users, Star, Trash2, FileText,
-  Tag, Save, Plus, RotateCcw, AlertTriangle
+  Tag, Save, Plus, RotateCcw, AlertTriangle, MessageSquare
 } from 'lucide-react';
 import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -615,8 +615,28 @@ export default function AdminCandidates() {
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-black mb-2">Candidate Applications</h1>
-            <p className="text-gray-600">Review and approve candidate registrations</p>
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-black mb-2">Candidate Applications</h1>
+                <p className="text-gray-600">Review and approve candidate registrations</p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-3">
+                <button
+                  onClick={() => router.push('/admin/candidates-export')}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Export Candidates</span>
+                </button>
+                <button
+                  onClick={() => router.push('/admin/conversations')}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>View Conversations</span>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Saved Filters */}
