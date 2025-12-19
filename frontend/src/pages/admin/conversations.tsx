@@ -76,15 +76,19 @@ export default function AdminConversations() {
       setLoading(true);
       const db = getFirebaseFirestore();
 
-      // Fetch all messages
-      const messagesQuery = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
+      // Fetch all messages - removed orderBy to avoid index requirement issues
+      const messagesQuery = collection(db, 'messages');
       const messagesSnapshot = await getDocs(messagesQuery);
+
+      console.log(`Fetched ${messagesSnapshot.docs.length} messages from Firestore`);
 
       const messagesData: Message[] = messagesSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt || Timestamp.now(),
       })) as Message[];
+
+      console.log(`Processed ${messagesData.length} messages`);
 
       // Group messages by conversationId or by participant pairs
       const conversationMap = new Map<string, Message[]>();
@@ -164,23 +168,36 @@ export default function AdminConversations() {
         const lastMessage = sortedMessages[sortedMessages.length - 1];
         const lastMessageAt = lastMessage?.createdAt?.toDate() || new Date();
 
-        conversationsData.push({
-          conversationId,
-          participantIds,
-          participants,
-          messages: sortedMessages,
-          lastMessageAt,
-          messageCount: messages.length,
-        });
+        // Only include conversations between candidates and agents
+        const roles = participants.map(p => p.role);
+        const hasCandidate = roles.includes('candidate');
+        const hasAgent = roles.includes('agent');
+
+        // Include if it's a candidate-agent conversation, or if we want to show all conversations
+        // For now, we'll show all conversations but you can uncomment the filter below
+        const shouldInclude = true; // Change to: hasCandidate && hasAgent to filter only candidate-agent conversations
+
+        if (shouldInclude) {
+          conversationsData.push({
+            conversationId,
+            participantIds,
+            participants,
+            messages: sortedMessages,
+            lastMessageAt,
+            messageCount: messages.length,
+          });
+        }
       }
 
       // Sort conversations by last message date
       conversationsData.sort((a, b) => b.lastMessageAt.getTime() - a.lastMessageAt.getTime());
 
+      console.log(`Created ${conversationsData.length} conversations`);
       setConversations(conversationsData);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching conversations:', error);
+      alert('Error loading conversations. Please check the console for details.');
       setLoading(false);
     }
   };
