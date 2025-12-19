@@ -100,7 +100,7 @@ export default function CandidateDashboard() {
 
   // Auto-load conversation messages when message is selected
   useEffect(() => {
-    if (selectedMessage && showMessageDetailModal && user) {
+    if (selectedMessage && user) {
       // Generate conversationId if it doesn't exist
       const senderId = selectedMessage.senderId;
       const recipientId = selectedMessage.recipientId || user.uid;
@@ -112,11 +112,11 @@ export default function CandidateDashboard() {
       setConversationMessages([]);
       // Then load new conversation with fallback to sender/recipient query
       loadConversationMessages(conversationId, senderId, recipientId);
-    } else if (!showMessageDetailModal) {
-      // Clear conversation messages when modal closes
+    } else if (!selectedMessage) {
+      // Clear conversation messages when no message is selected
       setConversationMessages([]);
     }
-  }, [selectedMessage?.id, showMessageDetailModal, user]);
+  }, [selectedMessage?.id, user]);
 
   const checkAuthAndLoadProfile = async () => {
     try {
@@ -259,7 +259,15 @@ export default function CandidateDashboard() {
       let unread = 0;
 
       allMessages.forEach((message) => {
-        const convId = message.conversationId || message.id;
+        // For candidates: group by agent (senderId) or use conversationId if it exists
+        // Generate consistent conversationId based on sorted user IDs
+        let convId = message.conversationId;
+        if (!convId && message.senderId && candidateId) {
+          const ids = [message.senderId, candidateId].sort();
+          convId = `conv_${ids[0]}_${ids[1]}`;
+        }
+        // Fallback to message id if we still don't have a convId
+        convId = convId || message.id;
 
         // Count unread messages
         if (message.status === 'unread') unread++;
