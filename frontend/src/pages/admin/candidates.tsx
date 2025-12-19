@@ -52,7 +52,7 @@ export default function AdminCandidates() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [candidates, setCandidates] = useState<CandidateWithProfile[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'new_users'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'new_users' | 'uncategorized'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
@@ -219,6 +219,12 @@ export default function AdminCandidates() {
           sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
           const userCreatedAt = userData.createdAt?.toDate?.() || new Date(0);
           if (userCreatedAt < sevenDaysAgo) continue;
+        } else if (filter === 'uncategorized') {
+          // Filter for candidates without any categories assigned
+          const categories = (userData as any).categories || [];
+          if (categories.length > 0) continue;
+          // Also exclude rejected candidates from uncategorized view
+          if (isRejected) continue;
         } else if (filter === 'all') {
           // Show all except explicitly filter logic
         }
@@ -647,6 +653,7 @@ export default function AdminCandidates() {
               <div className="flex space-x-2 overflow-x-auto">
                 {[
                   { value: 'all', label: 'All' },
+                  { value: 'uncategorized', label: 'Uncategorized' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
                   { value: 'rejected', label: 'Rejected' },

@@ -112,6 +112,42 @@ export default function CandidateDashboard() {
       setConversationMessages([]);
       // Then load new conversation with fallback to sender/recipient query
       loadConversationMessages(conversationId, senderId, recipientId);
+
+      // Mark messages in this conversation as read
+      (async () => {
+        try {
+          const db = getFirebaseFirestore();
+
+          // Mark the selected message as read if it's unread
+          if (selectedMessage.status === 'unread' && selectedMessage.id !== 'new') {
+            await updateDoc(doc(db, 'messages', selectedMessage.id), {
+              status: 'read',
+              updatedAt: Timestamp.now()
+            });
+          }
+
+          // Mark all message notifications for this conversation as read
+          if (conversationId) {
+            const notificationsQuery = query(
+              collection(db, 'notifications'),
+              where('userId', '==', user.uid),
+              where('conversationId', '==', conversationId),
+              where('isRead', '==', false),
+              where('type', '==', 'new_message')
+            );
+            const notificationsSnapshot = await getDocs(notificationsQuery);
+            const markReadPromises = notificationsSnapshot.docs.map(notifDoc =>
+              updateDoc(doc(db, 'notifications', notifDoc.id), { isRead: true })
+            );
+            await Promise.all(markReadPromises);
+          }
+
+          // Reload messages to update unread count
+          await loadMessages(db, user.uid);
+        } catch (error) {
+          console.error('Error marking messages as read:', error);
+        }
+      })();
     } else if (!selectedMessage) {
       // Clear conversation messages when no message is selected
       setConversationMessages([]);
