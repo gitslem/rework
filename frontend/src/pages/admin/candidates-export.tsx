@@ -30,6 +30,7 @@ export default function CandidatesExport() {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
   const [exportFormat, setExportFormat] = useState<ExportFormat>('csv');
   const [exporting, setExporting] = useState(false);
+  const [excludeIncomplete, setExcludeIncomplete] = useState(false);
 
   useEffect(() => {
     checkAdminAccess();
@@ -43,7 +44,7 @@ export default function CandidatesExport() {
 
   useEffect(() => {
     applyTimeFilter();
-  }, [timeFilter, candidates]);
+  }, [timeFilter, candidates, excludeIncomplete]);
 
   const checkAdminAccess = async () => {
     try {
@@ -130,6 +131,15 @@ export default function CandidatesExport() {
       case 'all':
       default:
         filtered = candidates;
+    }
+
+    // Filter out incomplete candidates if option is enabled
+    if (excludeIncomplete) {
+      filtered = filtered.filter(c => {
+        const hasName = c.firstName.trim() !== '' || c.lastName.trim() !== '';
+        const hasLocation = c.city.trim() !== '' || c.country.trim() !== '';
+        return hasName && hasLocation;
+      });
     }
 
     setFilteredCandidates(filtered);
@@ -392,6 +402,24 @@ export default function CandidatesExport() {
                     : 'TXT files contain formatted text with candidate information.'}
                 </p>
               </div>
+            </div>
+
+            {/* Additional Filters */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={excludeIncomplete}
+                  onChange={(e) => setExcludeIncomplete(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Exclude candidates without name or location
+                </span>
+              </label>
+              <p className="mt-1 ml-6 text-sm text-gray-500">
+                Only export candidates who have provided both their name (first or last) and location (city or country)
+              </p>
             </div>
 
             {/* Export Button */}
