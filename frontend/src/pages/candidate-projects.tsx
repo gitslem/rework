@@ -475,17 +475,29 @@ export default function CandidateProjectsPage() {
         // Get candidate real name from profile
         let candidateName = 'Candidate';
         const candidateProfileDoc = await getDoc(doc(getDb(), 'profiles', projectData.candidate_id));
+
+        console.log('📋 Fetching candidate profile...');
+        console.log('Profile exists:', candidateProfileDoc.exists());
+
         if (candidateProfileDoc.exists()) {
           const candidateProfile = candidateProfileDoc.data();
+          console.log('Profile data:', {
+            firstName: candidateProfile?.firstName,
+            lastName: candidateProfile?.lastName,
+            hasFirstName: !!candidateProfile?.firstName,
+            hasLastName: !!candidateProfile?.lastName
+          });
+
           candidateName = candidateProfile?.firstName && candidateProfile?.lastName
             ? `${candidateProfile.firstName} ${candidateProfile.lastName}`
-            : candidateProfile?.firstName || candidateEmail?.split('@')[0] || 'Candidate';
+            : candidateProfile?.firstName || candidateProfile?.lastName || candidateEmail?.split('@')[0] || 'Candidate';
         } else {
+          console.log('⚠️ No profile found for candidate');
           candidateName = candidateEmail?.split('@')[0] || 'Candidate';
         }
 
+        console.log('✅ Final candidate name:', candidateName);
         console.log('Candidate email:', candidateEmail);
-        console.log('Candidate name:', candidateName);
 
         if (candidateEmail) {
           const emailData = {
