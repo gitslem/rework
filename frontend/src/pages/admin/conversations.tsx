@@ -109,7 +109,7 @@ export default function AdminConversations() {
       // Build conversation objects
       const conversationsData: Conversation[] = [];
 
-      for (const [conversationId, messages] of conversationMap.entries()) {
+      for (const [conversationId, messages] of Array.from(conversationMap.entries())) {
         // Get unique participant IDs
         const participantIdsSet = new Set<string>();
         messages.forEach(msg => {
