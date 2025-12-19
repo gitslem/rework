@@ -146,21 +146,24 @@ service cloud.firestore {
 
     // Messages collection
     match /messages/{messageId} {
-      // Allow read if user is sender or recipient
+      // Allow read if user is sender, recipient, or admin
       allow read: if isAuthenticated() &&
         (resource.data.senderId == request.auth.uid ||
-         resource.data.recipientId == request.auth.uid);
+         resource.data.recipientId == request.auth.uid ||
+         isAdmin());
 
       // Allow create if authenticated (any user can send messages)
       allow create: if isAuthenticated();
 
-      // Allow update if user is sender or recipient
+      // Allow update if user is sender, recipient, or admin
       allow update: if isAuthenticated() &&
         (resource.data.senderId == request.auth.uid ||
-         resource.data.recipientId == request.auth.uid);
+         resource.data.recipientId == request.auth.uid ||
+         isAdmin());
 
-      // Allow delete if user is sender
-      allow delete: if isAuthenticated() && resource.data.senderId == request.auth.uid;
+      // Allow delete if user is sender or admin
+      allow delete: if isAuthenticated() &&
+        (resource.data.senderId == request.auth.uid || isAdmin());
     }
 
     // Company inquiries collection (for partnership/company signup form)
