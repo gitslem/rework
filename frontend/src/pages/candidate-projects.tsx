@@ -16,7 +16,7 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseFirestore, getFirebaseAuth } from '../lib/firebase/config';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { Calendar, Clock, X, DollarSign, TrendingUp, Loader2 } from 'lucide-react';
+import { Calendar, Clock, X, DollarSign, TrendingUp, Loader2, Bell } from 'lucide-react';
 import {
   CandidateProjectStatus,
   ProjectActionStatus,
@@ -44,6 +44,8 @@ export default function CandidateProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [connectedCandidates, setConnectedCandidates] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [projectNotificationCounts, setProjectNotificationCounts] = useState<Record<string, number>>({});
 
   // Sorting and filtering states
   const [sortBy, setSortBy] = useState<'date' | 'budget' | 'deadline' | 'platform'>('date');
@@ -253,6 +255,37 @@ export default function CandidateProjectsPage() {
     fetchConnections();
   }, [user, userRole]);
 
+  // Subscribe to notifications in real-time
+  useEffect(() => {
+    if (!user) return;
+
+    const notificationsQuery = query(
+      collection(getDb(), 'notifications'),
+      where('userId', '==', user.uid),
+      where('isRead', '==', false)
+    );
+
+    const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+      const notifsList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setNotifications(notifsList);
+
+      // Count unread notifications per project
+      const counts: Record<string, number> = {};
+      notifsList.forEach((notif: any) => {
+        if (notif.projectId) {
+          counts[notif.projectId] = (counts[notif.projectId] || 0) + 1;
+        }
+      });
+      setProjectNotificationCounts(counts);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
   // Fetch project details with real-time updates
   const fetchProjectDetails = async (projectId: string) => {
     try {
@@ -313,6 +346,18 @@ export default function CandidateProjectsPage() {
         pending_actions_count: pendingActionsCount,
         completed_actions_count: completedActionsCount
       });
+
+      // Mark all notifications for this project as read
+      const projectNotifications = notifications.filter((n: any) => n.projectId === projectId);
+      for (const notification of projectNotifications) {
+        try {
+          await updateDoc(doc(getDb(), 'notifications', notification.id), {
+            isRead: true
+          });
+        } catch (err) {
+          console.error('Error marking notification as read:', err);
+        }
+      }
 
       // Subscribe to real-time updates
       const unsubUpdates = onSnapshot(updatesQuery, (snapshot) => {
@@ -1625,9 +1670,19 @@ export default function CandidateProjectsPage() {
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer p-6"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {project.title}
-                  </h3>
+                  <div className="flex items-center gap-2 flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {project.title}
+                    </h3>
+                    {projectNotificationCounts[project.id] > 0 && (
+                      <div className="relative">
+                        <Bell className="w-5 h-5 text-red-500 animate-pulse" />
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                          {projectNotificationCounts[project.id]}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <span className={`${getStatusColor(project.status)} text-white text-xs px-2 py-1 rounded-full`}>
                     {project.status}
                   </span>
