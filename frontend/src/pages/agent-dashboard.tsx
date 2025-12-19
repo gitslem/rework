@@ -1546,12 +1546,12 @@ export default function AgentDashboard() {
 
           {/* Messages Tab - WhatsApp Style */}
           {activeTab === 'messages' && (
-            <div className="h-[calc(100vh-12rem)]">
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 h-full flex flex-col lg:flex-row">
+            <div className="fixed inset-0 top-[8rem] lg:relative lg:top-0 lg:h-[calc(100vh-12rem)]">
+              <div className="bg-white rounded-none lg:rounded-2xl shadow-xl overflow-hidden border-0 lg:border border-gray-200 h-full flex flex-col lg:flex-row">
                 {/* Conversations List - Left Side */}
-                <div className={`w-full lg:w-96 border-r border-gray-200 flex flex-col ${selectedMessage ? 'hidden lg:flex' : 'flex'}`}>
+                <div className={`w-full lg:w-96 border-r border-gray-200 flex flex-col ${selectedMessage ? 'hidden lg:flex' : 'flex'} h-full`}>
                   {/* Header */}
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 shadow-md">
+                  <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 shadow-md flex-shrink-0">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
                       <MessageSquare className="w-6 h-6" />
                       Messages
@@ -1562,7 +1562,7 @@ export default function AgentDashboard() {
                   </div>
 
                   {/* Search Bar */}
-                  <div className="p-4 border-b border-gray-200">
+                  <div className="p-4 border-b border-gray-200 flex-shrink-0">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <input
@@ -1574,7 +1574,7 @@ export default function AgentDashboard() {
                   </div>
 
                   {/* Filter Tabs */}
-                  <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                  <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
                     <div className="flex gap-2">
                       <button
                         onClick={() => setMessageFilter('all')}
@@ -1600,7 +1600,7 @@ export default function AgentDashboard() {
                   </div>
 
                   {/* Conversations */}
-                  <div className="flex-1 overflow-y-auto">
+                  <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {messages.filter(m => {
                       if (messageFilter === 'unread') return m.status === 'unread';
                       return true;
@@ -1677,7 +1677,7 @@ export default function AgentDashboard() {
                 </div>
 
                 {/* Chat Window - Right Side */}
-                <div className={`flex-1 flex flex-col ${!selectedMessage ? 'hidden lg:flex' : 'flex'}`}>
+                <div className={`flex-1 flex flex-col ${!selectedMessage ? 'hidden lg:flex' : 'flex'} h-full`}>
                   {!selectedMessage ? (
                     <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
                       style={{
@@ -1695,7 +1695,7 @@ export default function AgentDashboard() {
                   ) : (
                     <>
                       {/* Chat Header */}
-                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 shadow-md flex items-center gap-4">
+                      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-4 lg:px-6 py-4 shadow-md flex items-center gap-4 flex-shrink-0">
                         <button
                           onClick={() => setSelectedMessage(null)}
                           className="lg:hidden text-white hover:bg-white/20 p-2 rounded-lg transition-colors"
@@ -1719,10 +1719,11 @@ export default function AgentDashboard() {
 
                       {/* Messages */}
                       <div
-                        className="flex-1 overflow-y-auto px-6 py-6 space-y-4"
+                        className="flex-1 overflow-y-auto overscroll-contain px-4 lg:px-6 py-6 space-y-4"
                         style={{
                           backgroundColor: '#efeae2',
                           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d9d9d9' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                          , WebkitOverflowScrolling: 'touch'
                         }}
                       >
                         {/* Date Separator for first message */}
@@ -1812,7 +1813,7 @@ export default function AgentDashboard() {
                       </div>
 
                       {/* Reply Input */}
-                      <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+                      <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 flex-shrink-0 safe-bottom">
                         <div className="flex items-end gap-2">
                           <div className="flex-1 bg-white rounded-full shadow-sm border border-gray-300 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-200 transition-all">
                             <div className="flex items-center px-4 py-2">
@@ -1827,19 +1828,23 @@ export default function AgentDashboard() {
                                   }
                                 }}
                                 placeholder="Type a message..."
-                                className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400"
+                                className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder-gray-400 min-w-0"
                                 disabled={sendingReply}
+                                autoComplete="off"
+                                autoCorrect="off"
+                                autoCapitalize="sentences"
                               />
                             </div>
                           </div>
                           <button
                             onClick={handleSendReply}
                             disabled={sendingReply || !replyText.trim()}
-                            className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 ${
+                            className={`w-12 h-12 flex-shrink-0 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 ${
                               sendingReply || !replyText.trim()
                                 ? 'bg-gray-300 cursor-not-allowed'
-                                : 'bg-emerald-500 hover:bg-emerald-600 hover:scale-105 active:scale-95'
+                                : 'bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700'
                             }`}
+                            type="button"
                           >
                             {sendingReply ? (
                               <Loader className="w-5 h-5 animate-spin text-white" />
