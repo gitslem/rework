@@ -366,11 +366,12 @@ export default function CandidateProjectsNew() {
       const project = projects.find(p => p.id === scheduleProjectId);
       if (!project) return;
 
-      // Add scheduled time to project
+      // Add scheduled time to project with timezone
       await updateDoc(doc(getDb(), PROJECTS_COLLECTION, scheduleProjectId), {
         scheduled_screen_sharing: {
           date: scheduleData.date,
           time: scheduleData.time,
+          timezone: scheduleData.timezone,
           scheduled_by: user.uid,
           scheduled_by_name: userRole === 'candidate' ? (user.displayName || user.email) : '',
           scheduled_at: Timestamp.now()
@@ -380,11 +381,17 @@ export default function CandidateProjectsNew() {
 
       // Create notification for agent
       const recipientId = userRole === 'candidate' ? project.agent_id : project.candidate_id;
+      // Get timezone abbreviation for notification
+      const tzAbbr = scheduleData.timezone ? new Date().toLocaleString('en-US', {
+        timeZone: scheduleData.timezone,
+        timeZoneName: 'short'
+      }).split(' ').pop() : '';
+
       await addDoc(collection(getDb(), 'notifications'), {
         userId: recipientId,
         type: 'screen_sharing_scheduled',
         title: 'Screen Sharing Scheduled',
-        message: `Screen sharing has been scheduled for ${project.title} on ${scheduleData.date} at ${scheduleData.time}`,
+        message: `Screen sharing has been scheduled for ${project.title} on ${scheduleData.date} at ${scheduleData.time} ${tzAbbr}`,
         projectId: scheduleProjectId,
         scheduleData: scheduleData,
         isRead: false,
@@ -1372,7 +1379,8 @@ function CreateProjectModal({ onClose, onSubmit, connectedCandidates, isLoading 
 function ScheduleModal({ onClose, onSubmit, isLoading }: any) {
   const [formData, setFormData] = useState({
     date: '',
-    time: ''
+    time: '',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone // Auto-detect user's timezone
   });
 
   // Set minimum date to today
@@ -1432,6 +1440,43 @@ function ScheduleModal({ onClose, onSubmit, isLoading }: any) {
               onChange={(e) => setFormData({ ...formData, time: e.target.value })}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Time will show in 12-hour format (AM/PM) based on your browser settings
+            </p>
+          </div>
+
+          {/* Timezone Selection */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 mb-2">
+              Time Zone *
+            </label>
+            <select
+              required
+              value={formData.timezone}
+              onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+            >
+              <option value="America/New_York">Eastern Time (ET)</option>
+              <option value="America/Chicago">Central Time (CT)</option>
+              <option value="America/Denver">Mountain Time (MT)</option>
+              <option value="America/Los_Angeles">Pacific Time (PT)</option>
+              <option value="America/Anchorage">Alaska Time (AKT)</option>
+              <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+              <option value="Europe/London">London (GMT/BST)</option>
+              <option value="Europe/Paris">Central European Time (CET)</option>
+              <option value="Europe/Moscow">Moscow Time (MSK)</option>
+              <option value="Asia/Dubai">Dubai (GST)</option>
+              <option value="Asia/Kolkata">India (IST)</option>
+              <option value="Asia/Singapore">Singapore (SGT)</option>
+              <option value="Asia/Shanghai">China (CST)</option>
+              <option value="Asia/Tokyo">Japan (JST)</option>
+              <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+              <option value="Pacific/Auckland">New Zealand (NZDT/NZST)</option>
+              <option value="UTC">UTC (Coordinated Universal Time)</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Your detected timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+            </p>
           </div>
 
           {/* Actions */}
@@ -1446,7 +1491,7 @@ function ScheduleModal({ onClose, onSubmit, isLoading }: any) {
             </button>
             <button
               type="submit"
-              disabled={!formData.date || !formData.time || isLoading}
+              disabled={!formData.date || !formData.time || !formData.timezone || isLoading}
               className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/30 inline-flex items-center justify-center"
             >
               {isLoading ? (
