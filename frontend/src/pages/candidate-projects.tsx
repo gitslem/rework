@@ -1404,6 +1404,20 @@ export default function CandidateProjectsPage() {
     return date.toLocaleDateString();
   };
 
+  const formatDateTime = (timestamp: any) => {
+    if (!timestamp) return '';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   // Get unique platforms for filter
   const uniquePlatforms = Array.from(new Set(projects.map(p => p.platform).filter(Boolean)));
 
@@ -1833,6 +1847,7 @@ export default function CandidateProjectsPage() {
             getStatusColor={getStatusColor}
             getPriorityColor={getPriorityColor}
             formatDate={formatDate}
+            formatDateTime={formatDateTime}
           />
         )}
 
@@ -1884,7 +1899,7 @@ export default function CandidateProjectsPage() {
 }
 
 // ProjectDetailModal component (extracted for clarity)
-function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAddUpdate, onAddAction, onUpdateActionStatus, onDeleteProject, onCancelSchedule, onRescheduleSession, getStatusColor, getPriorityColor, formatDate }: any) {
+function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAddUpdate, onAddAction, onUpdateActionStatus, onDeleteProject, onCancelSchedule, onRescheduleSession, getStatusColor, getPriorityColor, formatDate, formatDateTime }: any) {
   const [rescheduleAction, setRescheduleAction] = useState<any>(null);
   const [rescheduleData, setRescheduleData] = useState({ date: '', time: '' });
   return (
@@ -2074,7 +2089,7 @@ function ProjectDetailModal({ project, updates, actions, userRole, onClose, onAd
                                 <div>
                                   <div className="font-medium">Scheduled Time:</div>
                                   <div className="text-blue-600 dark:text-blue-400 font-semibold">
-                                    {formatDate(action.scheduled_time)}
+                                    {formatDateTime(action.scheduled_time)}
                                   </div>
                                 </div>
                               </div>
