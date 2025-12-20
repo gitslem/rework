@@ -926,6 +926,101 @@ export default function AdminAgents() {
                   <p className="text-sm text-gray-700 leading-relaxed">{selectedAgent.bio}</p>
                 </div>
 
+                {/* Verification Documents */}
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                    <Award className="w-5 h-5" />
+                    Verification Documents
+                  </h3>
+                  <div className="space-y-4">
+                    {/* ID Verification */}
+                    <div>
+                      <span className="text-gray-600 text-sm block mb-2">ID Verification / Selfie:</span>
+                      {selectedAgent.idVerificationURL ? (
+                        <div className="bg-white p-3 rounded-lg border border-yellow-100">
+                          <a
+                            href={selectedAgent.idVerificationURL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline flex items-center gap-2"
+                          >
+                            <Globe className="w-4 h-4" />
+                            View ID Document
+                          </a>
+                          <img
+                            src={selectedAgent.idVerificationURL}
+                            alt="ID Verification"
+                            className="mt-2 max-w-md rounded-lg border border-gray-200"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">Not uploaded</p>
+                      )}
+                    </div>
+
+                    {/* Proof of Experience */}
+                    <div>
+                      <span className="text-gray-600 text-sm block mb-2">Proof of Experience:</span>
+                      {selectedAgent.proofOfExperienceURLs && selectedAgent.proofOfExperienceURLs.length > 0 ? (
+                        <div className="grid md:grid-cols-2 gap-3">
+                          {selectedAgent.proofOfExperienceURLs.map((url, index) => (
+                            <div key={index} className="bg-white p-3 rounded-lg border border-yellow-100">
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline flex items-center gap-2 mb-2"
+                              >
+                                <Globe className="w-4 h-4" />
+                                Document {index + 1}
+                              </a>
+                              <img
+                                src={url}
+                                alt={`Proof ${index + 1}`}
+                                className="max-w-full rounded-lg border border-gray-200"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">Not uploaded</p>
+                      )}
+                    </div>
+
+                    {/* Certifications */}
+                    <div>
+                      <span className="text-gray-600 text-sm block mb-2">Certifications:</span>
+                      {selectedAgent.certificationURLs && selectedAgent.certificationURLs.length > 0 ? (
+                        <div className="grid md:grid-cols-2 gap-3">
+                          {selectedAgent.certificationURLs.map((url, index) => (
+                            <div key={index} className="bg-white p-3 rounded-lg border border-yellow-100">
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline flex items-center gap-2 mb-2"
+                              >
+                                <Globe className="w-4 h-4" />
+                                Certificate {index + 1}
+                              </a>
+                              <img
+                                src={url}
+                                alt={`Certificate ${index + 1}`}
+                                className="max-w-full rounded-lg border border-gray-200"
+                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">Not uploaded</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 {/* Professional Info */}
                 <div>
                   <h3 className="text-lg font-bold text-black mb-3">Professional Background</h3>

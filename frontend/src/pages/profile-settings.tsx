@@ -62,6 +62,12 @@ export default function ProfileSettingsPage() {
   const [instagram, setInstagram] = useState('');
   const [paypalEmail, setPaypalEmail] = useState('');
 
+  // Agent-specific availability fields
+  const [timezone, setTimezone] = useState('');
+  const [workingHours, setWorkingHours] = useState('');
+  const [agentResponseTime, setAgentResponseTime] = useState('');
+  const [internetSpeed, setInternetSpeed] = useState('');
+
   useEffect(() => {
     checkAuthAndLoadProfile();
   }, []);
@@ -104,6 +110,12 @@ export default function ProfileSettingsPage() {
           setFacebook(profileData.socialLinks?.facebook || '');
           setInstagram(profileData.socialLinks?.instagram || '');
           setPaypalEmail(profileData.paypalEmail || '');
+
+          // Load agent-specific availability fields
+          setTimezone((profileData as any).timezone || '');
+          setWorkingHours((profileData as any).workingHours || '');
+          setAgentResponseTime((profileData as any).agentResponseTime || '');
+          setInternetSpeed((profileData as any).internetSpeed || '');
         }
 
         setLoading(false);
@@ -128,7 +140,7 @@ export default function ProfileSettingsPage() {
 
       const db = getFirebaseFirestore();
 
-      const updateData = {
+      const updateData: any = {
         firstName,
         lastName,
         displayName: `${firstName} ${lastName}`, // Keep displayName in sync with name changes
@@ -146,6 +158,14 @@ export default function ProfileSettingsPage() {
         paypalEmail,
         updatedAt: Timestamp.now()
       };
+
+      // Add agent-specific availability fields if user is an agent
+      if (userRole === 'agent') {
+        updateData.timezone = timezone;
+        updateData.workingHours = workingHours;
+        updateData.agentResponseTime = agentResponseTime;
+        updateData.internetSpeed = internetSpeed;
+      }
 
       await updateDoc(doc(db, 'profiles', user.uid), updateData);
 
@@ -577,6 +597,101 @@ export default function ProfileSettingsPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Availability & Working Hours - Agent Only */}
+                {userRole === 'agent' && (
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 shadow-md border-2 border-green-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-green-600" />
+                      Availability & Working Hours
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Set your availability information so admins and clients can better coordinate with you
+                    </p>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
+                        <div className="relative">
+                          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <select
+                            value={timezone}
+                            onChange={(e) => setTimezone(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                          >
+                            <option value="">Select timezone...</option>
+                            <option value="America/New_York">Eastern Time (ET)</option>
+                            <option value="America/Chicago">Central Time (CT)</option>
+                            <option value="America/Denver">Mountain Time (MT)</option>
+                            <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                            <option value="America/Anchorage">Alaska Time (AKT)</option>
+                            <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                            <option value="Europe/London">London (GMT/BST)</option>
+                            <option value="Europe/Paris">Central European Time (CET)</option>
+                            <option value="Europe/Moscow">Moscow Time (MSK)</option>
+                            <option value="Asia/Dubai">Dubai (GST)</option>
+                            <option value="Asia/Kolkata">India (IST)</option>
+                            <option value="Asia/Singapore">Singapore (SGT)</option>
+                            <option value="Asia/Shanghai">China (CST)</option>
+                            <option value="Asia/Tokyo">Japan (JST)</option>
+                            <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                            <option value="Pacific/Auckland">New Zealand (NZDT/NZST)</option>
+                            <option value="UTC">UTC</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Working Hours</label>
+                        <div className="relative">
+                          <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <select
+                            value={workingHours}
+                            onChange={(e) => setWorkingHours(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                          >
+                            <option value="">Select working hours...</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Flexible">Flexible</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Response Time</label>
+                        <div className="relative">
+                          <Bell className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <select
+                            value={agentResponseTime}
+                            onChange={(e) => setAgentResponseTime(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                          >
+                            <option value="">Select response time...</option>
+                            <option value="< 6 hours">Less than 6 hours</option>
+                            <option value="< 12 hours">Less than 12 hours</option>
+                            <option value="< 24 hours">Less than 24 hours</option>
+                            <option value="< 48 hours">Less than 48 hours</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Internet Speed</label>
+                        <div className="relative">
+                          <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <select
+                            value={internetSpeed}
+                            onChange={(e) => setInternetSpeed(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
+                          >
+                            <option value="">Select internet speed...</option>
+                            <option value="Slow">Slow (Below 10 Mbps)</option>
+                            <option value="Medium">Medium (10-50 Mbps)</option>
+                            <option value="Fast">Fast (50-100 Mbps)</option>
+                            <option value="Very Fast">Very Fast (100+ Mbps)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Social Links */}
                 <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
