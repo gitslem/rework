@@ -509,6 +509,18 @@ export default function CandidateDashboard() {
         isReply: true
       });
 
+      // Create notification for recipient
+      await addDoc(collection(db, 'notifications'), {
+        userId: selectedMessage.senderId,
+        type: 'new_message',
+        title: 'New Reply',
+        message: `${profile?.firstName} ${profile?.lastName} replied to you: ${trimmedReply.substring(0, 100)}${trimmedReply.length > 100 ? '...' : ''}`,
+        link: '/agent-dashboard?tab=messages',
+        conversationId: conversationId,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
       if (selectedMessage.status === 'unread') {
         await updateDoc(doc(db, 'messages', selectedMessage.id), {
           status: 'read',

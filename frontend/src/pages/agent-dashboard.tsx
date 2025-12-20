@@ -614,6 +614,18 @@ export default function AgentDashboard() {
         conversationId
       });
 
+      // Create notification for candidate
+      await addDoc(collection(db, 'notifications'), {
+        userId: message.senderId,
+        type: 'new_message',
+        title: 'Service Request Accepted',
+        message: `${profile?.firstName} ${profile?.lastName} accepted your service request and sent you a message.`,
+        link: '/candidate-dashboard?tab=messages',
+        conversationId: conversationId,
+        isRead: false,
+        createdAt: Timestamp.now()
+      });
+
       // Refresh messages
       await loadMessages(db, user.uid);
 
@@ -749,6 +761,10 @@ export default function AgentDashboard() {
         updatedAt: Timestamp.now()
       });
 
+      // Generate consistent conversationId
+      const ids = [user.uid, message.senderId].sort();
+      const conversationId = message.conversationId || `conv_${ids[0]}_${ids[1]}`;
+
       // Send rejection message to candidate
       await addDoc(collection(db, 'messages'), {
         senderId: user.uid,
@@ -759,7 +775,20 @@ export default function AgentDashboard() {
         subject: 'Service Request Declined',
         status: 'unread',
         createdAt: Timestamp.now(),
-        type: 'general'
+        type: 'general',
+        conversationId: conversationId
+      });
+
+      // Create notification for candidate
+      await addDoc(collection(db, 'notifications'), {
+        userId: message.senderId,
+        type: 'new_message',
+        title: 'Service Request Declined',
+        message: `${profile?.firstName} ${profile?.lastName} is unable to accept your service request at this time.`,
+        link: '/candidate-dashboard?tab=messages',
+        conversationId: conversationId,
+        isRead: false,
+        createdAt: Timestamp.now()
       });
 
       // Refresh messages
