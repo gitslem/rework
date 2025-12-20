@@ -20,6 +20,12 @@ interface AgentApplication extends Profile {
   rejectionReason?: string;
   rejectedAt?: Timestamp;
   rejectedBy?: string;
+  agentWorkingHours?: {
+    start: string;
+    end: string;
+    timezone: string;
+    days: string[];
+  };
 }
 
 interface SavedFilter {
@@ -1136,6 +1142,41 @@ export default function AdminAgents() {
                     <Clock className="w-5 h-5" />
                     Availability & Working Hours
                   </h3>
+
+                  {/* Detailed Schedule - if set */}
+                  {selectedAgent.agentWorkingHours && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Briefcase className="w-5 h-5 text-blue-600" />
+                        <span className="font-semibold text-gray-900">Availability Schedule</span>
+                      </div>
+                      <div className="space-y-2 text-sm text-gray-700">
+                        <div className="bg-white p-3 rounded-lg">
+                          <span className="font-medium text-gray-600">Working Hours: </span>
+                          <span className="font-bold text-blue-700">
+                            {selectedAgent.agentWorkingHours.start} - {selectedAgent.agentWorkingHours.end}
+                          </span>
+                          {selectedAgent.agentWorkingHours.timezone && (
+                            <span className="text-gray-500 ml-1">({selectedAgent.agentWorkingHours.timezone})</span>
+                          )}
+                        </div>
+                        {selectedAgent.agentWorkingHours.days && selectedAgent.agentWorkingHours.days.length > 0 && (
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="font-medium text-gray-600 block mb-2">Working Days:</span>
+                            <div className="flex flex-wrap gap-2">
+                              {selectedAgent.agentWorkingHours.days.map((day, idx) => (
+                                <span key={idx} className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                                  {day}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* General Availability Info */}
                   <div className="grid md:grid-cols-2 gap-4 text-sm">
                     <div className="bg-white p-3 rounded-lg">
                       <span className="text-gray-600 block mb-1">Working Hours:</span>
