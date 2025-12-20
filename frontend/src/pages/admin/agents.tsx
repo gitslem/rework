@@ -799,7 +799,7 @@ export default function AdminAgents() {
                     </div>
                     <div>
                       <span className="text-gray-600">Timezone:</span>
-                      <p className="font-medium">{selectedAgent.timezone || 'Not specified'}</p>
+                      <p className="font-medium">{selectedAgent.timezone?.trim() || 'Not specified'}</p>
                     </div>
                     <div>
                       <span className="text-gray-600">Signup Date:</span>
@@ -1139,19 +1139,19 @@ export default function AdminAgents() {
                   <div className="grid md:grid-cols-2 gap-4 text-sm">
                     <div className="bg-white p-3 rounded-lg">
                       <span className="text-gray-600 block mb-1">Working Hours:</span>
-                      <p className="font-medium text-lg">{selectedAgent.workingHours || 'Not specified'}</p>
+                      <p className="font-medium text-lg">{selectedAgent.workingHours?.trim() || 'Not specified'}</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg">
                       <span className="text-gray-600 block mb-1">Response Time:</span>
-                      <p className="font-medium text-lg">{selectedAgent.agentResponseTime || 'Not specified'}</p>
+                      <p className="font-medium text-lg">{selectedAgent.agentResponseTime?.trim() || 'Not specified'}</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg">
                       <span className="text-gray-600 block mb-1">Timezone:</span>
-                      <p className="font-medium text-lg">{selectedAgent.timezone || 'Not specified'}</p>
+                      <p className="font-medium text-lg">{selectedAgent.timezone?.trim() || 'Not specified'}</p>
                     </div>
                     <div className="bg-white p-3 rounded-lg">
                       <span className="text-gray-600 block mb-1">Internet Speed:</span>
-                      <p className="font-medium text-lg">{selectedAgent.internetSpeed || 'Not specified'}</p>
+                      <p className="font-medium text-lg">{selectedAgent.internetSpeed?.trim() || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>
