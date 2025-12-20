@@ -1407,6 +1407,8 @@ export default function CandidateProjectsPage() {
   const formatDateTime = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+
+    // Format with timezone abbreviation (e.g., EST, PST, etc.)
     return date.toLocaleString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -1414,7 +1416,8 @@ export default function CandidateProjectsPage() {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZoneName: 'short'  // Shows timezone like "EST", "PST", etc.
     });
   };
 
