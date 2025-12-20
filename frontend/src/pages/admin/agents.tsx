@@ -797,6 +797,14 @@ export default function AdminAgents() {
                       <span className="text-gray-600">Location:</span>
                       <p className="font-medium">{selectedAgent.city}, {selectedAgent.country}</p>
                     </div>
+                    <div>
+                      <span className="text-gray-600">Timezone:</span>
+                      <p className="font-medium">{selectedAgent.timezone || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Signup Date:</span>
+                      <p className="font-medium">{selectedAgent.user.createdAt.toDate().toLocaleDateString()}</p>
+                    </div>
                   </div>
                 </div>
 
@@ -946,12 +954,28 @@ export default function AdminAgents() {
                       <p className="font-medium">{selectedAgent.devices?.join(', ') || 'N/A'}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Internet Speed:</span>
-                      <p className="font-medium">{selectedAgent.internetSpeed || 'N/A'}</p>
+                      <span className="text-gray-600">Website/Portfolio:</span>
+                      <p className="font-medium">
+                        {selectedAgent.website ? (
+                          <a href={selectedAgent.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            {selectedAgent.website}
+                          </a>
+                        ) : 'N/A'}
+                      </p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Working Hours:</span>
-                      <p className="font-medium">{selectedAgent.workingHours || 'N/A'}</p>
+                      <span className="text-gray-600">LinkedIn:</span>
+                      <p className="font-medium">
+                        {selectedAgent.linkedin ? (
+                          <a href={selectedAgent.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            {selectedAgent.linkedin}
+                          </a>
+                        ) : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">PayPal Email:</span>
+                      <p className="font-medium">{selectedAgent.paypalEmail || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
@@ -961,7 +985,7 @@ export default function AdminAgents() {
                   <h3 className="text-lg font-bold text-black mb-3">Expertise</h3>
                   <div className="space-y-4">
                     <div>
-                      <span className="text-gray-600 text-sm block mb-2">Platforms:</span>
+                      <span className="text-gray-600 text-sm block mb-2">Platforms Experience:</span>
                       <div className="flex flex-wrap gap-2">
                         {selectedAgent.platformsExperience?.map(platform => (
                           <span key={platform} className="px-3 py-1 bg-black text-white text-xs rounded-full">
@@ -979,6 +1003,60 @@ export default function AdminAgents() {
                           </span>
                         ))}
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Platform Accounts Status */}
+                {selectedAgent.platformsAccounts && Object.keys(selectedAgent.platformsAccounts).length > 0 && (
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4">
+                    <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                      <Monitor className="w-5 h-5" />
+                      Platform Accounts & Status
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-3">
+                      {Object.entries(selectedAgent.platformsAccounts).map(([platform, status]) => (
+                        <div key={platform} className="bg-white p-3 rounded-lg border border-indigo-100 flex items-center justify-between">
+                          <span className="font-medium text-gray-900">{platform}</span>
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            status === 'active'
+                              ? 'bg-green-100 text-green-800'
+                              : status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : status === 'rejected'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {String(status).toUpperCase()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Availability & Rates */}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Availability & Working Hours
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div className="bg-white p-3 rounded-lg">
+                      <span className="text-gray-600 block mb-1">Working Hours:</span>
+                      <p className="font-medium text-lg">{selectedAgent.workingHours || 'Not specified'}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <span className="text-gray-600 block mb-1">Response Time:</span>
+                      <p className="font-medium text-lg">{selectedAgent.agentResponseTime || 'Not specified'}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <span className="text-gray-600 block mb-1">Timezone:</span>
+                      <p className="font-medium text-lg">{selectedAgent.timezone || 'Not specified'}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg">
+                      <span className="text-gray-600 block mb-1">Internet Speed:</span>
+                      <p className="font-medium text-lg">{selectedAgent.internetSpeed || 'Not specified'}</p>
                     </div>
                   </div>
                 </div>
