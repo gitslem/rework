@@ -518,10 +518,13 @@ export default function Home() {
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
                 <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                  <strong>Rework is a remote work enablement and recruitment platform.</strong>
+                  <strong>Rework is your career accelerator in the digital economy.</strong>
                 </p>
                 <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                  We support professionals by providing profile verification, application readiness, and access to vetted remote opportunities offered by third-party companies and platforms.
+                  We don't just list jobs; we prepare you for them. By combining <span className="font-semibold text-purple-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-purple-600">Strategic Onboarding</span>, we fast-track your access to a curated network of vetted remote opportunities.
+                </p>
+                <p className="text-lg text-gray-700 leading-relaxed font-medium">
+                  Stop searching—get verified, get ready, and get hired.
                 </p>
               </div>
             </div>

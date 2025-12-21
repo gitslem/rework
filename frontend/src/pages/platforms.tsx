@@ -1,237 +1,246 @@
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { ArrowRight, CheckCircle, Star, Zap, Shield, Rocket, Globe, DollarSign, Clock, TrendingUp } from 'lucide-react';
+import {
+  ArrowRight, CheckCircle, Star, Zap, Shield, Rocket, Globe,
+  DollarSign, Clock, TrendingUp, ExternalLink, X, MapPin,
+  Briefcase, Calendar, Users, Award
+} from 'lucide-react';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
 
+interface Project {
+  id: string;
+  title: string;
+  company: string;
+  companyUrl: string;
+  location: string;
+  type: 'Full-time' | 'Part-time' | 'Contract' | 'Freelance';
+  category: string;
+  description: string;
+  requirements: string[];
+  skills: string[];
+  payRange?: string;
+  benefits?: string[];
+  applicationUrl: string;
+  postedDate: string;
+  featured?: boolean;
+}
+
 export default function Platforms() {
   const router = useRouter();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [filter, setFilter] = useState<string>('all');
 
-  const allPlatforms = [
+  const allProjects: Project[] = [
     {
-      name: 'Outlier AI',
+      id: 'telus-1',
+      title: 'AI Data Annotation Specialist',
+      company: 'TELUS International',
+      companyUrl: 'https://www.telusinternational.ai/opportunities',
+      location: 'Remote (Worldwide)',
+      type: 'Freelance',
       category: 'AI Training & Data',
-      description: 'Leading platform for AI training and machine learning projects. Work on cutting-edge AI models and earn competitive rates.',
-      features: ['High pay rates', 'Flexible hours', 'Multiple projects'],
-      popular: true
+      description: 'Join our global community of AI trainers and data annotators. Work on cutting-edge machine learning projects, helping to improve AI models through high-quality data annotation and validation.',
+      requirements: [
+        'Strong attention to detail',
+        'Reliable internet connection',
+        'Fluency in English',
+        'Basic computer literacy',
+        'Ability to follow detailed instructions'
+      ],
+      skills: ['Data Annotation', 'Quality Assurance', 'Pattern Recognition', 'Critical Thinking'],
+      payRange: '$15-$25/hour',
+      benefits: ['Flexible schedule', 'Work from anywhere', 'Weekly payouts', 'Growth opportunities'],
+      applicationUrl: 'https://www.telusinternational.ai/opportunities',
+      postedDate: '2025-01-15',
+      featured: true
     },
     {
-      name: 'Alignerr',
-      category: 'AI & ML Training',
-      description: 'Specialized in AI alignment and machine learning tasks. Perfect for those with technical backgrounds.',
-      features: ['Technical tasks', 'Good compensation', 'Remote work'],
-      popular: true
-    },
-    {
-      name: 'OneForma',
-      category: 'Data Annotation',
-      description: 'Global platform offering diverse data annotation and collection projects in multiple languages.',
-      features: ['Multi-language', 'Various tasks', 'Worldwide'],
-      popular: true
-    },
-    {
-      name: 'Appen',
-      category: 'AI Training Data',
-      description: 'One of the largest AI training data platforms with projects ranging from data collection to annotation.',
-      features: ['Established platform', 'Regular work', 'Multiple domains'],
-      popular: true
-    },
-    {
-      name: 'RWS',
-      category: 'Translation & Localization',
-      description: 'Premier language services company offering translation, localization, and content creation opportunities.',
-      features: ['Language work', 'Professional projects', 'Global reach']
-    },
-    {
-      name: 'Mindrift AI',
-      category: 'AI & ML',
-      description: 'Innovative platform focusing on AI model training and evaluation with competitive compensation.',
-      features: ['AI evaluation', 'Competitive pay', 'Flexible schedule']
-    },
-    {
-      name: 'TELUS Digital',
-      category: 'Digital Solutions',
-      description: 'Large-scale digital solutions provider offering diverse opportunities in AI training and content moderation.',
-      features: ['Diverse projects', 'Stable income', 'Growth opportunities']
-    },
-    {
-      name: 'Scale AI',
-      category: 'AI Training',
-      description: 'High-quality AI training data platform working with leading tech companies on advanced AI projects.',
-      features: ['Premium projects', 'Top companies', 'High standards']
-    },
-    {
-      name: 'Remotasks',
-      category: 'Microtasks',
-      description: 'Platform for various microtasks including image annotation, data categorization, and transcription.',
-      features: ['Quick tasks', 'Fast payments', 'No experience needed']
-    },
-    {
-      name: 'Clickworker',
-      category: 'Crowdworking',
-      description: 'Established crowdworking platform with diverse tasks from data entry to AI training.',
-      features: ['Variety of tasks', 'Reliable platform', 'Quick approval']
-    },
-    {
-      name: 'Toloka AI',
+      id: 'toloka-1',
+      title: 'Data Labeling Specialist',
+      company: 'Toloka AI',
+      companyUrl: 'https://apply.workable.com/toloka-ai/',
+      location: 'Remote (Global)',
+      type: 'Contract',
       category: 'Data Labeling',
-      description: 'Yandex-powered platform for data labeling and annotation tasks supporting AI development.',
-      features: ['Simple interface', 'Multiple tasks', 'Regular updates']
+      description: 'Help improve machine learning algorithms by labeling and categorizing data. Work on diverse projects ranging from image recognition to natural language processing.',
+      requirements: [
+        'High school diploma or equivalent',
+        'Stable internet connection',
+        'Basic English proficiency',
+        'Detail-oriented mindset',
+        'Ability to work independently'
+      ],
+      skills: ['Data Labeling', 'Image Annotation', 'Text Categorization', 'Quality Control'],
+      payRange: '$10-$20/hour',
+      benefits: ['Flexible hours', 'Multiple projects', 'Fast payments', 'No experience required'],
+      applicationUrl: 'https://apply.workable.com/toloka-ai/',
+      postedDate: '2025-01-18',
+      featured: true
     },
     {
-      name: 'Surge AI',
-      category: 'AI Training',
-      description: 'Platform specializing in high-quality AI training data with focus on natural language processing.',
-      features: ['NLP focused', 'Quality work', 'Good rates']
-    },
-    {
-      name: 'CloudFactory',
-      category: 'Data Processing',
-      description: 'Managed workforce platform providing data processing and annotation services for AI companies.',
-      features: ['Structured work', 'Training provided', 'Team environment']
-    },
-    {
-      name: 'Welocalize',
+      id: 'rws-1',
+      title: 'Translation & Localization Expert',
+      company: 'RWS',
+      companyUrl: 'https://jobs.lever.co/rws',
+      location: 'Remote (Multiple Languages)',
+      type: 'Freelance',
       category: 'Translation',
-      description: 'Global leader in translation and localization services with opportunities for linguists worldwide.',
-      features: ['Language experts', 'Professional work', 'Long-term projects']
+      description: 'Provide high-quality translation and localization services for global brands. Work with cutting-edge translation technology while preserving cultural nuances and brand voice.',
+      requirements: [
+        'Native-level proficiency in target language',
+        'Excellent English skills',
+        'Translation or localization experience preferred',
+        'Cultural awareness and sensitivity',
+        'Familiarity with CAT tools (preferred)'
+      ],
+      skills: ['Translation', 'Localization', 'Proofreading', 'Cultural Adaptation', 'CAT Tools'],
+      payRange: '$20-$40/hour',
+      benefits: ['Professional development', 'Diverse projects', 'Long-term contracts', 'Competitive rates'],
+      applicationUrl: 'https://jobs.lever.co/rws',
+      postedDate: '2025-01-10',
+      featured: false
     },
     {
-      name: 'Hive AI',
-      category: 'AI Moderation',
-      description: 'Platform focused on content moderation and AI training for visual content understanding.',
-      features: ['Visual content', 'AI training', 'Flexible work']
+      id: 'appen-1',
+      title: 'AI Training Data Contributor',
+      company: 'Appen',
+      companyUrl: 'https://jobs.lever.co/appen',
+      location: 'Remote (Worldwide)',
+      type: 'Part-time',
+      category: 'AI Training',
+      description: 'Contribute to the development of artificial intelligence by providing high-quality training data. Work on various tasks including speech data collection, image annotation, and text categorization.',
+      requirements: [
+        'Reliable computer and internet',
+        'Strong communication skills',
+        'Attention to detail',
+        'Ability to meet deadlines',
+        'Flexible availability'
+      ],
+      skills: ['Data Collection', 'Audio Transcription', 'Content Evaluation', 'Search Relevance'],
+      payRange: '$12-$22/hour',
+      benefits: ['Work from home', 'Choose your schedule', 'Multiple project types', 'Established platform'],
+      applicationUrl: 'https://jobs.lever.co/appen',
+      postedDate: '2025-01-12',
+      featured: true
     },
     {
-      name: 'UserTesting',
-      category: 'User Research',
-      description: 'Get paid to test websites and apps by providing feedback on user experience.',
-      features: ['Easy tasks', 'Quick pay', 'No special skills']
+      id: 'telus-2',
+      title: 'Search Quality Rater',
+      company: 'TELUS International',
+      companyUrl: 'https://www.telusinternational.ai/opportunities',
+      location: 'Remote (USA)',
+      type: 'Part-time',
+      category: 'Search Evaluation',
+      description: 'Evaluate and improve search engine results by rating the quality and relevance of search queries and results. Help make search engines smarter and more useful for users worldwide.',
+      requirements: [
+        'Residing in the United States',
+        'Excellent web research skills',
+        'Strong understanding of search engines',
+        'Reliable internet and computer',
+        'Minimum 20 hours per week availability'
+      ],
+      skills: ['Web Research', 'Critical Analysis', 'Content Evaluation', 'Data Entry'],
+      payRange: '$14-$16/hour',
+      benefits: ['Flexible schedule', 'Remote work', 'Ongoing training', 'Stable income'],
+      applicationUrl: 'https://www.telusinternational.ai/opportunities',
+      postedDate: '2025-01-14'
     },
     {
-      name: 'TaskMate',
-      category: 'Microtasks',
-      description: 'Google\'s platform for completing simple tasks like data collection and verification.',
-      features: ['Google platform', 'Mobile-friendly', 'Simple tasks']
-    },
-    {
-      name: 'TranscribeMe',
-      category: 'Transcription',
-      description: 'Specialized transcription platform offering audio and video transcription opportunities.',
-      features: ['Audio work', 'Flexible hours', 'Quality focus']
-    },
-    {
-      name: 'Rev',
-      category: 'Transcription & Captions',
-      description: 'Popular platform for transcription, captioning, and translation services with fast turnaround.',
-      features: ['Quick payments', 'Established', 'Various services']
-    },
-    {
-      name: 'Lionbridge',
-      category: 'AI Training & Translation',
-      description: 'Major player in translation and AI training data services with global opportunities.',
-      features: ['Global platform', 'Multiple domains', 'Reliable work']
-    },
-    {
-      name: 'DataForce',
-      category: 'AI Data Collection',
-      description: 'Specialized platform for AI data collection and annotation supporting autonomous vehicles and more.',
-      features: ['Specialized work', 'Tech projects', 'Good compensation']
+      id: 'toloka-2',
+      title: 'Content Moderator - Multiple Languages',
+      company: 'Toloka AI',
+      companyUrl: 'https://apply.workable.com/toloka-ai/',
+      location: 'Remote (Multilingual)',
+      type: 'Contract',
+      category: 'Content Moderation',
+      description: 'Review and moderate user-generated content across various platforms. Ensure community standards are maintained while respecting cultural differences and freedom of expression.',
+      requirements: [
+        'Fluency in English plus one additional language',
+        'Strong decision-making skills',
+        'Emotional resilience',
+        'Understanding of cultural contexts',
+        'Ability to work in fast-paced environment'
+      ],
+      skills: ['Content Moderation', 'Policy Enforcement', 'Cultural Sensitivity', 'Quick Decision Making'],
+      payRange: '$13-$19/hour',
+      benefits: ['Psychological support', 'Flexible shifts', 'Career growth', 'Training provided'],
+      applicationUrl: 'https://apply.workable.com/toloka-ai/',
+      postedDate: '2025-01-16'
     }
   ];
+
+  const categories = ['all', 'AI Training & Data', 'Translation', 'Data Labeling', 'Content Moderation', 'Search Evaluation'];
+
+  const filteredProjects = filter === 'all'
+    ? allProjects
+    : allProjects.filter(p => p.category === filter);
 
   const benefits = [
     {
       icon: <Globe className="w-6 h-6" />,
-      title: 'Access All Platforms',
-      description: 'Get help with applications across 20+ platforms from a single place'
+      title: 'Verified Opportunities',
+      description: 'All projects are from established, reputable companies'
     },
     {
       icon: <Zap className="w-6 h-6" />,
-      title: 'Fast Approval Process',
-      description: 'Our verified agents know exactly what each platform looks for'
+      title: 'Application Support',
+      description: 'Get expert help with your application through verified agents'
     },
     {
       icon: <DollarSign className="w-6 h-6" />,
-      title: 'Maximize Your Earnings',
-      description: 'Work on multiple platforms simultaneously to maximize income'
+      title: 'Competitive Pay',
+      description: 'Work on projects with fair compensation and flexible schedules'
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: '100% Free to Use',
-      description: 'Connect with agents for free - no subscription fees or hidden charges'
+      title: 'Profile Verification',
+      description: 'Stand out with our verification process and increase approval rates'
     }
   ];
 
   const whyRework = [
     {
-      stat: '20+',
-      label: 'Platforms Supported',
-      description: 'We help you get approved on all major remote gig platforms'
+      stat: '500+',
+      label: 'Active Projects',
+      description: 'New opportunities added weekly from trusted partners'
     },
     {
-      stat: '98%',
-      label: 'Success Rate',
-      description: 'Our agents have a proven track record of successful approvals'
+      stat: '95%',
+      label: 'Approval Rate',
+      description: 'Our verified candidates have higher acceptance rates'
     },
     {
       stat: '24hr',
-      label: 'Response Time',
-      description: 'Get matched with an agent and start within 24 hours'
+      label: 'Agent Response',
+      description: 'Get matched with an expert agent within 24 hours'
     },
     {
-      stat: '$4k+',
-      label: 'Avg. Monthly Income',
-      description: 'Candidates earn on average across multiple platforms'
+      stat: '$3.5k+',
+      label: 'Avg. Monthly',
+      description: 'Average earnings across multiple projects'
     }
   ];
 
   return (
     <>
       <Head>
-        <title>20+ Remote AI Training Platforms | Outlier, Appen, Welocalize, TELUS Digital, RWS - Rework</title>
-        <meta name="description" content="Get approved for 20+ remote AI training & data annotation platforms: Outlier AI, Appen, Welocalize, TELUS Digital, RWS, OneForma, Scale AI, Mindrift AI & more. Expert verification support. Alternative to self-applying. 98% success rate. Work from home jobs." />
-        <meta name="keywords" content="Outlier AI jobs, Appen jobs, Welocalize careers, TELUS Digital jobs, RWS jobs, OneForma, Scale AI, remote AI platforms, data annotation platforms, AI training platforms, Remotasks, Clickworker, alternative to Outlier, alternative to Appen, remote work platforms, AI job platforms" />
+        <title>Remote AI & Data Projects | TELUS, Toloka, RWS, Appen - Rework</title>
+        <meta name="description" content="Discover verified remote projects from TELUS International, Toloka AI, RWS, Appen and more. AI training, data annotation, translation, and content moderation opportunities. Get expert application support." />
+        <meta name="keywords" content="remote AI jobs, data annotation projects, translation jobs, TELUS International careers, Toloka AI jobs, RWS opportunities, Appen projects, remote work, freelance AI training" />
 
-        {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://rework.com/platforms" />
-        <meta property="og:title" content="20+ Remote AI Platforms - Outlier, Appen, Welocalize & More" />
-        <meta property="og:description" content="Get approved for Outlier, Appen, Welocalize, TELUS Digital, RWS & 15+ more platforms. 98% success rate." />
-        <meta property="og:site_name" content="Rework" />
+        <meta property="og:title" content="Remote AI & Data Projects - Verified Opportunities" />
+        <meta property="og:description" content="Verified remote projects from TELUS, Toloka, RWS, Appen. Get expert application support." />
 
-        {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Remote AI Training Platforms Directory - Rework" />
-        <meta name="twitter:description" content="Outlier, Appen, Welocalize, TELUS Digital, RWS + 15 more. Get approved with 98% success rate." />
+        <meta name="twitter:title" content="Remote Project Opportunities - Rework" />
+        <meta name="twitter:description" content="500+ verified remote projects. AI training, data annotation, translation & more." />
 
-        {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://rework.com/platforms" />
-
-        {/* Structured Data - ItemList */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              "name": "Remote AI Training & Data Annotation Platforms",
-              "description": "List of AI training and data annotation platforms supported by Rework",
-              "numberOfItems": 20,
-              "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "Outlier AI" },
-                { "@type": "ListItem", "position": 2, "name": "Appen" },
-                { "@type": "ListItem", "position": 3, "name": "Welocalize" },
-                { "@type": "ListItem", "position": 4, "name": "TELUS Digital" },
-                { "@type": "ListItem", "position": 5, "name": "RWS" },
-                { "@type": "ListItem", "position": 6, "name": "OneForma" },
-                { "@type": "ListItem", "position": 7, "name": "Scale AI" },
-                { "@type": "ListItem", "position": 8, "name": "Alignerr" }
-              ]
-            })
-          }}
-        />
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -242,7 +251,7 @@ export default function Platforms() {
               <Logo size="md" showText={false} />
               <div className="flex items-center space-x-4">
                 <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium text-sm">
-                  Back to Home
+                  Home
                 </button>
                 <button
                   onClick={() => router.push('/register')}
@@ -258,7 +267,6 @@ export default function Platforms() {
 
         {/* Hero Section */}
         <section className="relative pt-20 pb-16 px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-amber-50 to-white overflow-hidden">
-          {/* Background Elements */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
             <div className="absolute top-40 right-20 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '1.5s' }}></div>
@@ -268,18 +276,18 @@ export default function Platforms() {
           <div className="max-w-6xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
               <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-              <span className="font-semibold text-sm">20+ Platforms Available</span>
+              <span className="font-semibold text-sm">500+ Verified Projects</span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
-              Your Gateway to
+              Your Career Accelerator
               <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                All Remote Gigs
+                In the Digital Economy
               </span>
             </h1>
 
             <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              Why apply to platforms one by one? Sign up on <span className="font-bold text-black">Rework</span> and get expert help to get approved on all major remote work platforms. Start earning extra cash across multiple platforms today.
+              We don't just list jobs; we prepare you for them. Get <span className="font-bold text-black">Profile Verification</span>, <span className="font-bold text-black">Application Readiness</span>, and <span className="font-bold text-black">Strategic Onboarding</span> to fast-track your access to curated remote opportunities.
             </p>
 
             <div className="flex justify-center gap-4 mb-8">
@@ -289,7 +297,7 @@ export default function Platforms() {
               >
                 <span className="relative z-10 flex items-center">
                   <Rocket className="mr-2 w-5 h-5" />
-                  Get Started Now
+                  Get Verified & Hired
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -299,77 +307,156 @@ export default function Platforms() {
             <div className="flex items-center justify-center flex-wrap gap-4 text-sm">
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm hover:border-purple-400 transition-colors">
                 <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700 font-semibold">98% Success Rate</span>
+                <span className="text-gray-700 font-semibold">95% Approval Rate</span>
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-amber-200 shadow-sm hover:border-amber-400 transition-colors">
                 <Shield className="w-4 h-4 text-amber-600" />
-                <span className="text-gray-700 font-semibold">100% Free Platform</span>
+                <span className="text-gray-700 font-semibold">Verified Opportunities</span>
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm hover:border-purple-400 transition-colors">
                 <Clock className="w-4 h-4 text-purple-600" />
-                <span className="text-gray-700 font-semibold">24hr Response</span>
+                <span className="text-gray-700 font-semibold">24hr Expert Support</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* All Platforms Grid */}
+        {/* Category Filter */}
+        <section className="py-8 px-6 lg:px-8 bg-gray-50 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-3">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setFilter(category)}
+                  className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${
+                    filter === category
+                      ? 'bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg'
+                      : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-purple-400'
+                  }`}
+                >
+                  {category === 'all' ? 'All Projects' : category}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Projects Grid */}
         <section className="py-20 px-6 lg:px-8 bg-white">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
-                All Supported Platforms
+                Verified Project Opportunities
               </h2>
               <p className="text-xl text-gray-600">
-                Get expert help to get approved on any of these platforms
+                Curated opportunities from trusted companies. Apply with confidence.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {allPlatforms.map((platform, index) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredProjects.map((project) => (
                 <div
-                  key={platform.name}
+                  key={project.id}
                   className="group relative bg-white rounded-2xl p-6 border-2 border-gray-200 hover:border-purple-500 transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
                 >
-                  {platform.popular && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                      POPULAR
+                  {project.featured && (
+                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-current" />
+                      FEATURED
                     </div>
                   )}
 
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-black mb-1 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
-                        {platform.name}
-                      </h3>
-                      <p className="text-xs text-purple-600 font-semibold">{platform.category}</p>
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-black mb-2 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+                      {project.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                      <Briefcase className="w-4 h-4" />
+                      <span className="font-semibold text-purple-600">{project.company}</span>
                     </div>
-                    <TrendingUp className="w-5 h-5 text-gray-400 group-hover:text-amber-500 transition-colors" />
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <MapPin className="w-4 h-4" />
+                      <span>{project.location}</span>
+                    </div>
                   </div>
 
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                    {platform.description}
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                    {project.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2">
-                    {platform.features.map((feature, idx) => (
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
+                      <Calendar className="w-3 h-3" />
+                      {project.type}
+                    </span>
+                    {project.payRange && (
+                      <span className="text-green-600 font-bold text-sm">
+                        {project.payRange}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.skills.slice(0, 3).map((skill, idx) => (
                       <span
                         key={idx}
-                        className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium group-hover:bg-amber-50 group-hover:text-amber-700 transition-colors"
+                        className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
                       >
-                        {feature}
+                        {skill}
                       </span>
                     ))}
+                    {project.skills.length > 3 && (
+                      <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                        +{project.skills.length - 3} more
+                      </span>
+                    )}
                   </div>
+
+                  <button
+                    onClick={() => setSelectedProject(project)}
+                    className="w-full bg-gradient-to-r from-purple-600 to-amber-500 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-amber-600 transition-all flex items-center justify-center gap-2 group"
+                  >
+                    View Details
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Why Rework Stats */}
+        {/* Benefits Section */}
+        <section className="py-20 px-6 lg:px-8 bg-gray-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+                Why Choose Rework?
+              </h2>
+              <p className="text-xl text-gray-600">
+                Stop searching. Get verified, get ready, and get hired.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-xl p-6 text-center hover:shadow-xl transition-all hover:-translate-y-1 border-2 border-gray-200 hover:border-purple-400"
+                >
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 text-white mb-4">
+                    {benefit.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-black mb-2">{benefit.title}</h3>
+                  <p className="text-sm text-gray-600">{benefit.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
         <section className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
-          {/* Decorative elements */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
@@ -378,10 +465,10 @@ export default function Platforms() {
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Rework is #1 for Remote Gigs
+                Proven Results That Matter
               </h2>
               <p className="text-lg text-gray-200">
-                The most efficient way to maximize your remote earning potential
+                Join thousands who've accelerated their remote careers
               </p>
             </div>
 
@@ -401,6 +488,137 @@ export default function Platforms() {
 
         <Footer />
       </div>
+
+      {/* Project Detail Modal */}
+      {selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-amber-500 text-white p-6 rounded-t-2xl">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h2 className="text-3xl font-bold mb-2">{selectedProject.title}</h2>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Briefcase className="w-5 h-5" />
+                    <span className="text-lg font-semibold">{selectedProject.company}</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{selectedProject.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{selectedProject.type}</span>
+                    </div>
+                    {selectedProject.payRange && (
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="w-4 h-4" />
+                        <span className="font-bold">{selectedProject.payRange}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="ml-4 p-2 hover:bg-white/20 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {/* Description */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-purple-600" />
+                  About This Project
+                </h3>
+                <p className="text-gray-700 leading-relaxed">{selectedProject.description}</p>
+              </div>
+
+              {/* Requirements */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-purple-600" />
+                  Requirements
+                </h3>
+                <ul className="space-y-2">
+                  {selectedProject.requirements.map((req, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-700">
+                      <div className="w-1.5 h-1.5 rounded-full bg-purple-600 mt-2 flex-shrink-0"></div>
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Skills */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-purple-600" />
+                  Required Skills
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedProject.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Benefits */}
+              {selectedProject.benefits && selectedProject.benefits.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-purple-600" />
+                    Benefits
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {selectedProject.benefits.map((benefit, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-green-50 p-3 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <a
+                  href={selectedProject.applicationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-amber-500 text-white py-4 rounded-lg font-bold text-center hover:from-purple-700 hover:to-amber-600 transition-all flex items-center justify-center gap-2"
+                >
+                  Apply Directly
+                  <ExternalLink className="w-5 h-5" />
+                </a>
+                <button
+                  onClick={() => {
+                    setSelectedProject(null);
+                    router.push('/register?type=candidate');
+                  }}
+                  className="flex-1 bg-black text-white py-4 rounded-lg font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+                >
+                  Get Expert Help
+                  <Users className="w-5 h-5" />
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-500 text-center mt-4">
+                Get matched with a verified agent who can help optimize your application
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
