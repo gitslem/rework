@@ -34,14 +34,14 @@ export default function Platforms() {
 
   const allProjects: Project[] = [
     {
-      id: 'telus-1',
+      id: 'proj-1',
       title: 'AI Data Annotation Specialist',
-      company: 'TELUS International',
+      company: 'Trusted Partner',
       companyUrl: 'https://www.telusinternational.ai/opportunities',
       location: 'Remote (Worldwide)',
       type: 'Freelance',
       category: 'AI Training & Data',
-      description: 'Join our global community of AI trainers and data annotators. Work on cutting-edge machine learning projects, helping to improve AI models through high-quality data annotation and validation.',
+      description: 'Join a global community of AI trainers and data annotators working with a leading digital solutions provider. Work on cutting-edge machine learning projects, helping to improve AI models through high-quality data annotation and validation.',
       requirements: [
         'Strong attention to detail',
         'Reliable internet connection',
@@ -57,14 +57,14 @@ export default function Platforms() {
       featured: true
     },
     {
-      id: 'toloka-1',
+      id: 'proj-2',
       title: 'Data Labeling Specialist',
-      company: 'Toloka AI',
+      company: 'Partner Company',
       companyUrl: 'https://apply.workable.com/toloka-ai/',
       location: 'Remote (Global)',
       type: 'Contract',
       category: 'Data Labeling',
-      description: 'Help improve machine learning algorithms by labeling and categorizing data. Work on diverse projects ranging from image recognition to natural language processing.',
+      description: 'Help improve machine learning algorithms by labeling and categorizing data for a global AI platform. Work on diverse projects ranging from image recognition to natural language processing.',
       requirements: [
         'High school diploma or equivalent',
         'Stable internet connection',
@@ -80,14 +80,14 @@ export default function Platforms() {
       featured: true
     },
     {
-      id: 'rws-1',
+      id: 'proj-3',
       title: 'Translation & Localization Expert',
-      company: 'RWS',
+      company: 'Language Services Partner',
       companyUrl: 'https://jobs.lever.co/rws',
       location: 'Remote (Multiple Languages)',
       type: 'Freelance',
       category: 'Translation',
-      description: 'Provide high-quality translation and localization services for global brands. Work with cutting-edge translation technology while preserving cultural nuances and brand voice.',
+      description: 'Provide high-quality translation and localization services for global brands through a premier language services company. Work with cutting-edge translation technology while preserving cultural nuances and brand voice.',
       requirements: [
         'Native-level proficiency in target language',
         'Excellent English skills',
@@ -103,14 +103,14 @@ export default function Platforms() {
       featured: false
     },
     {
-      id: 'appen-1',
+      id: 'proj-4',
       title: 'AI Training Data Contributor',
-      company: 'Appen',
+      company: 'Global AI Partner',
       companyUrl: 'https://jobs.lever.co/appen',
       location: 'Remote (Worldwide)',
       type: 'Part-time',
       category: 'AI Training',
-      description: 'Contribute to the development of artificial intelligence by providing high-quality training data. Work on various tasks including speech data collection, image annotation, and text categorization.',
+      description: 'Contribute to the development of artificial intelligence by providing high-quality training data for a leading AI training platform. Work on various tasks including speech data collection, image annotation, and text categorization.',
       requirements: [
         'Reliable computer and internet',
         'Strong communication skills',
@@ -126,14 +126,14 @@ export default function Platforms() {
       featured: true
     },
     {
-      id: 'telus-2',
+      id: 'proj-5',
       title: 'Search Quality Rater',
-      company: 'TELUS International',
+      company: 'Digital Solutions Partner',
       companyUrl: 'https://www.telusinternational.ai/opportunities',
       location: 'Remote (USA)',
       type: 'Part-time',
       category: 'Search Evaluation',
-      description: 'Evaluate and improve search engine results by rating the quality and relevance of search queries and results. Help make search engines smarter and more useful for users worldwide.',
+      description: 'Evaluate and improve search engine results by rating the quality and relevance of search queries and results. Help make search engines smarter and more useful for users worldwide through our digital innovation partner.',
       requirements: [
         'Residing in the United States',
         'Excellent web research skills',
@@ -148,14 +148,14 @@ export default function Platforms() {
       postedDate: '2025-01-14'
     },
     {
-      id: 'toloka-2',
-      title: 'Content Moderator - Multiple Languages',
-      company: 'Toloka AI',
+      id: 'proj-6',
+      title: 'Content Moderator - Multilingual',
+      company: 'AI Platform Partner',
       companyUrl: 'https://apply.workable.com/toloka-ai/',
       location: 'Remote (Multilingual)',
       type: 'Contract',
       category: 'Content Moderation',
-      description: 'Review and moderate user-generated content across various platforms. Ensure community standards are maintained while respecting cultural differences and freedom of expression.',
+      description: 'Review and moderate user-generated content across various platforms for a trusted AI partner. Ensure community standards are maintained while respecting cultural differences and freedom of expression.',
       requirements: [
         'Fluency in English plus one additional language',
         'Strong decision-making skills',
@@ -168,6 +168,144 @@ export default function Platforms() {
       benefits: ['Psychological support', 'Flexible shifts', 'Career growth', 'Training provided'],
       applicationUrl: 'https://apply.workable.com/toloka-ai/',
       postedDate: '2025-01-16'
+    },
+    {
+      id: 'proj-7',
+      title: 'Linguistic Annotation Specialist',
+      company: 'Language Partner',
+      companyUrl: 'https://jobs.lever.co/rws',
+      location: 'Remote (Worldwide)',
+      type: 'Freelance',
+      category: 'AI Training & Data',
+      description: 'Work with a leading language services provider to annotate and tag linguistic data for NLP and machine learning models. Help improve language understanding in AI systems across multiple languages.',
+      requirements: [
+        'Native or near-native language proficiency',
+        'Understanding of linguistic concepts',
+        'Previous annotation experience (preferred)',
+        'Strong analytical skills',
+        'Ability to work with annotation tools'
+      ],
+      skills: ['Linguistic Analysis', 'NLP Annotation', 'Language Processing', 'Attention to Detail'],
+      payRange: '$18-$30/hour',
+      benefits: ['Remote flexibility', 'Language variety', 'Professional growth', 'Ongoing projects'],
+      applicationUrl: 'https://jobs.lever.co/rws',
+      postedDate: '2025-01-17',
+      featured: false
+    },
+    {
+      id: 'proj-8',
+      title: 'Speech Data Collection Specialist',
+      company: 'AI Training Partner',
+      companyUrl: 'https://jobs.lever.co/appen',
+      location: 'Remote (Multiple Regions)',
+      type: 'Contract',
+      category: 'AI Training',
+      description: 'Contribute to speech recognition and voice AI projects by recording and validating speech data for a global AI training partner. Help improve voice assistants and speech-to-text accuracy.',
+      requirements: [
+        'Clear speech and pronunciation',
+        'Quiet recording environment',
+        'Quality microphone or headset',
+        'Native language proficiency',
+        'Consistent availability for recordings'
+      ],
+      skills: ['Audio Recording', 'Speech Validation', 'Quality Control', 'Communication'],
+      payRange: '$12-$18/hour',
+      benefits: ['Flexible timing', 'Remote work', 'Bonus opportunities', 'Simple tasks'],
+      applicationUrl: 'https://jobs.lever.co/appen',
+      postedDate: '2025-01-16',
+      featured: false
+    },
+    {
+      id: 'proj-9',
+      title: 'Image Recognition Validator',
+      company: 'Vision AI Partner',
+      companyUrl: 'https://www.telusinternational.ai/opportunities',
+      location: 'Remote (Global)',
+      type: 'Part-time',
+      category: 'AI Training & Data',
+      description: 'Validate and improve image recognition models by reviewing AI-generated labels and classifications for a leading digital solutions partner. Work on computer vision projects for autonomous systems and visual search.',
+      requirements: [
+        'Good visual perception',
+        'Understanding of object categories',
+        'Reliable internet for image loading',
+        'Basic technical knowledge',
+        'Pattern recognition skills'
+      ],
+      skills: ['Image Analysis', 'Classification', 'Visual QA', 'Pattern Recognition'],
+      payRange: '$14-$20/hour',
+      benefits: ['Visual variety', 'Flexible schedule', 'Training provided', 'Remote work'],
+      applicationUrl: 'https://www.telusinternational.ai/opportunities',
+      postedDate: '2025-01-15',
+      featured: false
+    },
+    {
+      id: 'proj-10',
+      title: 'Video Content Evaluator',
+      company: 'Platform Partner',
+      companyUrl: 'https://apply.workable.com/toloka-ai/',
+      location: 'Remote (Worldwide)',
+      type: 'Contract',
+      category: 'Content Moderation',
+      description: 'Evaluate video content quality, relevance, and appropriateness for a global content platform partner. Help maintain high standards for user-generated content while supporting content creators.',
+      requirements: [
+        'Understanding of video formats',
+        'Cultural awareness',
+        'Judgment and critical thinking',
+        'Fluency in English',
+        'Stable video streaming capability'
+      ],
+      skills: ['Video Analysis', 'Content Evaluation', 'Policy Application', 'Communication'],
+      payRange: '$13-$21/hour',
+      benefits: ['Diverse content', 'Flexible hours', 'Career progression', 'Support team'],
+      applicationUrl: 'https://apply.workable.com/toloka-ai/',
+      postedDate: '2025-01-14',
+      featured: false
+    },
+    {
+      id: 'proj-11',
+      title: 'Technical Translation Reviewer',
+      company: 'Localization Partner',
+      companyUrl: 'https://jobs.lever.co/rws',
+      location: 'Remote (Technical Languages)',
+      type: 'Freelance',
+      category: 'Translation',
+      description: 'Review and refine technical translations for software, engineering, and scientific content through a premier localization partner. Ensure accuracy and consistency in specialized terminology across languages.',
+      requirements: [
+        'Technical background or education',
+        'Translation/localization experience',
+        'Domain-specific knowledge',
+        'Quality assurance mindset',
+        'Familiarity with technical glossaries'
+      ],
+      skills: ['Technical Translation', 'QA Review', 'Terminology Management', 'Subject Matter Expertise'],
+      payRange: '$25-$45/hour',
+      benefits: ['Expert-level projects', 'Long-term engagement', 'Professional rate', 'Skill development'],
+      applicationUrl: 'https://jobs.lever.co/rws',
+      postedDate: '2025-01-11',
+      featured: true
+    },
+    {
+      id: 'proj-12',
+      title: 'Text Categorization Analyst',
+      company: 'Data Partner',
+      companyUrl: 'https://jobs.lever.co/appen',
+      location: 'Remote (Worldwide)',
+      type: 'Part-time',
+      category: 'Data Labeling',
+      description: 'Categorize and tag text data for machine learning models working with a leading AI training partner. Help improve content classification, sentiment analysis, and topic modeling systems.',
+      requirements: [
+        'Strong reading comprehension',
+        'Analytical thinking',
+        'Consistency in categorization',
+        'Fluency in target language',
+        'Basic understanding of ML concepts (helpful)'
+      ],
+      skills: ['Text Analysis', 'Categorization', 'Pattern Recognition', 'Data Consistency'],
+      payRange: '$11-$17/hour',
+      benefits: ['Flexible timing', 'Remote location', 'Ongoing work', 'Training materials'],
+      applicationUrl: 'https://jobs.lever.co/appen',
+      postedDate: '2025-01-13',
+      featured: false
     }
   ];
 
@@ -202,9 +340,9 @@ export default function Platforms() {
 
   const whyRework = [
     {
-      stat: '500+',
-      label: 'Active Projects',
-      description: 'New opportunities added weekly from trusted partners'
+      stat: '12+',
+      label: 'Project Types',
+      description: 'Diverse opportunities from our trusted partner network'
     },
     {
       stat: '95%',
@@ -276,7 +414,7 @@ export default function Platforms() {
           <div className="max-w-6xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
               <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
-              <span className="font-semibold text-sm">500+ Verified Projects</span>
+              <span className="font-semibold text-sm">12+ Verified Project Types from Partners</span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
@@ -373,7 +511,7 @@ export default function Platforms() {
                     </h3>
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
                       <Briefcase className="w-4 h-4" />
-                      <span className="font-semibold text-purple-600">{project.company}</span>
+                      <span className="font-semibold text-purple-600">Partner Opportunity</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <MapPin className="w-4 h-4" />
@@ -499,7 +637,7 @@ export default function Platforms() {
                   <h2 className="text-3xl font-bold mb-2">{selectedProject.title}</h2>
                   <div className="flex items-center gap-2 mb-2">
                     <Briefcase className="w-5 h-5" />
-                    <span className="text-lg font-semibold">{selectedProject.company}</span>
+                    <span className="text-lg font-semibold">Partner Opportunity</span>
                   </div>
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
