@@ -41,15 +41,15 @@ export default function Home() {
     { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
   ];
 
-  const platforms = [
-    'Outlier AI',
-    'Alignerr',
-    'OneForma',
-    'Appen',
-    'RWS',
-    'Mindrift AI',
-    'TELUS Digital',
-    'Scale AI'
+  const projectTypes = [
+    'AI Data Annotation',
+    'Content Moderation',
+    'Translation Services',
+    'Search Evaluation',
+    'Data Labeling',
+    'Audio Transcription',
+    'Image Recognition',
+    'Text Categorization'
   ];
 
   const features = [
@@ -561,21 +561,21 @@ export default function Home() {
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <p className="text-xs font-bold text-gray-500 mb-3 tracking-widest uppercase animate-fade-in">
-                Trusted Platforms We Work With
+                Verified Opportunities from Our Partners
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 animate-fade-in-up">
-                Connect to <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Top AI Platforms</span>
+                Access <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Premium Projects</span>
               </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {platforms.map((platform, index) => (
+              {projectTypes.map((project, index) => (
                 <div
-                  key={platform}
+                  key={project}
                   className={`group bg-white px-6 py-5 rounded-xl text-center font-bold text-gray-900 border-2 border-gray-200 hover:border-purple-500 hover-lift transition-all duration-300 shadow-sm hover:shadow-xl animate-fade-in-scale stagger-${(index % 6) + 1} cursor-pointer`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <span className="group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
-                    {platform}
+                    {project}
                   </span>
                 </div>
               ))}
@@ -588,7 +588,7 @@ export default function Home() {
                 className="group relative bg-black text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover-lift shadow-lg overflow-hidden"
               >
                 <span className="relative z-10 flex items-center space-x-2">
-                  <span>View All Platforms</span>
+                  <span>Explore All Projects</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
