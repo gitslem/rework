@@ -729,29 +729,30 @@ export default function Platforms() {
 
               {/* Action Buttons */}
               <div className="flex gap-4 pt-6 border-t border-gray-200">
-                <a
-                  href={selectedProject.applicationUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-amber-500 text-white py-4 rounded-lg font-bold text-center hover:from-purple-700 hover:to-amber-600 transition-all flex items-center justify-center gap-2"
-                >
-                  Apply Directly
-                  <ExternalLink className="w-5 h-5" />
-                </a>
                 <button
                   onClick={() => {
                     setSelectedProject(null);
                     router.push('/register?type=candidate');
                   }}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-amber-500 text-white py-4 rounded-lg font-bold hover:from-purple-700 hover:to-amber-600 transition-all flex items-center justify-center gap-2"
+                >
+                  Apply Now
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedProject(null);
+                    router.push('/support');
+                  }}
                   className="flex-1 bg-black text-white py-4 rounded-lg font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
                 >
-                  Get Expert Help
+                  Get Support
                   <Users className="w-5 h-5" />
                 </button>
               </div>
 
               <p className="text-sm text-gray-500 text-center mt-4">
-                Get matched with a verified agent who can help optimize your application
+                Sign up to apply for this opportunity or get expert assistance from our support team
               </p>
             </div>
           </div>
