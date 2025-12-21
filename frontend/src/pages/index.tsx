@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
@@ -20,6 +20,8 @@ export default function Home() {
   const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [missionVisible, setMissionVisible] = useState(false);
+  const missionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -32,6 +34,28 @@ export default function Home() {
     }, 5000); // Change testimonial every 5 seconds
 
     return () => clearInterval(interval);
+  }, []);
+
+  // Intersection Observer for mission section animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMissionVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (missionRef.current) {
+      observer.observe(missionRef.current);
+    }
+
+    return () => {
+      if (missionRef.current) {
+        observer.unobserve(missionRef.current);
+      }
+    };
   }, []);
 
   const stats = [
@@ -480,28 +504,35 @@ export default function Home() {
         </section>
 
         {/* What We Do - Clarity Section */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+        <section id="mission" ref={missionRef} className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
           {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-            {/* Floating Icons - Mission & Clarity Theme */}
-            <div className="absolute top-20 left-16 animate-float" style={{ animationDuration: '7s', animationDelay: '0s' }}>
-              <Target className="w-20 h-20 text-purple-400" />
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Floating Icons - Professional Workforce Theme */}
+            <div className="absolute top-20 left-16 animate-float opacity-15" style={{ animationDuration: '7s', animationDelay: '0s' }}>
+              <Shield className="w-20 h-20 text-purple-600" />
             </div>
-            <div className="absolute top-40 right-20 animate-float" style={{ animationDuration: '9s', animationDelay: '1s' }}>
-              <Lightbulb className="w-16 h-16 text-amber-400" />
+            <div className="absolute top-40 right-20 animate-float opacity-15" style={{ animationDuration: '9s', animationDelay: '1s' }}>
+              <Award className="w-18 h-18 text-amber-600" />
             </div>
-            <div className="absolute bottom-32 left-1/4 animate-float" style={{ animationDuration: '11s', animationDelay: '2s' }}>
-              <Shield className="w-18 h-18 text-purple-500" />
+            <div className="absolute bottom-32 left-1/4 animate-float opacity-15" style={{ animationDuration: '11s', animationDelay: '2s' }}>
+              <Briefcase className="w-20 h-20 text-purple-500" />
             </div>
-            <div className="absolute top-1/2 right-1/4 animate-float" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
-              <CheckCircle className="w-14 h-14 text-green-500" />
+            <div className="absolute top-1/2 right-1/4 animate-float opacity-15" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
+              <UserCheck className="w-18 h-18 text-green-600" />
             </div>
-            <div className="absolute bottom-20 right-16 animate-float" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <BadgeCheck className="w-16 h-16 text-purple-600" />
+            <div className="absolute bottom-20 right-16 animate-float opacity-15" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
+              <BadgeCheck className="w-20 h-20 text-purple-600" />
             </div>
-            {/* Gradient Orbs */}
-            <div className="absolute top-10 right-1/3 w-64 h-64 bg-gradient-to-br from-purple-300/20 to-amber-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
-            <div className="absolute bottom-10 left-1/3 w-72 h-72 bg-gradient-to-br from-amber-300/20 to-purple-300/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
+            <div className="absolute top-1/3 left-1/3 animate-float opacity-15" style={{ animationDuration: '12s', animationDelay: '0.8s' }}>
+              <Building2 className="w-16 h-16 text-amber-500" />
+            </div>
+            <div className="absolute bottom-40 right-1/3 animate-float opacity-15" style={{ animationDuration: '13s', animationDelay: '1.2s' }}>
+              <Rocket className="w-17 h-17 text-purple-500" />
+            </div>
+            {/* Enhanced Gradient Orbs */}
+            <div className="absolute top-10 right-1/3 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-br from-green-300/15 to-teal-300/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '16s', animationDelay: '1s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
@@ -510,22 +541,77 @@ export default function Home() {
                 <Target className="w-5 h-5 text-purple-600" />
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-6 animate-fade-in-up">
-                What is Rework?
+              <h2 className={`text-4xl md:text-5xl font-extrabold text-black mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                What Is Rework?
               </h2>
             </div>
 
-            <div className="max-w-4xl mx-auto space-y-8">
-              <div className="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200">
-                <p className="text-xl text-gray-700 leading-relaxed mb-6">
-                  <strong>Rework is your career accelerator in the digital economy.</strong>
+            <div className="max-w-5xl mx-auto space-y-8">
+              {/* Main Content Card */}
+              <div className={`bg-white/90 backdrop-blur-sm rounded-2xl p-10 shadow-2xl border-2 border-purple-100 transition-all duration-1000 delay-200 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                <p className={`text-2xl text-gray-800 leading-relaxed mb-8 font-semibold transition-all duration-1000 delay-300 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                  Remote-Works is a professional talent platform designed to connect verified professionals with high-quality remote opportunities worldwide.
                 </p>
-                <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                  We don't just list jobs; we prepare you for them. By combining <span className="font-semibold text-purple-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-purple-600">Strategic Onboarding</span>, we fast-track your access to a curated network of vetted remote opportunities.
-                </p>
-                <p className="text-lg text-gray-700 leading-relaxed font-medium">
-                  Stop searching—get verified, get ready, and get hired.
-                </p>
+
+                <div className={`space-y-6 text-lg text-gray-700 leading-relaxed transition-all duration-1000 delay-400 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                  <p>
+                    We do more than publish job openings from partners. Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
+                  </p>
+
+                  <p>
+                    Through a structured system of <span className="font-bold text-purple-600">Profile Verification</span>, <span className="font-bold text-purple-600">Application Readiness</span>, and <span className="font-bold text-purple-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
+                  </p>
+                </div>
+
+                <div className={`mt-10 p-6 bg-gradient-to-r from-purple-50 to-amber-50 rounded-xl border-2 border-purple-200 transition-all duration-1000 delay-500 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                  <p className="text-xl font-bold text-gray-900 mb-2 text-center">
+                    This is not job searching.
+                  </p>
+                  <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600 text-center">
+                    This is workforce readiness across multiple platforms.
+                  </p>
+                </div>
+              </div>
+
+              {/* Verified. Qualified. Hired. - Journey Stages */}
+              <div className={`bg-gradient-to-r from-purple-600 to-amber-600 rounded-2xl p-1 shadow-2xl transition-all duration-1000 delay-700 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+                <div className="bg-white rounded-xl p-8">
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
+                    {/* Verified */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mb-3 shadow-lg">
+                        <BadgeCheck className="w-12 h-12 text-white" />
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-black text-green-600">Verified</h3>
+                    </div>
+
+                    {/* Arrow 1 */}
+                    <div className="transform md:rotate-0 rotate-90">
+                      <ArrowRight className="w-12 h-12 text-purple-600" strokeWidth={3} />
+                    </div>
+
+                    {/* Qualified */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mb-3 shadow-lg">
+                        <Award className="w-12 h-12 text-white" />
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-black text-purple-600">Qualified</h3>
+                    </div>
+
+                    {/* Arrow 2 */}
+                    <div className="transform md:rotate-0 rotate-90">
+                      <ArrowRight className="w-12 h-12 text-purple-600" strokeWidth={3} />
+                    </div>
+
+                    {/* Hired */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mb-3 shadow-lg">
+                        <Rocket className="w-12 h-12 text-white" />
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-black text-amber-600">Hired</h3>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
