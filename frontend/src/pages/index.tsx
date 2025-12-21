@@ -508,31 +508,24 @@ export default function Home() {
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Floating Icons - Professional Workforce Theme */}
-            <div className="absolute top-20 left-16 animate-float opacity-15" style={{ animationDuration: '7s', animationDelay: '0s' }}>
-              <Shield className="w-20 h-20 text-purple-600" />
+            <div className="absolute top-20 left-16 animate-float opacity-10" style={{ animationDuration: '7s', animationDelay: '0s' }}>
+              <Shield className="w-16 h-16 text-purple-600" />
             </div>
-            <div className="absolute top-40 right-20 animate-float opacity-15" style={{ animationDuration: '9s', animationDelay: '1s' }}>
-              <Award className="w-18 h-18 text-amber-600" />
+            <div className="absolute top-40 right-20 animate-float opacity-10" style={{ animationDuration: '9s', animationDelay: '1s' }}>
+              <Award className="w-14 h-14 text-amber-600" />
             </div>
-            <div className="absolute bottom-32 left-1/4 animate-float opacity-15" style={{ animationDuration: '11s', animationDelay: '2s' }}>
-              <Briefcase className="w-20 h-20 text-purple-500" />
+            <div className="absolute bottom-32 left-1/4 animate-float opacity-10" style={{ animationDuration: '11s', animationDelay: '2s' }}>
+              <Briefcase className="w-16 h-16 text-purple-500" />
             </div>
-            <div className="absolute top-1/2 right-1/4 animate-float opacity-15" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
-              <UserCheck className="w-18 h-18 text-green-600" />
+            <div className="absolute top-1/2 right-1/4 animate-float opacity-10" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
+              <UserCheck className="w-14 h-14 text-green-600" />
             </div>
-            <div className="absolute bottom-20 right-16 animate-float opacity-15" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <BadgeCheck className="w-20 h-20 text-purple-600" />
-            </div>
-            <div className="absolute top-1/3 left-1/3 animate-float opacity-15" style={{ animationDuration: '12s', animationDelay: '0.8s' }}>
-              <Building2 className="w-16 h-16 text-amber-500" />
-            </div>
-            <div className="absolute bottom-40 right-1/3 animate-float opacity-15" style={{ animationDuration: '13s', animationDelay: '1.2s' }}>
-              <Rocket className="w-17 h-17 text-purple-500" />
+            <div className="absolute bottom-20 right-16 animate-float opacity-10" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
+              <BadgeCheck className="w-16 h-16 text-purple-600" />
             </div>
             {/* Enhanced Gradient Orbs */}
-            <div className="absolute top-10 right-1/3 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-blue-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
-            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-br from-green-300/15 to-teal-300/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '16s', animationDelay: '1s' }}></div>
+            <div className="absolute top-10 right-1/3 w-96 h-96 bg-gradient-to-br from-purple-400/15 to-blue-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-400/15 to-orange-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
@@ -541,76 +534,66 @@ export default function Home() {
                 <Target className="w-5 h-5 text-purple-600" />
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
-              <h2 className={`text-4xl md:text-5xl font-extrabold text-black mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
+              <h2 className={`text-4xl md:text-5xl font-extrabold text-black mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                 What Is Rework?
               </h2>
             </div>
 
-            <div className="max-w-5xl mx-auto space-y-8">
-              {/* Main Content Card */}
-              <div className={`bg-white/90 backdrop-blur-sm rounded-2xl p-10 shadow-2xl border-2 border-purple-100 transition-all duration-1000 delay-200 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                <p className={`text-2xl text-gray-800 leading-relaxed mb-8 font-semibold transition-all duration-1000 delay-300 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                  Remote-Works is a professional talent platform designed to connect verified professionals with high-quality remote opportunities worldwide.
-                </p>
+            <div className="max-w-4xl mx-auto space-y-10">
+              {/* Main Content - Typewriter Style */}
+              <div className={`bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-purple-100 transition-all duration-1000 ${missionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+                <div className="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
+                  <p className={missionVisible ? 'animate-typewriter' : 'opacity-0'}>
+                    <span className="font-bold text-gray-900">Remote-Works is a professional talent platform designed to connect verified professionals with high-quality remote opportunities worldwide.</span>
+                  </p>
 
-                <div className={`space-y-6 text-lg text-gray-700 leading-relaxed transition-all duration-1000 delay-400 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                  <p>
+                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[2500ms]' : 'opacity-0'}`}>
                     We do more than publish job openings from partners. Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
                   </p>
 
-                  <p>
-                    Through a structured system of <span className="font-bold text-purple-600">Profile Verification</span>, <span className="font-bold text-purple-600">Application Readiness</span>, and <span className="font-bold text-purple-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
+                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[3500ms]' : 'opacity-0'}`}>
+                    Through a structured system of <span className="font-semibold text-purple-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-purple-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
                   </p>
                 </div>
 
-                <div className={`mt-10 p-6 bg-gradient-to-r from-purple-50 to-amber-50 rounded-xl border-2 border-purple-200 transition-all duration-1000 delay-500 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                  <p className="text-xl font-bold text-gray-900 mb-2 text-center">
-                    This is not job searching.
-                  </p>
-                  <p className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600 text-center">
-                    This is workforce readiness across multiple platforms.
+                {/* Not Job Searching Banner */}
+                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[4500ms]' : 'opacity-0'}`}>
+                  <p className="text-lg font-bold text-gray-900 text-center">
+                    This is not job searching. <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">This is workforce readiness.</span>
                   </p>
                 </div>
               </div>
 
-              {/* Verified. Qualified. Hired. - Journey Stages */}
-              <div className={`bg-gradient-to-r from-purple-600 to-amber-600 rounded-2xl p-1 shadow-2xl transition-all duration-1000 delay-700 ${missionVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
-                <div className="bg-white rounded-xl p-8">
-                  <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-                    {/* Verified */}
-                    <div className="flex flex-col items-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mb-3 shadow-lg">
-                        <BadgeCheck className="w-12 h-12 text-white" />
-                      </div>
-                      <h3 className="text-2xl md:text-3xl font-black text-green-600">Verified</h3>
-                    </div>
-
-                    {/* Arrow 1 */}
-                    <div className="transform md:rotate-0 rotate-90">
-                      <ArrowRight className="w-12 h-12 text-purple-600" strokeWidth={3} />
-                    </div>
-
-                    {/* Qualified */}
-                    <div className="flex flex-col items-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mb-3 shadow-lg">
-                        <Award className="w-12 h-12 text-white" />
-                      </div>
-                      <h3 className="text-2xl md:text-3xl font-black text-purple-600">Qualified</h3>
-                    </div>
-
-                    {/* Arrow 2 */}
-                    <div className="transform md:rotate-0 rotate-90">
-                      <ArrowRight className="w-12 h-12 text-purple-600" strokeWidth={3} />
-                    </div>
-
-                    {/* Hired */}
-                    <div className="flex flex-col items-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center mb-3 shadow-lg">
-                        <Rocket className="w-12 h-12 text-white" />
-                      </div>
-                      <h3 className="text-2xl md:text-3xl font-black text-amber-600">Hired</h3>
-                    </div>
+              {/* Compact Journey Stages - Modern Inline Design */}
+              <div className={`flex items-center justify-center gap-3 transition-all duration-1000 delay-[5000ms] ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                {/* Verified */}
+                <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-green-200 hover:border-green-400 transition-all shadow-md hover:shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                    <BadgeCheck className="w-5 h-5 text-white" />
                   </div>
+                  <span className="font-bold text-green-700 text-sm md:text-base">Verified</span>
+                </div>
+
+                {/* Arrow */}
+                <ArrowRight className="w-6 h-6 text-purple-400" strokeWidth={2.5} />
+
+                {/* Qualified */}
+                <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-purple-200 hover:border-purple-400 transition-all shadow-md hover:shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <Award className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-bold text-purple-700 text-sm md:text-base">Qualified</span>
+                </div>
+
+                {/* Arrow */}
+                <ArrowRight className="w-6 h-6 text-purple-400" strokeWidth={2.5} />
+
+                {/* Hired */}
+                <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-amber-200 hover:border-amber-400 transition-all shadow-md hover:shadow-lg">
+                  <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center">
+                    <Rocket className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="font-bold text-amber-700 text-sm md:text-base">Hired</span>
                 </div>
               </div>
             </div>
