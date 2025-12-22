@@ -275,7 +275,7 @@ export default function Company() {
                   Back to Home
                 </button>
                 <button
-                  onClick={() => router.push('/register?type=company')}
+                  onClick={() => router.push('/agent-signup?type=company')}
                   className="relative group bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-all overflow-hidden"
                 >
                   <span className="relative z-10">Partner With Us</span>
@@ -314,7 +314,7 @@ export default function Company() {
 
             <div className="flex justify-center gap-4 mb-8">
               <button
-                onClick={() => router.push('/register?type=company')}
+                onClick={() => router.push('/agent-signup?type=company')}
                 className="group relative bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl overflow-hidden"
               >
                 <span className="relative z-10 flex items-center">
@@ -516,7 +516,7 @@ export default function Company() {
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <button
-                onClick={() => router.push('/register?type=company')}
+                onClick={() => router.push('/agent-signup?type=company')}
                 className="group bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105"
               >
                 <span className="flex items-center justify-center">
