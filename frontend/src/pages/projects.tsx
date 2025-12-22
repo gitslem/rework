@@ -40,6 +40,12 @@ export default function Platforms() {
   const [hasAnimated, setHasAnimated] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
+  // Typewriter animation for hero text
+  const [typewriterText, setTypewriterText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const fullText = "Your career shouldn't be limited by geography or guesswork. Remote-Works prepares you to compete—and win—in the global remote economy by positioning you as a trusted, ready-to-hire professional.";
+
   const allProjects: Project[] = [
     {
       id: 'proj-1',
@@ -369,6 +375,42 @@ export default function Platforms() {
     }
   ];
 
+  // Typewriter effect for hero text
+  useEffect(() => {
+    let typeInterval: NodeJS.Timeout | null = null;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isTyping && typewriterText === '') {
+          setIsTyping(true);
+          let index = 0;
+
+          typeInterval = setInterval(() => {
+            if (index < fullText.length) {
+              setTypewriterText(fullText.slice(0, index + 1));
+              index++;
+            } else {
+              if (typeInterval) clearInterval(typeInterval);
+              setIsTyping(false);
+            }
+          }, 30); // 30ms per character for smooth typing effect
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+
+    return () => {
+      if (typeInterval) clearInterval(typeInterval);
+      if (heroRef.current) {
+        observer.unobserve(heroRef.current);
+      }
+    };
+  }, [typewriterText, isTyping, fullText]);
+
   // Intersection Observer for stats animation
   useEffect(() => {
     let intervals: NodeJS.Timeout[] = [];
@@ -489,7 +531,7 @@ export default function Platforms() {
             <div className="absolute bottom-20 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '3s' }}></div>
           </div>
 
-          <div className="max-w-6xl mx-auto text-center relative z-10">
+          <div ref={heroRef} className="max-w-6xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
               <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
               <span className="font-semibold text-sm">12+ Verified Project Types from Partners</span>
@@ -502,8 +544,9 @@ export default function Platforms() {
               </span>
             </h1>
 
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              We don't just list jobs from partners; we prepare you for them. Get <span className="font-bold text-black">Profile Verification</span>, <span className="font-bold text-black">Application Readiness</span>, and <span className="font-bold text-black">Strategic Onboarding</span> to fast-track your access to curated remote opportunities.
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8 min-h-[120px]">
+              {typewriterText}
+              {isTyping && <span className="animate-pulse">|</span>}
             </p>
 
             <div className="flex justify-center gap-4 mb-8">
