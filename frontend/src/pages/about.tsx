@@ -156,21 +156,21 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>About Rework | Leading Remote Work Platform for AI Training & Data Annotation Jobs</title>
-        <meta name="description" content="Rework has helped 27,000+ professionals get approved for remote AI training jobs on Outlier, Appen, Welocalize, TELUS Digital, RWS & more. 98% success rate. Join the leading platform for data annotation and machine learning jobs." />
-        <meta name="keywords" content="about rework, remote work platform, AI training jobs, data annotation careers, remote AI opportunities, work from home jobs, machine learning jobs, platform approval service" />
+        <title>About Rework | Professional Remote Work Platform with Personalized Career Support</title>
+        <meta name="description" content="Rework has helped thousands of professionals access verified remote work opportunities with personalized support. 98% success rate. Leading platform for remote AI training, data annotation, translation, and digital content careers with expert guidance." />
+        <meta name="keywords" content="about rework, remote work platform, personalized career support, AI training careers, data annotation jobs, remote opportunities, work from home platform, professional development, career readiness program, remote job assistance, flexible work opportunities" />
 
         {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://rework.com/about" />
-        <meta property="og:title" content="About Rework - 27,000+ Professionals Approved for Remote AI Jobs" />
-        <meta property="og:description" content="Learn how Rework helps professionals get approved for remote AI training and data annotation jobs with 98% success rate." />
+        <meta property="og:title" content="About Rework - Professional Remote Work Platform" />
+        <meta property="og:description" content="Learn how Rework provides personalized support to help professionals access verified remote work opportunities with 98% success rate." />
         <meta property="og:site_name" content="Rework" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Rework - Leading Remote AI Jobs Platform" />
-        <meta name="twitter:description" content="27,000+ approvals. 98% success rate. Get approved for Outlier, Appen, Welocalize & more." />
+        <meta name="twitter:title" content="About Rework - Remote Work with Expert Support" />
+        <meta name="twitter:description" content="Thousands of successful placements. 98% success rate. Personalized support for remote work opportunities." />
 
         {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />

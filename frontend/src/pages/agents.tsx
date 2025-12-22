@@ -112,7 +112,20 @@ export default function Agents() {
   return (
     <>
       <Head>
-        <title>Browse Agents | Remote-Works</title>
+        <title>Expert Career Agents | Personalized Remote Work Support</title>
+        <meta name="description" content="Connect with professional career agents who provide personalized support for remote work opportunities. Get expert guidance on profile optimization, application preparation, and platform verification for AI training, data annotation, and translation roles." />
+        <meta name="keywords" content="career agents, personalized career support, remote work guidance, professional mentorship, application support, career coaching, remote job assistance, expert career advice, profile optimization, career readiness support" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Expert Career Agents - Personalized Support" />
+        <meta property="og:description" content="Connect with professional agents for personalized remote work guidance and application support." />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Career Agents - Expert Remote Work Support" />
+        <meta name="twitter:description" content="Professional agents providing personalized career guidance for remote opportunities." />
+
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/agents" />
       </Head>
 
       <div className="min-h-screen bg-gray-50">

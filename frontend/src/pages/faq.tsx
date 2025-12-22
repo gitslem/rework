@@ -173,8 +173,20 @@ export default function FAQ() {
   return (
     <>
       <Head>
-        <title>FAQ - Frequently Asked Questions | Rework</title>
-        <meta name="description" content="Find answers to common questions about Rework, our remote work enablement platform, verification process, opportunities, payments, security, and how to get started." />
+        <title>FAQ - Frequently Asked Questions | Remote Work Platform</title>
+        <meta name="description" content="Find answers to common questions about Rework's remote work platform, personalized support services, profile verification process, career opportunities, professional guidance, security, and how to get started with remote work." />
+        <meta name="keywords" content="remote work FAQ, career support questions, platform verification FAQ, remote job questions, application support help, career guidance FAQ, remote work help, professional development questions" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="FAQ - Remote Work Questions Answered" />
+        <meta property="og:description" content="Common questions about remote work opportunities, personalized support, and professional guidance." />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="FAQ - Rework Remote Work Platform" />
+        <meta name="twitter:description" content="Answers to questions about remote work opportunities and career support." />
+
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/faq" />
       </Head>
 
       <div className="min-h-screen bg-white">
