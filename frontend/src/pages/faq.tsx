@@ -15,148 +15,157 @@ export default function FAQ() {
 
   const faqCategories = [
     {
+      category: "About Remote-Works",
+      faqs: [
+        {
+          question: "What is Remote-Works?",
+          answer: "Remote-Works is a professional talent platform designed to connect verified professionals with high-quality remote opportunities worldwide. We don't just list jobs from partners—we ensure candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply. Through our structured system of Profile Verification, Application Readiness, and Employer-Aligned Onboarding, we streamline access to vetted remote roles, reducing friction, increasing trust, and accelerating hiring outcomes. This is not job searching—this is workforce readiness across multiple platforms."
+        },
+        {
+          question: "How is Remote-Works different from other job boards?",
+          answer: "We're not a traditional job board. We're a workforce readiness platform. While other sites simply list jobs, we prepare you for them. Every professional goes through comprehensive verification, receives application readiness training, and benefits from employer-aligned onboarding. We work with partner companies to provide curated opportunities, and our 98% success rate proves that preparation matters. With Remote-Works, you're not just applying—you're arriving ready to succeed."
+        },
+        {
+          question: "What does 'workforce readiness' mean?",
+          answer: "Workforce readiness means you're not just job searching—you're being strategically prepared for success. Through our three-stage system (Profile Verification, Application Readiness, and Employer-Aligned Onboarding), we ensure you meet partner requirements before you apply, understand what employers expect, and are positioned to succeed from day one. Our professionals have a 98% success rate because they're ready when opportunity arrives."
+        },
+        {
+          question: "Do you guarantee employment?",
+          answer: "No, and we believe honesty builds trust. We provide professional preparation and verified access to opportunities, but we cannot guarantee employment. All hiring decisions are made by our partner companies based on their specific requirements and business needs. What we do guarantee is that you'll be thoroughly prepared, professionally verified, and strategically positioned for success. Our 98% success rate speaks to the quality of our preparation process."
+        }
+      ]
+    },
+    {
       category: "Getting Started",
       faqs: [
         {
-          question: "What is Rework?",
-          answer: "Rework is a remote work enablement and recruitment platform that helps professionals prepare, verify, and connect with legitimate remote work opportunities. We provide profile verification, application readiness support, and access to vetted opportunities on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, and 20+ more. We are not an employer—all hiring decisions are made by third-party companies."
+          question: "How do I get started with Remote-Works?",
+          answer: "Getting started is straightforward: (1) Create your professional profile by clicking 'Get Started' on our homepage. (2) Complete our Profile Verification process, which includes identity verification, skill assessment, and eligibility review. (3) Undergo Application Readiness training to understand partner expectations. (4) Access verified project opportunities from our partner network. The entire verification process typically takes 24-48 hours, and our support team is available 24/7 to assist you."
         },
         {
-          question: "How do I sign up?",
-          answer: "Click 'Get Started' on our homepage and create your professional profile. Complete the verification process including identity, skill, and eligibility checks. Once verified, you'll gain access to remote work opportunities from trusted platforms. The verification process typically takes 24-48 hours."
+          question: "Is there any cost to join?",
+          answer: "No. Creating an account, completing verification, and accessing opportunities is completely free. We believe in transparency—you'll never be surprised by hidden fees. Optional career enhancement services (like advanced profile optimization or one-on-one coaching) are available for purchase if you choose, but they're never required. The core platform and all opportunities remain free to access."
         },
         {
-          question: "Is the platform free to use?",
-          answer: "Yes! Creating an account and accessing the platform is completely free. There are no hidden fees or mandatory charges. Optional career support services (like profile optimization or application readiness review) are available for purchase if you choose to use them, but they're not required to access opportunities."
+          question: "What is the Profile Verification process?",
+          answer: "Profile Verification is our first stage of workforce readiness. It includes: (1) Identity Verification – confirming you are who you say you are through government-issued ID. (2) Skill Assessment – validating your expertise relevant to remote work opportunities. (3) Eligibility Review – ensuring you meet partner platform requirements. This comprehensive verification builds trust with our partners and significantly increases your approval rates. The process takes 24-48 hours and ensures only quality professionals access our partner network."
         },
         {
-          question: "How long does verification take?",
-          answer: "The verification process typically takes 24-48 hours. We review your identity, skills, and eligibility to ensure you meet platform standards. You'll receive an email notification once your verification is complete and you can start accessing opportunities."
+          question: "What happens after I'm verified?",
+          answer: "After verification, you enter our Application Readiness stage. You'll receive training on partner expectations, learn what makes applications successful, and understand how to position yourself for each opportunity. Then, you'll access our curated partner opportunities—12+ verified project types across AI data annotation, content moderation, translation services, search evaluation, and more. You can apply to multiple opportunities, and our average professional earns $4k+ monthly by working across multiple projects."
         }
       ]
     },
     {
-      category: "For Professionals",
+      category: "Partner Opportunities",
       faqs: [
         {
-          question: "How much does it cost to access opportunities?",
-          answer: "Accessing the platform and opportunities is completely free. Optional career support services (profile optimization, application readiness review, skill assessment guidance) are available for purchase if you choose to use them, with prices varying by service. These services are not required—they're just additional support if you want extra help."
+          question: "What types of opportunities are available?",
+          answer: "We provide access to 12+ verified project types from trusted partner companies: AI Data Annotation, Content Moderation, Translation & Localization, Search Quality Evaluation, Data Labeling, Audio Transcription, Image Recognition, Video Content Evaluation, Technical Translation, Text Categorization, Linguistic Annotation, and Speech Data Collection. Projects range from $10-$45/hour depending on complexity and expertise. Our average professional earns $4k+ monthly by working across multiple projects."
         },
         {
-          question: "What's the success rate for platform approvals?",
-          answer: "Professionals who complete our verification process and follow platform guidelines have a 98% success rate in securing opportunities. We ensure your profile meets platform standards and requirements before you apply, significantly increasing your chances of approval."
+          question: "How do partner opportunities work?",
+          answer: "We work with trusted partner companies who provide remote opportunities. When you're ready to apply, we connect you directly with these partners. You'll see full project details—requirements, pay range, benefits, and application process. Because you've completed our three-stage readiness system, you're applying as a verified, prepared professional, which significantly increases your approval chances. All work and payment happens directly between you and the partner company."
         },
         {
-          question: "How do I access remote work opportunities?",
-          answer: "After completing verification, browse available opportunities that match your skills and interests. Each opportunity listing shows platform requirements, expected income, and application details. You apply directly through our platform, and we help ensure your application meets all requirements."
+          question: "Can I work on multiple projects at once?",
+          answer: "Absolutely! Most of our successful professionals work across multiple partner projects simultaneously. This diversifies income, provides flexibility, and protects against fluctuations in any single project's availability. Our platform helps you manage multiple applications and track your opportunities. The average Remote-Works professional earns $4k+ monthly by strategically working across 2-4 projects."
         },
         {
-          question: "Do you guarantee job placement?",
-          answer: "No. We provide career enablement and recruitment support, not employment guarantees. We help you prepare application-ready profiles and connect you with opportunities, but all hiring decisions are made by the third-party companies and platforms based on their specific requirements."
+          question: "What's the average income potential?",
+          answer: "Our professionals earn an average of $4k+ monthly. Income varies based on the projects you choose, hours you work, and your expertise level. Some opportunities pay $10-$20/hour (data labeling, content moderation), while specialized roles pay $25-$45/hour (technical translation, linguistic annotation). Because we prepare you thoroughly, your approval rates are higher and you can access better-paying opportunities faster."
         },
         {
-          question: "How long does it take to start working?",
-          answer: "After verification (24-48 hours), you can immediately start applying to opportunities. Platform approval times vary—most take 1-2 weeks to review applications. Once approved by the platform, you can typically start working right away."
-        },
-        {
-          question: "Can I apply to multiple platforms?",
-          answer: "Yes! You can apply to as many platforms as you'd like. Many professionals work across multiple platforms simultaneously to maximize their income. We support 20+ platforms including Outlier, Alignerr, OneForma, Appen, and more."
+          question: "How quickly can I start earning?",
+          answer: "Timeline breakdown: Profile Verification (24-48 hours) → Application Readiness training (immediate access after verification) → Apply to partner opportunities (same day) → Partner company review (1-2 weeks typically) → Start working (immediately upon partner approval). Most professionals start earning within 2-3 weeks of joining Remote-Works. Some partners have faster approval processes, while specialized roles may take longer but offer higher pay."
         }
       ]
     },
     {
-      category: "For Employers",
+      category: "The Three-Stage System",
       faqs: [
         {
-          question: "How can my company use Rework to find talent?",
-          answer: "Rework helps employers access pre-screened, verified professionals ready for remote work. You can post opportunities or request talent that matches your specific requirements. All professionals have completed identity, skill, and eligibility verification before being added to our talent pool."
+          question: "What is Profile Verification?",
+          answer: "Stage 1 of workforce readiness. Profile Verification confirms your identity, validates your skills, and ensures you meet basic requirements for remote work. This includes government ID verification, skill assessments relevant to your expertise, and eligibility checks for partner platforms. Verification typically takes 24-48 hours. This stage builds trust with partners and ensures only quality professionals access opportunities."
         },
         {
-          question: "What types of professionals are available?",
-          answer: "Our platform includes professionals skilled in AI training, data annotation, content moderation, software development, and other remote work roles. All professionals are verified and have experience with remote work platforms and digital collaboration."
+          question: "What is Application Readiness?",
+          answer: "Stage 2 of workforce readiness. Application Readiness ensures you understand what partners expect and how to present yourself successfully. This includes training on common application requirements, guidance on showcasing relevant experience, tips for partner-specific expectations, and best practices for remote work applications. This preparation is why our professionals have a 98% success rate—they're ready before they apply."
         },
         {
-          question: "How are professionals vetted?",
-          answer: "Every professional completes comprehensive verification including identity checks, skill assessments, and eligibility reviews. This ensures authenticity and credibility. Professionals also receive application readiness training to understand remote work expectations."
+          question: "What is Employer-Aligned Onboarding?",
+          answer: "Stage 3 of workforce readiness. Employer-Aligned Onboarding means we help you understand each partner's specific culture, requirements, and success factors before you apply. This strategic positioning ensures you're not just qualified—you're aligned with what the partner values. This final stage of preparation accelerates hiring outcomes by reducing friction between professionals and partners."
         },
         {
-          question: "What's the process for hiring through Rework?",
-          answer: "Post your opportunity or specific talent requirements on our platform. Browse pre-verified professional profiles or receive recommendations. Connect with candidates directly for interviews. All hiring decisions and employment relationships are between you and the professional."
-        },
-        {
-          question: "Is there a fee for employers?",
-          answer: "Contact our sales team for employer pricing and partnership options. We offer flexible plans based on your hiring volume and needs. Visit our For Employers page or contact support for more information."
+          question: "Why do I need all three stages?",
+          answer: "Because preparation creates results. Traditional job boards let anyone apply to anything, resulting in low success rates and wasted time. Our three-stage system ensures you're verified (trusted), ready (prepared), and aligned (positioned) before you apply. This is why Remote-Works professionals have a 98% success rate while typical job board success rates are under 10%. We reduce friction, increase trust, and accelerate outcomes for both you and our partners."
         }
       ]
     },
     {
-      category: "Payments & Security",
+      category: "Trust & Security",
       faqs: [
         {
-          question: "How does payment work for optional services?",
-          answer: "The platform is free to use. If you choose to purchase optional career support services (profile optimization, application readiness review, etc.), payment is processed securely through trusted payment processors. You only pay for the specific services you choose to use."
+          question: "How do I know Remote-Works is legitimate?",
+          answer: "Transparency builds trust. Here's what makes us legitimate: (1) We never guarantee employment—only preparation and verified access. (2) We're free to use—no hidden fees or mandatory charges. (3) We work with established partner companies, not ourselves as employers. (4) Our verification process protects both professionals and partners. (5) We provide 24/7 support and maintain GDPR compliance. (6) We're honest about what we can and cannot do. Trust is earned through transparency and results."
         },
         {
-          question: "Is my payment information secure?",
-          answer: "Yes. We use industry-standard encryption and work with trusted payment processors including Stripe and PayPal. We never store your full credit card information on our servers. All transactions are encrypted and secure."
+          question: "Is my personal information secure?",
+          answer: "Yes. We use enterprise-grade security including SSL encryption, secure databases, regular security audits, and GDPR compliance. Your verification data is stored securely and used only for platform access and partner matching. We never sell your data to third parties. All payment information (for optional services) is processed through trusted payment processors—we never store full credit card information. See our Privacy Policy and GDPR Compliance pages for complete details."
         },
         {
-          question: "What payment methods do you accept?",
-          answer: "We accept all major credit cards, debit cards, and PayPal for optional service purchases. Payment options may vary by region. The platform itself requires no payment."
+          question: "What if I have issues with a partner opportunity?",
+          answer: "Contact our support team immediately at support@remote-works.io. While we don't control hiring decisions (those are made by partner companies), we can: help mediate communication issues, provide guidance on partner expectations, assist with application concerns, and ensure your platform experience is positive. Our 24/7 support team is here to help you succeed. We track partner feedback to maintain quality across our network."
         },
         {
-          question: "What is your refund policy?",
-          answer: "Refund policies for optional career support services are clearly stated before purchase. Contact our support team if you have any issues with a service. Platform access is always free, so no refund is needed for basic features."
+          question: "How are partner companies vetted?",
+          answer: "We only work with established, legitimate companies. Our partner vetting includes: verifying company legitimacy and reputation, confirming payment reliability and history, reviewing professional feedback and success rates, ensuring clear opportunity terms and expectations, and monitoring ongoing partner performance. We maintain relationships only with partners who meet our standards for professionalism and reliability."
         },
         {
-          question: "How is my personal data protected?",
-          answer: "We use enterprise-grade security including SSL encryption, secure databases, GDPR compliance, and regular security audits. We never sell your data to third parties. All verification data is stored securely and used only for platform access. See our Privacy Policy and GDPR Compliance pages for details."
+          question: "What's your refund policy?",
+          answer: "The platform is free, so no refunds are needed for core features. If you purchase optional career enhancement services (coaching, advanced profile optimization, etc.), refund policies are clearly stated before purchase. We stand behind our optional services—if you're not satisfied, contact support within 7 days for resolution. We believe in fair treatment and transparent policies."
         }
       ]
     },
     {
-      category: "Platform Features",
+      category: "Success & Support",
       faqs: [
         {
-          question: "Can I contact support before signing up?",
-          answer: "Yes! Our support team is available 24/7 via email and live chat during business hours (9 AM - 6 PM EST). We're happy to answer questions about verification, opportunities, or any platform features before you create an account."
+          question: "What is your success rate?",
+          answer: "Professionals who complete our three-stage readiness system have a 98% success rate in securing opportunities with partner companies. This high success rate is because we ensure you're verified, prepared, and aligned before you apply. Compare this to typical job board success rates of under 10%, and you'll see why workforce readiness matters more than job searching."
         },
         {
-          question: "How does the verification process work?",
-          answer: "After signing up, you'll complete identity verification (government ID), skill assessment (relevant to your expertise), and eligibility review (platform-specific requirements). This ensures all professionals meet quality standards and helps increase approval rates for opportunities."
+          question: "What if I'm not approved by a partner?",
+          answer: "First, this is rare—our 98% success rate means most professionals are approved. If you're not approved: (1) Contact our support team for guidance. (2) We'll review your application and identify improvement areas. (3) You can reapply after addressing feedback. (4) You can apply to other partner opportunities—rejection from one doesn't affect others. (5) We'll provide additional Application Readiness coaching if needed. Our goal is your success."
         },
         {
-          question: "What if I have an issue with an opportunity or platform?",
-          answer: "Contact our support team immediately. While we don't control hiring decisions (those are made by third-party companies), we can help mediate issues, provide guidance, and ensure your experience on our platform is positive."
-        },
-        {
-          question: "Is there customer support?",
-          answer: "Yes! We offer 24/7 email support and live chat during business hours (9 AM - 6 PM EST). All users receive the same high-quality support with fast response times."
+          question: "How do I contact support?",
+          answer: "We offer 24/7 support: Email us at support@remote-works.io for detailed inquiries (response within 24 hours). Visit our Support page for live chat during business hours (9 AM - 6 PM EST). Check our FAQ page (you're here!) for instant answers to common questions. All professionals receive the same high-quality support—no premium tiers, no gatekeeping. We're here to help you succeed."
         },
         {
           question: "Can I update my profile after verification?",
-          answer: "Absolutely! You can update your profile, skills, and experience at any time. Significant changes may require re-verification to ensure your profile remains accurate and you continue to meet platform standards."
+          answer: "Yes! You can update your profile, skills, and experience at any time. Minor updates (contact info, work history additions) don't require re-verification. Significant changes (new skills, different expertise areas, location changes) may require re-verification to ensure accuracy and maintain our 98% success rate. We want your profile to always represent your current capabilities."
+        },
+        {
+          question: "What happens after I'm approved by a partner?",
+          answer: "Once a partner approves you, you work directly with them. They'll provide onboarding, project assignments, payment processing, and ongoing support. Remote-Works remains available if you have questions or concerns, but the day-to-day working relationship is between you and the partner. Most partners provide clear guidelines, regular communication, and reliable payment schedules. You can continue accessing new opportunities through Remote-Works while working with current partners."
         }
       ]
     },
     {
-      category: "Supported Platforms",
+      category: "Optional Services",
       faqs: [
         {
-          question: "Which platforms do you connect with?",
-          answer: "We connect professionals with opportunities on 20+ platforms including Outlier AI, Alignerr, OneForma, Appen, RWS, Mindrift AI, TELUS Digital, Scale AI, and many more AI training and remote work platforms. New platforms are added regularly based on demand and verification standards."
+          question: "What optional services are available?",
+          answer: "While the platform is free, we offer optional career enhancement services if you want extra support: Advanced Profile Optimization (expert review and enhancement of your profile), One-on-One Coaching (personalized career guidance and strategy), Application Review (detailed feedback on specific applications), and Skill Development Resources (courses and materials for in-demand skills). These are completely optional—many professionals succeed without them. We offer them for those who want additional support."
         },
         {
-          question: "Do I need to know which platform I want to work on?",
-          answer: "No! Many professionals aren't sure which platform is best for them. Our platform provides guidance and recommendations based on your skills, experience, location, and career goals. You can browse all available opportunities and choose what fits best."
+          question: "Do I need to purchase services to access opportunities?",
+          answer: "No. Let's be crystal clear: accessing opportunities is free. Application Readiness training is free. Profile Verification is free. Partner opportunities are free to apply to. Optional services are exactly that—optional extras for professionals who want additional personalized support. Many of our successful, $4k+/month professionals never purchase optional services. They're available if you want them, not required for success."
         },
         {
-          question: "Can I work on multiple platforms at once?",
-          answer: "Yes! Many professionals work across multiple platforms simultaneously to maximize income and opportunities. Our average user earns $4k+ monthly by working on multiple platforms. There's no restriction on how many you can join."
-        },
-        {
-          question: "What if my desired platform isn't listed?",
-          answer: "Contact our support team! We're constantly adding new platforms based on user requests and verification standards. We may already be in the process of adding it or can help you find similar opportunities."
+          question: "How do I know if optional services are right for me?",
+          answer: "Honest answer: most professionals don't need them. Our free Application Readiness training and Profile Verification prepare you thoroughly. Consider optional services if: you're entering a highly specialized field and want expert guidance, you're having trouble getting approved and want personalized feedback, you want to maximize your income strategy across multiple partners, or you simply prefer one-on-one support. Our support team can help you decide—we won't upsell you on services you don't need."
         }
       ]
     }
@@ -173,8 +182,8 @@ export default function FAQ() {
   return (
     <>
       <Head>
-        <title>FAQ - Frequently Asked Questions | Rework</title>
-        <meta name="description" content="Find answers to common questions about Rework, our remote work enablement platform, verification process, opportunities, payments, security, and how to get started." />
+        <title>FAQ - Frequently Asked Questions | Remote-Works</title>
+        <meta name="description" content="Get answers about Remote-Works' professional talent platform, our three-stage workforce readiness system (Profile Verification, Application Readiness, Employer-Aligned Onboarding), partner opportunities, security, and how we help verified professionals connect with high-quality remote opportunities worldwide." />
       </Head>
 
       <div className="min-h-screen bg-white">
