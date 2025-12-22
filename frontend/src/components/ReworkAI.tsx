@@ -615,7 +615,13 @@ Would you like to:`;
           onClick={() => setIsMinimized(false)}
           className="bg-black text-white rounded-full px-6 py-3 shadow-2xl hover:scale-105 transition-all duration-200 flex items-center space-x-2"
         >
-          <UserCircle className="w-5 h-5" />
+          <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-400">
+            <img
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=Hannah&backgroundColor=b6e3f4&accessories=prescription02&top=longHairStraight&hairColor=brunette&clothingColor=3c4f5c&clothing=blazerShirt"
+              alt="Hannah"
+              className="w-full h-full object-cover"
+            />
+          </div>
           <span className="font-semibold">Hannah</span>
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
         </button>
@@ -630,8 +636,12 @@ Would you like to:`;
         <div className="bg-gradient-to-r from-black to-gray-800 text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
-                <UserCircle className="w-7 h-7 text-white" />
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                <img
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Hannah&backgroundColor=b6e3f4&accessories=prescription02&top=longHairStraight&hairColor=brunette&clothingColor=3c4f5c&clothing=blazerShirt"
+                  alt="Hannah Support"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
             </div>
@@ -669,8 +679,16 @@ Would you like to:`;
                 <div key={message.id} className="space-y-2">
                   <div className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
                     <div className={`flex items-start space-x-2 max-w-[80%] ${message.isBot ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.isBot ? 'bg-gradient-to-br from-purple-400 to-pink-400 text-white' : 'bg-gray-300 text-gray-700'}`}>
-                        {message.isBot ? <UserCircle className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.isBot ? 'bg-gradient-to-br from-purple-400 to-pink-400 overflow-hidden' : 'bg-gray-300 text-gray-700'}`}>
+                        {message.isBot ? (
+                          <img
+                            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Hannah&backgroundColor=b6e3f4&accessories=prescription02&top=longHairStraight&hairColor=brunette&clothingColor=3c4f5c&clothing=blazerShirt"
+                            alt="Hannah"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-5 h-5" />
+                        )}
                       </div>
                       <div className={`rounded-2xl px-4 py-3 ${message.isBot ? 'bg-white border border-gray-200' : 'bg-black text-white'}`}>
                         <p className="text-sm whitespace-pre-line leading-relaxed">{message.text}</p>
@@ -722,7 +740,7 @@ Would you like to:`;
                 </button>
               </form>
               <p className="text-xs text-gray-500 text-center mt-2">
-                Powered by Hannah • 24/7 Support
+                Powered by Rework • 24/7 Support
               </p>
             </div>
           </>
