@@ -37,13 +37,14 @@ export default function Platforms() {
   const [approvalRate, setApprovalRate] = useState(0);
   const [responseTime, setResponseTime] = useState(0);
   const [avgEarnings, setAvgEarnings] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const hasAnimatedRef = useRef(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
   // Typewriter animation for hero text
   const [typewriterText, setTypewriterText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const hasTypedRef = useRef(false);
   const fullText = "Your career shouldn't be limited by geography or guesswork. Remote-Works prepares you to compete—and win—in the global remote economy by positioning you as a trusted, ready-to-hire professional.";
 
   const allProjects: Project[] = [
@@ -381,7 +382,8 @@ export default function Platforms() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !isTyping && typewriterText === '') {
+        if (entry.isIntersecting && !hasTypedRef.current) {
+          hasTypedRef.current = true;
           setIsTyping(true);
           let index = 0;
 
@@ -399,17 +401,19 @@ export default function Platforms() {
       { threshold: 0.3 }
     );
 
-    if (heroRef.current) {
-      observer.observe(heroRef.current);
+    const currentRef = heroRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
       if (typeInterval) clearInterval(typeInterval);
-      if (heroRef.current) {
-        observer.unobserve(heroRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, [typewriterText, isTyping, fullText]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Intersection Observer for stats animation
   useEffect(() => {
@@ -417,8 +421,8 @@ export default function Platforms() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated) {
-          setHasAnimated(true);
+        if (entry.isIntersecting && !hasAnimatedRef.current) {
+          hasAnimatedRef.current = true;
 
           // Animate project count from 0 to 12
           let projectFrame = 0;
@@ -468,18 +472,20 @@ export default function Platforms() {
       { threshold: 0.3 }
     );
 
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
+    const currentStatsRef = statsRef.current;
+    if (currentStatsRef) {
+      observer.observe(currentStatsRef);
     }
 
     return () => {
       // Clear all intervals on cleanup
       intervals.forEach(interval => clearInterval(interval));
-      if (statsRef.current) {
-        observer.unobserve(statsRef.current);
+      if (currentStatsRef) {
+        observer.unobserve(currentStatsRef);
       }
     };
-  }, [hasAnimated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
