@@ -586,11 +586,12 @@ export default function Home() {
 
         {/* What We Do - Clarity Section */}
         <section id="mission" ref={missionRef} className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
-          {/* Subtle Background Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Minimal Gradient Orbs */}
-            <div className="absolute top-20 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-200/20 to-amber-200/20 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 left-1/4 w-64 h-64 bg-gradient-to-br from-amber-200/15 to-purple-200/15 rounded-full blur-3xl"></div>
+          {/* Subtle Background Decoration */}
+          <div className="absolute inset-0 overflow-hidden opacity-40 pointer-events-none">
+            {/* Animated gradient orbs - matching hero section subtlety */}
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDuration: '10s' }}></div>
+            <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}></div>
+            <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-green-200 to-teal-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '14s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">

@@ -4,14 +4,14 @@ import {
   MessageSquare,
   X,
   Send,
-  Bot,
   User,
   Minimize2,
   Sparkles,
   Mail,
   Phone,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  UserCircle
 } from 'lucide-react';
 
 interface Message {
@@ -29,186 +29,182 @@ interface QuickAction {
 
 const FAQ_DATA = [
   {
-    category: "Company Information",
-    keywords: ["company", "address", "location", "where located", "office", "contact", "email", "phone", "reach", "headquarters", "based"],
+    category: "About Remote-Works",
+    keywords: ["what is", "remote-works", "different", "workforce readiness", "job board", "guarantee employment", "platform", "about"],
     faqs: [
       {
-        question: "Where is Remote-Works located?",
-        answer: "Remote-Works is located at:\n📍 5 Buttermill Ave, L4K 0J5, CA\n✉️ support@remote-works.io\n\nWe're a Canadian company serving clients worldwide. Our team is available 24/7 to support our global community of candidates and agents."
+        question: "What is Remote-Works?",
+        answer: "Remote-Works is a professional talent platform designed to connect verified professionals with high-quality remote opportunities worldwide. We don't just list jobs from partners—we ensure candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply. Through our structured system of Profile Verification, Application Readiness, and Employer-Aligned Onboarding, we streamline access to vetted remote roles, reducing friction, increasing trust, and accelerating hiring outcomes. This is not job searching—this is workforce readiness across multiple platforms."
       },
       {
-        question: "How can I contact Remote-Works?",
-        answer: "You can reach us through:\n\n✉️ Email: support@remote-works.io\n📍 Address: 5 Buttermill Ave, L4K 0J5, CA\n💬 Live Chat: Available 24/7 through this chat\n🌐 Support Page: Visit /support for more options\n📝 Contact Form: Available on our website\n\nWe typically respond within 24 hours!"
+        question: "How is Remote-Works different from other job boards?",
+        answer: "We're not a traditional job board. We're a workforce readiness platform. While other sites simply list jobs, we prepare you for them. Every professional goes through comprehensive verification, receives application readiness training, and benefits from employer-aligned onboarding. We work with partner companies to provide curated opportunities, and our 98% success rate proves that preparation matters. With Remote-Works, you're not just applying—you're arriving ready to succeed."
       },
       {
-        question: "What are your business hours?",
-        answer: "We offer 24/7 support! Our AI assistant (that's me!) is always available to help. Human support agents are available during extended hours to serve our global community. Email support@remote-works.io anytime and we'll respond within 24 hours."
-      }
-    ]
-  },
-  {
-    category: "Website Pages & Navigation",
-    keywords: ["page", "where find", "navigate", "trust", "gdpr", "privacy", "transparency", "about", "faq", "terms"],
-    faqs: [
-      {
-        question: "What is the Trust & Transparency page?",
-        answer: "Our Trust & Transparency page (/trust-transparency) covers:\n\n🛡️ What We Stand For - Our core values\n✅ Our Promise - Our commitments to you\n⚠️ Scam Detection - How to spot and avoid scams\n🔍 Verification Process - How we verify agents\n🔒 Safety Features - Built-in protection measures\n\nThis page shows our commitment to maintaining a safe, trustworthy platform for everyone."
+        question: "What does 'workforce readiness' mean?",
+        answer: "Workforce readiness means you're not just job searching—you're being strategically prepared for success. Through our three-stage system (Profile Verification, Application Readiness, and Employer-Aligned Onboarding), we ensure you meet partner requirements before you apply, understand what employers expect, and are positioned to succeed from day one. Our professionals have a 98% success rate because they're ready when opportunity arrives."
       },
       {
-        question: "What is GDPR compliance?",
-        answer: "Our GDPR Compliance page (/gdpr-compliance) explains:\n\n📋 Your Data Rights - Access, rectification, erasure, etc.\n🔐 Data Protection - How we secure your information\n📊 What We Collect - Complete transparency on data collection\n⏰ Data Retention - How long we keep your data\n🌍 International Transfers - Cross-border data handling\n✉️ DPO Contact: dpo@remote-works.io\n\nWe're fully committed to protecting your privacy and complying with GDPR regulations."
-      },
-      {
-        question: "Where can I find information about company policies?",
-        answer: "Important pages:\n\n🔒 Privacy Policy - /privacy\n📜 Terms of Service - /terms\n🛡️ Trust & Transparency - /trust-transparency\n🇪🇺 GDPR Compliance - /gdpr-compliance\n📖 Code of Conduct - /code-of-conduct\n❓ FAQ - /faq\n📞 Support - /support\n\nAll policies are easily accessible from our footer menu!"
+        question: "Do you guarantee employment?",
+        answer: "No, and we believe honesty builds trust. We provide professional preparation and verified access to opportunities, but we cannot guarantee employment. All hiring decisions are made by our partner companies based on their specific requirements and business needs. What we do guarantee is that you'll be thoroughly prepared, professionally verified, and strategically positioned for success. Our 98% success rate speaks to the quality of our preparation process."
       }
     ]
   },
   {
     category: "Getting Started",
-    keywords: ["what is", "sign up", "join", "fee", "approval", "start", "begin", "how to", "register"],
+    keywords: ["get started", "start", "begin", "sign up", "join", "cost", "fee", "free", "verification", "verified", "how to"],
     faqs: [
       {
-        question: "What is Remote-Works?",
-        answer: "Remote-Works is a marketplace that connects candidates with verified agents who help them get approved for projects on platforms like Outlier, Alignerr, OneForma, Appen, RWS, Mindrift, TELUS Digital, Scale AI, Handshake AI, Lionbridge, Mercor, and 20+ more platforms. Our agents have proven track records (98% success rate) and provide personalized guidance to maximize your approval chances."
+        question: "How do I get started with Remote-Works?",
+        answer: "Getting started is straightforward: (1) Create your professional profile by clicking 'Get Started' on our homepage. (2) Complete our Profile Verification process, which includes identity verification, skill assessment, and eligibility review. (3) Undergo Application Readiness training to understand partner expectations. (4) Access verified project opportunities from our partner network. The entire verification process typically takes 24-48 hours, and our support team is available 24/7 to assist you."
       },
       {
-        question: "How do I sign up?",
-        answer: "Click 'Get Started' on our homepage and choose whether you want to sign up as a candidate or agent. Fill out your profile information and wait for admin approval (usually 24-48 hours). Once approved, candidates can browse agents and agents can start accepting clients."
+        question: "Is there any cost to join?",
+        answer: "No. Creating an account, completing verification, and accessing opportunities is completely free. We believe in transparency—you'll never be surprised by hidden fees. Optional career enhancement services (like advanced profile optimization or one-on-one coaching) are available for purchase if you choose, but they're never required. The core platform and all opportunities remain free to access."
       },
       {
-        question: "Is there a fee to join?",
-        answer: "Signing up is completely free for both candidates and agents. It's 100% free to use - no subscription fees, no hidden charges. Candidates only pay agents for services after receiving results or approval. Connect with agents and only pay for services you need!"
+        question: "What is the Profile Verification process?",
+        answer: "Profile Verification is our first stage of workforce readiness. It includes: (1) Identity Verification – confirming you are who you say you are through government-issued ID. (2) Skill Assessment – validating your expertise relevant to remote work opportunities. (3) Eligibility Review – ensuring you meet partner platform requirements. This comprehensive verification builds trust with our partners and significantly increases your approval rates. The process takes 24-48 hours and ensures only quality professionals access our partner network."
       },
       {
-        question: "How long does admin approval take?",
-        answer: "Admin approval typically takes 24-48 hours. We review each profile to ensure quality and authenticity. You'll receive an email notification once your account is approved."
+        question: "What happens after I'm verified?",
+        answer: "After verification, you enter our Application Readiness stage. You'll receive training on partner expectations, learn what makes applications successful, and understand how to position yourself for each opportunity. Then, you'll access our curated partner opportunities—12+ verified project types across AI data annotation, content moderation, translation services, search evaluation, and more. You can apply to multiple opportunities, and our average professional earns $4k+ monthly by working across multiple projects."
       }
     ]
   },
   {
-    category: "For Candidates",
-    keywords: ["agent", "charge", "fee", "cost", "price", "success", "approval", "candidate", "hire"],
+    category: "Partner Opportunities",
+    keywords: ["opportunities", "partner", "projects", "types", "income", "earning", "salary", "pay", "work", "multiple", "how much", "average"],
     faqs: [
       {
-        question: "How do agents work with candidates?",
-        answer: "Agents offer flexible arrangements based on your needs:\n\n💼 Different Models Available:\n• Free assistance (some agents help at no charge)\n• Revenue sharing (percentage of your earnings)\n• One-time service fee (varies by agent and platform)\n\nEach agent's profile clearly shows their preferred working model and terms. Browse profiles to find an arrangement that works best for you!"
+        question: "What types of opportunities are available?",
+        answer: "We provide access to 12+ verified project types from trusted partner companies: AI Data Annotation, Content Moderation, Translation & Localization, Search Quality Evaluation, Data Labeling, Audio Transcription, Image Recognition, Video Content Evaluation, Technical Translation, Text Categorization, Linguistic Annotation, and Speech Data Collection. Projects range from $10-$45/hour depending on complexity and expertise. Our average professional earns $4k+ monthly by working across multiple projects."
       },
       {
-        question: "What's the success rate?",
-        answer: "Our verified agents have a 98% success rate in getting candidates approved. We only work with agents who have proven track records and consistently deliver results."
+        question: "How do partner opportunities work?",
+        answer: "We work with trusted partner companies who provide remote opportunities. When you're ready to apply, we connect you directly with these partners. You'll see full project details—requirements, pay range, benefits, and application process. Because you've completed our three-stage readiness system, you're applying as a verified, prepared professional, which significantly increases your approval chances. All work and payment happens directly between you and the partner company."
       },
       {
-        question: "How do I choose an agent?",
-        answer: "Browse agent profiles to see their specializations, success rates, reviews, and working models. Look for agents who specialize in the platforms you're interested in and have high ratings from previous clients. Each agent clearly lists their terms and preferred arrangement."
+        question: "Can I work on multiple projects at once?",
+        answer: "Absolutely! Most of our successful professionals work across multiple partner projects simultaneously. This diversifies income, provides flexibility, and protects against fluctuations in any single project's availability. Our platform helps you manage multiple applications and track your opportunities. The average Remote-Works professional earns $4k+ monthly by strategically working across 2-4 projects."
+      },
+      {
+        question: "What's the average income potential?",
+        answer: "Our professionals earn an average of $4k+ monthly. Income varies based on the projects you choose, hours you work, and your expertise level. Some opportunities pay $10-$20/hour (data labeling, content moderation), while specialized roles pay $25-$45/hour (technical translation, linguistic annotation). Because we prepare you thoroughly, your approval rates are higher and you can access better-paying opportunities faster."
+      },
+      {
+        question: "How quickly can I start earning?",
+        answer: "Timeline breakdown: Profile Verification (24-48 hours) → Application Readiness training (immediate access after verification) → Apply to partner opportunities (same day) → Partner company review (1-2 weeks typically) → Start working (immediately upon partner approval). Most professionals start earning within 2-3 weeks of joining Remote-Works. Some partners have faster approval processes, while specialized roles may take longer but offer higher pay."
       }
     ]
   },
   {
-    category: "Payments & Security",
-    keywords: ["payment", "pay", "refund", "secure", "security", "data", "privacy", "arrangement", "terms"],
+    category: "The Three-Stage System",
+    keywords: ["three-stage", "stages", "profile verification", "application readiness", "employer-aligned onboarding", "onboarding", "system", "process"],
     faqs: [
       {
-        question: "How does payment work?",
-        answer: "Payment arrangements are flexible and depend on the agent you choose:\n\n💰 Common Models:\n• Free service - Some agents help without charge\n• Revenue share - Agent gets percentage of your earnings\n• One-time fee - Pay once for the service\n\nAll arrangements are clearly stated in the agent's profile before you connect. We ensure transparency in all agreements between candidates and agents."
+        question: "What is Profile Verification?",
+        answer: "Stage 1 of workforce readiness. Profile Verification confirms your identity, validates your skills, and ensures you meet basic requirements for remote work. This includes government ID verification, skill assessments relevant to your expertise, and eligibility checks for partner platforms. Verification typically takes 24-48 hours. This stage builds trust with partners and ensures only quality professionals access opportunities."
       },
       {
-        question: "Is my payment information secure?",
-        answer: "Yes! We use industry-standard encryption and work with trusted payment processors. We never store your full payment information on our servers. All transactions are secured with the highest level of protection."
+        question: "What is Application Readiness?",
+        answer: "Stage 2 of workforce readiness. Application Readiness ensures you understand what partners expect and how to present yourself successfully. This includes training on common application requirements, guidance on showcasing relevant experience, tips for partner-specific expectations, and best practices for remote work applications. This preparation is why our professionals have a 98% success rate—they're ready before they apply."
       },
       {
-        question: "What if there's a dispute?",
-        answer: "Our support team mediates any disputes fairly. We review the agreed terms between you and the agent, and work to resolve issues quickly. If necessary, we can take action to protect both parties and ensure fair treatment."
-      }
-    ]
-  },
-  {
-    category: "Platform Features",
-    keywords: ["message", "review", "dispute", "support", "contact", "help", "profile", "update"],
-    faqs: [
-      {
-        question: "Can I message agents before hiring?",
-        answer: "Yes! You can message agents to ask questions and discuss your situation before making a commitment. This helps ensure you find the right fit."
+        question: "What is Employer-Aligned Onboarding?",
+        answer: "Stage 3 of workforce readiness. Employer-Aligned Onboarding means we help you understand each partner's specific culture, requirements, and success factors before you apply. This strategic positioning ensures you're not just qualified—you're aligned with what the partner values. This final stage of preparation accelerates hiring outcomes by reducing friction between professionals and partners."
       },
       {
-        question: "Is there customer support?",
-        answer: "Yes! We offer 24/7 email support and live chat during business hours (9 AM - 6 PM EST). Premium users get priority support with faster response times."
-      },
-      {
-        question: "What if I have a dispute with an agent?",
-        answer: "Contact our support team immediately. We'll mediate the dispute and, if necessary, issue refunds or take action against agents who violate our terms of service."
-      }
-    ]
-  },
-  {
-    category: "Supported Platforms",
-    keywords: ["platform", "outlier", "alignerr", "oneforma", "appen", "rws", "mindrift", "telus", "scale", "google", "paypal", "handshake", "lionbridge", "mercor", "support", "which platforms"],
-    faqs: [
-      {
-        question: "Which platforms do you support?",
-        answer: "We support 20+ leading AI training and remote work platforms including:\n\n🔷 TELUS Digital - AI training & data collection\n🔷 OneForma - Data annotation & AI training\n🔷 Google - AI & ML projects\n🔷 Scale AI - Data labeling & AI training\n🔷 Outlier AI - AI training & feedback\n🔷 Appen - Data collection & annotation\n🔷 Alignerr - AI model alignment\n🔷 Handshake AI - Career platform integration\n🔷 Mindrift - AI training platform\n🔷 Lionbridge - Translation & AI training\n🔷 Mercor - Tech talent marketplace\n\nAnd many more! New platforms are added regularly based on demand from our community."
-      },
-      {
-        question: "Can agents help with multiple platforms?",
-        answer: "Yes! Many agents specialize in multiple platforms. Check their profile to see which services they offer. Our verified agents have proven track records across various platforms with a 98% success rate!"
-      },
-      {
-        question: "What is your success rate?",
-        answer: "We maintain an impressive 98% success rate! Our verified agents have helped thousands of candidates get approved on their desired platforms. This high success rate comes from:\n\n✅ Thoroughly vetted agents\n✅ Proven strategies and guidance\n✅ Platform-specific expertise\n✅ Continuous quality monitoring\n✅ Personalized support throughout the process"
+        question: "Why do I need all three stages?",
+        answer: "Because preparation creates results. Traditional job boards let anyone apply to anything, resulting in low success rates and wasted time. Our three-stage system ensures you're verified (trusted), ready (prepared), and aligned (positioned) before you apply. This is why Remote-Works professionals have a 98% success rate while typical job board success rates are under 10%. We reduce friction, increase trust, and accelerate outcomes for both you and our partners."
       }
     ]
   },
   {
     category: "Trust & Security",
-    keywords: ["trust", "safe", "security", "scam", "fraud", "verify", "verified", "legitimate", "real", "authentic", "protect", "protection"],
+    keywords: ["trust", "security", "legitimate", "safe", "secure", "data", "privacy", "scam", "fraud", "gdpr", "protection", "partner vetting", "refund"],
     faqs: [
       {
-        question: "How do you verify agents?",
-        answer: "Our rigorous 4-step verification process includes:\n\n1️⃣ Identity Verification - Government-issued ID and proof of address\n2️⃣ Track Record Check - Review history of successful placements\n3️⃣ Background Screening - Comprehensive credibility checks\n4️⃣ Continuous Monitoring - Ongoing performance and feedback tracking\n\nOnly agents who pass all checks get the verified badge and can work with candidates!"
+        question: "How do I know Remote-Works is legitimate?",
+        answer: "Transparency builds trust. Here's what makes us legitimate: (1) We never guarantee employment—only preparation and verified access. (2) We're free to use—no hidden fees or mandatory charges. (3) We work with established partner companies, not ourselves as employers. (4) Our verification process protects both professionals and partners. (5) We provide 24/7 support and maintain GDPR compliance. (6) We're honest about what we can and cannot do. Trust is earned through transparency and results."
       },
       {
-        question: "How do I avoid scams?",
-        answer: "Watch out for these red flags:\n\n🚫 Large upfront payments without guarantees\n🚫 Unrealistic promises or guaranteed approval\n🚫 Requests to communicate off-platform\n🚫 Pressure tactics or false urgency\n🚫 Requests for login credentials\n🚫 Unverified agents (no verified badge)\n\nAlways:\n✅ Use our secure messaging system\n✅ Work only with verified agents\n✅ Report suspicious activity immediately\n✅ Read agent reviews and ratings\n\nYour safety is our priority!"
+        question: "Is my personal information secure?",
+        answer: "Yes. We use enterprise-grade security including SSL encryption, secure databases, regular security audits, and GDPR compliance. Your verification data is stored securely and used only for platform access and partner matching. We never sell your data to third parties. All payment information (for optional services) is processed through trusted payment processors—we never store full credit card information. See our Privacy Policy and GDPR Compliance pages for complete details."
       },
       {
-        question: "What safety features do you have?",
-        answer: "We provide multiple layers of protection:\n\n🔔 Real-Time Alerts - Suspicious activity notifications\n✅ Verified Badges - Easy identification of trusted agents\n🔒 Encrypted Messages - End-to-end encryption\n📋 Transaction Records - Complete audit trail\n🛡️ Secure Payments - Industry-standard encryption\n👁️ 24/7 Monitoring - Continuous platform surveillance\n⚖️ Dispute Resolution - Fair mediation process\n\nVisit our Trust & Transparency page for more details!"
+        question: "What if I have issues with a partner opportunity?",
+        answer: "Contact our support team immediately at support@remote-works.io. While we don't control hiring decisions (those are made by partner companies), we can: help mediate communication issues, provide guidance on partner expectations, assist with application concerns, and ensure your platform experience is positive. Our 24/7 support team is here to help you succeed. We track partner feedback to maintain quality across our network."
       },
       {
-        question: "Is my data protected?",
-        answer: "Absolutely! We take data protection seriously:\n\n🔐 End-to-end encryption for all sensitive data\n🏢 Secure, certified data centers with 24/7 monitoring\n🔑 Strict access controls - need-to-know basis only\n🔍 Regular security audits and penetration testing\n📊 GDPR compliant - full transparency on data use\n⏰ Clear data retention policies\n🚫 We NEVER sell your data to third parties\n\nContact our DPO at dpo@remote-works.io for data privacy questions!"
+        question: "How are partner companies vetted?",
+        answer: "We only work with established, legitimate companies. Our partner vetting includes: verifying company legitimacy and reputation, confirming payment reliability and history, reviewing professional feedback and success rates, ensuring clear opportunity terms and expectations, and monitoring ongoing partner performance. We maintain relationships only with partners who meet our standards for professionalism and reliability."
+      },
+      {
+        question: "What's your refund policy?",
+        answer: "The platform is free, so no refunds are needed for core features. If you purchase optional career enhancement services (coaching, advanced profile optimization, etc.), refund policies are clearly stated before purchase. We stand behind our optional services—if you're not satisfied, contact support within 7 days for resolution. We believe in fair treatment and transparent policies."
       }
     ]
   },
   {
-    category: "Platform Features & Statistics",
-    keywords: ["feature", "statistics", "stats", "how many", "users", "monthly income", "average", "earnings", "platforms", "support hours"],
+    category: "Success & Support",
+    keywords: ["success rate", "support", "contact", "help", "approved", "not approved", "update profile", "after approval", "98%"],
     faqs: [
       {
-        question: "What are Remote-Works key features?",
-        answer: "Our platform offers:\n\n✅ Verified Agents - Thoroughly vetted professionals\n🔒 Secure Platform - Flexible payment arrangements (free, revenue share, or one-time)\n💬 Direct Communication - Message agents directly\n📈 High Success Rate - 98% approval success rate\n⏱️ Fast Approval - Matched within 24 hours\n🎁 100% Free to Use - No subscription or hidden fees\n🌍 20+ Platforms - Wide range of opportunities\n💰 $3k+ Average Monthly Income\n🎯 24/7 Support - Always here to help\n\nStart your journey to remote work success today!"
+        question: "What is your success rate?",
+        answer: "Professionals who complete our three-stage readiness system have a 98% success rate in securing opportunities with partner companies. This high success rate is because we ensure you're verified, prepared, and aligned before you apply. Compare this to typical job board success rates of under 10%, and you'll see why workforce readiness matters more than job searching."
       },
       {
-        question: "What are your platform statistics?",
-        answer: "Here are our impressive numbers:\n\n📊 98% Success Rate - Industry-leading approval rate\n🌐 20+ Platforms Supported - And growing!\n💰 $3k+ Average Monthly Income for candidates\n⏰ 24/7 Support - Round-the-clock assistance\n👥 5,000+ Active Users worldwide\n⚡ 24 Hours - Average agent matching time\n🌍 Global Reach - Serving clients worldwide\n✨ 100% Free - No subscription fees\n\nJoin thousands of successful remote workers!"
+        question: "What if I'm not approved by a partner?",
+        answer: "First, this is rare—our 98% success rate means most professionals are approved. If you're not approved: (1) Contact our support team for guidance. (2) We'll review your application and identify improvement areas. (3) You can reapply after addressing feedback. (4) You can apply to other partner opportunities—rejection from one doesn't affect others. (5) We'll provide additional Application Readiness coaching if needed. Our goal is your success."
       },
       {
-        question: "What is the average monthly income?",
-        answer: "Our candidates earn an average of $3,000+ per month! This varies based on:\n\n• Platform(s) you work with\n• Hours committed per week\n• Skill level and experience\n• Project availability\n• Geographic location\n\nMany candidates work with multiple platforms simultaneously to maximize their earnings. Our verified agents help you get approved faster so you can start earning sooner!"
+        question: "How do I contact support?",
+        answer: "We offer 24/7 support: Email us at support@remote-works.io for detailed inquiries (response within 24 hours). Visit our Support page for live chat during business hours (9 AM - 6 PM EST). Check our FAQ page for instant answers to common questions. All professionals receive the same high-quality support—no premium tiers, no gatekeeping. We're here to help you succeed."
+      },
+      {
+        question: "Can I update my profile after verification?",
+        answer: "Yes! You can update your profile, skills, and experience at any time. Minor updates (contact info, work history additions) don't require re-verification. Significant changes (new skills, different expertise areas, location changes) may require re-verification to ensure accuracy and maintain our 98% success rate. We want your profile to always represent your current capabilities."
+      },
+      {
+        question: "What happens after I'm approved by a partner?",
+        answer: "Once a partner approves you, you work directly with them. They'll provide onboarding, project assignments, payment processing, and ongoing support. Remote-Works remains available if you have questions or concerns, but the day-to-day working relationship is between you and the partner. Most partners provide clear guidelines, regular communication, and reliable payment schedules. You can continue accessing new opportunities through Remote-Works while working with current partners."
       }
     ]
   },
   {
-    category: "Core Values & Mission",
-    keywords: ["value", "mission", "stand for", "believe", "principle", "integrity", "community", "fair"],
+    category: "Optional Services",
+    keywords: ["optional services", "coaching", "profile optimization", "services", "purchase", "buy", "paid", "need to buy"],
     faqs: [
       {
-        question: "What does Remote-Works stand for?",
-        answer: "Our core values guide everything we do:\n\n❤️ Integrity First - Honesty and transparency in every interaction\n👥 Community Focus - Your success is our success\n⚖️ Fair & Equal - Equal opportunity for everyone\n💡 Innovation - Continuous improvement using latest technology\n\nWe're committed to building a safe, transparent, and trustworthy platform where candidates and agents can succeed together!"
+        question: "What optional services are available?",
+        answer: "While the platform is free, we offer optional career enhancement services if you want extra support: Advanced Profile Optimization (expert review and enhancement of your profile), One-on-One Coaching (personalized career guidance and strategy), Application Review (detailed feedback on specific applications), and Skill Development Resources (courses and materials for in-demand skills). These are completely optional—many professionals succeed without them. We offer them for those who want additional support."
       },
       {
-        question: "What is your promise to users?",
-        answer: "We promise:\n\n✅ 100% Verified Agents - Rigorous verification process\n🔒 Secure Payments - Encrypted, fraud-protected transactions\n👁️ Complete Transparency - No hidden fees or surprises\n📞 24/7 Support - Always available when you need us\n🛡️ Data Protection - Your information is safe with us\n⭐ Quality Assurance - High standards maintained through monitoring\n\nYour trust is earned through our actions, not just words!"
+        question: "Do I need to purchase services to access opportunities?",
+        answer: "No. Let's be crystal clear: accessing opportunities is free. Application Readiness training is free. Profile Verification is free. Partner opportunities are free to apply to. Optional services are exactly that—optional extras for professionals who want additional personalized support. Many of our successful, $4k+/month professionals never purchase optional services. They're available if you want them, not required for success."
+      },
+      {
+        question: "How do I know if optional services are right for me?",
+        answer: "Honest answer: most professionals don't need them. Our free Application Readiness training and Profile Verification prepare you thoroughly. Consider optional services if: you're entering a highly specialized field and want expert guidance, you're having trouble getting approved and want personalized feedback, you want to maximize your income strategy across multiple partners, or you simply prefer one-on-one support. Our support team can help you decide—we won't upsell you on services you don't need."
+      }
+    ]
+  },
+  {
+    category: "Company Information",
+    keywords: ["company", "address", "location", "where located", "office", "contact", "email", "phone", "reach", "headquarters", "based", "social media", "twitter", "blog", "trustpilot"],
+    faqs: [
+      {
+        question: "Where is Remote-Works located?",
+        answer: "Remote-Works is located at:\n📍 Concord, CA\n✉️ support@remote-works.io\n\nWe're a professional talent platform serving clients worldwide. Our team is available 24/7 to support our global community of professionals."
+      },
+      {
+        question: "How can I contact Remote-Works?",
+        answer: "You can reach us through:\n\n✉️ Email: support@remote-works.io\n📍 Address: Concord, CA\n💬 Live Chat: Available 24/7 through this chat\n🌐 Support Page: Visit /support for more options\n\nWe typically respond within 24 hours!"
+      },
+      {
+        question: "What are your social media channels?",
+        answer: "Follow us on:\n\n📝 Blog: https://ai.remote-works.io/\n🐦 Twitter/X: https://x.com/remote_worksio\n⭐ Trustpilot: https://ca.trustpilot.com/review/remote-works.io\n\nStay updated with the latest news, tips, and opportunities!"
       }
     ]
   }
@@ -288,7 +284,7 @@ export default function ReworkAI() {
 
     // Check for greetings
     if (lowerQuery.match(/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/)) {
-      return "Hello! 👋 I'm Rework AI, your personal assistant.\n\nI'm here to help you find any information about Remote-Works. I can scan our entire website to give you accurate answers about our company, services, policies, and more.\n\nWhat would you like to know?";
+      return "Hello! 👋 I'm Hannah, your Remote-Works assistant.\n\nI'm here to help you learn about our workforce readiness platform, our three-stage system (Profile Verification, Application Readiness, and Employer-Aligned Onboarding), partner opportunities, and how we help professionals succeed with a 98% success rate.\n\nWhat would you like to know?";
     }
 
     // Check for navigation requests
@@ -418,17 +414,36 @@ export default function ReworkAI() {
           }
         ]);
       } else {
+        // Site-aligned response for outside questions
+        const outOfScopeResponse = `I appreciate your question! While I'm specifically designed to help with information about Remote-Works' workforce readiness platform, I want to make sure you get the best answer.
+
+Here's what I can help with:
+• Our three-stage system (Profile Verification, Application Readiness, Employer-Aligned Onboarding)
+• Partner opportunities and income potential ($4k+ monthly average)
+• How our 98% success rate works
+• Platform security and trust
+• Getting started and verification process
+• Optional services and support
+
+For questions outside these areas, our human support team is available 24/7 and would love to help! They can provide personalized assistance for your specific situation.
+
+Would you like to:`;
+
         addMessage(
-          "I don't have a specific answer for that question, but I'd be happy to connect you with our support team who can help! Would you like to:",
+          outOfScopeResponse,
           true,
           [
             {
-              label: "Contact Support",
+              label: "Contact Support Team",
               action: () => handleEscalateToHuman()
             },
             {
-              label: "View FAQ",
+              label: "View Full FAQ",
               action: () => router.push('/faq')
+            },
+            {
+              label: "Ask About Remote-Works",
+              action: () => handleMoreQuestions()
             },
             {
               label: "Leave a Message",
@@ -462,7 +477,7 @@ export default function ReworkAI() {
 
   const handleMoreQuestions = () => {
     addMessage(
-      "Great! Here are some topics I can help you with:\n\n• Getting started with Remote-Works\n• Agent fees and pricing\n• Payment and security\n• Platform features\n• Supported platforms\n\nWhat would you like to know?",
+      "Perfect! Here are some topics I can help you with:\n\n• What is Remote-Works and how we're different\n• Our three-stage workforce readiness system\n• Partner opportunities and income potential\n• Getting started and verification process\n• Success rates and support\n• Trust, security, and GDPR compliance\n• Optional services (completely optional!)\n\nWhat would you like to know?",
       true
     );
   };
@@ -540,7 +555,7 @@ export default function ReworkAI() {
     if (messages.length === 0) {
       setTimeout(() => {
         addMessage(
-          "Hi there! 👋 I'm Rework AI, your personal assistant.\n\nI'm here to help you with anything about Remote-Works - whether it's finding information, navigating the site, or answering your questions.\n\nWhat can I help you with today?",
+          "Hi there! 👋 I'm Hannah, your Remote-Works assistant.\n\nI'm here to help you understand our workforce readiness platform, learn about our three-stage system, explore partner opportunities, and answer any questions you have about Remote-Works.\n\nWhat can I help you with today?",
           true,
           []
         );
@@ -579,7 +594,7 @@ export default function ReworkAI() {
       <button
         onClick={openChat}
         className="fixed bottom-6 right-6 z-50 bg-black text-white rounded-full p-4 shadow-2xl hover:scale-110 transition-all duration-300 group animate-bounce-subtle"
-        aria-label="Open Rework AI Chat"
+        aria-label="Open Hannah Chat"
       >
         <div className="relative">
           <MessageSquare className="w-7 h-7" />
@@ -587,7 +602,7 @@ export default function ReworkAI() {
         </div>
         <div className="absolute bottom-full right-0 mb-2 px-4 py-2 bg-black text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
           <Sparkles className="w-4 h-4 inline mr-1" />
-          Chat with Rework AI
+          Chat with Hannah
         </div>
       </button>
     );
@@ -600,8 +615,8 @@ export default function ReworkAI() {
           onClick={() => setIsMinimized(false)}
           className="bg-black text-white rounded-full px-6 py-3 shadow-2xl hover:scale-105 transition-all duration-200 flex items-center space-x-2"
         >
-          <Bot className="w-5 h-5" />
-          <span className="font-semibold">Rework AI</span>
+          <UserCircle className="w-5 h-5" />
+          <span className="font-semibold">Hannah</span>
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
         </button>
       </div>
@@ -615,14 +630,14 @@ export default function ReworkAI() {
         <div className="bg-gradient-to-r from-black to-gray-800 text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <Bot className="w-6 h-6 text-black" />
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                <UserCircle className="w-7 h-7 text-white" />
               </div>
               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
             </div>
             <div>
               <h3 className="font-bold text-lg flex items-center">
-                Rework AI
+                Hannah
                 <Sparkles className="w-4 h-4 ml-2" />
               </h3>
               <p className="text-xs text-gray-300">Online • Typically replies instantly</p>
@@ -654,8 +669,8 @@ export default function ReworkAI() {
                 <div key={message.id} className="space-y-2">
                   <div className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}>
                     <div className={`flex items-start space-x-2 max-w-[80%] ${message.isBot ? 'flex-row' : 'flex-row-reverse space-x-reverse'}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.isBot ? 'bg-black text-white' : 'bg-gray-300 text-gray-700'}`}>
-                        {message.isBot ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.isBot ? 'bg-gradient-to-br from-purple-400 to-pink-400 text-white' : 'bg-gray-300 text-gray-700'}`}>
+                        {message.isBot ? <UserCircle className="w-5 h-5" /> : <User className="w-5 h-5" />}
                       </div>
                       <div className={`rounded-2xl px-4 py-3 ${message.isBot ? 'bg-white border border-gray-200' : 'bg-black text-white'}`}>
                         <p className="text-sm whitespace-pre-line leading-relaxed">{message.text}</p>
@@ -707,7 +722,7 @@ export default function ReworkAI() {
                 </button>
               </form>
               <p className="text-xs text-gray-500 text-center mt-2">
-                Powered by Rework AI • 24/7 Support
+                Powered by Hannah • 24/7 Support
               </p>
             </div>
           </>
