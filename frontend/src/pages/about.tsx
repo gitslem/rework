@@ -17,26 +17,26 @@ export default function About() {
   const values = [
     {
       icon: <Shield className="w-8 h-8" />,
-      title: "Comprehensive Verification",
-      description: "All professionals complete identity, skill, and eligibility verification to ensure authenticity and credibility before accessing opportunities.",
+      title: "Trusted Partnerships",
+      description: "We partner exclusively with established global organizations that maintain high standards for remote work quality, fair compensation, and professional development.",
       color: "bg-black"
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "No Job Guarantees",
-      description: "We provide career enablement and recruitment support—not employment. All hiring decisions are made by third-party companies based on their requirements.",
+      title: "Professional Integrity",
+      description: "Every professional in our network undergoes comprehensive verification to ensure authenticity, credibility, and readiness to meet international work standards.",
       color: "bg-gray-800"
     },
     {
       icon: <Target className="w-8 h-8" />,
-      title: "Quality Standards",
-      description: "We focus on connecting professionals with legitimate, vetted remote work opportunities offered by reputable third-party companies and platforms.",
+      title: "Quality-First Approach",
+      description: "We prioritize long-term career success over quick placements. Our structured guidance ensures professionals are genuinely prepared for remote work excellence.",
       color: "bg-gray-700"
     },
     {
       icon: <Heart className="w-8 h-8" />,
-      title: "Complete Transparency",
-      description: "Clear communication about our role, services, and limitations. No false promises, no misleading claims—just honest support and realistic expectations.",
+      title: "Transparent Communication",
+      description: "Complete honesty about processes, requirements, and expectations. We build trust through clear communication and realistic guidance at every step.",
       color: "bg-gray-900"
     }
   ];
@@ -44,30 +44,30 @@ export default function About() {
   const expertCategories = [
     {
       icon: <Briefcase className="w-12 h-12" />,
-      title: "Profile Verification",
-      count: "Core",
-      description: "Comprehensive identity, skill, and eligibility verification processes to ensure all professionals meet platform standards.",
+      title: "Professional Verification",
+      count: "Rigorous",
+      description: "Multi-level verification process ensuring every professional meets international standards for identity, skills, and professional readiness.",
       color: "from-blue-600 to-cyan-600"
     },
     {
       icon: <MessageSquare className="w-12 h-12" />,
-      title: "Application Support",
-      count: "Service",
-      description: "Structured onboarding and guidance to help professionals prepare application-ready profiles that meet platform requirements.",
+      title: "Expert Guidance",
+      count: "Personalized",
+      description: "One-on-one career coaching from specialists who understand global platform requirements and industry best practices.",
       color: "from-purple-600 to-pink-600"
     },
     {
       icon: <Award className="w-12 h-12" />,
-      title: "Career Enablement",
-      count: "Focus",
-      description: "Optional career support services including profile optimization, application readiness review, and skill assessment guidance.",
+      title: "Career Development",
+      count: "Continuous",
+      description: "Ongoing professional development resources, skill enhancement programs, and career advancement support for long-term success.",
       color: "from-green-600 to-emerald-600"
     },
     {
       icon: <Globe className="w-12 h-12" />,
-      title: "Global Opportunities",
-      count: "Access",
-      description: "Connections to verified remote work opportunities offered by third-party companies and platforms worldwide.",
+      title: "Global Network",
+      count: "20+ Partners",
+      description: "Direct access to vetted opportunities through our partnerships with leading organizations in AI, language services, and digital content.",
       color: "from-orange-600 to-red-600"
     }
   ];
@@ -184,12 +184,13 @@ export default function About() {
               "@context": "https://schema.org",
               "@type": "AboutPage",
               "name": "About Rework",
-              "description": "Rework has helped 27,000+ professionals get approved for remote AI training and data annotation jobs",
+              "description": "Professional career platform partnering with leading global organizations to connect verified professionals with legitimate remote opportunities in AI training, data annotation, translation, and digital content creation",
               "mainEntity": {
                 "@type": "Organization",
                 "name": "Rework",
                 "url": "https://rework.com",
                 "foundingDate": "2023",
+                "description": "Professional remote work platform with partnerships across 20+ global organizations",
                 "numberOfEmployees": {
                   "@type": "QuantitativeValue",
                   "value": "400+"
@@ -244,14 +245,14 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto space-y-6">
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                Connecting Professionals with
+                Your Trusted Partner for
                 <span className="block text-black">
-                  Verified Remote Work Opportunities
+                  Global Remote Work Success
                 </span>
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Remote-Works.io is a career enablement and recruitment platform helping professionals prepare, verify,
-                and connect with legitimate remote work opportunities across global digital work platforms.
+                Rework is a professional career platform partnering with leading global organizations to connect verified professionals
+                with legitimate remote opportunities in AI training, data annotation, translation, and digital content creation.
               </p>
             </div>
           </div>
@@ -266,29 +267,31 @@ export default function About() {
                   <span className="bg-gray-100 text-black px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide">Our Mission</span>
                 </div>
                 <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                  Enabling Remote Work Careers
+                  Building Bridges to Global Remote Opportunities
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  The remote work landscape has transformed dramatically, creating opportunities for professionals worldwide.
-                  However, navigating application requirements, verification processes, and platform standards can be challenging
-                  for individuals seeking legitimate remote work opportunities.
+                  In today's rapidly evolving digital economy, remote work opportunities have become increasingly accessible yet
+                  increasingly competitive. Rework was founded to bridge the gap between talented professionals worldwide and
+                  leading global organizations seeking skilled remote contributors.
                 </p>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  Remote-Works.io was created to provide clarity and support. We help professionals prepare comprehensive profiles,
-                  complete necessary verifications, and connect with vetted remote work opportunities offered by third-party companies
-                  and platforms. Our platform focuses on transparency, ethical practices, and realistic expectations.
+                  <strong>We are not a job board.</strong> We are a professional career platform that partners with established
+                  global organizations in AI development, language services, and digital content creation. Our partnerships with
+                  industry leaders enable us to provide structured pathways to legitimate remote opportunities that might otherwise
+                  be difficult to access or navigate independently.
                 </p>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
-                  <strong>Our mission is clear:</strong> provide career enablement and recruitment support services that help
-                  professionals access legitimate remote work opportunities. We believe in transparency, ethical practices, and
-                  empowering individuals to build sustainable remote careers.
+                  Through our comprehensive verification process, personalized career guidance, and direct partnerships with
+                  top-tier platforms, we help professionals build credible profiles that meet international standards. Our success
+                  is measured by the long-term career growth of the professionals we serve.
                 </p>
                 <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">Vision for 2026</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">Our Commitment to Excellence</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Expand our network of verified support specialists, establish direct partnerships with leading remote work
-                    platforms, and create a more transparent ecosystem that connects professionals with legitimate opportunities
-                    while maintaining ethical standards and realistic expectations.
+                    We maintain rigorous standards for both the professionals we verify and the partnerships we establish. Every
+                    opportunity we connect you with has been thoroughly vetted to ensure legitimacy, fair compensation, and
+                    professional working conditions. We believe in sustainable remote careers built on trust, transparency, and
+                    mutual respect.
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -366,10 +369,10 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Our Services
+                Comprehensive Professional Services
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Comprehensive career enablement and recruitment support for remote professionals
+                End-to-end career support designed to connect verified professionals with global remote opportunities
               </p>
             </div>
 
@@ -391,28 +394,28 @@ export default function About() {
 
             {/* Service Principles */}
             <div className="mt-16 bg-gradient-to-br from-gray-50 to-white rounded-3xl p-10 border-2 border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Commitments</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Why Leading Organizations Trust Us</h3>
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                     <BadgeCheck className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Verification First</h4>
-                  <p className="text-gray-600 text-sm">All professionals complete comprehensive verification before accessing opportunities</p>
+                  <h4 className="font-bold text-gray-900 mb-2">Verified Talent Pool</h4>
+                  <p className="text-gray-600 text-sm">Every professional is thoroughly verified for identity, skills, and professional readiness through our rigorous multi-step process</p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                     <TrendingUp className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">No False Promises</h4>
-                  <p className="text-gray-600 text-sm">We provide support and access—not guarantees of approval or employment</p>
+                  <h4 className="font-bold text-gray-900 mb-2">Quality Standards</h4>
+                  <p className="text-gray-600 text-sm">We maintain international quality benchmarks, ensuring professionals meet the high standards expected by global organizations</p>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
                     <Shield className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Ethical Practices</h4>
-                  <p className="text-gray-600 text-sm">Complete transparency about our role, services, and limitations</p>
+                  <h4 className="font-bold text-gray-900 mb-2">Partnership Integrity</h4>
+                  <p className="text-gray-600 text-sm">Built on trust, transparency, and ethical practices—we are committed to sustainable success for all stakeholders</p>
                 </div>
               </div>
             </div>
@@ -508,10 +511,10 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Your Journey with Remote-Works.io
+                Your Professional Journey with Rework
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                A clear, structured process from profile creation to accessing remote work opportunities
+                A structured pathway from verification to accessing opportunities with our global partner organizations
               </p>
             </div>
 
@@ -525,9 +528,9 @@ export default function About() {
                       <UserPlus className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">01</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Create & Verify Profile</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Professional Verification</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Create your account and complete identity, skill, and eligibility verification to access opportunities.
+                      Complete our comprehensive verification process covering identity, professional credentials, and skill assessment to meet international standards.
                     </p>
                   </div>
                   {/* Arrow */}
@@ -543,9 +546,9 @@ export default function About() {
                       <BadgeCheck className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">02</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Get Application-Ready</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Expert Career Coaching</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Receive structured onboarding and guidance to ensure your profile meets platform standards and requirements.
+                      Work with experienced career specialists who provide personalized guidance to optimize your profile for global partner platforms.
                     </p>
                   </div>
                   {/* Arrow */}
@@ -561,9 +564,9 @@ export default function About() {
                       <DollarSign className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">03</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Access Opportunities</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Partner Connections</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      Connect with verified remote work opportunities offered by third-party companies and platforms.
+                      Gain access to curated opportunities from our network of 20+ trusted global partners in AI, translation, and digital content.
                     </p>
                   </div>
                   {/* Arrow */}
@@ -579,9 +582,9 @@ export default function About() {
                       <TrendingUp className="w-10 h-10 text-white" />
                     </div>
                     <div className="text-4xl font-bold text-black mb-2">04</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Work Directly</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">Career Growth</h3>
                     <p className="text-gray-600 leading-relaxed text-sm">
-                      All work, payments, contracts, and assignments are handled directly by the hiring company—not by us.
+                      Build sustainable remote careers with ongoing support, professional development resources, and access to multiple partner platforms.
                     </p>
                   </div>
                 </div>
@@ -591,12 +594,12 @@ export default function About() {
               <div className="mt-16 bg-gradient-to-r from-gray-900 to-black rounded-3xl p-10 text-white">
                 <div className="grid md:grid-cols-3 gap-8">
                   <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">Career Enablement</div>
-                    <p className="text-gray-300 text-sm">Profile verification and application readiness support services</p>
+                    <div className="text-3xl font-bold mb-2">Professional Platform</div>
+                    <p className="text-gray-300 text-sm">Comprehensive career services connecting verified professionals with global opportunities</p>
                   </div>
                   <div className="text-center border-l border-r border-gray-700 px-4">
-                    <div className="text-3xl font-bold mb-2">Not an Employer</div>
-                    <p className="text-gray-300 text-sm">We connect you with opportunities—hiring is done by third-party companies</p>
+                    <div className="text-3xl font-bold mb-2">Trusted Partners</div>
+                    <p className="text-gray-300 text-sm">Direct partnerships with 20+ leading organizations in AI, translation, and digital content</p>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold mb-2">Optional Services</div>
