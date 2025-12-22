@@ -76,63 +76,51 @@ export default function Company() {
   const projectTypes = [
     {
       name: "AI Data Annotation",
-      service: "Structured data labeling for machine learning models",
-      rate: "$15-$35/hr"
+      description: "High-quality labeled datasets for training machine learning models with precision and accuracy"
     },
     {
       name: "Content Moderation",
-      service: "Quality control for user-generated content platforms",
-      rate: "$12-$25/hr"
+      description: "Scalable content review ensuring platform safety and community guidelines compliance"
     },
     {
       name: "Translation & Localization",
-      service: "Professional language translation services",
-      rate: "$20-$45/hr"
+      description: "Professional multilingual content adaptation for global markets and diverse audiences"
     },
     {
       name: "Search Quality Evaluation",
-      service: "Assessment and improvement of search engine results",
-      rate: "$15-$30/hr"
+      description: "Expert assessment of search engine performance and result relevance optimization"
     },
     {
       name: "Data Labeling",
-      service: "Classification and tagging of datasets",
-      rate: "$10-$22/hr"
+      description: "Accurate classification and tagging of large-scale datasets for AI applications"
     },
     {
       name: "Audio Transcription",
-      service: "Converting audio content to text format",
-      rate: "$12-$28/hr"
+      description: "Precise conversion of audio and video content into structured text format"
     },
     {
       name: "Image Recognition",
-      service: "Object detection and image classification tasks",
-      rate: "$15-$32/hr"
+      description: "Advanced object detection and visual classification for computer vision projects"
     },
     {
       name: "Video Content Evaluation",
-      service: "Assessment of video quality and content accuracy",
-      rate: "$14-$30/hr"
+      description: "Comprehensive quality assessment and content accuracy verification for media"
     },
     {
       name: "Technical Translation",
-      service: "Specialized translation for technical documentation",
-      rate: "$25-$45/hr"
+      description: "Specialized translation for technical documentation, manuals, and software interfaces"
     },
     {
       name: "Text Categorization",
-      service: "Document classification and content organization",
-      rate: "$12-$26/hr"
+      description: "Intelligent document classification and semantic content organization systems"
     },
     {
       name: "Linguistic Annotation",
-      service: "Advanced linguistic analysis and tagging",
-      rate: "$20-$40/hr"
+      description: "Advanced language analysis including syntax, semantics, and discourse tagging"
     },
     {
       name: "Speech Data Collection",
-      service: "Voice recording and audio data gathering",
-      rate: "$15-$28/hr"
+      description: "Diverse voice recording and audio dataset creation for speech recognition systems"
     }
   ];
 
@@ -243,8 +231,8 @@ export default function Company() {
 
           .slider-track {
             display: flex;
-            gap: 1.5rem;
-            animation: scroll 60s linear infinite;
+            gap: 1rem;
+            animation: scroll 50s linear infinite;
             width: fit-content;
           }
 
@@ -253,8 +241,8 @@ export default function Company() {
           }
 
           .slider-card {
-            min-width: 320px;
-            max-width: 320px;
+            min-width: 280px;
+            max-width: 280px;
             flex-shrink: 0;
           }
 
@@ -269,8 +257,8 @@ export default function Company() {
 
           @media (max-width: 768px) {
             .slider-card {
-              min-width: 280px;
-              max-width: 280px;
+              min-width: 260px;
+              max-width: 260px;
             }
           }
         `}</style>
@@ -373,25 +361,25 @@ export default function Company() {
         </section>
 
         {/* Project Types Slider Section */}
-        <section className="py-20 px-6 lg:px-8 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
+        <section className="py-16 px-6 lg:px-8 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">
                 <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
                   12+ Project Types
                 </span>
                 {' '}We Support
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                From AI data annotation to technical translation—access verified professionals across diverse expertise areas
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Access verified professionals across diverse expertise areas
               </p>
             </div>
 
             {/* Slider Container */}
             <div className="relative">
               {/* Gradient Fade Edges */}
-              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
 
               {/* Slider Track */}
               <div className="slider-container">
@@ -400,40 +388,17 @@ export default function Company() {
                   {[...projectTypes, ...projectTypes].map((project, index) => (
                     <div
                       key={index}
-                      className="slider-card group bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all hover:scale-105"
+                      className="slider-card group bg-white rounded-xl p-5 shadow-md border border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all"
                     >
-                      {/* Project Header */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-black group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
-                            {project.name}
-                          </h3>
-                        </div>
-                        <div className="flex-shrink-0 ml-3">
-                          <div className="bg-gradient-to-br from-purple-600 to-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
-                            {project.rate}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Project Description */}
+                      <h3 className="text-base font-bold text-black mb-2 group-hover:text-purple-600 transition-colors">
+                        {project.name}
+                      </h3>
                       <p className="text-gray-600 text-sm leading-relaxed">
-                        {project.service}
+                        {project.description}
                       </p>
-
-                      {/* Decorative Bottom Bar */}
-                      <div className="mt-4 h-1 w-full bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Info Badge */}
-            <div className="flex justify-center mt-8">
-              <div className="inline-flex items-center space-x-2 bg-white px-6 py-3 rounded-full border-2 border-purple-200 shadow-md">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <span className="text-gray-700 font-semibold">Hover to pause • Auto-scrolling showcase</span>
               </div>
             </div>
           </div>
