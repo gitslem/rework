@@ -168,8 +168,8 @@ export default function Home() {
     },
     {
       icon: <Target className="w-6 h-6" />,
-      title: "No False Promises",
-      description: "We don't guarantee jobs or approvals—we provide support and access."
+      title: "Professional Standards",
+      description: "Preparation and access, delivered within enterprise hiring standards."
     },
     {
       icon: <Sparkles className="w-6 h-6" />,
