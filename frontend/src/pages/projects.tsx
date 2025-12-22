@@ -364,18 +364,18 @@ export default function Platforms() {
   return (
     <>
       <Head>
-        <title>Remote AI & Data Projects | TELUS, Toloka, RWS, Appen - Rework</title>
-        <meta name="description" content="Discover verified remote projects from TELUS International, Toloka AI, RWS, Appen and more. AI training, data annotation, translation, and content moderation opportunities. Get expert application support." />
-        <meta name="keywords" content="remote AI jobs, data annotation projects, translation jobs, TELUS International careers, Toloka AI jobs, RWS opportunities, Appen projects, remote work, freelance AI training" />
+        <title>Remote Work Projects | AI Training, Data Annotation, Translation & Content Jobs</title>
+        <meta name="description" content="Discover verified remote work opportunities across multiple platforms. AI training, data annotation, translation, content moderation, and digital content creation projects. Get personalized application support and professional guidance." />
+        <meta name="keywords" content="remote work projects, AI training opportunities, data annotation jobs, translation work, content moderation careers, remote freelance projects, work from home opportunities, digital content jobs, remote AI work, flexible freelance roles, online work platforms, remote career opportunities" />
 
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://rework.com/platforms" />
-        <meta property="og:title" content="Remote AI & Data Projects - Verified Opportunities" />
-        <meta property="og:description" content="Verified remote projects from TELUS, Toloka, RWS, Appen. Get expert application support." />
+        <meta property="og:title" content="Remote Work Projects - Verified Opportunities" />
+        <meta property="og:description" content="Verified remote projects across multiple platforms. AI training, data annotation, translation, and content creation. Get expert application support." />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Remote Project Opportunities - Rework" />
-        <meta name="twitter:description" content="500+ verified remote projects. AI training, data annotation, translation & more." />
+        <meta name="twitter:title" content="Remote Project Opportunities" />
+        <meta name="twitter:description" content="500+ verified remote projects. AI training, data annotation, translation, content moderation & more with personalized support." />
 
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://rework.com/platforms" />

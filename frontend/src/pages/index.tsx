@@ -249,21 +249,21 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Rework - Remote AI Training Jobs | Get Approved for Outlier, Appen, Welocalize & More</title>
-        <meta name="description" content="Get approved for remote AI training and data annotation jobs on Outlier, Appen, Welocalize, TELUS Digital, RWS & 20+ platforms. Expert verification support. 98% success rate. Work from home with $4k+ avg monthly income." />
-        <meta name="keywords" content="remote work, AI training jobs, data annotation jobs, remote AI jobs, work from home, Outlier alternative, Appen alternative, Welocalize jobs, TELUS Digital jobs, RWS jobs, remote data labeling, machine learning jobs, AI training platform, remote work opportunities, data annotation platform" />
+        <title>Remote Work Opportunities with Personalized Support | Professional Career Platform</title>
+        <meta name="description" content="Access verified remote work opportunities worldwide with personalized application support. Expert career guidance, professional profile verification, and structured onboarding to help you succeed in remote AI training, data annotation, translation, and digital content roles." />
+        <meta name="keywords" content="remote work opportunities, work from home jobs, personalized career support, remote AI training jobs, data annotation careers, translation jobs, content moderation roles, remote job platform, professional verification, career readiness, digital nomad jobs, flexible remote work, freelance opportunities, remote career guidance" />
 
         {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://rework.com/" />
-        <meta property="og:title" content="Rework - Get Approved for Remote AI Training & Data Annotation Jobs" />
-        <meta property="og:description" content="Join 27,000+ professionals earning $4k+ monthly on Outlier, Appen, Welocalize & more. 98% approval success rate." />
+        <meta property="og:title" content="Remote Work Platform with Personalized Career Support" />
+        <meta property="og:description" content="Join thousands of professionals accessing verified remote opportunities with expert guidance. 98% success rate. Personalized support for remote AI training, data annotation, translation, and more." />
         <meta property="og:site_name" content="Rework" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Rework - Remote AI Training & Data Annotation Jobs" />
-        <meta name="twitter:description" content="Get approved for remote AI jobs on Outlier, Appen, Welocalize & 20+ platforms. 98% success rate." />
+        <meta name="twitter:title" content="Remote Work with Professional Career Support" />
+        <meta name="twitter:description" content="Verified remote work opportunities with personalized application support. Expert career guidance for AI training, data annotation, and translation roles." />
 
         {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />
@@ -506,40 +506,11 @@ export default function Home() {
 
         {/* What We Do - Clarity Section */}
         <section id="mission" ref={missionRef} className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
-          {/* Animated Background Elements */}
+          {/* Subtle Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Floating Icons - Professional Mission Theme */}
-            <div className="absolute top-16 left-12 animate-float opacity-12" style={{ animationDuration: '8s', animationDelay: '0s' }}>
-              <Shield className="w-20 h-20 text-purple-600" />
-            </div>
-            <div className="absolute top-32 right-16 animate-float opacity-12" style={{ animationDuration: '9s', animationDelay: '1s' }}>
-              <Award className="w-16 h-16 text-amber-600" />
-            </div>
-            <div className="absolute top-1/3 left-20 animate-float opacity-12" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <Heart className="w-14 h-14 text-purple-500" />
-            </div>
-            <div className="absolute bottom-40 left-1/4 animate-float opacity-12" style={{ animationDuration: '11s', animationDelay: '2s' }}>
-              <Briefcase className="w-18 h-18 text-purple-500" />
-            </div>
-            <div className="absolute top-1/2 right-1/4 animate-float opacity-12" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
-              <UserCheck className="w-16 h-16 text-green-600" />
-            </div>
-            <div className="absolute bottom-24 right-20 animate-float opacity-12" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <BadgeCheck className="w-20 h-20 text-purple-600" />
-            </div>
-            <div className="absolute top-2/3 right-1/3 animate-float opacity-12" style={{ animationDuration: '12s', animationDelay: '2.5s' }}>
-              <Flag className="w-14 h-14 text-amber-500" />
-            </div>
-            <div className="absolute bottom-1/3 left-1/3 animate-float opacity-12" style={{ animationDuration: '13s', animationDelay: '1s' }}>
-              <Rocket className="w-16 h-16 text-purple-600" />
-            </div>
-            <div className="absolute top-1/4 right-16 animate-float opacity-12" style={{ animationDuration: '11s', animationDelay: '3s' }}>
-              <Lightbulb className="w-15 h-15 text-amber-600" />
-            </div>
-            {/* Enhanced Gradient Orbs */}
-            <div className="absolute top-10 right-1/3 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
-            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-gradient-to-br from-green-400/15 to-teal-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '16s', animationDelay: '1s' }}></div>
+            {/* Minimal Gradient Orbs */}
+            <div className="absolute top-20 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-200/20 to-amber-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 left-1/4 w-64 h-64 bg-gradient-to-br from-amber-200/15 to-purple-200/15 rounded-full blur-3xl"></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
