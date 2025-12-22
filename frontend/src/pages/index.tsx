@@ -3,10 +3,11 @@ import { useRouter } from 'next/router';
 import {
   ArrowRight, CheckCircle, Users, Briefcase, Shield,
   Zap, Clock, Star, MessageSquare, Award, TrendingUp,
-  BadgeCheck, UserCheck, Building2, Sparkles,
+  BadgeCheck, UserCheck, Building2, Sparkles, Compass,
   Target, Search, FileCheck, Menu, X, Rocket, Mail, Send, Loader,
   Home as HomeIcon, Coffee, Wifi, Monitor, Bot, Headphones, Layers, DollarSign,
-  Laptop, Globe, Code, Lightbulb, Database, Server, Smartphone, ChevronLeft, ChevronRight
+  Laptop, Globe, Code, Lightbulb, Database, Server, Smartphone, ChevronLeft, ChevronRight,
+  Heart, Flag, Workflow, Network
 } from 'lucide-react';
 import Head from 'next/head';
 import Logo from '@/components/Logo';
@@ -507,31 +508,44 @@ export default function Home() {
         <section id="mission" ref={missionRef} className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Floating Icons - Professional Workforce Theme */}
-            <div className="absolute top-20 left-16 animate-float opacity-10" style={{ animationDuration: '7s', animationDelay: '0s' }}>
-              <Shield className="w-16 h-16 text-purple-600" />
+            {/* Floating Icons - Professional Mission Theme */}
+            <div className="absolute top-16 left-12 animate-float opacity-12" style={{ animationDuration: '8s', animationDelay: '0s' }}>
+              <Shield className="w-20 h-20 text-purple-600" />
             </div>
-            <div className="absolute top-40 right-20 animate-float opacity-10" style={{ animationDuration: '9s', animationDelay: '1s' }}>
-              <Award className="w-14 h-14 text-amber-600" />
+            <div className="absolute top-32 right-16 animate-float opacity-12" style={{ animationDuration: '9s', animationDelay: '1s' }}>
+              <Award className="w-16 h-16 text-amber-600" />
             </div>
-            <div className="absolute bottom-32 left-1/4 animate-float opacity-10" style={{ animationDuration: '11s', animationDelay: '2s' }}>
-              <Briefcase className="w-16 h-16 text-purple-500" />
+            <div className="absolute top-1/3 left-20 animate-float opacity-12" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
+              <Heart className="w-14 h-14 text-purple-500" />
             </div>
-            <div className="absolute top-1/2 right-1/4 animate-float opacity-10" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
-              <UserCheck className="w-14 h-14 text-green-600" />
+            <div className="absolute bottom-40 left-1/4 animate-float opacity-12" style={{ animationDuration: '11s', animationDelay: '2s' }}>
+              <Briefcase className="w-18 h-18 text-purple-500" />
             </div>
-            <div className="absolute bottom-20 right-16 animate-float opacity-10" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <BadgeCheck className="w-16 h-16 text-purple-600" />
+            <div className="absolute top-1/2 right-1/4 animate-float opacity-12" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
+              <UserCheck className="w-16 h-16 text-green-600" />
+            </div>
+            <div className="absolute bottom-24 right-20 animate-float opacity-12" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
+              <BadgeCheck className="w-20 h-20 text-purple-600" />
+            </div>
+            <div className="absolute top-2/3 right-1/3 animate-float opacity-12" style={{ animationDuration: '12s', animationDelay: '2.5s' }}>
+              <Flag className="w-14 h-14 text-amber-500" />
+            </div>
+            <div className="absolute bottom-1/3 left-1/3 animate-float opacity-12" style={{ animationDuration: '13s', animationDelay: '1s' }}>
+              <Rocket className="w-16 h-16 text-purple-600" />
+            </div>
+            <div className="absolute top-1/4 right-16 animate-float opacity-12" style={{ animationDuration: '11s', animationDelay: '3s' }}>
+              <Lightbulb className="w-15 h-15 text-amber-600" />
             </div>
             {/* Enhanced Gradient Orbs */}
-            <div className="absolute top-10 right-1/3 w-96 h-96 bg-gradient-to-br from-purple-400/15 to-blue-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
-            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-400/15 to-orange-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
+            <div className="absolute top-10 right-1/3 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
+            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-gradient-to-br from-green-400/15 to-teal-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '16s', animationDelay: '1s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-200 mb-6 animate-fade-in">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Compass className="w-5 h-5 text-purple-600" />
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
               <h2 className={`text-4xl md:text-5xl font-extrabold mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
@@ -543,21 +557,21 @@ export default function Home() {
               {/* Main Content - Typewriter Style */}
               <div className={`bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-purple-100 transition-all duration-1000 ${missionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                 <div className="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
-                  <p className={`overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '300ms' }}>
+                  <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '500ms' }}>
                     <span className="font-bold text-gray-900">Remote-Works connects verified professionals with high-quality remote opportunities worldwide.</span>
                   </p>
 
-                  <p className={`overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '800ms' }}>
+                  <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '2700ms' }}>
                     We do more than publish job openings from partners. Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
                   </p>
 
-                  <p className={`overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '1300ms' }}>
+                  <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '4900ms' }}>
                     Through a structured system of <span className="font-semibold text-green-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-amber-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
                   </p>
                 </div>
 
                 {/* Not Job Searching Banner */}
-                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '1800ms' }}>
+                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '7100ms' }}>
                   <p className="text-lg font-bold text-gray-900 text-center">
                     This is not job searching. <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">This is workforce readiness.</span>
                   </p>
