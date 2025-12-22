@@ -29,7 +29,7 @@ export default function Home() {
   const [avgIncome, setAvgIncome] = useState(0);
   const [successRate, setSuccessRate] = useState(0);
   const [supportHours, setSupportHours] = useState(0);
-  const [statsAnimated, setStatsAnimated] = useState(false);
+  const statsAnimatedRef = useRef(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -73,8 +73,8 @@ export default function Home() {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !statsAnimated) {
-          setStatsAnimated(true);
+        if (entry.isIntersecting && !statsAnimatedRef.current) {
+          statsAnimatedRef.current = true;
 
           // Animate platforms count from 0 to 20
           let platformFrame = 0;
@@ -124,18 +124,20 @@ export default function Home() {
       { threshold: 0.3 }
     );
 
-    if (statsRef.current) {
-      observer.observe(statsRef.current);
+    const currentStatsRef = statsRef.current;
+    if (currentStatsRef) {
+      observer.observe(currentStatsRef);
     }
 
     return () => {
       // Clear all intervals on cleanup
       intervals.forEach(interval => clearInterval(interval));
-      if (statsRef.current) {
-        observer.unobserve(statsRef.current);
+      if (currentStatsRef) {
+        observer.unobserve(currentStatsRef);
       }
     };
-  }, [statsAnimated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const stats = [
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
