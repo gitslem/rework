@@ -543,21 +543,21 @@ export default function Home() {
               {/* Main Content - Typewriter Style */}
               <div className={`bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-purple-100 transition-all duration-1000 ${missionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                 <div className="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
-                  <p className={missionVisible ? 'animate-typewriter' : 'opacity-0'}>
-                    <span className="font-bold text-gray-900">Remote-Works is a professional talent platform designed to connect verified professionals with high-quality remote opportunities worldwide.</span>
+                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-300' : 'opacity-0'}`}>
+                    <span className="font-bold text-gray-900">Remote-Works connects verified professionals with high-quality remote opportunities worldwide.</span>
                   </p>
 
-                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[2500ms]' : 'opacity-0'}`}>
+                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[1500ms]' : 'opacity-0'}`}>
                     We do more than publish job openings from partners. Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
                   </p>
 
-                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[3500ms]' : 'opacity-0'}`}>
-                    Through a structured system of <span className="font-semibold text-purple-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-purple-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
+                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[2500ms]' : 'opacity-0'}`}>
+                    Through a structured system of <span className="font-semibold text-green-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-amber-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
                   </p>
                 </div>
 
                 {/* Not Job Searching Banner */}
-                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[4500ms]' : 'opacity-0'}`}>
+                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[3500ms]' : 'opacity-0'}`}>
                   <p className="text-lg font-bold text-gray-900 text-center">
                     This is not job searching. <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">This is workforce readiness.</span>
                   </p>
@@ -565,7 +565,7 @@ export default function Home() {
               </div>
 
               {/* Compact Journey Stages - Modern Inline Design */}
-              <div className={`flex items-center justify-center gap-3 transition-all duration-1000 delay-[5000ms] ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className={`flex flex-wrap items-center justify-center gap-3 transition-all duration-1000 delay-[4500ms] ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
                 {/* Verified */}
                 <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-green-200 hover:border-green-400 transition-all shadow-md hover:shadow-lg">
                   <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
@@ -574,8 +574,8 @@ export default function Home() {
                   <span className="font-bold text-green-700 text-sm md:text-base">Verified</span>
                 </div>
 
-                {/* Arrow */}
-                <ArrowRight className="w-6 h-6 text-purple-400" strokeWidth={2.5} />
+                {/* Arrow - Hidden on mobile, shown on desktop */}
+                <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
 
                 {/* Qualified */}
                 <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-purple-200 hover:border-purple-400 transition-all shadow-md hover:shadow-lg">
@@ -585,8 +585,8 @@ export default function Home() {
                   <span className="font-bold text-purple-700 text-sm md:text-base">Qualified</span>
                 </div>
 
-                {/* Arrow */}
-                <ArrowRight className="w-6 h-6 text-purple-400" strokeWidth={2.5} />
+                {/* Arrow - Hidden on mobile, shown on desktop */}
+                <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
 
                 {/* Hired */}
                 <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-amber-200 hover:border-amber-400 transition-all shadow-md hover:shadow-lg">
