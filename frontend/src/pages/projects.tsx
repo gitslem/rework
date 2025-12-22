@@ -1,282 +1,763 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useAuthStore } from '@/lib/authStore';
 import Head from 'next/head';
 import {
-  Globe2, Search, Filter, Briefcase, Clock, DollarSign,
-  MapPin, Calendar, TrendingUp, Star, BadgeCheck, ArrowRight
+  ArrowRight, CheckCircle, Star, Zap, Shield, Rocket, Globe,
+  DollarSign, Clock, TrendingUp, ExternalLink, X, MapPin,
+  Briefcase, Calendar, Users, Award
 } from 'lucide-react';
-import axios from 'axios';
+import Logo from '@/components/Logo';
+import Footer from '@/components/Footer';
 
 interface Project {
-  id: number;
+  id: string;
   title: string;
-  description: string;
+  company: string;
+  companyUrl: string;
+  location: string;
+  type: 'Full-time' | 'Part-time' | 'Contract' | 'Freelance';
   category: string;
-  budget: number;
-  deadline: string;
-  status: string;
-  required_skills: string[];
-  created_at: string;
-  owner: {
-    id: number;
-    email: string;
-    profile?: {
-      first_name?: string;
-      last_name?: string;
-      company_name?: string;
-    };
-  };
+  description: string;
+  requirements: string[];
+  skills: string[];
+  payRange?: string;
+  benefits?: string[];
+  applicationUrl: string;
+  postedDate: string;
+  featured?: boolean;
 }
 
-export default function Projects() {
+export default function Platforms() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [filter, setFilter] = useState<string>('all');
 
-  const categories = [
-    { value: 'all', label: 'All Projects' },
-    { value: 'ai_development', label: 'AI Development' },
-    { value: 'automation', label: 'Automation' },
-    { value: 'prompt_engineering', label: 'Prompt Engineering' },
-    { value: 'ml_training', label: 'ML Training' },
-    { value: 'integration', label: 'Integration' }
+  const allProjects: Project[] = [
+    {
+      id: 'proj-1',
+      title: 'AI Data Annotation Specialist',
+      company: 'Trusted Partner',
+      companyUrl: 'https://www.telusinternational.ai/opportunities',
+      location: 'Remote (Worldwide)',
+      type: 'Freelance',
+      category: 'AI Training & Data',
+      description: 'Join a global community of AI trainers and data annotators working with a leading digital solutions provider. Work on cutting-edge machine learning projects, helping to improve AI models through high-quality data annotation and validation.',
+      requirements: [
+        'Strong attention to detail',
+        'Reliable internet connection',
+        'Fluency in English',
+        'Basic computer literacy',
+        'Ability to follow detailed instructions'
+      ],
+      skills: ['Data Annotation', 'Quality Assurance', 'Pattern Recognition', 'Critical Thinking'],
+      payRange: '$15-$25/hour',
+      benefits: ['Flexible schedule', 'Work from anywhere', 'Weekly payouts', 'Growth opportunities'],
+      applicationUrl: 'https://www.telusinternational.ai/opportunities',
+      postedDate: '2025-01-15',
+      featured: true
+    },
+    {
+      id: 'proj-2',
+      title: 'Data Labeling Specialist',
+      company: 'Partner Company',
+      companyUrl: 'https://apply.workable.com/toloka-ai/',
+      location: 'Remote (Global)',
+      type: 'Contract',
+      category: 'Data Labeling',
+      description: 'Help improve machine learning algorithms by labeling and categorizing data for a global AI platform. Work on diverse projects ranging from image recognition to natural language processing.',
+      requirements: [
+        'High school diploma or equivalent',
+        'Stable internet connection',
+        'Basic English proficiency',
+        'Detail-oriented mindset',
+        'Ability to work independently'
+      ],
+      skills: ['Data Labeling', 'Image Annotation', 'Text Categorization', 'Quality Control'],
+      payRange: '$10-$20/hour',
+      benefits: ['Flexible hours', 'Multiple projects', 'Fast payments', 'No experience required'],
+      applicationUrl: 'https://apply.workable.com/toloka-ai/',
+      postedDate: '2025-01-18',
+      featured: true
+    },
+    {
+      id: 'proj-3',
+      title: 'Translation & Localization Expert',
+      company: 'Language Services Partner',
+      companyUrl: 'https://jobs.lever.co/rws',
+      location: 'Remote (Multiple Languages)',
+      type: 'Freelance',
+      category: 'Translation',
+      description: 'Provide high-quality translation and localization services for global brands through a premier language services company. Work with cutting-edge translation technology while preserving cultural nuances and brand voice.',
+      requirements: [
+        'Native-level proficiency in target language',
+        'Excellent English skills',
+        'Translation or localization experience preferred',
+        'Cultural awareness and sensitivity',
+        'Familiarity with CAT tools (preferred)'
+      ],
+      skills: ['Translation', 'Localization', 'Proofreading', 'Cultural Adaptation', 'CAT Tools'],
+      payRange: '$20-$40/hour',
+      benefits: ['Professional development', 'Diverse projects', 'Long-term contracts', 'Competitive rates'],
+      applicationUrl: 'https://jobs.lever.co/rws',
+      postedDate: '2025-01-10',
+      featured: false
+    },
+    {
+      id: 'proj-4',
+      title: 'AI Training Data Contributor',
+      company: 'Global AI Partner',
+      companyUrl: 'https://jobs.lever.co/appen',
+      location: 'Remote (Worldwide)',
+      type: 'Part-time',
+      category: 'AI Training',
+      description: 'Contribute to the development of artificial intelligence by providing high-quality training data for a leading AI training platform. Work on various tasks including speech data collection, image annotation, and text categorization.',
+      requirements: [
+        'Reliable computer and internet',
+        'Strong communication skills',
+        'Attention to detail',
+        'Ability to meet deadlines',
+        'Flexible availability'
+      ],
+      skills: ['Data Collection', 'Audio Transcription', 'Content Evaluation', 'Search Relevance'],
+      payRange: '$12-$22/hour',
+      benefits: ['Work from home', 'Choose your schedule', 'Multiple project types', 'Established platform'],
+      applicationUrl: 'https://jobs.lever.co/appen',
+      postedDate: '2025-01-12',
+      featured: true
+    },
+    {
+      id: 'proj-5',
+      title: 'Search Quality Rater',
+      company: 'Digital Solutions Partner',
+      companyUrl: 'https://www.telusinternational.ai/opportunities',
+      location: 'Remote (USA)',
+      type: 'Part-time',
+      category: 'Search Evaluation',
+      description: 'Evaluate and improve search engine results by rating the quality and relevance of search queries and results. Help make search engines smarter and more useful for users worldwide through our digital innovation partner.',
+      requirements: [
+        'Residing in the United States',
+        'Excellent web research skills',
+        'Strong understanding of search engines',
+        'Reliable internet and computer',
+        'Minimum 20 hours per week availability'
+      ],
+      skills: ['Web Research', 'Critical Analysis', 'Content Evaluation', 'Data Entry'],
+      payRange: '$14-$16/hour',
+      benefits: ['Flexible schedule', 'Remote work', 'Ongoing training', 'Stable income'],
+      applicationUrl: 'https://www.telusinternational.ai/opportunities',
+      postedDate: '2025-01-14'
+    },
+    {
+      id: 'proj-6',
+      title: 'Content Moderator - Multilingual',
+      company: 'AI Platform Partner',
+      companyUrl: 'https://apply.workable.com/toloka-ai/',
+      location: 'Remote (Multilingual)',
+      type: 'Contract',
+      category: 'Content Moderation',
+      description: 'Review and moderate user-generated content across various platforms for a trusted AI partner. Ensure community standards are maintained while respecting cultural differences and freedom of expression.',
+      requirements: [
+        'Fluency in English plus one additional language',
+        'Strong decision-making skills',
+        'Emotional resilience',
+        'Understanding of cultural contexts',
+        'Ability to work in fast-paced environment'
+      ],
+      skills: ['Content Moderation', 'Policy Enforcement', 'Cultural Sensitivity', 'Quick Decision Making'],
+      payRange: '$13-$19/hour',
+      benefits: ['Psychological support', 'Flexible shifts', 'Career growth', 'Training provided'],
+      applicationUrl: 'https://apply.workable.com/toloka-ai/',
+      postedDate: '2025-01-16'
+    },
+    {
+      id: 'proj-7',
+      title: 'Linguistic Annotation Specialist',
+      company: 'Language Partner',
+      companyUrl: 'https://jobs.lever.co/rws',
+      location: 'Remote (Worldwide)',
+      type: 'Freelance',
+      category: 'AI Training & Data',
+      description: 'Work with a leading language services provider to annotate and tag linguistic data for NLP and machine learning models. Help improve language understanding in AI systems across multiple languages.',
+      requirements: [
+        'Native or near-native language proficiency',
+        'Understanding of linguistic concepts',
+        'Previous annotation experience (preferred)',
+        'Strong analytical skills',
+        'Ability to work with annotation tools'
+      ],
+      skills: ['Linguistic Analysis', 'NLP Annotation', 'Language Processing', 'Attention to Detail'],
+      payRange: '$18-$30/hour',
+      benefits: ['Remote flexibility', 'Language variety', 'Professional growth', 'Ongoing projects'],
+      applicationUrl: 'https://jobs.lever.co/rws',
+      postedDate: '2025-01-17',
+      featured: false
+    },
+    {
+      id: 'proj-8',
+      title: 'Speech Data Collection Specialist',
+      company: 'AI Training Partner',
+      companyUrl: 'https://jobs.lever.co/appen',
+      location: 'Remote (Multiple Regions)',
+      type: 'Contract',
+      category: 'AI Training',
+      description: 'Contribute to speech recognition and voice AI projects by recording and validating speech data for a global AI training partner. Help improve voice assistants and speech-to-text accuracy.',
+      requirements: [
+        'Clear speech and pronunciation',
+        'Quiet recording environment',
+        'Quality microphone or headset',
+        'Native language proficiency',
+        'Consistent availability for recordings'
+      ],
+      skills: ['Audio Recording', 'Speech Validation', 'Quality Control', 'Communication'],
+      payRange: '$12-$18/hour',
+      benefits: ['Flexible timing', 'Remote work', 'Bonus opportunities', 'Simple tasks'],
+      applicationUrl: 'https://jobs.lever.co/appen',
+      postedDate: '2025-01-16',
+      featured: false
+    },
+    {
+      id: 'proj-9',
+      title: 'Image Recognition Validator',
+      company: 'Vision AI Partner',
+      companyUrl: 'https://www.telusinternational.ai/opportunities',
+      location: 'Remote (Global)',
+      type: 'Part-time',
+      category: 'AI Training & Data',
+      description: 'Validate and improve image recognition models by reviewing AI-generated labels and classifications for a leading digital solutions partner. Work on computer vision projects for autonomous systems and visual search.',
+      requirements: [
+        'Good visual perception',
+        'Understanding of object categories',
+        'Reliable internet for image loading',
+        'Basic technical knowledge',
+        'Pattern recognition skills'
+      ],
+      skills: ['Image Analysis', 'Classification', 'Visual QA', 'Pattern Recognition'],
+      payRange: '$14-$20/hour',
+      benefits: ['Visual variety', 'Flexible schedule', 'Training provided', 'Remote work'],
+      applicationUrl: 'https://www.telusinternational.ai/opportunities',
+      postedDate: '2025-01-15',
+      featured: false
+    },
+    {
+      id: 'proj-10',
+      title: 'Video Content Evaluator',
+      company: 'Platform Partner',
+      companyUrl: 'https://apply.workable.com/toloka-ai/',
+      location: 'Remote (Worldwide)',
+      type: 'Contract',
+      category: 'Content Moderation',
+      description: 'Evaluate video content quality, relevance, and appropriateness for a global content platform partner. Help maintain high standards for user-generated content while supporting content creators.',
+      requirements: [
+        'Understanding of video formats',
+        'Cultural awareness',
+        'Judgment and critical thinking',
+        'Fluency in English',
+        'Stable video streaming capability'
+      ],
+      skills: ['Video Analysis', 'Content Evaluation', 'Policy Application', 'Communication'],
+      payRange: '$13-$21/hour',
+      benefits: ['Diverse content', 'Flexible hours', 'Career progression', 'Support team'],
+      applicationUrl: 'https://apply.workable.com/toloka-ai/',
+      postedDate: '2025-01-14',
+      featured: false
+    },
+    {
+      id: 'proj-11',
+      title: 'Technical Translation Reviewer',
+      company: 'Localization Partner',
+      companyUrl: 'https://jobs.lever.co/rws',
+      location: 'Remote (Technical Languages)',
+      type: 'Freelance',
+      category: 'Translation',
+      description: 'Review and refine technical translations for software, engineering, and scientific content through a premier localization partner. Ensure accuracy and consistency in specialized terminology across languages.',
+      requirements: [
+        'Technical background or education',
+        'Translation/localization experience',
+        'Domain-specific knowledge',
+        'Quality assurance mindset',
+        'Familiarity with technical glossaries'
+      ],
+      skills: ['Technical Translation', 'QA Review', 'Terminology Management', 'Subject Matter Expertise'],
+      payRange: '$25-$45/hour',
+      benefits: ['Expert-level projects', 'Long-term engagement', 'Professional rate', 'Skill development'],
+      applicationUrl: 'https://jobs.lever.co/rws',
+      postedDate: '2025-01-11',
+      featured: true
+    },
+    {
+      id: 'proj-12',
+      title: 'Text Categorization Analyst',
+      company: 'Data Partner',
+      companyUrl: 'https://jobs.lever.co/appen',
+      location: 'Remote (Worldwide)',
+      type: 'Part-time',
+      category: 'Data Labeling',
+      description: 'Categorize and tag text data for machine learning models working with a leading AI training partner. Help improve content classification, sentiment analysis, and topic modeling systems.',
+      requirements: [
+        'Strong reading comprehension',
+        'Analytical thinking',
+        'Consistency in categorization',
+        'Fluency in target language',
+        'Basic understanding of ML concepts (helpful)'
+      ],
+      skills: ['Text Analysis', 'Categorization', 'Pattern Recognition', 'Data Consistency'],
+      payRange: '$11-$17/hour',
+      benefits: ['Flexible timing', 'Remote location', 'Ongoing work', 'Training materials'],
+      applicationUrl: 'https://jobs.lever.co/appen',
+      postedDate: '2025-01-13',
+      featured: false
+    }
   ];
 
-  useEffect(() => {
-    fetchProjects();
-  }, [selectedCategory]);
+  const categories = ['all', 'AI Training & Data', 'Translation', 'Data Labeling', 'Content Moderation', 'Search Evaluation'];
 
-  const fetchProjects = async () => {
-    try {
-      setLoading(true);
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const params: any = { status: 'open' };
-      if (selectedCategory !== 'all') {
-        params.category = selectedCategory;
-      }
+  const filteredProjects = filter === 'all'
+    ? allProjects
+    : allProjects.filter(p => p.category === filter);
 
-      const response = await axios.get(`${API_URL}/api/v1/projects`, { params });
-      setProjects(response.data);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-    } finally {
-      setLoading(false);
+  const benefits = [
+    {
+      icon: <Globe className="w-6 h-6" />,
+      title: 'Verified Opportunities',
+      description: 'All projects are from established, reputable companies'
+    },
+    {
+      icon: <Zap className="w-6 h-6" />,
+      title: 'Application Support',
+      description: 'Get expert help with your application through verified agents'
+    },
+    {
+      icon: <DollarSign className="w-6 h-6" />,
+      title: 'Competitive Pay',
+      description: 'Work on projects with fair compensation and flexible schedules'
+    },
+    {
+      icon: <Shield className="w-6 h-6" />,
+      title: 'Profile Verification',
+      description: 'Stand out with our verification process and increase approval rates'
     }
-  };
+  ];
 
-  const filteredProjects = projects.filter(project =>
-    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      'ai_development': 'bg-blue-100 text-blue-700',
-      'automation': 'bg-purple-100 text-purple-700',
-      'prompt_engineering': 'bg-pink-100 text-pink-700',
-      'ml_training': 'bg-green-100 text-green-700',
-      'integration': 'bg-orange-100 text-orange-700'
-    };
-    return colors[category] || 'bg-gray-100 text-gray-700';
-  };
+  const whyRework = [
+    {
+      stat: '12+',
+      label: 'Project Types',
+      description: 'Diverse opportunities from our trusted partner network'
+    },
+    {
+      stat: '95%',
+      label: 'Approval Rate',
+      description: 'Our verified candidates have higher acceptance rates'
+    },
+    {
+      stat: '24hr',
+      label: 'Agent Response',
+      description: 'Get matched with an expert agent within 24 hours'
+    },
+    {
+      stat: '$4k+',
+      label: 'Avg. Monthly',
+      description: 'Average earnings across multiple projects'
+    }
+  ];
 
   return (
     <>
       <Head>
-        <title>Browse Projects - Remote-Works</title>
+        <title>Remote AI & Data Projects | TELUS, Toloka, RWS, Appen - Rework</title>
+        <meta name="description" content="Discover verified remote projects from TELUS International, Toloka AI, RWS, Appen and more. AI training, data annotation, translation, and content moderation opportunities. Get expert application support." />
+        <meta name="keywords" content="remote AI jobs, data annotation projects, translation jobs, TELUS International careers, Toloka AI jobs, RWS opportunities, Appen projects, remote work, freelance AI training" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://rework.com/platforms" />
+        <meta property="og:title" content="Remote AI & Data Projects - Verified Opportunities" />
+        <meta property="og:description" content="Verified remote projects from TELUS, Toloka, RWS, Appen. Get expert application support." />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Remote Project Opportunities - Rework" />
+        <meta name="twitter:description" content="500+ verified remote projects. AI training, data annotation, translation & more." />
+
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/platforms" />
       </Head>
 
       <div className="min-h-screen bg-white">
         {/* Navigation */}
-        <nav className="bg-white border-b border-accent-gray-200 sticky top-0 z-50">
+        <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              <div className="flex items-center cursor-pointer" onClick={() => router.push('/')}>
-                <Globe2 className="w-8 h-8 text-primary-500 mr-2" />
-                <div className="text-2xl font-bold text-accent-dark">
-                  Relay<span className="gradient-text">work</span>
-                </div>
-              </div>
-              <div className="flex items-center space-x-6">
-                <button onClick={() => router.push('/projects')} className="text-primary-500 font-medium">Browse Projects</button>
-                {isAuthenticated ? (
-                  <button onClick={() => router.push('/dashboard')} className="btn-primary">
-                    Dashboard
-                  </button>
-                ) : (
-                  <>
-                    <button onClick={() => router.push('/login')} className="text-accent-gray-600 hover:text-primary-500 transition font-medium">Login</button>
-                    <button onClick={() => router.push('/register')} className="btn-primary">
-                      Sign Up
-                    </button>
-                  </>
-                )}
+              <Logo size="md" showText={false} />
+              <div className="flex items-center space-x-4">
+                <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium text-sm">
+                  Home
+                </button>
+                <button
+                  onClick={() => router.push('/register')}
+                  className="relative group bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-all overflow-hidden"
+                >
+                  <span className="relative z-10">Get Started</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </button>
               </div>
             </div>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary-50 to-purple-50 py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h1 className="text-5xl font-bold text-accent-dark mb-4">
-                Browse AI Projects
-              </h1>
-              <p className="text-xl text-accent-gray-600 max-w-2xl mx-auto">
-                Discover async AI projects from companies worldwide. Work on your schedule, get verified for your skills.
-              </p>
+        <section className="relative pt-20 pb-16 px-6 lg:px-8 bg-gradient-to-br from-purple-50 via-amber-50 to-white overflow-hidden">
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
+            <div className="absolute top-40 right-20 w-72 h-72 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute bottom-20 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '3s' }}></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto text-center relative z-10">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
+              <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+              <span className="font-semibold text-sm">12+ Verified Project Types from Partners</span>
             </div>
 
-            {/* Search Bar */}
-            <div className="max-w-3xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-accent-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search projects by title, description, or skills..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 border-2 border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition text-lg"
-                />
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
+              Your Career Accelerator
+              <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
+                In the Digital Economy
+              </span>
+            </h1>
+
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
+              We don't just list jobs from partners; we prepare you for them. Get <span className="font-bold text-black">Profile Verification</span>, <span className="font-bold text-black">Application Readiness</span>, and <span className="font-bold text-black">Strategic Onboarding</span> to fast-track your access to curated remote opportunities.
+            </p>
+
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                onClick={() => router.push('/register?type=candidate')}
+                className="group relative bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center">
+                  <Rocket className="mr-2 w-5 h-5" />
+                  Get Verified & Hired
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-center flex-wrap gap-4 text-sm">
+              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm hover:border-purple-400 transition-colors">
+                <CheckCircle className="w-4 h-4 text-green-600" />
+                <span className="text-gray-700 font-semibold">95% Approval Rate</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-amber-200 shadow-sm hover:border-amber-400 transition-colors">
+                <Shield className="w-4 h-4 text-amber-600" />
+                <span className="text-gray-700 font-semibold">Verified Opportunities</span>
+              </div>
+              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm hover:border-purple-400 transition-colors">
+                <Clock className="w-4 h-4 text-purple-600" />
+                <span className="text-gray-700 font-semibold">24hr Expert Support</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Filters and Projects */}
-        <section className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Category Filters */}
-            <div className="mb-8 flex items-center space-x-4 overflow-x-auto pb-4">
-              <Filter className="w-5 h-5 text-accent-gray-500 flex-shrink-0" />
+        {/* Category Filter */}
+        <section className="py-8 px-6 lg:px-8 bg-gray-50 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-3">
               {categories.map((category) => (
                 <button
-                  key={category.value}
-                  onClick={() => setSelectedCategory(category.value)}
-                  className={`px-6 py-2 rounded-full font-medium whitespace-nowrap transition ${
-                    selectedCategory === category.value
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-accent-gray-100 text-accent-gray-700 hover:bg-accent-gray-200'
+                  key={category}
+                  onClick={() => setFilter(category)}
+                  className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${
+                    filter === category
+                      ? 'bg-gradient-to-r from-purple-600 to-amber-500 text-white shadow-lg'
+                      : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-purple-400'
                   }`}
                 >
-                  {category.label}
+                  {category === 'all' ? 'All Projects' : category}
                 </button>
               ))}
             </div>
-
-            {/* Projects Grid */}
-            {loading ? (
-              <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-                <p className="mt-4 text-accent-gray-600">Loading projects...</p>
-              </div>
-            ) : filteredProjects.length === 0 ? (
-              <div className="text-center py-20">
-                <Briefcase className="w-16 h-16 text-accent-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-accent-gray-700 mb-2">No projects found</h3>
-                <p className="text-accent-gray-500">Try adjusting your filters or check back later for new opportunities.</p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="bg-white rounded-2xl border-2 border-accent-gray-200 p-6 hover:border-primary-500 hover:shadow-xl transition-all cursor-pointer card-hover"
-                    onClick={() => router.push(`/projects/${project.id}`)}
-                  >
-                    {/* Category Badge */}
-                    <div className="mb-4">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(project.category)}`}>
-                        {project.category.replace('_', ' ').toUpperCase()}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-xl font-bold text-accent-dark mb-3 line-clamp-2">
-                      {project.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-accent-gray-600 mb-4 line-clamp-3">
-                      {project.description}
-                    </p>
-
-                    {/* Skills */}
-                    {project.required_skills && project.required_skills.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.required_skills.slice(0, 3).map((skill, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-primary-50 text-primary-700 rounded text-xs font-medium">
-                            {skill}
-                          </span>
-                        ))}
-                        {project.required_skills.length > 3 && (
-                          <span className="px-2 py-1 bg-accent-gray-100 text-accent-gray-600 rounded text-xs font-medium">
-                            +{project.required_skills.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Project Meta */}
-                    <div className="flex items-center justify-between pt-4 border-t border-accent-gray-200">
-                      <div className="flex items-center space-x-4 text-sm text-accent-gray-600">
-                        <div className="flex items-center">
-                          <DollarSign className="w-4 h-4 mr-1" />
-                          <span className="font-semibold text-accent-dark">${project.budget.toLocaleString()}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          <span>{formatDate(project.deadline)}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Company Info */}
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
-                          <BadgeCheck className="w-5 h-5 text-primary-500" />
-                        </div>
-                        <span className="text-sm text-accent-gray-700 font-medium">
-                          {project.owner?.profile?.company_name || 'Company'}
-                        </span>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-primary-500" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </section>
 
-        {/* CTA Section */}
-        {!isAuthenticated && (
-          <section className="py-16 bg-gradient-to-br from-primary-500 to-purple-600">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <h2 className="text-4xl font-bold text-white mb-4">
-                Ready to Start Working?
+        {/* Projects Grid */}
+        <section className="py-20 px-6 lg:px-8 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+                Verified Project Opportunities
               </h2>
-              <p className="text-xl text-white/90 mb-8">
-                Sign up now to apply for projects and showcase your AI expertise.
+              <p className="text-xl text-gray-600">
+                Curated opportunities from trusted companies. Apply with confidence.
               </p>
-              <button onClick={() => router.push('/register?type=freelancer')} className="bg-white text-primary-500 px-10 py-4 rounded-lg font-bold hover:shadow-2xl transition transform hover:scale-105 text-lg">
-                Join as Freelancer
-              </button>
             </div>
-          </section>
-        )}
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredProjects.map((project) => (
+                <div
+                  key={project.id}
+                  className="group relative bg-white rounded-2xl p-6 border-2 border-gray-200 hover:border-purple-500 transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
+                >
+                  {project.featured && (
+                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-current" />
+                      FEATURED
+                    </div>
+                  )}
+
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-black mb-2 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+                      {project.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                      <Briefcase className="w-4 h-4" />
+                      <span className="font-semibold text-purple-600">Partner Opportunity</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <MapPin className="w-4 h-4" />
+                      <span>{project.location}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                    {project.description}
+                  </p>
+
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">
+                      <Calendar className="w-3 h-3" />
+                      {project.type}
+                    </span>
+                    {project.payRange && (
+                      <span className="text-green-600 font-bold text-sm">
+                        {project.payRange}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {project.skills.slice(0, 3).map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    {project.skills.length > 3 && (
+                      <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                        +{project.skills.length - 3} more
+                      </span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedProject(project)}
+                    className="w-full bg-gradient-to-r from-purple-600 to-amber-500 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-amber-600 transition-all flex items-center justify-center gap-2 group"
+                  >
+                    View Details
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-20 px-6 lg:px-8 bg-gray-50">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+                Why Choose Rework?
+              </h2>
+              <p className="text-xl text-gray-600">
+                Stop searching. Get verified, get ready, and get hired.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-xl p-6 text-center hover:shadow-xl transition-all hover:-translate-y-1 border-2 border-gray-200 hover:border-purple-400"
+                >
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-amber-500 text-white mb-4">
+                    {benefit.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-black mb-2">{benefit.title}</h3>
+                  <p className="text-sm text-gray-600">{benefit.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Proven Results That Matter
+              </h2>
+              <p className="text-lg text-gray-200">
+                Join thousands who've accelerated their remote careers
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-4 gap-8">
+              {whyRework.map((item, index) => (
+                <div key={index} className="text-center group hover:scale-105 transition-transform">
+                  <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
+                    {item.stat}
+                  </div>
+                  <div className="text-lg font-bold mb-2">{item.label}</div>
+                  <p className="text-sm text-gray-300">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <Footer />
       </div>
+
+      {/* Project Detail Modal */}
+      {selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-amber-500 text-white p-6 rounded-t-2xl">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h2 className="text-3xl font-bold mb-2">{selectedProject.title}</h2>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Briefcase className="w-5 h-5" />
+                    <span className="text-lg font-semibold">Partner Opportunity</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{selectedProject.location}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{selectedProject.type}</span>
+                    </div>
+                    {selectedProject.payRange && (
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="w-4 h-4" />
+                        <span className="font-bold">{selectedProject.payRange}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="ml-4 p-2 hover:bg-white/20 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-8">
+              {/* Description */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-purple-600" />
+                  About This Project
+                </h3>
+                <p className="text-gray-700 leading-relaxed">{selectedProject.description}</p>
+              </div>
+
+              {/* Requirements */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-purple-600" />
+                  Requirements
+                </h3>
+                <ul className="space-y-2">
+                  {selectedProject.requirements.map((req, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-700">
+                      <div className="w-1.5 h-1.5 rounded-full bg-purple-600 mt-2 flex-shrink-0"></div>
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Skills */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-purple-600" />
+                  Required Skills
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {selectedProject.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Benefits */}
+              {selectedProject.benefits && selectedProject.benefits.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-black mb-3 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-purple-600" />
+                    Benefits
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {selectedProject.benefits.map((benefit, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-green-50 p-3 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        <span className="text-gray-700 text-sm">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <button
+                  onClick={() => {
+                    setSelectedProject(null);
+                    router.push('/register?type=candidate');
+                  }}
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-amber-500 text-white py-4 rounded-lg font-bold hover:from-purple-700 hover:to-amber-600 transition-all flex items-center justify-center gap-2"
+                >
+                  Apply Now
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedProject(null);
+                    router.push('/support');
+                  }}
+                  className="flex-1 bg-black text-white py-4 rounded-lg font-bold hover:bg-gray-800 transition-all flex items-center justify-center gap-2"
+                >
+                  Get Support
+                  <Users className="w-5 h-5" />
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-500 text-center mt-4">
+                Sign up to apply for this opportunity or get expert assistance from our support team
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

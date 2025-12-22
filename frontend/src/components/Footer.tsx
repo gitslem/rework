@@ -28,7 +28,7 @@ export default function Footer() {
                 </div>
                 <div className="flex items-start space-x-2">
                   <MapPin className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
-                  <span>5 buttermill ave L4K 0J5, CA</span>
+                  <span>Concord, CA</span>
                 </div>
               </div>
             </div>

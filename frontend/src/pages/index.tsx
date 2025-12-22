@@ -301,7 +301,7 @@ export default function Home() {
               "url": "https://rework.com",
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://rework.com/platforms?q={search_term_string}",
+                "target": "https://rework.com/projects?q={search_term_string}",
                 "query-input": "required name=search_term_string"
               }
             })
@@ -320,7 +320,7 @@ export default function Home() {
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center space-x-8">
-                <a href="#platforms" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">Platforms</a>
+                <a href="#projects" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">Projects</a>
                 <a href="#how-it-works" className="text-sm font-medium text-gray-600 hover:text-black transition-colors">How It Works</a>
                 <button onClick={() => router.push('/about')} className="text-sm font-medium text-gray-600 hover:text-black transition-colors">About</button>
                 <button onClick={() => router.push('/faq')} className="text-sm font-medium text-gray-600 hover:text-black transition-colors">FAQ</button>
@@ -346,7 +346,7 @@ export default function Home() {
             {/* Mobile Navigation */}
             {mobileMenuOpen && (
               <div className="lg:hidden py-4 space-y-4 border-t border-gray-200">
-                <a href="#platforms" className="block text-sm font-medium text-gray-600 hover:text-black">Platforms</a>
+                <a href="#projects" className="block text-sm font-medium text-gray-600 hover:text-black">Projects</a>
                 <a href="#how-it-works" className="block text-sm font-medium text-gray-600 hover:text-black">How It Works</a>
                 <button onClick={() => router.push('/about')} className="block w-full text-left text-sm font-medium text-gray-600 hover:text-black">About</button>
                 <button onClick={() => router.push('/faq')} className="block w-full text-left text-sm font-medium text-gray-600 hover:text-black">FAQ</button>
@@ -534,8 +534,8 @@ export default function Home() {
                 <Target className="w-5 h-5 text-purple-600" />
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
-              <h2 className={`text-4xl md:text-5xl font-extrabold text-black mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                What Is Rework?
+              <h2 className={`text-4xl md:text-5xl font-extrabold mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                What Is <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Rework</span>?
               </h2>
             </div>
 
@@ -601,7 +601,7 @@ export default function Home() {
         </section>
 
         {/* Platform Badges */}
-        <section id="platforms" className="py-20 px-6 lg:px-8 bg-white relative overflow-hidden">
+        <section id="projects" className="py-20 px-6 lg:px-8 bg-white relative overflow-hidden">
           {/* Animated Background Elements - Platform & Connection Theme */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/* Gradient Orbs */}
@@ -653,7 +653,7 @@ export default function Home() {
             {/* View All Button */}
             <div className="flex justify-center mt-8 animate-fade-in">
               <button
-                onClick={() => router.push('/platforms')}
+                onClick={() => router.push('/projects')}
                 className="group relative bg-black text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover-lift shadow-lg overflow-hidden"
               >
                 <span className="relative z-10 flex items-center space-x-2">
