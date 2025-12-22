@@ -404,10 +404,10 @@ export default function Home() {
               {/* Enhanced Subheadline with Clean Background */}
               <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                 <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
-                  Rework helps{' '}
+                  Your{' '}
                   <span className="relative inline-block group">
                     <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
-                      professionals prepare, verify, and connect
+                      trusted partner
                     </span>
                     <svg className="absolute -bottom-1 left-0 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
                       <path d="M0,3 Q50,6 100,3" stroke="url(#gradient-underline)" strokeWidth="3" fill="none" strokeLinecap="round"/>
@@ -419,9 +419,9 @@ export default function Home() {
                       </defs>
                     </svg>
                   </span>
-                  {' '}with legitimate remote work opportunities across{' '}
+                  {' '}connecting verified professionals with legitimate remote work opportunities through partnerships with{' '}
                   <span className="font-bold text-black relative">
-                    global digital work platforms
+                    leading global organizations
                   </span>
                 </p>
               </div>
