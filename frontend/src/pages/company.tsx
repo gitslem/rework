@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { ArrowRight, CheckCircle, Users, TrendingUp, Shield, Zap, Globe, DollarSign, Award, Target, Briefcase, Clock, Building2, Sparkles } from 'lucide-react';
 import Logo from '@/components/Logo';
@@ -6,103 +7,147 @@ import Footer from '@/components/Footer';
 
 export default function Company() {
   const router = useRouter();
+  const [counters, setCounters] = useState<Record<string, number>>({ stat1: 0, stat2: 0, stat3: 0, stat4: 0 });
+  const [hasAnimated, setHasAnimated] = useState(false);
 
   const benefits = [
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Access to Pre-Qualified Talent",
-      description: "Tap into a pool of verified candidates already approved for top AI training platforms. Save time on vetting and onboarding."
+      title: "Workforce-Ready Professionals",
+      description: "Access verified professionals who have completed our three-stage readiness system—Profile Verification, Application Readiness, and Employer-Aligned Onboarding."
     },
     {
       icon: <TrendingUp className="w-8 h-8" />,
-      title: "Scalable Workforce Solutions",
-      description: "Whether you need 10 or 1,000 candidates, our platform scales with your business needs seamlessly."
+      title: "98% Success Rate",
+      description: "Our professionals have a 98% success rate in securing roles because they're verified, prepared, and aligned before they apply to your opportunities."
     },
     {
       icon: <Shield className="w-8 h-8" />,
       title: "Quality Assurance",
-      description: "Every candidate is vetted by our verified agents who maintain a 98% success rate in platform approvals."
+      description: "Every professional undergoes comprehensive verification including identity checks, skill assessments, and eligibility reviews before accessing your opportunities."
     },
     {
       icon: <Zap className="w-8 h-8" />,
-      title: "Rapid Deployment",
-      description: "Get candidates approved and working on your projects within 24-48 hours, not weeks or months."
+      title: "Rapid Access to Talent",
+      description: "Connect with verified professionals in 24-48 hours. No lengthy recruitment cycles—our workforce readiness system accelerates hiring outcomes."
     },
     {
       icon: <Globe className="w-8 h-8" />,
-      title: "Global Reach",
-      description: "Access talent from around the world, enabling 24/7 operations and diverse perspectives on your projects."
+      title: "Global Talent Pool",
+      description: "Access professionals worldwide across 12+ project types and areas of expertise, enabling 24/7 operations and diverse skill sets for your projects."
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
-      title: "Cost-Effective",
-      description: "Reduce recruitment costs and overhead. Pay only for successful placements with flexible partnership models."
+      title: "Reduced Friction",
+      description: "Lower recruitment costs and time-to-hire. Our readiness system ensures professionals meet your requirements before applying, reducing screening overhead."
     }
   ];
 
   const useCases = [
     {
-      title: "AI Training Companies",
-      description: "Need hundreds of annotators for your next AI model? We connect you with pre-approved candidates ready to start immediately.",
+      title: "AI Training & Development",
+      description: "Partner with Remote-Works to access professionals verified for AI data annotation, content moderation, search quality evaluation, and machine learning projects.",
       icon: <Sparkles className="w-12 h-12" />
     },
     {
-      title: "Data Annotation Firms",
-      description: "Scale your annotation team instantly with vetted professionals who understand quality standards and platform requirements.",
+      title: "Data Services Companies",
+      description: "Scale your annotation, labeling, and categorization teams with workforce-ready professionals who understand quality standards and project requirements.",
       icon: <Target className="w-12 h-12" />
     },
     {
-      title: "Outsourcing Companies",
-      description: "Partner with us to expand your service offerings and provide guaranteed platform approvals to your clients.",
+      title: "Enterprise Tech Solutions",
+      description: "Expand your service offerings with access to verified professionals across technical translation, linguistic annotation, and specialized project types.",
       icon: <Briefcase className="w-12 h-12" />
     },
     {
-      title: "Tech Startups",
-      description: "Build your initial data labeling team quickly without the overhead of traditional recruitment processes.",
+      title: "Growing Startups",
+      description: "Build your initial project teams quickly with verified, prepared professionals—no traditional recruitment overhead or lengthy vetting processes.",
       icon: <Building2 className="w-12 h-12" />
     }
   ];
 
   const stats = [
-    { number: "20+", label: "Platforms Covered", description: "Access to major AI training platforms" },
-    { number: "98%", label: "Approval Success", description: "Industry-leading success rate" },
-    { number: "24hr", label: "Time to Deploy", description: "Fast candidate onboarding" },
-    { number: "27000", label: "Active Candidates", description: "Growing talent pool" }
+    { target: 12, suffix: "+", label: "Project Types", description: "Areas of expertise covered" },
+    { target: 98, suffix: "%", label: "Success Rate", description: "Industry-leading preparation" },
+    { target: 24, suffix: "hr", label: "Time to Connect", description: "Fast professional matching" },
+    { target: 5000, suffix: "+", label: "Verified Professionals", description: "Growing talent network" }
   ];
 
   const features = [
-    "Bulk candidate processing and approval",
-    "Custom integration with your systems",
-    "White-label solution options",
-    "Dedicated account management",
-    "Real-time analytics and reporting",
-    "Flexible pricing models",
+    "Access to workforce-ready professionals",
+    "Three-stage verification system",
+    "Custom partnership models",
+    "Dedicated partner success team",
+    "Real-time professional matching",
+    "Flexible collaboration options",
     "Quality assurance guarantees",
     "Priority support 24/7"
   ];
 
+  // Number counting animation
+  useEffect(() => {
+    if (hasAnimated) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setHasAnimated(true);
+
+          // Animate each stat
+          stats.forEach((stat, index) => {
+            const duration = 2000; // 2 seconds
+            const steps = 60;
+            const increment = stat.target / steps;
+            let current = 0;
+
+            const timer = setInterval(() => {
+              current += increment;
+              if (current >= stat.target) {
+                current = stat.target;
+                clearInterval(timer);
+              }
+
+              setCounters(prev => ({
+                ...prev,
+                [`stat${index + 1}`]: Math.floor(current)
+              }));
+            }, duration / steps);
+          });
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    const statsElement = document.getElementById('stats-section');
+    if (statsElement) {
+      observer.observe(statsElement);
+    }
+
+    return () => observer.disconnect();
+  }, [hasAnimated]);
+
   return (
     <>
       <Head>
-        <title>For Companies - Hire Pre-Approved Remote AI Talent | Rework Enterprise Solutions</title>
-        <meta name="description" content="Scale your AI training & data annotation teams with Rework. Access 27,000+ pre-qualified professionals approved for Outlier, Appen, Welocalize, TELUS Digital & RWS. Reduce recruitment costs by 80%. Deploy teams in 24 hours. B2B workforce solutions for AI companies." />
-        <meta name="keywords" content="hire AI trainers, data annotation workforce, remote AI team, AI training talent, data labeling team, outsource AI training, AI workforce solutions, machine learning annotators, hire remote data scientists, AI training recruitment, enterprise AI solutions" />
+        <title>For Companies - Partner with Workforce-Ready Professionals | Remote-Works</title>
+        <meta name="description" content="Partner with Remote-Works to access verified professionals who have completed our three-stage workforce readiness system. 98% success rate. 12+ project types. Connect with workforce-ready talent in 24 hours. Professional talent platform for companies seeking verified, prepared professionals." />
+        <meta name="keywords" content="workforce readiness, verified professionals, professional talent platform, AI project talent, data annotation professionals, remote work partnerships, enterprise talent solutions, workforce verification, professional preparation, employer partnerships" />
 
         {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://rework.com/company" />
-        <meta property="og:title" content="Hire Pre-Approved AI Training & Data Annotation Teams - Rework" />
-        <meta property="og:description" content="Access 27,000+ pre-qualified professionals. Deploy teams in 24 hours. 98% approval rate. Enterprise workforce solutions." />
-        <meta property="og:site_name" content="Rework" />
+        <meta property="og:url" content="https://remote-works.io/company" />
+        <meta property="og:title" content="Partner with Workforce-Ready Professionals - Remote-Works" />
+        <meta property="og:description" content="Access verified professionals. 98% success rate. Three-stage workforce readiness system. Enterprise partnerships." />
+        <meta property="og:site_name" content="Remote-Works" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Rework for Companies - Enterprise AI Workforce Solutions" />
-        <meta name="twitter:description" content="Hire pre-approved AI training & data annotation professionals. 24hr deployment. 27,000+ talent pool." />
+        <meta name="twitter:title" content="Remote-Works for Companies - Workforce Readiness Platform" />
+        <meta name="twitter:description" content="Partner with verified professionals. 24hr connection. 5,000+ workforce-ready talent." />
 
         {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://rework.com/company" />
+        <link rel="canonical" href="https://remote-works.io/company" />
 
         {/* Structured Data - Service */}
         <script
@@ -111,16 +156,16 @@ export default function Company() {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Service",
-              "name": "Rework Enterprise Workforce Solutions",
-              "description": "Pre-qualified AI training and data annotation workforce for companies",
+              "name": "Remote-Works Enterprise Partnerships",
+              "description": "Workforce readiness platform connecting companies with verified professionals",
               "provider": {
                 "@type": "Organization",
-                "name": "Rework"
+                "name": "Remote-Works"
               },
               "areaServed": "Worldwide",
               "audience": {
                 "@type": "BusinessAudience",
-                "audienceType": "AI Training Companies, Data Annotation Firms, Tech Startups"
+                "audienceType": "AI Companies, Data Services Firms, Tech Startups, Enterprise Solutions"
               }
             })
           }}
@@ -138,7 +183,7 @@ export default function Company() {
                   Back to Home
                 </button>
                 <button
-                  onClick={() => router.push('/agent-signup?type=company')}
+                  onClick={() => router.push('/register')}
                   className="relative group bg-black text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-all overflow-hidden"
                 >
                   <span className="relative z-10">Partner With Us</span>
@@ -161,28 +206,28 @@ export default function Company() {
           <div className="max-w-6xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
               <Building2 className="w-4 h-4" />
-              <span className="font-semibold text-sm">Enterprise Solutions</span>
+              <span className="font-semibold text-sm">For Companies</span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-6">
-              Scale Your Workforce with
+              Partner with Verified,
               <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
-                Pre-Qualified Talent
+                Workforce-Ready Professionals
               </span>
             </h1>
 
             <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              Partner with Remote-Works to access thousands of verified candidates already approved for top AI training platforms. Reduce recruitment time from months to days.
+              Remote-Works connects you with professionals who have completed our three-stage workforce readiness system—Profile Verification, Application Readiness, and Employer-Aligned Onboarding. Access verified, prepared, and aligned talent across 12+ project types with a 98% success rate.
             </p>
 
             <div className="flex justify-center gap-4 mb-8">
               <button
-                onClick={() => router.push('/agent-signup?type=company')}
+                onClick={() => router.push('/register')}
                 className="group relative bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl overflow-hidden"
               >
                 <span className="relative z-10 flex items-center">
                   <Users className="mr-2 w-5 h-5" />
-                  Start Partnership
+                  Become a Partner
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -192,11 +237,11 @@ export default function Company() {
             <div className="flex items-center justify-center flex-wrap gap-4 text-sm">
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm">
                 <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700 font-semibold">No Setup Fees</span>
+                <span className="text-gray-700 font-semibold">Free Platform</span>
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-amber-200 shadow-sm">
                 <Clock className="w-4 h-4 text-amber-600" />
-                <span className="text-gray-700 font-semibold">24hr Deployment</span>
+                <span className="text-gray-700 font-semibold">24hr Connection</span>
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm">
                 <Award className="w-4 h-4 text-purple-600" />
@@ -207,13 +252,13 @@ export default function Company() {
         </section>
 
         {/* Stats Section */}
-        <section className="py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white">
+        <section id="stats-section" className="py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center group hover:scale-105 transition-transform">
                   <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">
-                    {stat.number}
+                    {counters[`stat${index + 1}`]}{stat.suffix}
                   </div>
                   <div className="text-lg font-bold mb-2">{stat.label}</div>
                   <p className="text-sm text-gray-300">{stat.description}</p>
@@ -231,7 +276,7 @@ export default function Company() {
                 Why Partner with Remote-Works?
               </h2>
               <p className="text-xl text-gray-600">
-                Transform your workforce recruitment with our proven platform
+                Access workforce-ready professionals through our proven three-stage system
               </p>
             </div>
 
@@ -264,7 +309,7 @@ export default function Company() {
                 Perfect For Your Business
               </h2>
               <p className="text-xl text-gray-600">
-                Trusted by companies across multiple industries
+                Trusted by companies seeking workforce-ready professionals
               </p>
             </div>
 
@@ -294,10 +339,10 @@ export default function Company() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
-                What's Included
+                Partnership Benefits
               </h2>
               <p className="text-xl text-gray-600">
-                Everything you need to scale your workforce efficiently
+                Everything you need to access workforce-ready professionals efficiently
               </p>
             </div>
 
@@ -327,19 +372,19 @@ export default function Company() {
 
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-              Ready to Transform Your Recruitment?
+              Ready to Access Workforce-Ready Professionals?
             </h2>
             <p className="text-xl text-gray-200 mb-8 leading-relaxed">
-              Join leading companies who trust Remote-Works for their workforce needs. Let's discuss how we can help you scale.
+              Join companies who partner with Remote-Works for verified, prepared, and aligned professionals. Let's discuss how our workforce readiness system accelerates your hiring outcomes.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <button
-                onClick={() => router.push('/agent-signup?type=company')}
+                onClick={() => router.push('/register')}
                 className="group bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105"
               >
                 <span className="flex items-center justify-center">
-                  Get Started Now
+                  Become a Partner
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </span>
               </button>
@@ -353,8 +398,8 @@ export default function Company() {
 
             <p className="text-sm text-gray-300 mt-8">
               Have questions? Contact us at{' '}
-              <a href="mailto:partnerships@remote-works.io" className="text-amber-400 hover:text-amber-300 font-semibold">
-                partnerships@remote-works.io
+              <a href="mailto:support@remote-works.io" className="text-amber-400 hover:text-amber-300 font-semibold">
+                support@remote-works.io
               </a>
             </p>
           </div>
