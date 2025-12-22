@@ -189,8 +189,20 @@ export default function TrustTransparency() {
   return (
     <>
       <Head>
-        <title>Trust & Transparency | Rework</title>
-        <meta name="description" content="Complete transparency about our role, services, and commitments. Learn what we do, what we don't do, and how we protect our community while maintaining ethical standards." />
+        <title>Trust & Transparency | Ethical Remote Work Platform</title>
+        <meta name="description" content="Complete transparency about our role, services, and commitments. Learn what we do, what we don't do, and how we protect our community while maintaining ethical standards in remote work opportunities." />
+        <meta name="keywords" content="trust transparency, ethical remote work, platform integrity, honest career services, transparent job platform, ethical employment, remote work standards, professional integrity" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Trust & Transparency - Rework" />
+        <meta property="og:description" content="Complete transparency about our services and ethical standards in remote work placement." />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Trust & Transparency - Rework" />
+        <meta name="twitter:description" content="Ethical standards and transparency in remote work opportunities." />
+
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/trust-transparency" />
       </Head>
 
       <div className="min-h-screen bg-white">

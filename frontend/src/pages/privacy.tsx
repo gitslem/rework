@@ -12,8 +12,16 @@ export default function Privacy() {
   return (
     <>
       <Head>
-        <title>Privacy Policy | Remote-Works</title>
-        <meta name="description" content="Remote-Works Privacy Policy - Learn how we collect, use, and protect your personal information." />
+        <title>Privacy Policy | Rework Remote Work Platform</title>
+        <meta name="description" content="Rework Privacy Policy - Learn how we collect, use, and protect your personal information on our remote work platform. Your data security and privacy are our priorities." />
+        <meta name="keywords" content="privacy policy, data protection, personal information security, user privacy, data security, privacy rights, information protection" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Privacy Policy - Rework" />
+        <meta property="og:description" content="Learn how we protect your personal information and maintain your privacy." />
+
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/privacy" />
       </Head>
 
       <div className="min-h-screen bg-white">

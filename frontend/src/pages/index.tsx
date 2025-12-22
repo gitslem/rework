@@ -24,6 +24,14 @@ export default function Home() {
   const [missionVisible, setMissionVisible] = useState(false);
   const missionRef = useRef<HTMLDivElement>(null);
 
+  // Stats counting animation
+  const [platformsCount, setPlatformsCount] = useState(0);
+  const [avgIncome, setAvgIncome] = useState(0);
+  const [successRate, setSuccessRate] = useState(0);
+  const [supportHours, setSupportHours] = useState(0);
+  const statsAnimatedRef = useRef(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -59,10 +67,82 @@ export default function Home() {
     };
   }, []);
 
+  // Intersection Observer for stats counting animation
+  useEffect(() => {
+    let intervals: NodeJS.Timeout[] = [];
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !statsAnimatedRef.current) {
+          statsAnimatedRef.current = true;
+
+          // Animate platforms count from 0 to 20
+          let platformFrame = 0;
+          const platformInterval = setInterval(() => {
+            platformFrame++;
+            setPlatformsCount(platformFrame);
+            if (platformFrame >= 20) clearInterval(platformInterval);
+          }, 50);
+          intervals.push(platformInterval);
+
+          // Animate avg income from 0 to 4000
+          let incomeFrame = 0;
+          const incomeInterval = setInterval(() => {
+            incomeFrame += 100;
+            if (incomeFrame >= 4000) {
+              setAvgIncome(4000);
+              clearInterval(incomeInterval);
+            } else {
+              setAvgIncome(incomeFrame);
+            }
+          }, 20);
+          intervals.push(incomeInterval);
+
+          // Animate success rate from 0 to 95
+          let rateFrame = 0;
+          const rateInterval = setInterval(() => {
+            rateFrame += 2;
+            if (rateFrame >= 95) {
+              setSuccessRate(95);
+              clearInterval(rateInterval);
+            } else {
+              setSuccessRate(rateFrame);
+            }
+          }, 20);
+          intervals.push(rateInterval);
+
+          // Animate support hours from 0 to 24
+          let hoursFrame = 0;
+          const hoursInterval = setInterval(() => {
+            hoursFrame++;
+            setSupportHours(hoursFrame);
+            if (hoursFrame >= 24) clearInterval(hoursInterval);
+          }, 40);
+          intervals.push(hoursInterval);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    const currentStatsRef = statsRef.current;
+    if (currentStatsRef) {
+      observer.observe(currentStatsRef);
+    }
+
+    return () => {
+      // Clear all intervals on cleanup
+      intervals.forEach(interval => clearInterval(interval));
+      if (currentStatsRef) {
+        observer.unobserve(currentStatsRef);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const stats = [
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
     { number: "$4k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
-    { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
+    { number: "95%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
     { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
   ];
 
@@ -90,8 +170,8 @@ export default function Home() {
     },
     {
       icon: <Target className="w-6 h-6" />,
-      title: "No False Promises",
-      description: "We don't guarantee jobs or approvals—we provide support and access."
+      title: "Professional Standards",
+      description: "Preparation and access, delivered within enterprise hiring standards."
     },
     {
       icon: <Sparkles className="w-6 h-6" />,
@@ -249,21 +329,21 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Rework - Remote AI Training Jobs | Get Approved for Outlier, Appen, Welocalize & More</title>
-        <meta name="description" content="Get approved for remote AI training and data annotation jobs on Outlier, Appen, Welocalize, TELUS Digital, RWS & 20+ platforms. Expert verification support. 98% success rate. Work from home with $4k+ avg monthly income." />
-        <meta name="keywords" content="remote work, AI training jobs, data annotation jobs, remote AI jobs, work from home, Outlier alternative, Appen alternative, Welocalize jobs, TELUS Digital jobs, RWS jobs, remote data labeling, machine learning jobs, AI training platform, remote work opportunities, data annotation platform" />
+        <title>Remote Work Opportunities with Personalized Support | Professional Career Platform</title>
+        <meta name="description" content="Access verified remote work opportunities worldwide with personalized application support. Expert career guidance, professional profile verification, and structured onboarding to help you succeed in remote AI training, data annotation, translation, and digital content roles." />
+        <meta name="keywords" content="remote work opportunities, work from home jobs, personalized career support, remote AI training jobs, data annotation careers, translation jobs, content moderation roles, remote job platform, professional verification, career readiness, digital nomad jobs, flexible remote work, freelance opportunities, remote career guidance" />
 
         {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://rework.com/" />
-        <meta property="og:title" content="Rework - Get Approved for Remote AI Training & Data Annotation Jobs" />
-        <meta property="og:description" content="Join 27,000+ professionals earning $4k+ monthly on Outlier, Appen, Welocalize & more. 98% approval success rate." />
+        <meta property="og:title" content="Remote Work Platform with Personalized Career Support" />
+        <meta property="og:description" content="Join thousands of professionals accessing verified remote opportunities with expert guidance. 98% success rate. Personalized support for remote AI training, data annotation, translation, and more." />
         <meta property="og:site_name" content="Rework" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Rework - Remote AI Training & Data Annotation Jobs" />
-        <meta name="twitter:description" content="Get approved for remote AI jobs on Outlier, Appen, Welocalize & 20+ platforms. 98% success rate." />
+        <meta name="twitter:title" content="Remote Work with Professional Career Support" />
+        <meta name="twitter:description" content="Verified remote work opportunities with personalized application support. Expert career guidance for AI training, data annotation, and translation roles." />
 
         {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />
@@ -404,10 +484,10 @@ export default function Home() {
               {/* Enhanced Subheadline with Clean Background */}
               <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                 <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
-                  Rework helps{' '}
+                  Your{' '}
                   <span className="relative inline-block group">
                     <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
-                      professionals prepare, verify, and connect
+                      trusted partner
                     </span>
                     <svg className="absolute -bottom-1 left-0 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
                       <path d="M0,3 Q50,6 100,3" stroke="url(#gradient-underline)" strokeWidth="3" fill="none" strokeLinecap="round"/>
@@ -419,9 +499,9 @@ export default function Home() {
                       </defs>
                     </svg>
                   </span>
-                  {' '}with legitimate remote work opportunities across{' '}
+                  {' '}connecting verified professionals with legitimate remote work opportunities through partnerships with{' '}
                   <span className="font-bold text-black relative">
-                    global digital work platforms
+                    leading global organizations
                   </span>
                 </p>
               </div>
@@ -434,7 +514,7 @@ export default function Home() {
                       <CheckCircle className="w-6 h-6 text-green-600" />
                       <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-green-900 font-bold text-sm sm:text-base">98% Success Rate</span>
+                    <span className="text-green-900 font-bold text-sm sm:text-base">95% Success Rate</span>
                   </div>
                 </div>
                 <div className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 px-5 py-3 rounded-2xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
@@ -716,7 +796,7 @@ export default function Home() {
           </div>
 
           {/* Stats Content */}
-          <div className="max-w-6xl mx-auto relative z-10">
+          <div ref={statsRef} className="max-w-6xl mx-auto relative z-10">
             {/* Section Header */}
             <div className="text-center mb-16">
               <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-purple-200 mb-6">
@@ -733,42 +813,55 @@ export default function Home() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className={`text-center group animate-fade-in-up stagger-${index + 1} cursor-default`}
-                  style={{ animationDelay: `${index * 0.15}s` }}
-                >
-                  {/* Icon Container with Glow Effect */}
-                  <div className="relative inline-flex items-center justify-center mb-6">
-                    {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+              {stats.map((stat, index) => {
+                let displayValue = stat.number;
+                if (index === 0) {
+                  displayValue = `${platformsCount}+`;
+                } else if (index === 1) {
+                  displayValue = `$${(avgIncome / 1000).toFixed(1)}k+`;
+                } else if (index === 2) {
+                  displayValue = `${successRate}%`;
+                } else if (index === 3) {
+                  displayValue = `${supportHours}/7`;
+                }
 
-                    {/* Icon */}
-                    <div
-                      className="relative w-20 h-20 bg-gradient-to-br from-purple-50 to-amber-50 backdrop-filter backdrop-blur-lg border-2 border-purple-200 rounded-2xl flex items-center justify-center shadow-lg hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
-                      style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
-                    >
-                      <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
-                        {stat.icon}
+                return (
+                  <div
+                    key={index}
+                    className={`text-center group animate-fade-in-up stagger-${index + 1} cursor-default`}
+                    style={{ animationDelay: `${index * 0.15}s` }}
+                  >
+                    {/* Icon Container with Glow Effect */}
+                    <div className="relative inline-flex items-center justify-center mb-6">
+                      {/* Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+
+                      {/* Icon */}
+                      <div
+                        className="relative w-20 h-20 bg-gradient-to-br from-purple-50 to-amber-50 backdrop-filter backdrop-blur-lg border-2 border-purple-200 rounded-2xl flex items-center justify-center shadow-lg hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
+                        style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
+                      >
+                        <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
+                          {stat.icon}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Number with Gradient */}
-                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-                    {stat.number}
-                  </div>
+                    {/* Number with Gradient */}
+                    <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                      {displayValue}
+                    </div>
 
-                  {/* Label */}
-                  <div className="text-sm md:text-base text-gray-600 font-semibold tracking-wide uppercase group-hover:text-black transition-colors duration-300">
-                    {stat.label}
-                  </div>
+                    {/* Label */}
+                    <div className="text-sm md:text-base text-gray-600 font-semibold tracking-wide uppercase group-hover:text-black transition-colors duration-300">
+                      {stat.label}
+                    </div>
 
-                  {/* Decorative Line */}
-                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100"></div>
-                </div>
-              ))}
+                    {/* Decorative Line */}
+                    <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100"></div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

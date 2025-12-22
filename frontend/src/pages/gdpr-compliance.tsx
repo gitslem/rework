@@ -192,8 +192,16 @@ export default function GDPRCompliance() {
   return (
     <>
       <Head>
-        <title>GDPR Compliance | RemoteWorks</title>
-        <meta name="description" content="Learn how RemoteWorks complies with GDPR regulations and protects your personal data. Understand your rights and our data protection practices." />
+        <title>GDPR Compliance | Rework Remote Work Platform</title>
+        <meta name="description" content="Learn how Rework complies with GDPR regulations and protects your personal data. Understand your rights under GDPR and our comprehensive data protection practices for remote work professionals." />
+        <meta name="keywords" content="GDPR compliance, data protection, GDPR rights, personal data protection, EU privacy regulations, data security, privacy compliance, user data rights" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="GDPR Compliance - Rework" />
+        <meta property="og:description" content="Our commitment to GDPR compliance and protecting your personal data." />
+
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://rework.com/gdpr-compliance" />
       </Head>
 
       <div className="min-h-screen bg-white">
