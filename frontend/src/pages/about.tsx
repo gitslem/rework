@@ -14,30 +14,49 @@ export default function About() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
+  const teamMembers = [
+    {
+      name: "Anslem Ebiega",
+      role: "Teams Lead",
+      icon: <Users className="w-8 h-8" />
+    },
+    {
+      name: "Jubal Simire",
+      role: "Support Lead",
+      icon: <MessageSquare className="w-8 h-8" />
+    },
+    {
+      name: "Salisu Mudassir",
+      role: "Marketing Lead",
+      icon: <TrendingUp className="w-8 h-8" />
+    },
+    {
+      name: "Hannah Elio",
+      role: "Onboarding Lead",
+      icon: <UserPlus className="w-8 h-8" />
+    }
+  ];
+
   const values = [
     {
       icon: <Shield className="w-8 h-8" />,
       title: "Trusted Partnerships",
       description: "We partner exclusively with established global organizations that maintain high standards for remote work quality, fair compensation, and professional development.",
-      color: "bg-black"
     },
     {
       icon: <Users className="w-8 h-8" />,
       title: "Professional Integrity",
       description: "Every professional in our network undergoes comprehensive verification to ensure authenticity, credibility, and readiness to meet international work standards.",
-      color: "bg-gray-800"
     },
     {
       icon: <Target className="w-8 h-8" />,
       title: "Quality-First Approach",
       description: "We prioritize long-term career success over quick placements. Our structured guidance ensures professionals are genuinely prepared for remote work excellence.",
-      color: "bg-gray-700"
     },
     {
       icon: <Heart className="w-8 h-8" />,
       title: "Transparent Communication",
       description: "Complete honesty about processes, requirements, and expectations. We build trust through clear communication and realistic guidance at every step.",
-      color: "bg-gray-900"
     }
   ];
 
@@ -47,28 +66,28 @@ export default function About() {
       title: "Professional Verification",
       count: "Rigorous",
       description: "Multi-level verification process ensuring every professional meets international standards for identity, skills, and professional readiness.",
-      color: "from-blue-600 to-cyan-600"
+      color: "from-purple-600 to-pink-600"
     },
     {
       icon: <MessageSquare className="w-12 h-12" />,
       title: "Expert Guidance",
       count: "Personalized",
       description: "One-on-one career coaching from specialists who understand global platform requirements and industry best practices.",
-      color: "from-purple-600 to-pink-600"
+      color: "from-amber-600 to-yellow-600"
     },
     {
       icon: <Award className="w-12 h-12" />,
       title: "Career Development",
       count: "Continuous",
       description: "Ongoing professional development resources, skill enhancement programs, and career advancement support for long-term success.",
-      color: "from-green-600 to-emerald-600"
+      color: "from-purple-600 to-amber-600"
     },
     {
       icon: <Globe className="w-12 h-12" />,
       title: "Global Network",
       count: "20+ Partners",
       description: "Direct access to vetted opportunities through our partnerships with leading organizations in AI, language services, and digital content.",
-      color: "from-orange-600 to-red-600"
+      color: "from-pink-600 to-purple-600"
     }
   ];
 
@@ -135,7 +154,7 @@ export default function About() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev === trustpilotReviews.length - 1 ? 0 : prev + 1));
-    }, 5000); // Change testimonial every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -146,7 +165,7 @@ export default function About() {
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`w-5 h-5 ${i < rating ? 'fill-green-500 text-green-500' : 'text-gray-300'}`}
+            className={`w-5 h-5 ${i < rating ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`}
           />
         ))}
       </div>
@@ -156,25 +175,25 @@ export default function About() {
   return (
     <>
       <Head>
-        <title>About Rework | Professional Remote Work Platform with Personalized Career Support</title>
-        <meta name="description" content="Rework has helped thousands of professionals access verified remote work opportunities with personalized support. 98% success rate. Leading platform for remote AI training, data annotation, translation, and digital content careers with expert guidance." />
-        <meta name="keywords" content="about rework, remote work platform, personalized career support, AI training careers, data annotation jobs, remote opportunities, work from home platform, professional development, career readiness program, remote job assistance, flexible work opportunities" />
+        <title>About Remote-Works | Professional Remote Work Platform with Personalized Career Support</title>
+        <meta name="description" content="Remote-Works has helped thousands of professionals access verified remote work opportunities with personalized support. 95% success rate. Leading platform for remote AI training, data annotation, translation, and digital content careers with expert guidance." />
+        <meta name="keywords" content="about remote-works, remote work platform, personalized career support, AI training careers, data annotation jobs, remote opportunities, work from home platform, professional development, career readiness program, remote job assistance, flexible work opportunities" />
 
         {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://rework.com/about" />
-        <meta property="og:title" content="About Rework - Professional Remote Work Platform" />
-        <meta property="og:description" content="Learn how Rework provides personalized support to help professionals access verified remote work opportunities with 98% success rate." />
-        <meta property="og:site_name" content="Rework" />
+        <meta property="og:url" content="https://remote-works.io/about" />
+        <meta property="og:title" content="About Remote-Works - Professional Remote Work Platform" />
+        <meta property="og:description" content="Learn how Remote-Works provides personalized support to help professionals access verified remote work opportunities with 95% success rate." />
+        <meta property="og:site_name" content="Remote-Works" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Rework - Remote Work with Expert Support" />
-        <meta name="twitter:description" content="Thousands of successful placements. 98% success rate. Personalized support for remote work opportunities." />
+        <meta name="twitter:title" content="About Remote-Works - Remote Work with Expert Support" />
+        <meta name="twitter:description" content="Thousands of successful placements. 95% success rate. Personalized support for remote work opportunities." />
 
         {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://rework.com/about" />
+        <link rel="canonical" href="https://remote-works.io/about" />
 
         {/* Structured Data - AboutPage */}
         <script
@@ -183,12 +202,12 @@ export default function About() {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "AboutPage",
-              "name": "About Rework",
+              "name": "About Remote-Works",
               "description": "Professional career platform partnering with leading global organizations to connect verified professionals with legitimate remote opportunities in AI training, data annotation, translation, and digital content creation",
               "mainEntity": {
                 "@type": "Organization",
-                "name": "Rework",
-                "url": "https://rework.com",
+                "name": "Remote-Works",
+                "url": "https://remote-works.io",
                 "foundingDate": "2023",
                 "description": "Professional remote work platform with partnerships across 20+ global organizations",
                 "numberOfEmployees": {
@@ -205,16 +224,16 @@ export default function About() {
         {/* Navigation */}
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-20 md:h-24 py-3">
-              <Logo onClick={() => router.push('/')} showText={false} size="lg" />
+            <div className="flex justify-between items-center h-20">
+              <Logo onClick={() => router.push('/')} showText={false} size="md" />
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-8">
-                <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium">Home</button>
-                <button onClick={() => router.push('/login')} className="text-gray-600 hover:text-black transition-colors font-medium">Sign In</button>
+              <div className="hidden md:flex items-center space-x-4">
+                <button onClick={() => router.push('/')} className="text-gray-600 hover:text-black transition-colors font-medium text-sm">Home</button>
+                <button onClick={() => router.push('/login')} className="text-gray-600 hover:text-black transition-colors font-medium text-sm">Sign In</button>
                 <button
                   onClick={() => router.push('/register')}
-                  className="bg-black text-white px-6 py-2.5 rounded-full font-semibold hover:bg-gray-800 hover:scale-105 transition-all duration-200"
+                  className="bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-2 rounded-full font-semibold hover:opacity-90 transition-all"
                 >
                   Get Started
                 </button>
@@ -234,24 +253,31 @@ export default function About() {
               <div className="md:hidden py-4 space-y-3 border-t border-gray-200">
                 <button onClick={() => { router.push('/'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">Home</button>
                 <button onClick={() => { router.push('/login'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-600 hover:text-black hover:bg-gray-50 transition-colors font-medium">Sign In</button>
-                <button onClick={() => { router.push('/register'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors mx-4">Get Started</button>
+                <button onClick={() => { router.push('/register'); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white rounded-lg font-semibold mx-4">Get Started</button>
               </div>
             )}
           </div>
         </nav>
 
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-20 pb-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-amber-50 to-white pt-20 pb-16">
+          {/* Background Elements */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-20 left-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
+            <div className="absolute top-40 right-20 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '1.5s' }}></div>
+            <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '3s' }}></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center max-w-4xl mx-auto space-y-6">
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-5xl md:text-6xl font-extrabold text-black leading-tight">
                 Your Trusted Partner for
-                <span className="block text-black">
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
                   Global Remote Work Success
                 </span>
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Rework is a professional career platform partnering with leading global organizations to connect verified professionals
+              <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                Remote-Works is a professional career platform partnering with leading global organizations to connect verified professionals
                 with legitimate remote opportunities in AI training, data annotation, translation, and digital content creation.
               </p>
             </div>
@@ -259,19 +285,19 @@ export default function About() {
         </section>
 
         {/* Mission & Vision Section */}
-        <section className="py-24 bg-white">
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
                 <div className="inline-block mb-4">
-                  <span className="bg-gray-100 text-black px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide">Our Mission</span>
+                  <span className="bg-gradient-to-r from-purple-600 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide">Our Mission</span>
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                <h2 className="text-4xl font-extrabold text-black mb-6">
                   Building Bridges to Global Remote Opportunities
                 </h2>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
                   In today's rapidly evolving digital economy, remote work opportunities have become increasingly accessible yet
-                  increasingly competitive. Rework was founded to bridge the gap between talented professionals worldwide and
+                  increasingly competitive. Remote-Works was founded to bridge the gap between talented professionals worldwide and
                   leading global organizations seeking skilled remote contributors.
                 </p>
                 <p className="text-lg text-gray-600 leading-relaxed mb-6">
@@ -285,47 +311,38 @@ export default function About() {
                   top-tier platforms, we help professionals build credible profiles that meet international standards. Our success
                   is measured by the long-term career growth of the professionals we serve.
                 </p>
-                <div className="bg-gray-50 rounded-xl p-6 mb-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-3">Our Commitment to Excellence</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    We maintain rigorous standards for both the professionals we verify and the partnerships we establish. Every
-                    opportunity we connect you with has been thoroughly vetted to ensure legitimacy, fair compensation, and
-                    professional working conditions. We believe in sustainable remote careers built on trust, transparency, and
-                    mutual respect.
-                  </p>
-                </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-4">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-6 h-6 text-purple-600 flex-shrink-0" />
                     <span className="text-gray-700 font-medium">Comprehensive profile verification process</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-6 h-6 text-amber-600 flex-shrink-0" />
                     <span className="text-gray-700 font-medium">Structured onboarding and guidance</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                    <CheckCircle className="w-6 h-6 text-purple-600 flex-shrink-0" />
                     <span className="text-gray-700 font-medium">Access to vetted remote opportunities</span>
                   </div>
                 </div>
               </div>
               <div className="relative">
-                <div className="bg-black rounded-3xl p-12 text-white shadow-2xl">
+                <div className="bg-gradient-to-br from-purple-900 via-purple-800 to-black rounded-3xl p-12 text-white shadow-2xl">
                   <div className="space-y-8">
                     <div>
-                      <div className="text-5xl font-bold mb-2">2023</div>
+                      <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">2023</div>
                       <div className="text-gray-300">Founded</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2">20+</div>
+                      <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">20+</div>
                       <div className="text-gray-300">Partner Platforms</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2">Global</div>
+                      <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Global</div>
                       <div className="text-gray-300">Reach</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2">100%</div>
+                      <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">100%</div>
                       <div className="text-gray-300">Transparency</div>
                     </div>
                   </div>
@@ -336,10 +353,10 @@ export default function About() {
         </section>
 
         {/* Values Section */}
-        <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
+        <section className="py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
                 Our Core Values
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -351,12 +368,12 @@ export default function About() {
               {values.map((value, index) => (
                 <div
                   key={index}
-                  className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-black cursor-pointer hover:-translate-y-1"
+                  className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-500"
                 >
-                  <div className={`inline-flex items-center justify-center w-16 h-16 ${value.color} rounded-2xl text-white mb-6 group-hover:scale-110 transition-transform shadow-md`}>
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl text-white mb-6 group-hover:scale-110 transition-transform shadow-md">
                     {value.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
+                  <h3 className="text-xl font-bold text-black mb-3">{value.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{value.description}</p>
                 </div>
               ))}
@@ -364,11 +381,43 @@ export default function About() {
           </div>
         </section>
 
-        {/* Meet Our Experts Section */}
-        <section className="py-24 bg-white">
+        {/* Team Section */}
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+                Meet Our{' '}
+                <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
+                  Leadership Team
+                </span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Dedicated professionals committed to your remote work success
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {teamMembers.map((member, index) => (
+                <div
+                  key={index}
+                  className="group bg-gradient-to-br from-purple-50 to-amber-50 rounded-2xl p-8 text-center hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-purple-500"
+                >
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-full text-white mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    {member.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-black mb-2">{member.name}</h3>
+                  <p className="text-purple-600 font-semibold">{member.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Professional Services Section */}
+        <section className="py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
                 Comprehensive Professional Services
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -380,64 +429,36 @@ export default function About() {
               {expertCategories.map((category, index) => (
                 <div
                   key={index}
-                  className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-black cursor-pointer hover:-translate-y-2"
+                  className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-500"
                 >
                   <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br ${category.color} rounded-2xl text-white mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
                     {category.icon}
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">{category.count}</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{category.title}</h3>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent mb-2">{category.count}</div>
+                  <h3 className="text-xl font-bold text-black mb-3">{category.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{category.description}</p>
                 </div>
               ))}
-            </div>
-
-            {/* Service Principles */}
-            <div className="mt-16 bg-gradient-to-br from-gray-50 to-white rounded-3xl p-10 border-2 border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Why Leading Organizations Trust Us</h3>
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <BadgeCheck className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Verified Talent Pool</h4>
-                  <p className="text-gray-600 text-sm">Every professional is thoroughly verified for identity, skills, and professional readiness through our rigorous multi-step process</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <TrendingUp className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Quality Standards</h4>
-                  <p className="text-gray-600 text-sm">We maintain international quality benchmarks, ensuring professionals meet the high standards expected by global organizations</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Partnership Integrity</h4>
-                  <p className="text-gray-600 text-sm">Built on trust, transparency, and ethical practices—we are committed to sustainable success for all stakeholders</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
 
         {/* Trustpilot Reviews Section */}
-        <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <div className="flex items-center justify-center gap-3 mb-4">
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+                <h2 className="text-4xl md:text-5xl font-extrabold text-black">
                   Trusted by Thousands
                 </h2>
               </div>
               <div className="flex items-center justify-center gap-2 mb-4">
                 <div className="flex gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-8 h-8 fill-green-500 text-green-500" />
+                    <Star key={i} className="w-8 h-8 fill-amber-500 text-amber-500" />
                   ))}
                 </div>
-                <span className="text-2xl font-bold text-gray-900">4.9 out of 5</span>
+                <span className="text-2xl font-bold text-black">4.9 out of 5</span>
               </div>
               <p className="text-lg text-gray-600">Verified customer reviews from our community</p>
             </div>
@@ -445,24 +466,24 @@ export default function About() {
             {/* Testimonial Slider */}
             <div className="relative max-w-4xl mx-auto">
               {/* Main Testimonial Card */}
-              <div className="bg-white rounded-3xl p-10 md:p-12 shadow-2xl border-2 border-gray-100 hover:border-green-500 transition-all duration-500">
+              <div className="bg-gradient-to-br from-purple-50 to-amber-50 rounded-3xl p-10 md:p-12 shadow-2xl border-2 border-purple-200 hover:border-purple-500 transition-all duration-500">
                 <div className="flex items-center justify-between mb-6">
                   {renderStars(trustpilotReviews[currentTestimonial].rating)}
                   {trustpilotReviews[currentTestimonial].verified && (
-                    <span className="bg-green-100 text-green-700 text-sm px-4 py-2 rounded-full font-semibold flex items-center gap-2">
+                    <span className="bg-purple-100 text-purple-700 text-sm px-4 py-2 rounded-full font-semibold flex items-center gap-2">
                       <BadgeCheck className="w-4 h-4" />
                       Verified
                     </span>
                   )}
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                <h3 className="text-2xl md:text-3xl font-bold text-black mb-4">
                   {trustpilotReviews[currentTestimonial].title}
                 </h3>
                 <p className="text-lg text-gray-600 leading-relaxed mb-8">
                   "{trustpilotReviews[currentTestimonial].review}"
                 </p>
-                <div className="border-t border-gray-200 pt-6">
-                  <p className="text-xl font-bold text-gray-900">
+                <div className="border-t border-purple-200 pt-6">
+                  <p className="text-xl font-bold text-black">
                     {trustpilotReviews[currentTestimonial].author}
                   </p>
                   <p className="text-gray-500 mt-1">
@@ -474,17 +495,17 @@ export default function About() {
               {/* Navigation Buttons */}
               <button
                 onClick={() => setCurrentTestimonial((prev) => (prev === 0 ? trustpilotReviews.length - 1 : prev - 1))}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-16 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-gray-200 hover:border-green-500 flex items-center justify-center transition-all hover:scale-110 group"
+                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-16 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-purple-200 hover:border-purple-500 flex items-center justify-center transition-all hover:scale-110 group"
                 aria-label="Previous testimonial"
               >
-                <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-green-600" />
+                <ChevronLeft className="w-6 h-6 text-gray-600 group-hover:text-purple-600" />
               </button>
               <button
                 onClick={() => setCurrentTestimonial((prev) => (prev === trustpilotReviews.length - 1 ? 0 : prev + 1))}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-16 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-gray-200 hover:border-green-500 flex items-center justify-center transition-all hover:scale-110 group"
+                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-16 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-purple-200 hover:border-purple-500 flex items-center justify-center transition-all hover:scale-110 group"
                 aria-label="Next testimonial"
               >
-                <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-green-600" />
+                <ChevronRight className="w-6 h-6 text-gray-600 group-hover:text-purple-600" />
               </button>
 
               {/* Dot Indicators */}
@@ -495,7 +516,7 @@ export default function About() {
                     onClick={() => setCurrentTestimonial(index)}
                     className={`transition-all duration-300 rounded-full ${
                       index === currentTestimonial
-                        ? 'w-8 h-3 bg-gradient-to-r from-green-500 to-green-600'
+                        ? 'w-8 h-3 bg-gradient-to-r from-purple-600 to-amber-500'
                         : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
                     }`}
                     aria-label={`Go to testimonial ${index + 1}`}
@@ -507,119 +528,78 @@ export default function About() {
         </section>
 
         {/* How It Works Process */}
-        <section className="py-24 bg-white">
+        <section className="py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Your Professional Journey with Rework
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+                Your Professional Journey with Remote-Works
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 A structured pathway from verification to accessing opportunities with our global partner organizations
               </p>
             </div>
 
-            <div className="relative">
-              {/* Process Flow */}
-              <div className="grid md:grid-cols-4 gap-8 relative">
-                {/* Step 1: Sign Up */}
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
-                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <UserPlus className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="text-4xl font-bold text-black mb-2">01</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Professional Verification</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      Complete our comprehensive verification process covering identity, professional credentials, and skill assessment to meet international standards.
-                    </p>
-                  </div>
-                  {/* Arrow */}
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                    <ArrowRight className="w-8 h-8 text-gray-300" />
-                  </div>
+            <div className="grid md:grid-cols-4 gap-8">
+              {/* Step 1 */}
+              <div className="relative bg-white rounded-2xl p-8 text-center shadow-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <UserPlus className="w-10 h-10 text-white" />
                 </div>
-
-                {/* Step 2: Get Approved */}
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
-                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <BadgeCheck className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="text-4xl font-bold text-black mb-2">02</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Expert Career Coaching</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      Work with experienced career specialists who provide personalized guidance to optimize your profile for global partner platforms.
-                    </p>
-                  </div>
-                  {/* Arrow */}
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                    <ArrowRight className="w-8 h-8 text-gray-300" />
-                  </div>
-                </div>
-
-                {/* Step 3: Start Earning */}
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
-                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <DollarSign className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="text-4xl font-bold text-black mb-2">03</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Partner Connections</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      Gain access to curated opportunities from our network of 20+ trusted global partners in AI, translation, and digital content.
-                    </p>
-                  </div>
-                  {/* Arrow */}
-                  <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                    <ArrowRight className="w-8 h-8 text-gray-300" />
-                  </div>
-                </div>
-
-                {/* Step 4: Scale Income */}
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-black transition-all hover:shadow-xl">
-                    <div className="w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                      <TrendingUp className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="text-4xl font-bold text-black mb-2">04</div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Career Growth</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm">
-                      Build sustainable remote careers with ongoing support, professional development resources, and access to multiple partner platforms.
-                    </p>
-                  </div>
-                </div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">01</div>
+                <h3 className="text-xl font-bold text-black mb-3">Professional Verification</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  Complete our comprehensive verification process covering identity, professional credentials, and skill assessment.
+                </p>
               </div>
 
-              {/* Service Model Info */}
-              <div className="mt-16 bg-gradient-to-r from-gray-900 to-black rounded-3xl p-10 text-white">
-                <div className="grid md:grid-cols-3 gap-8">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">Professional Platform</div>
-                    <p className="text-gray-300 text-sm">Comprehensive career services connecting verified professionals with global opportunities</p>
-                  </div>
-                  <div className="text-center border-l border-r border-gray-700 px-4">
-                    <div className="text-3xl font-bold mb-2">Trusted Partners</div>
-                    <p className="text-gray-300 text-sm">Direct partnerships with 20+ leading organizations in AI, translation, and digital content</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold mb-2">Optional Services</div>
-                    <p className="text-gray-300 text-sm">Additional career support available but not required for access</p>
-                  </div>
+              {/* Step 2 */}
+              <div className="relative bg-white rounded-2xl p-8 text-center shadow-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <BadgeCheck className="w-10 h-10 text-white" />
                 </div>
+                <div className="text-4xl font-bold text-amber-600 mb-2">02</div>
+                <h3 className="text-xl font-bold text-black mb-3">Expert Career Coaching</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  Work with experienced career specialists who provide personalized guidance to optimize your profile.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="relative bg-white rounded-2xl p-8 text-center shadow-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <DollarSign className="w-10 h-10 text-white" />
+                </div>
+                <div className="text-4xl font-bold text-purple-600 mb-2">03</div>
+                <h3 className="text-xl font-bold text-black mb-3">Partner Connections</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  Gain access to curated opportunities from our network of 20+ trusted global partners.
+                </p>
+              </div>
+
+              {/* Step 4 */}
+              <div className="relative bg-white rounded-2xl p-8 text-center shadow-lg border-2 border-transparent hover:border-purple-500 transition-all">
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                  <TrendingUp className="w-10 h-10 text-white" />
+                </div>
+                <div className="text-4xl font-bold text-amber-600 mb-2">04</div>
+                <h3 className="text-xl font-bold text-black mb-3">Career Growth</h3>
+                <p className="text-gray-600 leading-relaxed text-sm">
+                  Build sustainable remote careers with ongoing support and professional development resources.
+                </p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Timeline Section */}
-        <section className="py-24 bg-gradient-to-b from-gray-50 to-white">
+        <section className="py-20 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
                 Our Journey
               </h2>
               <p className="text-xl text-gray-600">
-                From a simple idea to a global marketplace
+                From a simple idea to a global platform
               </p>
             </div>
 
@@ -627,12 +607,12 @@ export default function About() {
               {milestones.map((milestone, index) => (
                 <div key={index} className="flex gap-6">
                   <div className="flex-shrink-0">
-                    <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                       {milestone.year}
                     </div>
                   </div>
-                  <div className="flex-grow bg-white rounded-2xl p-6 border-2 border-gray-200 hover:border-black transition-all shadow-lg">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{milestone.event}</h3>
+                  <div className="flex-grow bg-gradient-to-br from-purple-50 to-amber-50 rounded-2xl p-6 border-2 border-purple-200 hover:border-purple-500 transition-all shadow-lg">
+                    <h3 className="text-2xl font-bold text-black mb-2">{milestone.event}</h3>
                     <p className="text-gray-600 leading-relaxed">{milestone.description}</p>
                   </div>
                 </div>
@@ -642,34 +622,43 @@ export default function About() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24 bg-black text-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+        <section className="relative py-20 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
               Ready to Access Remote Work Opportunities?
             </h2>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join Remote-Works.io to verify your profile, prepare for applications, and connect with legitimate remote work opportunities offered by third-party companies and platforms.
+            <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Join Remote-Works to verify your profile, prepare for applications, and connect with legitimate remote work opportunities offered by third-party companies and platforms.
             </p>
             <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
-              <div className="bg-gray-900 rounded-xl p-6">
-                <div className="text-3xl font-bold mb-2">Verified</div>
-                <div className="text-gray-400 text-sm">Profile verification process</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Verified</div>
+                <div className="text-gray-300 text-sm">Profile verification process</div>
               </div>
-              <div className="bg-gray-900 rounded-xl p-6">
-                <div className="text-3xl font-bold mb-2">Transparent</div>
-                <div className="text-gray-400 text-sm">No false promises or guarantees</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Transparent</div>
+                <div className="text-gray-300 text-sm">No false promises or guarantees</div>
               </div>
-              <div className="bg-gray-900 rounded-xl p-6">
-                <div className="text-3xl font-bold mb-2">Support</div>
-                <div className="text-gray-400 text-sm">Career enablement services</div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Support</div>
+                <div className="text-gray-300 text-sm">Career enablement services</div>
               </div>
             </div>
             <div className="flex justify-center">
               <button
                 onClick={() => router.push('/register?type=candidate')}
-                className="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-2xl"
+                className="group bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-2xl"
               >
-                Get Started as a Professional
+                <span className="flex items-center justify-center">
+                  Get Started as a Professional
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                </span>
               </button>
             </div>
           </div>
