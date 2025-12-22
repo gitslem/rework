@@ -506,40 +506,12 @@ export default function Home() {
 
         {/* What We Do - Clarity Section */}
         <section id="mission" ref={missionRef} className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {/* Floating Icons - Professional Mission Theme */}
-            <div className="absolute top-16 left-12 animate-float opacity-12" style={{ animationDuration: '8s', animationDelay: '0s' }}>
-              <Shield className="w-20 h-20 text-purple-600" />
-            </div>
-            <div className="absolute top-32 right-16 animate-float opacity-12" style={{ animationDuration: '9s', animationDelay: '1s' }}>
-              <Award className="w-16 h-16 text-amber-600" />
-            </div>
-            <div className="absolute top-1/3 left-20 animate-float opacity-12" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <Heart className="w-14 h-14 text-purple-500" />
-            </div>
-            <div className="absolute bottom-40 left-1/4 animate-float opacity-12" style={{ animationDuration: '11s', animationDelay: '2s' }}>
-              <Briefcase className="w-18 h-18 text-purple-500" />
-            </div>
-            <div className="absolute top-1/2 right-1/4 animate-float opacity-12" style={{ animationDuration: '8s', animationDelay: '0.5s' }}>
-              <UserCheck className="w-16 h-16 text-green-600" />
-            </div>
-            <div className="absolute bottom-24 right-20 animate-float opacity-12" style={{ animationDuration: '10s', animationDelay: '1.5s' }}>
-              <BadgeCheck className="w-20 h-20 text-purple-600" />
-            </div>
-            <div className="absolute top-2/3 right-1/3 animate-float opacity-12" style={{ animationDuration: '12s', animationDelay: '2.5s' }}>
-              <Flag className="w-14 h-14 text-amber-500" />
-            </div>
-            <div className="absolute bottom-1/3 left-1/3 animate-float opacity-12" style={{ animationDuration: '13s', animationDelay: '1s' }}>
-              <Rocket className="w-16 h-16 text-purple-600" />
-            </div>
-            <div className="absolute top-1/4 right-16 animate-float opacity-12" style={{ animationDuration: '11s', animationDelay: '3s' }}>
-              <Lightbulb className="w-15 h-15 text-amber-600" />
-            </div>
-            {/* Enhanced Gradient Orbs */}
-            <div className="absolute top-10 right-1/3 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '12s', animationDelay: '0s' }}></div>
-            <div className="absolute bottom-10 left-1/3 w-96 h-96 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-3xl animate-float" style={{ animationDuration: '14s', animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-gradient-to-br from-green-400/15 to-teal-400/15 rounded-full blur-3xl animate-float" style={{ animationDuration: '16s', animationDelay: '1s' }}></div>
+          {/* Subtle Background Decoration */}
+          <div className="absolute inset-0 overflow-hidden opacity-40 pointer-events-none">
+            {/* Animated gradient orbs - matching hero section subtlety */}
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDuration: '10s' }}></div>
+            <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}></div>
+            <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-green-200 to-teal-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '14s' }}></div>
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10">
