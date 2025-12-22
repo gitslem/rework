@@ -9,6 +9,7 @@ export default function Company() {
   const router = useRouter();
   const [counters, setCounters] = useState<Record<string, number>>({ stat1: 0, stat2: 0, stat3: 0, stat4: 0 });
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [currentProjectSlide, setCurrentProjectSlide] = useState(0);
 
   const benefits = [
     {
@@ -177,6 +178,15 @@ export default function Company() {
     return () => observer.disconnect();
   }, [hasAnimated]);
 
+  // Auto-play project carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentProjectSlide((prev) => (prev === projectTypes.length - 1 ? 0 : prev + 1));
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       <Head>
@@ -222,46 +232,6 @@ export default function Company() {
           }}
         />
 
-        {/* Slider Styles */}
-        <style jsx>{`
-          .slider-container {
-            width: 100%;
-            overflow: hidden;
-          }
-
-          .slider-track {
-            display: flex;
-            gap: 1rem;
-            animation: scroll 50s linear infinite;
-            width: fit-content;
-          }
-
-          .slider-track:hover {
-            animation-play-state: paused;
-          }
-
-          .slider-card {
-            min-width: 280px;
-            max-width: 280px;
-            flex-shrink: 0;
-          }
-
-          @keyframes scroll {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-50%);
-            }
-          }
-
-          @media (max-width: 768px) {
-            .slider-card {
-              min-width: 260px;
-              max-width: 260px;
-            }
-          }
-        `}</style>
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -360,45 +330,86 @@ export default function Company() {
           </div>
         </section>
 
-        {/* Project Types Slider Section */}
-        <section className="py-16 px-6 lg:px-8 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">
+        {/* Project Types Carousel Section */}
+        <section className="py-20 px-6 lg:px-8 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
                 <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
                   12+ Project Types
                 </span>
                 {' '}We Support
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Access verified professionals across diverse expertise areas
               </p>
             </div>
 
-            {/* Slider Container */}
+            {/* Carousel Container */}
             <div className="relative">
-              {/* Gradient Fade Edges */}
-              <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
-
-              {/* Slider Track */}
-              <div className="slider-container">
-                <div className="slider-track">
-                  {/* Render projects twice for seamless loop */}
-                  {[...projectTypes, ...projectTypes].map((project, index) => (
-                    <div
-                      key={index}
-                      className="slider-card group bg-white rounded-xl p-5 shadow-md border border-gray-200 hover:border-purple-400 hover:shadow-lg transition-all"
-                    >
-                      <h3 className="text-base font-bold text-black mb-2 group-hover:text-purple-600 transition-colors">
-                        {project.name}
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {project.description}
-                      </p>
-                    </div>
-                  ))}
+              {/* Main Carousel Card */}
+              <div className="relative bg-gradient-to-br from-purple-50 via-white to-amber-50 rounded-3xl p-12 md:p-16 shadow-2xl border-2 border-purple-200 min-h-[350px] flex flex-col justify-center">
+                {/* Project Number Badge */}
+                <div className="absolute top-6 right-6">
+                  <div className="bg-gradient-to-r from-purple-600 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    {currentProjectSlide + 1} / {projectTypes.length}
+                  </div>
                 </div>
+
+                {/* Project Content */}
+                <div className="text-center space-y-6">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl text-white mb-4 shadow-lg mx-auto">
+                    <span className="text-3xl font-bold">{currentProjectSlide + 1}</span>
+                  </div>
+
+                  <h3 className="text-3xl md:text-4xl font-extrabold text-black mb-4">
+                    {projectTypes[currentProjectSlide].name}
+                  </h3>
+
+                  <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                    {projectTypes[currentProjectSlide].description}
+                  </p>
+                </div>
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={() => setCurrentProjectSlide((prev) => (prev === 0 ? projectTypes.length - 1 : prev - 1))}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-purple-200 hover:border-purple-500 flex items-center justify-center transition-all hover:scale-110 group"
+                  aria-label="Previous project"
+                >
+                  <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-purple-600 rotate-180" />
+                </button>
+                <button
+                  onClick={() => setCurrentProjectSlide((prev) => (prev === projectTypes.length - 1 ? 0 : prev + 1))}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-purple-200 hover:border-purple-500 flex items-center justify-center transition-all hover:scale-110 group"
+                  aria-label="Next project"
+                >
+                  <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-purple-600" />
+                </button>
+              </div>
+
+              {/* Dot Indicators */}
+              <div className="flex justify-center gap-2 mt-8 flex-wrap">
+                {projectTypes.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentProjectSlide(index)}
+                    className={`transition-all duration-300 ${
+                      index === currentProjectSlide
+                        ? 'w-12 h-3 bg-gradient-to-r from-purple-600 to-amber-500 rounded-full'
+                        : 'w-3 h-3 bg-gray-300 hover:bg-gray-400 rounded-full'
+                    }`}
+                    aria-label={`Go to project ${index + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Auto-play indicator */}
+              <div className="text-center mt-6">
+                <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  Auto-advancing every 4 seconds
+                </p>
               </div>
             </div>
           </div>
