@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -31,6 +31,20 @@ export default function Platforms() {
   const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [filter, setFilter] = useState<string>('all');
+
+  // Stats counting animation
+  const [projectCount, setProjectCount] = useState(0);
+  const [approvalRate, setApprovalRate] = useState(0);
+  const [responseTime, setResponseTime] = useState(0);
+  const [avgEarnings, setAvgEarnings] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+
+  // Typewriter animation for hero text
+  const [typewriterText, setTypewriterText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const fullText = "Your career shouldn't be limited by geography or guesswork. Remote-Works prepares you to compete—and win—in the global remote economy by positioning you as a trusted, ready-to-hire professional.";
 
   const allProjects: Project[] = [
     {
@@ -361,6 +375,112 @@ export default function Platforms() {
     }
   ];
 
+  // Typewriter effect for hero text
+  useEffect(() => {
+    let typeInterval: NodeJS.Timeout | null = null;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isTyping && typewriterText === '') {
+          setIsTyping(true);
+          let index = 0;
+
+          typeInterval = setInterval(() => {
+            if (index < fullText.length) {
+              setTypewriterText(fullText.slice(0, index + 1));
+              index++;
+            } else {
+              if (typeInterval) clearInterval(typeInterval);
+              setIsTyping(false);
+            }
+          }, 30); // 30ms per character for smooth typing effect
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+
+    return () => {
+      if (typeInterval) clearInterval(typeInterval);
+      if (heroRef.current) {
+        observer.unobserve(heroRef.current);
+      }
+    };
+  }, [typewriterText, isTyping, fullText]);
+
+  // Intersection Observer for stats animation
+  useEffect(() => {
+    let intervals: NodeJS.Timeout[] = [];
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+
+          // Animate project count from 0 to 12
+          let projectFrame = 0;
+          const projectInterval = setInterval(() => {
+            projectFrame++;
+            setProjectCount(projectFrame);
+            if (projectFrame >= 12) clearInterval(projectInterval);
+          }, 50);
+          intervals.push(projectInterval);
+
+          // Animate approval rate from 0 to 95
+          let approvalFrame = 0;
+          const approvalInterval = setInterval(() => {
+            approvalFrame += 2;
+            if (approvalFrame >= 95) {
+              setApprovalRate(95);
+              clearInterval(approvalInterval);
+            } else {
+              setApprovalRate(approvalFrame);
+            }
+          }, 20);
+          intervals.push(approvalInterval);
+
+          // Animate response time from 0 to 24
+          let responseFrame = 0;
+          const responseInterval = setInterval(() => {
+            responseFrame++;
+            setResponseTime(responseFrame);
+            if (responseFrame >= 24) clearInterval(responseInterval);
+          }, 40);
+          intervals.push(responseInterval);
+
+          // Animate earnings from 0 to 4000
+          let earningsFrame = 0;
+          const earningsInterval = setInterval(() => {
+            earningsFrame += 100;
+            if (earningsFrame >= 4000) {
+              setAvgEarnings(4000);
+              clearInterval(earningsInterval);
+            } else {
+              setAvgEarnings(earningsFrame);
+            }
+          }, 20);
+          intervals.push(earningsInterval);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => {
+      // Clear all intervals on cleanup
+      intervals.forEach(interval => clearInterval(interval));
+      if (statsRef.current) {
+        observer.unobserve(statsRef.current);
+      }
+    };
+  }, [hasAnimated]);
+
   return (
     <>
       <Head>
@@ -411,7 +531,7 @@ export default function Platforms() {
             <div className="absolute bottom-20 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '3s' }}></div>
           </div>
 
-          <div className="max-w-6xl mx-auto text-center relative z-10">
+          <div ref={heroRef} className="max-w-6xl mx-auto text-center relative z-10">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-lg mb-8">
               <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
               <span className="font-semibold text-sm">12+ Verified Project Types from Partners</span>
@@ -424,8 +544,9 @@ export default function Platforms() {
               </span>
             </h1>
 
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              We don't just list jobs from partners; we prepare you for them. Get <span className="font-bold text-black">Profile Verification</span>, <span className="font-bold text-black">Application Readiness</span>, and <span className="font-bold text-black">Strategic Onboarding</span> to fast-track your access to curated remote opportunities.
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8 min-h-[120px]">
+              {typewriterText}
+              {isTyping && <span className="animate-pulse">|</span>}
             </p>
 
             <div className="flex justify-center gap-4 mb-8">
@@ -594,7 +715,7 @@ export default function Platforms() {
         </section>
 
         {/* Stats Section */}
-        <section className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+        <section ref={statsRef} className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
@@ -611,15 +732,28 @@ export default function Platforms() {
             </div>
 
             <div className="grid md:grid-cols-4 gap-8">
-              {whyRework.map((item, index) => (
-                <div key={index} className="text-center group hover:scale-105 transition-transform">
-                  <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
-                    {item.stat}
+              {whyRework.map((item, index) => {
+                let displayValue = item.stat;
+                if (index === 0) {
+                  displayValue = `${projectCount}+`;
+                } else if (index === 1) {
+                  displayValue = `${approvalRate}%`;
+                } else if (index === 2) {
+                  displayValue = `${responseTime}hr`;
+                } else if (index === 3) {
+                  displayValue = `$${(avgEarnings / 1000).toFixed(1)}k+`;
+                }
+
+                return (
+                  <div key={index} className="text-center group hover:scale-105 transition-transform">
+                    <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
+                      {displayValue}
+                    </div>
+                    <div className="text-lg font-bold mb-2">{item.label}</div>
+                    <p className="text-sm text-gray-300">{item.description}</p>
                   </div>
-                  <div className="text-lg font-bold mb-2">{item.label}</div>
-                  <p className="text-sm text-gray-300">{item.description}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
