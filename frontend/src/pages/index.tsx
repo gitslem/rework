@@ -531,7 +531,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-12">
               <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-200 mb-6 animate-fade-in">
-                <Target className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-purple-600" />
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
               <h2 className={`text-4xl md:text-5xl font-extrabold mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
@@ -543,21 +543,21 @@ export default function Home() {
               {/* Main Content - Typewriter Style */}
               <div className={`bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-purple-100 transition-all duration-1000 ${missionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                 <div className="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
-                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-300' : 'opacity-0'}`}>
+                  <p className={`overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '300ms' }}>
                     <span className="font-bold text-gray-900">Remote-Works connects verified professionals with high-quality remote opportunities worldwide.</span>
                   </p>
 
-                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[1500ms]' : 'opacity-0'}`}>
+                  <p className={`overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '800ms' }}>
                     We do more than publish job openings from partners. Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
                   </p>
 
-                  <p className={`${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[2500ms]' : 'opacity-0'}`}>
+                  <p className={`overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '1300ms' }}>
                     Through a structured system of <span className="font-semibold text-green-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-amber-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
                   </p>
                 </div>
 
                 {/* Not Job Searching Banner */}
-                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'opacity-100 transition-opacity duration-1000 delay-[3500ms]' : 'opacity-0'}`}>
+                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 overflow-hidden ${missionVisible ? 'animate-slide-in-left' : 'opacity-0'}`} style={{ animationDelay: '1800ms' }}>
                   <p className="text-lg font-bold text-gray-900 text-center">
                     This is not job searching. <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">This is workforce readiness.</span>
                   </p>
