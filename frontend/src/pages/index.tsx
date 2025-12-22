@@ -24,6 +24,14 @@ export default function Home() {
   const [missionVisible, setMissionVisible] = useState(false);
   const missionRef = useRef<HTMLDivElement>(null);
 
+  // Stats counting animation
+  const [platformsCount, setPlatformsCount] = useState(0);
+  const [avgIncome, setAvgIncome] = useState(0);
+  const [successRate, setSuccessRate] = useState(0);
+  const [supportHours, setSupportHours] = useState(0);
+  const [statsAnimated, setStatsAnimated] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -59,10 +67,80 @@ export default function Home() {
     };
   }, []);
 
+  // Intersection Observer for stats counting animation
+  useEffect(() => {
+    let intervals: NodeJS.Timeout[] = [];
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !statsAnimated) {
+          setStatsAnimated(true);
+
+          // Animate platforms count from 0 to 20
+          let platformFrame = 0;
+          const platformInterval = setInterval(() => {
+            platformFrame++;
+            setPlatformsCount(platformFrame);
+            if (platformFrame >= 20) clearInterval(platformInterval);
+          }, 50);
+          intervals.push(platformInterval);
+
+          // Animate avg income from 0 to 4000
+          let incomeFrame = 0;
+          const incomeInterval = setInterval(() => {
+            incomeFrame += 100;
+            if (incomeFrame >= 4000) {
+              setAvgIncome(4000);
+              clearInterval(incomeInterval);
+            } else {
+              setAvgIncome(incomeFrame);
+            }
+          }, 20);
+          intervals.push(incomeInterval);
+
+          // Animate success rate from 0 to 95
+          let rateFrame = 0;
+          const rateInterval = setInterval(() => {
+            rateFrame += 2;
+            if (rateFrame >= 95) {
+              setSuccessRate(95);
+              clearInterval(rateInterval);
+            } else {
+              setSuccessRate(rateFrame);
+            }
+          }, 20);
+          intervals.push(rateInterval);
+
+          // Animate support hours from 0 to 24
+          let hoursFrame = 0;
+          const hoursInterval = setInterval(() => {
+            hoursFrame++;
+            setSupportHours(hoursFrame);
+            if (hoursFrame >= 24) clearInterval(hoursInterval);
+          }, 40);
+          intervals.push(hoursInterval);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => {
+      // Clear all intervals on cleanup
+      intervals.forEach(interval => clearInterval(interval));
+      if (statsRef.current) {
+        observer.unobserve(statsRef.current);
+      }
+    };
+  }, [statsAnimated]);
+
   const stats = [
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
     { number: "$4k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
-    { number: "98%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
+    { number: "95%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
     { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
   ];
 
@@ -434,7 +512,7 @@ export default function Home() {
                       <CheckCircle className="w-6 h-6 text-green-600" />
                       <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
                     </div>
-                    <span className="text-green-900 font-bold text-sm sm:text-base">98% Success Rate</span>
+                    <span className="text-green-900 font-bold text-sm sm:text-base">95% Success Rate</span>
                   </div>
                 </div>
                 <div className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 px-5 py-3 rounded-2xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
@@ -715,7 +793,7 @@ export default function Home() {
           </div>
 
           {/* Stats Content */}
-          <div className="max-w-6xl mx-auto relative z-10">
+          <div ref={statsRef} className="max-w-6xl mx-auto relative z-10">
             {/* Section Header */}
             <div className="text-center mb-16">
               <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-purple-200 mb-6">
@@ -732,42 +810,55 @@ export default function Home() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className={`text-center group animate-fade-in-up stagger-${index + 1} cursor-default`}
-                  style={{ animationDelay: `${index * 0.15}s` }}
-                >
-                  {/* Icon Container with Glow Effect */}
-                  <div className="relative inline-flex items-center justify-center mb-6">
-                    {/* Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+              {stats.map((stat, index) => {
+                let displayValue = stat.number;
+                if (index === 0) {
+                  displayValue = `${platformsCount}+`;
+                } else if (index === 1) {
+                  displayValue = `$${(avgIncome / 1000).toFixed(1)}k+`;
+                } else if (index === 2) {
+                  displayValue = `${successRate}%`;
+                } else if (index === 3) {
+                  displayValue = `${supportHours}/7`;
+                }
 
-                    {/* Icon */}
-                    <div
-                      className="relative w-20 h-20 bg-gradient-to-br from-purple-50 to-amber-50 backdrop-filter backdrop-blur-lg border-2 border-purple-200 rounded-2xl flex items-center justify-center shadow-lg hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
-                      style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
-                    >
-                      <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
-                        {stat.icon}
+                return (
+                  <div
+                    key={index}
+                    className={`text-center group animate-fade-in-up stagger-${index + 1} cursor-default`}
+                    style={{ animationDelay: `${index * 0.15}s` }}
+                  >
+                    {/* Icon Container with Glow Effect */}
+                    <div className="relative inline-flex items-center justify-center mb-6">
+                      {/* Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
+
+                      {/* Icon */}
+                      <div
+                        className="relative w-20 h-20 bg-gradient-to-br from-purple-50 to-amber-50 backdrop-filter backdrop-blur-lg border-2 border-purple-200 rounded-2xl flex items-center justify-center shadow-lg hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
+                        style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
+                      >
+                        <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
+                          {stat.icon}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Number with Gradient */}
-                  <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-                    {stat.number}
-                  </div>
+                    {/* Number with Gradient */}
+                    <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
+                      {displayValue}
+                    </div>
 
-                  {/* Label */}
-                  <div className="text-sm md:text-base text-gray-600 font-semibold tracking-wide uppercase group-hover:text-black transition-colors duration-300">
-                    {stat.label}
-                  </div>
+                    {/* Label */}
+                    <div className="text-sm md:text-base text-gray-600 font-semibold tracking-wide uppercase group-hover:text-black transition-colors duration-300">
+                      {stat.label}
+                    </div>
 
-                  {/* Decorative Line */}
-                  <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100"></div>
-                </div>
-              ))}
+                    {/* Decorative Line */}
+                    <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100"></div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
