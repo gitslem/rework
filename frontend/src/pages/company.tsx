@@ -18,8 +18,8 @@ export default function Company() {
     },
     {
       icon: <TrendingUp className="w-8 h-8" />,
-      title: "98% Success Rate",
-      description: "Our professionals have a 98% success rate in securing roles because they're verified, prepared, and aligned before they apply to your opportunities."
+      title: "95% Success Rate",
+      description: "Our professionals have a 95% success rate in securing roles because they're verified, prepared, and aligned before they apply to your opportunities."
     },
     {
       icon: <Shield className="w-8 h-8" />,
@@ -68,9 +68,72 @@ export default function Company() {
 
   const stats = [
     { target: 12, suffix: "+", label: "Project Types", description: "Areas of expertise covered" },
-    { target: 98, suffix: "%", label: "Success Rate", description: "Industry-leading preparation" },
+    { target: 95, suffix: "%", label: "Success Rate", description: "Industry-leading preparation" },
     { target: 24, suffix: "hr", label: "Time to Connect", description: "Fast professional matching" },
-    { target: 5000, suffix: "+", label: "Verified Professionals", description: "Growing talent network" }
+    { target: 27000, suffix: "+", label: "Verified Professionals", description: "Growing talent network" }
+  ];
+
+  const projectTypes = [
+    {
+      name: "AI Data Annotation",
+      service: "Structured data labeling for machine learning models",
+      rate: "$15-$35/hr"
+    },
+    {
+      name: "Content Moderation",
+      service: "Quality control for user-generated content platforms",
+      rate: "$12-$25/hr"
+    },
+    {
+      name: "Translation & Localization",
+      service: "Professional language translation services",
+      rate: "$20-$45/hr"
+    },
+    {
+      name: "Search Quality Evaluation",
+      service: "Assessment and improvement of search engine results",
+      rate: "$15-$30/hr"
+    },
+    {
+      name: "Data Labeling",
+      service: "Classification and tagging of datasets",
+      rate: "$10-$22/hr"
+    },
+    {
+      name: "Audio Transcription",
+      service: "Converting audio content to text format",
+      rate: "$12-$28/hr"
+    },
+    {
+      name: "Image Recognition",
+      service: "Object detection and image classification tasks",
+      rate: "$15-$32/hr"
+    },
+    {
+      name: "Video Content Evaluation",
+      service: "Assessment of video quality and content accuracy",
+      rate: "$14-$30/hr"
+    },
+    {
+      name: "Technical Translation",
+      service: "Specialized translation for technical documentation",
+      rate: "$25-$45/hr"
+    },
+    {
+      name: "Text Categorization",
+      service: "Document classification and content organization",
+      rate: "$12-$26/hr"
+    },
+    {
+      name: "Linguistic Annotation",
+      service: "Advanced linguistic analysis and tagging",
+      rate: "$20-$40/hr"
+    },
+    {
+      name: "Speech Data Collection",
+      service: "Voice recording and audio data gathering",
+      rate: "$15-$28/hr"
+    }
   ];
 
   const features = [
@@ -130,20 +193,20 @@ export default function Company() {
     <>
       <Head>
         <title>For Companies - Partner with Workforce-Ready Professionals | Remote-Works</title>
-        <meta name="description" content="Partner with Remote-Works to access verified professionals who have completed our three-stage workforce readiness system. 98% success rate. 12+ project types. Connect with workforce-ready talent in 24 hours. Professional talent platform for companies seeking verified, prepared professionals." />
+        <meta name="description" content="Partner with Remote-Works to access verified professionals who have completed our three-stage workforce readiness system. 95% success rate. 12+ project types. Connect with workforce-ready talent in 24 hours. Professional talent platform for companies seeking verified, prepared professionals." />
         <meta name="keywords" content="workforce readiness, verified professionals, professional talent platform, AI project talent, data annotation professionals, remote work partnerships, enterprise talent solutions, workforce verification, professional preparation, employer partnerships" />
 
         {/* Open Graph Tags */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://remote-works.io/company" />
         <meta property="og:title" content="Partner with Workforce-Ready Professionals - Remote-Works" />
-        <meta property="og:description" content="Access verified professionals. 98% success rate. Three-stage workforce readiness system. Enterprise partnerships." />
+        <meta property="og:description" content="Access verified professionals. 95% success rate. Three-stage workforce readiness system. Enterprise partnerships." />
         <meta property="og:site_name" content="Remote-Works" />
 
         {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Remote-Works for Companies - Workforce Readiness Platform" />
-        <meta name="twitter:description" content="Partner with verified professionals. 24hr connection. 5,000+ workforce-ready talent." />
+        <meta name="twitter:description" content="Partner with verified professionals. 24hr connection. 27,000+ workforce-ready talent." />
 
         {/* Additional SEO Tags */}
         <meta name="robots" content="index, follow" />
@@ -170,6 +233,47 @@ export default function Company() {
             })
           }}
         />
+
+        {/* Slider Styles */}
+        <style jsx>{`
+          .slider-container {
+            width: 100%;
+            overflow: hidden;
+          }
+
+          .slider-track {
+            display: flex;
+            gap: 1.5rem;
+            animation: scroll 60s linear infinite;
+            width: fit-content;
+          }
+
+          .slider-track:hover {
+            animation-play-state: paused;
+          }
+
+          .slider-card {
+            min-width: 320px;
+            max-width: 320px;
+            flex-shrink: 0;
+          }
+
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+
+          @media (max-width: 768px) {
+            .slider-card {
+              min-width: 280px;
+              max-width: 280px;
+            }
+          }
+        `}</style>
       </Head>
 
       <div className="min-h-screen bg-white">
@@ -217,7 +321,7 @@ export default function Company() {
             </h1>
 
             <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              Remote-Works connects you with professionals who have completed our three-stage workforce readiness system—Profile Verification, Application Readiness, and Employer-Aligned Onboarding. Access verified, prepared, and aligned talent across 12+ project types with a 98% success rate.
+              Remote-Works connects you with professionals who have completed our three-stage workforce readiness system—Profile Verification, Application Readiness, and Employer-Aligned Onboarding. Access verified, prepared, and aligned talent across 12+ project types with a 95% success rate.
             </p>
 
             <div className="flex justify-center gap-4 mb-8">
@@ -245,7 +349,7 @@ export default function Company() {
               </div>
               <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm">
                 <Award className="w-4 h-4 text-purple-600" />
-                <span className="text-gray-700 font-semibold">98% Success Rate</span>
+                <span className="text-gray-700 font-semibold">95% Success Rate</span>
               </div>
             </div>
           </div>
@@ -264,6 +368,73 @@ export default function Company() {
                   <p className="text-sm text-gray-300">{stat.description}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Project Types Slider Section */}
+        <section className="py-20 px-6 lg:px-8 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
+                <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
+                  12+ Project Types
+                </span>
+                {' '}We Support
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                From AI data annotation to technical translation—access verified professionals across diverse expertise areas
+              </p>
+            </div>
+
+            {/* Slider Container */}
+            <div className="relative">
+              {/* Gradient Fade Edges */}
+              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+
+              {/* Slider Track */}
+              <div className="slider-container">
+                <div className="slider-track">
+                  {/* Render projects twice for seamless loop */}
+                  {[...projectTypes, ...projectTypes].map((project, index) => (
+                    <div
+                      key={index}
+                      className="slider-card group bg-white rounded-2xl p-6 shadow-lg border-2 border-gray-200 hover:border-purple-500 transition-all hover:scale-105"
+                    >
+                      {/* Project Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-black group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-amber-500 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+                            {project.name}
+                          </h3>
+                        </div>
+                        <div className="flex-shrink-0 ml-3">
+                          <div className="bg-gradient-to-br from-purple-600 to-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
+                            {project.rate}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Project Description */}
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {project.service}
+                      </p>
+
+                      {/* Decorative Bottom Bar */}
+                      <div className="mt-4 h-1 w-full bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Info Badge */}
+            <div className="flex justify-center mt-8">
+              <div className="inline-flex items-center space-x-2 bg-white px-6 py-3 rounded-full border-2 border-purple-200 shadow-md">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <span className="text-gray-700 font-semibold">Hover to pause • Auto-scrolling showcase</span>
+              </div>
             </div>
           </div>
         </section>
