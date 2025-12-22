@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -31,6 +31,14 @@ export default function Platforms() {
   const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [filter, setFilter] = useState<string>('all');
+
+  // Stats counting animation
+  const [projectCount, setProjectCount] = useState(0);
+  const [approvalRate, setApprovalRate] = useState(0);
+  const [responseTime, setResponseTime] = useState(0);
+  const [avgEarnings, setAvgEarnings] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
 
   const allProjects: Project[] = [
     {
@@ -361,6 +369,76 @@ export default function Platforms() {
     }
   ];
 
+  // Intersection Observer for stats animation
+  useEffect(() => {
+    let intervals: NodeJS.Timeout[] = [];
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+
+          // Animate project count from 0 to 12
+          let projectFrame = 0;
+          const projectInterval = setInterval(() => {
+            projectFrame++;
+            setProjectCount(projectFrame);
+            if (projectFrame >= 12) clearInterval(projectInterval);
+          }, 50);
+          intervals.push(projectInterval);
+
+          // Animate approval rate from 0 to 95
+          let approvalFrame = 0;
+          const approvalInterval = setInterval(() => {
+            approvalFrame += 2;
+            if (approvalFrame >= 95) {
+              setApprovalRate(95);
+              clearInterval(approvalInterval);
+            } else {
+              setApprovalRate(approvalFrame);
+            }
+          }, 20);
+          intervals.push(approvalInterval);
+
+          // Animate response time from 0 to 24
+          let responseFrame = 0;
+          const responseInterval = setInterval(() => {
+            responseFrame++;
+            setResponseTime(responseFrame);
+            if (responseFrame >= 24) clearInterval(responseInterval);
+          }, 40);
+          intervals.push(responseInterval);
+
+          // Animate earnings from 0 to 4000
+          let earningsFrame = 0;
+          const earningsInterval = setInterval(() => {
+            earningsFrame += 100;
+            if (earningsFrame >= 4000) {
+              setAvgEarnings(4000);
+              clearInterval(earningsInterval);
+            } else {
+              setAvgEarnings(earningsFrame);
+            }
+          }, 20);
+          intervals.push(earningsInterval);
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (statsRef.current) {
+      observer.observe(statsRef.current);
+    }
+
+    return () => {
+      // Clear all intervals on cleanup
+      intervals.forEach(interval => clearInterval(interval));
+      if (statsRef.current) {
+        observer.unobserve(statsRef.current);
+      }
+    };
+  }, [hasAnimated]);
+
   return (
     <>
       <Head>
@@ -594,7 +672,7 @@ export default function Platforms() {
         </section>
 
         {/* Stats Section */}
-        <section className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+        <section ref={statsRef} className="relative py-16 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
             <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
@@ -611,15 +689,28 @@ export default function Platforms() {
             </div>
 
             <div className="grid md:grid-cols-4 gap-8">
-              {whyRework.map((item, index) => (
-                <div key={index} className="text-center group hover:scale-105 transition-transform">
-                  <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
-                    {item.stat}
+              {whyRework.map((item, index) => {
+                let displayValue = item.stat;
+                if (index === 0) {
+                  displayValue = `${projectCount}+`;
+                } else if (index === 1) {
+                  displayValue = `${approvalRate}%`;
+                } else if (index === 2) {
+                  displayValue = `${responseTime}hr`;
+                } else if (index === 3) {
+                  displayValue = `$${(avgEarnings / 1000).toFixed(1)}k+`;
+                }
+
+                return (
+                  <div key={index} className="text-center group hover:scale-105 transition-transform">
+                    <div className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent group-hover:from-yellow-300 group-hover:to-amber-400 transition-all">
+                      {displayValue}
+                    </div>
+                    <div className="text-lg font-bold mb-2">{item.label}</div>
+                    <p className="text-sm text-gray-300">{item.description}</p>
                   </div>
-                  <div className="text-lg font-bold mb-2">{item.label}</div>
-                  <p className="text-sm text-gray-300">{item.description}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
