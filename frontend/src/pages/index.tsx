@@ -601,7 +601,7 @@ export default function Home() {
                 <span className="text-sm font-semibold text-gray-700">Our Mission</span>
               </div>
               <h2 className={`text-4xl md:text-5xl font-extrabold mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                What Is <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Rework</span>?
+                Join <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Rework</span>
               </h2>
             </div>
 
@@ -610,22 +610,18 @@ export default function Home() {
               <div className={`bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-purple-100 transition-all duration-1000 ${missionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
                 <div className="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
                   <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '500ms' }}>
-                    <span className="font-bold text-gray-900">Remote-Works connects verified professionals with high-quality remote opportunities worldwide.</span>
+                    Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
                   </p>
 
                   <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '2700ms' }}>
-                    We do more than publish job openings from partners. Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
-                  </p>
-
-                  <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '4900ms' }}>
-                    Through a structured system of <span className="font-semibold text-green-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-amber-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles—reducing friction, increasing trust, and accelerating hiring outcomes.
+                    Through a structured system of <span className="font-semibold text-green-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-amber-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles.
                   </p>
                 </div>
 
-                {/* Not Job Searching Banner */}
-                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '7100ms' }}>
+                {/* Workforce Readiness Banner */}
+                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '4900ms' }}>
                   <p className="text-lg font-bold text-gray-900 text-center">
-                    This is not job searching. <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">This is workforce readiness.</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">Where professionals become ready, trusted, and hire-ready for the global workforce.</span>
                   </p>
                 </div>
               </div>
