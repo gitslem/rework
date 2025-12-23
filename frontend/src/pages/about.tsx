@@ -95,7 +95,7 @@ export default function About() {
     {
       rating: 5,
       title: "Excellent service, got approved quickly!",
-      review: "I was skeptical at first, but Remote-Works truly delivered. My agent was professional, responsive, and knew exactly what the platform was looking for. Got approved on Outlier within 5 days!",
+      review: "I was skeptical at first, but Remote-Works truly delivered. My career specialist was professional, responsive, and knew exactly what the platform was looking for. Got approved on Outlier within 5 days!",
       author: "Sarah Martinez",
       date: "November 2024",
       verified: true
@@ -103,7 +103,7 @@ export default function About() {
     {
       rating: 5,
       title: "Best decision for my remote career",
-      review: "After months of failed applications, I found Remote-Works. The agent I worked with understood the process inside-out and helped me get approved on 3 platforms. Now earning $3.5K monthly!",
+      review: "After months of failed applications, I found Remote-Works. The career specialist I worked with understood the process inside-out and helped me get approved on 3 platforms. Now earning $3.5K monthly!",
       author: "David Chen",
       date: "October 2024",
       verified: true
@@ -111,7 +111,7 @@ export default function About() {
     {
       rating: 5,
       title: "Professional and reliable",
-      review: "The verification process showed me this is a legitimate platform. My agent was knowledgeable, the payment was fair (only after approval), and the support team was helpful throughout.",
+      review: "The verification process showed me this is a legitimate platform. My career specialist was knowledgeable, the payment was fair (only after approval), and the support team was helpful throughout.",
       author: "Priya Sharma",
       date: "December 2024",
       verified: true
@@ -119,7 +119,7 @@ export default function About() {
     {
       rating: 5,
       title: "Game changer for platform approvals",
-      review: "I tried applying on my own for 6 months with no success. Remote-Works matched me with an expert who got me approved in less than 2 weeks. The ROI was incredible!",
+      review: "I tried applying on my own for 6 months with no success. Remote-Works matched me with a career specialist who got me approved in less than 2 weeks. The ROI was incredible!",
       author: "Michael Johnson",
       date: "September 2024",
       verified: true
@@ -127,7 +127,7 @@ export default function About() {
     {
       rating: 5,
       title: "Trustworthy and effective",
-      review: "What impressed me most was the transparency. Real success rates, honest communication, and no hidden fees. My agent delivered exactly what was promised.",
+      review: "What impressed me most was the transparency. Real success rates, honest communication, and no hidden fees. My career specialist delivered exactly what was promised.",
       author: "Emma Thompson",
       date: "November 2024",
       verified: true
@@ -135,7 +135,7 @@ export default function About() {
     {
       rating: 5,
       title: "Highly recommended for beginners",
-      review: "As someone new to remote work, Remote-Works made everything simple. The agent explained every step, helped with my applications, and I'm now working on multiple platforms.",
+      review: "As someone new to remote work, Remote-Works made everything simple. The career specialist explained every step, helped with my applications, and I'm now working on multiple platforms.",
       author: "Ahmed Hassan",
       date: "October 2024",
       verified: true
@@ -143,11 +143,11 @@ export default function About() {
   ];
 
   const milestones = [
-    { year: "2023", event: "Remote-Works Founded", description: "Launched in March 2023 with a mission to democratize access to AI training opportunities. Started with 12 carefully vetted agents and a vision to solve the platform approval crisis." },
-    { year: "2023", event: "First 100 Agents Verified", description: "By September 2023, reached 100 verified agents across 15 countries. Implemented proprietary verification system requiring proof of 10+ successful approvals." },
-    { year: "2024", event: "10,000 Successful Approvals", description: "Hit major milestone of 10,000 candidates successfully approved. Achieved 98% success rate through rigorous agent training and quality control." },
+    { year: "2023", event: "Remote-Works Founded", description: "Launched in March 2023 with a mission to democratize access to AI training opportunities. Started with 12 project types and a vision to solve the platform approval crisis." },
+    { year: "2023", event: "First 100 Professionals Verified", description: "By September 2023, reached 100 verified professionals across 15 countries. Implemented proprietary verification system requiring proof of 10+ successful approvals." },
+    { year: "2024", event: "10,000 Successful Approvals", description: "Hit major milestone of 10,000 candidates successfully approved. Achieved 95% success rate through rigorous professional training and quality control." },
     { year: "2024", event: "Platform Partnerships", description: "Established direct communication channels with compliance teams at major AI training platforms to better understand their evolving requirements." },
-    { year: "2025", event: "400+ Agents, 27K+ Approvals", description: "Network grew to 400+ verified agents across 35 countries. Facilitated 27,000+ successful platform approvals, with candidates now earning $3K+ monthly on average." }
+    { year: "2025", event: "400+ Project Types, 27K+ Approvals", description: "Network expanded to 400+ verified project opportunities across 35 countries. Facilitated 27,000+ successful platform approvals, with professionals now earning $4K+ monthly on average." }
   ];
 
   // Auto-play testimonials slider
