@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import {
   Users, MessageSquare, Settings, LogOut,
@@ -94,12 +94,32 @@ export default function CandidateDashboard() {
   // Projects count
   const [projectsCount, setProjectsCount] = useState(0);
 
+  // Ref for auto-scrolling to latest message
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   useEffect(() => {
     checkAuthAndLoadProfile();
   }, []);
 
+  // Auto-scroll to bottom when conversation messages change
+  useEffect(() => {
+    if (conversationMessages.length > 0) {
+      // Small delay to ensure DOM has updated
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [conversationMessages]);
+
   // Auto-load conversation messages when message is selected
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
     if (selectedMessage && user) {
       // Generate conversationId if it doesn't exist
       const senderId = selectedMessage.senderId;
@@ -110,8 +130,10 @@ export default function CandidateDashboard() {
       console.log('[Candidate Dashboard] Auto-loading conversation messages for:', conversationId);
       // Clear previous conversation messages first
       setConversationMessages([]);
-      // Then load new conversation with fallback to sender/recipient query
-      loadConversationMessages(conversationId, senderId, recipientId);
+      // Then set up real-time listener for conversation with fallback to sender/recipient query
+      loadConversationMessages(conversationId, senderId, recipientId).then((cleanup) => {
+        unsubscribe = cleanup;
+      });
 
       // Mark messages in this conversation as read
       (async () => {
@@ -152,6 +174,13 @@ export default function CandidateDashboard() {
       // Clear conversation messages when no message is selected
       setConversationMessages([]);
     }
+
+    // Cleanup function to unsubscribe from real-time listeners
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [selectedMessage?.id, user]);
 
   const checkAuthAndLoadProfile = async () => {
@@ -326,7 +355,7 @@ export default function CandidateDashboard() {
 
   const loadConversationMessages = async (conversationId: string, senderId: string, recipientId: string) => {
     try {
-      console.log(`[Candidate Dashboard] Loading conversation between ${senderId} and ${recipientId}`);
+      console.log(`[Candidate Dashboard] Setting up real-time listener for conversation between ${senderId} and ${recipientId}`);
       const db = getFirebaseFirestore();
 
       // ALWAYS query by sender/recipient pairs (more reliable than conversationId)
@@ -346,42 +375,55 @@ export default function CandidateDashboard() {
         orderBy('createdAt', 'asc')
       );
 
-      console.log('[Candidate Dashboard] Running dual queries for conversation messages...');
-      const [snapshot1, snapshot2] = await Promise.all([
-        getDocs(query1),
-        getDocs(query2)
-      ]);
+      // Set up real-time listeners for both queries
+      let messages1: any[] = [];
+      let messages2: any[] = [];
 
-      // Combine and sort by createdAt
-      const allMessages: any[] = [];
-      snapshot1.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
-      snapshot2.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() }));
-
-      allMessages.sort((a, b) => {
-        const aTime = a.createdAt?.toMillis?.() || 0;
-        const bTime = b.createdAt?.toMillis?.() || 0;
-        return aTime - bTime;
+      const unsubscribe1 = onSnapshot(query1, (snapshot) => {
+        messages1 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateConversationMessages();
       });
 
-      console.log(`[Candidate Dashboard] Found ${allMessages.length} messages in conversation`);
+      const unsubscribe2 = onSnapshot(query2, (snapshot) => {
+        messages2 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        updateConversationMessages();
+      });
 
-      // Update messages with conversationId if missing (for future reference)
-      const messagesToUpdate = allMessages.filter(msg => !msg.conversationId);
-      if (messagesToUpdate.length > 0) {
-        console.log(`[Candidate Dashboard] Updating ${messagesToUpdate.length} messages with conversationId`);
-        const updatePromises = messagesToUpdate.map(msg =>
-          updateDoc(doc(db, 'messages', msg.id), {
-            conversationId: conversationId,
-            updatedAt: Timestamp.now()
-          }).catch(err => console.error(`Failed to update message ${msg.id}:`, err))
-        );
-        await Promise.all(updatePromises);
-      }
+      const updateConversationMessages = () => {
+        // Combine and sort by createdAt
+        const allMessages = [...messages1, ...messages2];
+        allMessages.sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() || 0;
+          const bTime = b.createdAt?.toMillis?.() || 0;
+          return aTime - bTime;
+        });
 
-      setConversationMessages(allMessages);
-      setSelectedConversationId(conversationId);
+        console.log(`[Candidate Dashboard] Real-time update: ${allMessages.length} messages in conversation`);
+
+        // Update messages with conversationId if missing (for future reference)
+        const messagesToUpdate = allMessages.filter(msg => !msg.conversationId);
+        if (messagesToUpdate.length > 0) {
+          console.log(`[Candidate Dashboard] Updating ${messagesToUpdate.length} messages with conversationId`);
+          const updatePromises = messagesToUpdate.map(msg =>
+            updateDoc(doc(db, 'messages', msg.id), {
+              conversationId: conversationId,
+              updatedAt: Timestamp.now()
+            }).catch(err => console.error(`Failed to update message ${msg.id}:`, err))
+          );
+          Promise.all(updatePromises);
+        }
+
+        setConversationMessages(allMessages);
+        setSelectedConversationId(conversationId);
+      };
+
+      // Store unsubscribe functions for cleanup
+      return () => {
+        unsubscribe1();
+        unsubscribe2();
+      };
     } catch (error: any) {
-      console.error('[Candidate Dashboard] Error loading conversation messages:', error);
+      console.error('[Candidate Dashboard] Error setting up conversation listener:', error);
       alert(`Failed to load conversation: ${error.message}\n\nPlease check the browser console for details.`);
       setConversationMessages([]);
     }
@@ -1564,50 +1606,54 @@ export default function CandidateDashboard() {
 
                           {/* Display all messages in the conversation */}
                           {conversationMessages.length > 0 ? (
-                            conversationMessages.map((msg, index) => {
-                              const isOwnMessage = user && msg.senderId === user.uid;
-                              const showDateSeparator = index > 0 &&
-                                msg.createdAt?.toDate?.()?.toLocaleDateString() !==
-                                conversationMessages[index - 1]?.createdAt?.toDate?.()?.toLocaleDateString();
+                            <>
+                              {conversationMessages.map((msg, index) => {
+                                const isOwnMessage = user && msg.senderId === user.uid;
+                                const showDateSeparator = index > 0 &&
+                                  msg.createdAt?.toDate?.()?.toLocaleDateString() !==
+                                  conversationMessages[index - 1]?.createdAt?.toDate?.()?.toLocaleDateString();
 
-                              return (
-                                <div key={msg.id}>
-                                  {/* Date separator for new days */}
-                                  {showDateSeparator && (
-                                    <div className="flex justify-center my-4">
-                                      <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
-                                        <p className="text-xs font-medium text-gray-600">
-                                          {msg.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
-                                        </p>
+                                return (
+                                  <div key={msg.id}>
+                                    {/* Date separator for new days */}
+                                    {showDateSeparator && (
+                                      <div className="flex justify-center my-4">
+                                        <div className="bg-white px-4 py-1 rounded-lg shadow-sm">
+                                          <p className="text-xs font-medium text-gray-600">
+                                            {msg.createdAt?.toDate?.()?.toLocaleDateString() || 'Today'}
+                                          </p>
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
 
-                                  {/* Message bubble */}
-                                  <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-xs lg:max-w-md rounded-2xl shadow-md px-4 py-3 ${
-                                      isOwnMessage
-                                        ? 'bg-emerald-500 text-white rounded-br-sm'
-                                        : 'bg-white text-gray-800 rounded-tl-sm'
-                                    }`}>
-                                      {msg.subject && index === 0 && (
-                                        <p className={`text-sm font-semibold mb-2 ${
-                                          isOwnMessage ? 'text-emerald-100' : 'text-emerald-600'
-                                        }`}>
-                                          {msg.subject}
-                                        </p>
-                                      )}
-                                      <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                                      <div className="flex items-center justify-end gap-1 mt-2">
-                                        <p className={`text-xs ${isOwnMessage ? 'text-emerald-100' : 'text-gray-500'}`}>
-                                          {msg.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
-                                        </p>
+                                    {/* Message bubble */}
+                                    <div className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                                      <div className={`max-w-xs lg:max-w-md rounded-2xl shadow-md px-4 py-3 ${
+                                        isOwnMessage
+                                          ? 'bg-emerald-500 text-white rounded-br-sm'
+                                          : 'bg-white text-gray-800 rounded-tl-sm'
+                                      }`}>
+                                        {msg.subject && index === 0 && (
+                                          <p className={`text-sm font-semibold mb-2 ${
+                                            isOwnMessage ? 'text-emerald-100' : 'text-emerald-600'
+                                          }`}>
+                                            {msg.subject}
+                                          </p>
+                                        )}
+                                        <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
+                                        <div className="flex items-center justify-end gap-1 mt-2">
+                                          <p className={`text-xs ${isOwnMessage ? 'text-emerald-100' : 'text-gray-500'}`}>
+                                            {msg.createdAt?.toDate?.()?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) || ''}
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              );
-                            })
+                                );
+                              })}
+                              {/* Invisible div for auto-scrolling to bottom */}
+                              <div ref={messagesEndRef} />
+                            </>
                           ) : (
                             <div className="flex justify-center items-center h-full">
                               <div className="bg-white rounded-2xl p-8 shadow-lg">
