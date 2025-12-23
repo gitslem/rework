@@ -124,6 +124,14 @@ export default function AgentDashboard() {
   // Ref to track if we've processed query params
   const queryParamsProcessedRef = useRef(false);
 
+  // Ref for auto-scrolling to latest message
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Function to scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const availablePlatforms = [
     'Outlier AI',
     'Alignerr',
@@ -249,8 +257,20 @@ export default function AgentDashboard() {
     }
   }, [router.isReady, router.query, messages, user, profile]);
 
+  // Auto-scroll to bottom when conversation messages change
+  useEffect(() => {
+    if (conversationMessages.length > 0) {
+      // Small delay to ensure DOM has updated
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [conversationMessages]);
+
   // Auto-load conversation messages when message is selected
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
     if (selectedMessage && showMessageModal && user) {
       // Generate conversationId if it doesn't exist
       const senderId = selectedMessage.senderId;
@@ -261,8 +281,10 @@ export default function AgentDashboard() {
       console.log('[Agent Dashboard] Auto-loading conversation messages for:', conversationId);
       // Clear previous conversation messages first
       setConversationMessages([]);
-      // Then load new conversation with fallback to sender/recipient query
-      loadConversationMessages(conversationId, senderId, recipientId);
+      // Then set up real-time listener for conversation with fallback to sender/recipient query
+      loadConversationMessages(conversationId, senderId, recipientId).then((cleanup) => {
+        unsubscribe = cleanup;
+      });
 
       // Mark messages in this conversation as read
       (async () => {
@@ -303,6 +325,13 @@ export default function AgentDashboard() {
       // Clear conversation messages when modal closes
       setConversationMessages([]);
     }
+
+    // Cleanup function to unsubscribe from real-time listeners
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [selectedMessage?.id, showMessageModal, user]);
 
   const checkAuthAndLoadProfile = async () => {
@@ -467,7 +496,7 @@ export default function AgentDashboard() {
 
   const loadConversationMessages = async (conversationId: string, senderId: string, recipientId: string) => {
     try {
-      console.log(`[Agent Dashboard] Loading conversation between ${senderId} and ${recipientId}`);
+      console.log(`[Agent Dashboard] Setting up real-time listener for conversation between ${senderId} and ${recipientId}`);
       const db = getFirebaseFirestore();
 
       // ALWAYS query by sender/recipient pairs (more reliable than conversationId)
@@ -487,42 +516,55 @@ export default function AgentDashboard() {
         orderBy('createdAt', 'asc')
       );
 
-      console.log('[Agent Dashboard] Running dual queries for conversation messages...');
-      const [snapshot1, snapshot2] = await Promise.all([
-        getDocs(query1),
-        getDocs(query2)
-      ]);
+      // Set up real-time listeners for both queries
+      let messages1: Message[] = [];
+      let messages2: Message[] = [];
 
-      // Combine and sort by createdAt
-      const allMessages: Message[] = [];
-      snapshot1.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() } as Message));
-      snapshot2.forEach(doc => allMessages.push({ id: doc.id, ...doc.data() } as Message));
-
-      allMessages.sort((a, b) => {
-        const aTime = a.createdAt?.toMillis?.() || 0;
-        const bTime = b.createdAt?.toMillis?.() || 0;
-        return aTime - bTime;
+      const unsubscribe1 = onSnapshot(query1, (snapshot) => {
+        messages1 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+        updateConversationMessages();
       });
 
-      console.log(`[Agent Dashboard] Found ${allMessages.length} messages in conversation`);
+      const unsubscribe2 = onSnapshot(query2, (snapshot) => {
+        messages2 = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+        updateConversationMessages();
+      });
 
-      // Update messages with conversationId if missing (for future reference)
-      const messagesToUpdate = allMessages.filter(msg => !msg.conversationId);
-      if (messagesToUpdate.length > 0) {
-        console.log(`[Agent Dashboard] Updating ${messagesToUpdate.length} messages with conversationId`);
-        const updatePromises = messagesToUpdate.map(msg =>
-          updateDoc(doc(db, 'messages', msg.id), {
-            conversationId: conversationId,
-            updatedAt: Timestamp.now()
-          }).catch(err => console.error(`Failed to update message ${msg.id}:`, err))
-        );
-        await Promise.all(updatePromises);
-      }
+      const updateConversationMessages = () => {
+        // Combine and sort by createdAt
+        const allMessages = [...messages1, ...messages2];
+        allMessages.sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() || 0;
+          const bTime = b.createdAt?.toMillis?.() || 0;
+          return aTime - bTime;
+        });
 
-      setConversationMessages(allMessages);
-      setSelectedConversationId(conversationId);
+        console.log(`[Agent Dashboard] Real-time update: ${allMessages.length} messages in conversation`);
+
+        // Update messages with conversationId if missing (for future reference)
+        const messagesToUpdate = allMessages.filter(msg => !msg.conversationId);
+        if (messagesToUpdate.length > 0) {
+          console.log(`[Agent Dashboard] Updating ${messagesToUpdate.length} messages with conversationId`);
+          const updatePromises = messagesToUpdate.map(msg =>
+            updateDoc(doc(db, 'messages', msg.id), {
+              conversationId: conversationId,
+              updatedAt: Timestamp.now()
+            }).catch(err => console.error(`Failed to update message ${msg.id}:`, err))
+          );
+          Promise.all(updatePromises);
+        }
+
+        setConversationMessages(allMessages);
+        setSelectedConversationId(conversationId);
+      };
+
+      // Store unsubscribe functions for cleanup
+      return () => {
+        unsubscribe1();
+        unsubscribe2();
+      };
     } catch (error: any) {
-      console.error('[Agent Dashboard] Error loading conversation messages:', error);
+      console.error('[Agent Dashboard] Error setting up conversation listener:', error);
       alert(`Failed to load conversation: ${error.message}\n\nPlease check the browser console for details.`);
       setConversationMessages([]);
     }
@@ -1768,7 +1810,8 @@ export default function AgentDashboard() {
 
                         {/* Display all messages in the conversation */}
                         {conversationMessages.length > 0 ? (
-                          conversationMessages.map((msg, index) => {
+                          <>
+                            {conversationMessages.map((msg, index) => {
                             const isOwnMessage = user && msg.senderId === user.uid;
                             const showDateSeparator = index > 0 &&
                               msg.createdAt?.toDate?.()?.toLocaleDateString() !==
@@ -1830,8 +1873,10 @@ export default function AgentDashboard() {
                                 </div>
                               </div>
                             );
-                          })
-                        ) : (
+                          })}
+                          {/* Invisible div for auto-scrolling to bottom */}
+                          <div ref={messagesEndRef} />
+                        </>) : (
                           <div className="flex justify-center items-center h-full">
                             <div className="bg-white rounded-2xl p-8 shadow-lg">
                               <Loader className="w-10 h-10 animate-spin text-emerald-500 mx-auto mb-4" />
