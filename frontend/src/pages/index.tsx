@@ -34,6 +34,11 @@ export default function Home() {
   const statsAnimatedRef = useRef(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
+  // Stats slider with typewriter effect
+  const [currentStatIndex, setCurrentStatIndex] = useState(0);
+  const [typewriterText, setTypewriterText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -192,6 +197,42 @@ export default function Home() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Stats slider with typewriter effect
+  useEffect(() => {
+    const statsLabels = [
+      "Platforms Supported",
+      "Avg. Monthly Income",
+      "Success Rate",
+      "Support"
+    ];
+
+    const currentLabel = statsLabels[currentStatIndex];
+    let charIndex = 0;
+    setTypewriterText('');
+    setIsTyping(true);
+
+    // Typewriter animation
+    const typewriterInterval = setInterval(() => {
+      if (charIndex < currentLabel.length) {
+        setTypewriterText(currentLabel.substring(0, charIndex + 1));
+        charIndex++;
+      } else {
+        clearInterval(typewriterInterval);
+        setIsTyping(false);
+      }
+    }, 80); // Speed of typing
+
+    // Auto-rotate to next stat after displaying
+    const rotationTimeout = setTimeout(() => {
+      setCurrentStatIndex((prev) => (prev + 1) % 4);
+    }, 4000); // Display each stat for 4 seconds
+
+    return () => {
+      clearInterval(typewriterInterval);
+      clearTimeout(rotationTimeout);
+    };
+  }, [currentStatIndex]);
 
   const stats = [
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
@@ -827,57 +868,74 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              {stats.map((stat, index) => {
-                let displayValue = stat.number;
-                if (index === 0) {
-                  displayValue = `${platformsCount}+`;
-                } else if (index === 1) {
-                  displayValue = `$${(avgIncome / 1000).toFixed(1)}k+`;
-                } else if (index === 2) {
-                  displayValue = `${successRate}%`;
-                } else if (index === 3) {
-                  displayValue = `${supportHours}/7`;
-                }
-
-                return (
-                  <div
-                    key={index}
-                    className={`text-center group animate-fade-in-up stagger-${index + 1} cursor-default`}
-                    style={{ animationDelay: `${index * 0.15}s` }}
-                  >
-                    {/* Icon Container with Glow Effect */}
-                    <div className="relative inline-flex items-center justify-center mb-6">
-                      {/* Glow Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 group-hover:opacity-40 transition-all duration-500"></div>
-
-                      {/* Icon */}
-                      <div
-                        className="relative w-20 h-20 bg-gradient-to-br from-purple-50 to-amber-50 backdrop-filter backdrop-blur-lg border-2 border-purple-200 rounded-2xl flex items-center justify-center shadow-lg hover-lift animate-float transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500"
-                        style={{ animationDelay: `${index * 0.5}s`, animationDuration: `${6 + index}s` }}
-                      >
-                        <div className="text-purple-600 group-hover:scale-110 transition-transform duration-300">
-                          {stat.icon}
+            {/* Interactive Stats Slider with Typewriter Effect */}
+            <div className="max-w-4xl mx-auto">
+              <div className="relative">
+                {/* Main Stat Display */}
+                <div className="bg-gradient-to-br from-purple-50 via-white to-amber-50 backdrop-blur-xl border-2 border-purple-200 rounded-3xl p-12 md:p-16 shadow-2xl transition-all duration-700 hover:shadow-3xl">
+                  <div className="text-center space-y-8">
+                    {/* Icon with Animated Glow */}
+                    <div className="relative inline-flex items-center justify-center">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                      <div className="relative w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-purple-100 to-amber-100 border-4 border-white rounded-3xl flex items-center justify-center shadow-xl transform transition-all duration-500 hover:scale-110 hover:rotate-6">
+                        <div className="text-purple-600 scale-150">
+                          {stats[currentStatIndex].icon}
                         </div>
                       </div>
                     </div>
 
-                    {/* Number with Gradient */}
-                    <div className="text-5xl md:text-6xl font-extrabold mb-2 bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
-                      {displayValue}
+                    {/* Animated Number */}
+                    <div className="relative">
+                      <div className="text-7xl md:text-8xl font-black bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent animate-fade-in-scale">
+                        {currentStatIndex === 0 && `${platformsCount}+`}
+                        {currentStatIndex === 1 && `$${(avgIncome / 1000).toFixed(1)}k+`}
+                        {currentStatIndex === 2 && `${successRate}%`}
+                        {currentStatIndex === 3 && `${supportHours}/7`}
+                      </div>
                     </div>
 
-                    {/* Label */}
-                    <div className="text-sm md:text-base text-gray-600 font-semibold tracking-wide uppercase group-hover:text-black transition-colors duration-300">
-                      {stat.label}
+                    {/* Typewriter Label */}
+                    <div className="relative h-12 flex items-center justify-center">
+                      <div className="text-2xl md:text-3xl font-bold text-gray-800 tracking-wide">
+                        <span className="inline-block">{typewriterText}</span>
+                        <span className={`inline-block w-0.5 h-8 bg-purple-600 ml-1 ${isTyping ? 'animate-blink' : 'opacity-0'}`}></span>
+                      </div>
                     </div>
 
-                    {/* Decorative Line */}
-                    <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-amber-500 mx-auto mt-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-x-0 group-hover:scale-x-100"></div>
+                    {/* Progress Indicators */}
+                    <div className="flex items-center justify-center gap-3 pt-4">
+                      {stats.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentStatIndex(index)}
+                          className={`transition-all duration-500 rounded-full ${
+                            index === currentStatIndex
+                              ? 'w-12 h-3 bg-gradient-to-r from-purple-600 to-amber-500'
+                              : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
+                          }`}
+                          aria-label={`View stat ${index + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={() => setCurrentStatIndex((prev) => (prev - 1 + 4) % 4)}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 w-12 h-12 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 hover:bg-purple-50"
+                  aria-label="Previous stat"
+                >
+                  <ArrowRight className="w-6 h-6 text-purple-600 rotate-180" />
+                </button>
+                <button
+                  onClick={() => setCurrentStatIndex((prev) => (prev + 1) % 4)}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 w-12 h-12 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 hover:bg-purple-50"
+                  aria-label="Next stat"
+                >
+                  <ArrowRight className="w-6 h-6 text-purple-600" />
+                </button>
+              </div>
             </div>
           </div>
 
