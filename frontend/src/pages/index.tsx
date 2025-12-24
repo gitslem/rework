@@ -38,6 +38,7 @@ export default function Home() {
   const [currentStatIndex, setCurrentStatIndex] = useState(0);
   const [typewriterText, setTypewriterText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [displayNumber, setDisplayNumber] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
@@ -198,7 +199,7 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Stats slider with typewriter effect
+  // Stats slider with typewriter effect and number counting
   useEffect(() => {
     const statsLabels = [
       "Platforms Supported",
@@ -207,21 +208,45 @@ export default function Home() {
       "Support"
     ];
 
+    const statsTargets = [20, 4000, 95, 24]; // Target values for counting
     const currentLabel = statsLabels[currentStatIndex];
+    const targetValue = statsTargets[currentStatIndex];
+
     let charIndex = 0;
     setTypewriterText('');
     setIsTyping(true);
+    setDisplayNumber(0);
 
-    // Typewriter animation
-    const typewriterInterval = setInterval(() => {
-      if (charIndex < currentLabel.length) {
-        setTypewriterText(currentLabel.substring(0, charIndex + 1));
-        charIndex++;
+    // Number counting animation
+    const countDuration = 1500; // 1.5 seconds to count
+    const countSteps = 30;
+    const increment = targetValue / countSteps;
+    let currentCount = 0;
+    let countStep = 0;
+
+    const countingInterval = setInterval(() => {
+      if (countStep < countSteps) {
+        currentCount += increment;
+        setDisplayNumber(Math.floor(currentCount));
+        countStep++;
       } else {
-        clearInterval(typewriterInterval);
-        setIsTyping(false);
+        setDisplayNumber(targetValue);
+        clearInterval(countingInterval);
       }
-    }, 80); // Speed of typing
+    }, countDuration / countSteps);
+
+    // Typewriter animation (starts after a brief delay)
+    setTimeout(() => {
+      const typewriterInterval = setInterval(() => {
+        if (charIndex < currentLabel.length) {
+          setTypewriterText(currentLabel.substring(0, charIndex + 1));
+          charIndex++;
+        } else {
+          clearInterval(typewriterInterval);
+          setIsTyping(false);
+        }
+      }, 80);
+    }, 300);
 
     // Auto-rotate to next stat after displaying
     const rotationTimeout = setTimeout(() => {
@@ -229,7 +254,7 @@ export default function Home() {
     }, 4000); // Display each stat for 4 seconds
 
     return () => {
-      clearInterval(typewriterInterval);
+      clearInterval(countingInterval);
       clearTimeout(rotationTimeout);
     };
   }, [currentStatIndex]);
@@ -869,49 +894,49 @@ export default function Home() {
             </div>
 
             {/* Interactive Stats Slider with Typewriter Effect */}
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-2xl mx-auto">
               <div className="relative">
-                {/* Main Stat Display */}
-                <div className="bg-gradient-to-br from-purple-50 via-white to-amber-50 backdrop-blur-xl border-2 border-purple-200 rounded-3xl p-12 md:p-16 shadow-2xl transition-all duration-700 hover:shadow-3xl">
-                  <div className="text-center space-y-8">
+                {/* Main Stat Display - Compact Version */}
+                <div className="bg-gradient-to-br from-purple-50 via-white to-amber-50 backdrop-blur-xl border-2 border-purple-200 rounded-2xl p-8 md:p-10 shadow-xl transition-all duration-700 hover:shadow-2xl">
+                  <div className="text-center space-y-4">
                     {/* Icon with Animated Glow */}
                     <div className="relative inline-flex items-center justify-center">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-                      <div className="relative w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-purple-100 to-amber-100 border-4 border-white rounded-3xl flex items-center justify-center shadow-xl transform transition-all duration-500 hover:scale-110 hover:rotate-6">
-                        <div className="text-purple-600 scale-150">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                      <div className="relative w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-100 to-amber-100 border-2 border-white rounded-2xl flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-110 hover:rotate-6">
+                        <div className="text-purple-600 scale-125">
                           {stats[currentStatIndex].icon}
                         </div>
                       </div>
                     </div>
 
-                    {/* Animated Number */}
+                    {/* Animated Number with Counting */}
                     <div className="relative">
-                      <div className="text-7xl md:text-8xl font-black bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent animate-fade-in-scale">
-                        {currentStatIndex === 0 && `${platformsCount}+`}
-                        {currentStatIndex === 1 && `$${(avgIncome / 1000).toFixed(1)}k+`}
-                        {currentStatIndex === 2 && `${successRate}%`}
-                        {currentStatIndex === 3 && `${supportHours}/7`}
+                      <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent">
+                        {currentStatIndex === 0 && `${displayNumber}+`}
+                        {currentStatIndex === 1 && `$${(displayNumber / 1000).toFixed(1)}k+`}
+                        {currentStatIndex === 2 && `${displayNumber}%`}
+                        {currentStatIndex === 3 && `${displayNumber}/7`}
                       </div>
                     </div>
 
                     {/* Typewriter Label */}
-                    <div className="relative h-12 flex items-center justify-center">
-                      <div className="text-2xl md:text-3xl font-bold text-gray-800 tracking-wide">
+                    <div className="relative h-10 flex items-center justify-center">
+                      <div className="text-lg md:text-xl font-bold text-gray-800 tracking-wide">
                         <span className="inline-block">{typewriterText}</span>
-                        <span className={`inline-block w-0.5 h-8 bg-purple-600 ml-1 ${isTyping ? 'animate-blink' : 'opacity-0'}`}></span>
+                        <span className={`inline-block w-0.5 h-6 bg-purple-600 ml-1 ${isTyping ? 'animate-blink' : 'opacity-0'}`}></span>
                       </div>
                     </div>
 
                     {/* Progress Indicators */}
-                    <div className="flex items-center justify-center gap-3 pt-4">
+                    <div className="flex items-center justify-center gap-2 pt-2">
                       {stats.map((_, index) => (
                         <button
                           key={index}
                           onClick={() => setCurrentStatIndex(index)}
                           className={`transition-all duration-500 rounded-full ${
                             index === currentStatIndex
-                              ? 'w-12 h-3 bg-gradient-to-r from-purple-600 to-amber-500'
-                              : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
+                              ? 'w-8 h-2 bg-gradient-to-r from-purple-600 to-amber-500'
+                              : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
                           }`}
                           aria-label={`View stat ${index + 1}`}
                         />
@@ -923,17 +948,17 @@ export default function Home() {
                 {/* Navigation Arrows */}
                 <button
                   onClick={() => setCurrentStatIndex((prev) => (prev - 1 + 4) % 4)}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 w-12 h-12 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 hover:bg-purple-50"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-4 w-10 h-10 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 hover:bg-purple-50"
                   aria-label="Previous stat"
                 >
-                  <ArrowRight className="w-6 h-6 text-purple-600 rotate-180" />
+                  <ArrowRight className="w-5 h-5 text-purple-600 rotate-180" />
                 </button>
                 <button
                   onClick={() => setCurrentStatIndex((prev) => (prev + 1) % 4)}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 w-12 h-12 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 hover:bg-purple-50"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-4 w-10 h-10 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 hover:bg-purple-50"
                   aria-label="Next stat"
                 >
-                  <ArrowRight className="w-6 h-6 text-purple-600" />
+                  <ArrowRight className="w-5 h-5 text-purple-600" />
                 </button>
               </div>
             </div>
