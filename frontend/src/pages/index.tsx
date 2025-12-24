@@ -66,9 +66,26 @@ export default function Home() {
       };
       video.addEventListener('ended', handleEnded);
 
+      // Handle visibility change - resume video when tab becomes visible
+      const handleVisibilityChange = () => {
+        if (!document.hidden && video.paused) {
+          playVideo();
+        }
+      };
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      // Periodic check to ensure video is playing
+      const playbackCheck = setInterval(() => {
+        if (video.paused && !video.ended && video.readyState >= 2) {
+          playVideo();
+        }
+      }, 3000); // Check every 3 seconds
+
       return () => {
         video.removeEventListener('loadeddata', playVideo);
         video.removeEventListener('ended', handleEnded);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        clearInterval(playbackCheck);
       };
     }
   }, []);
@@ -490,6 +507,8 @@ export default function Home() {
               preload="auto"
               disablePictureInPicture
               disableRemotePlayback
+              webkit-playsinline="true"
+              x5-playsinline="true"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               style={{ objectPosition: 'center' }}
               onLoadedData={() => setVideoLoaded(true)}
@@ -500,6 +519,19 @@ export default function Home() {
                 if (!video.ended) {
                   video.play().catch(() => {});
                 }
+              }}
+              onSuspend={(e) => {
+                // Resume if suspended
+                const video = e.currentTarget;
+                if (video.paused && !video.ended) {
+                  video.play().catch(() => {});
+                }
+              }}
+              onStalled={(e) => {
+                // Resume if stalled
+                const video = e.currentTarget;
+                video.load();
+                video.play().catch(() => {});
               }}
             >
               <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
