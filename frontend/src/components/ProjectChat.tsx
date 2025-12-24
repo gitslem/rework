@@ -82,7 +82,10 @@ export default function ProjectChat({
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    // Instantly jump to bottom without any animation
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
   };
 
   const fetchMessages = async () => {
