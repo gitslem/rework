@@ -38,6 +38,41 @@ export default function Home() {
     setIsVisible(true);
   }, []);
 
+  // Ensure video plays continuously
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      // Ensure video plays when loaded
+      const playVideo = async () => {
+        try {
+          await video.play();
+        } catch (error) {
+          // Autoplay might be blocked, but user interaction will trigger it
+          console.log('Video autoplay prevented:', error);
+        }
+      };
+
+      // Attempt to play when video is ready
+      if (video.readyState >= 3) {
+        playVideo();
+      } else {
+        video.addEventListener('loadeddata', playVideo);
+      }
+
+      // Ensure video restarts if loop fails
+      const handleEnded = () => {
+        video.currentTime = 0;
+        playVideo();
+      };
+      video.addEventListener('ended', handleEnded);
+
+      return () => {
+        video.removeEventListener('loadeddata', playVideo);
+        video.removeEventListener('ended', handleEnded);
+      };
+    }
+  }, []);
+
   // Auto-play testimonials slider
   useEffect(() => {
     const interval = setInterval(() => {
@@ -453,10 +488,19 @@ export default function Home() {
               muted
               playsInline
               preload="auto"
+              disablePictureInPicture
+              disableRemotePlayback
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               style={{ objectPosition: 'center' }}
               onLoadedData={() => setVideoLoaded(true)}
               onError={() => setVideoLoaded(false)}
+              onPause={(e) => {
+                // Prevent video from pausing - keep it playing continuously
+                const video = e.currentTarget;
+                if (!video.ended) {
+                  video.play().catch(() => {});
+                }
+              }}
             >
               <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
               Your browser does not support the video tag.
