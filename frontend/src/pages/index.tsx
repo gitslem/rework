@@ -605,37 +605,6 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Enhanced Trust Badges with Professional Look */}
-              <div className={`flex items-center justify-center flex-wrap gap-4 sm:gap-6 ${isVisible ? 'animate-fade-in-up stagger-3' : 'opacity-0'}`}>
-                <div className="group relative bg-gradient-to-br from-green-50 to-emerald-50 px-5 py-3 rounded-2xl border-2 border-green-200 hover:border-green-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
-                      <div className="absolute inset-0 bg-green-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                    </div>
-                    <span className="text-green-900 font-bold text-sm sm:text-base">95% Success Rate</span>
-                  </div>
-                </div>
-                <div className="group relative bg-gradient-to-br from-blue-50 to-cyan-50 px-5 py-3 rounded-2xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <Shield className="w-6 h-6 text-blue-600" />
-                      <div className="absolute inset-0 bg-blue-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                    </div>
-                    <span className="text-blue-900 font-bold text-sm sm:text-base">100% Free Platform</span>
-                  </div>
-                </div>
-                <div className="group relative bg-gradient-to-br from-purple-50 to-pink-50 px-5 py-3 rounded-2xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl hover:scale-105">
-                  <div className="flex items-center space-x-2">
-                    <div className="relative">
-                      <Zap className="w-6 h-6 text-purple-600" />
-                      <div className="absolute inset-0 bg-purple-400 rounded-full blur opacity-0 group-hover:opacity-50 transition-opacity"></div>
-                    </div>
-                    <span className="text-purple-900 font-bold text-sm sm:text-base">24hr Response</span>
-                  </div>
-                </div>
-              </div>
-
               {/* Enhanced CTA Buttons with Professional Animations */}
               <div className={`flex flex-col sm:flex-row justify-center gap-4 pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
                 <button
@@ -662,20 +631,15 @@ export default function Home() {
 
               {/* Enhanced Trust Indicators */}
               <div className={`pt-8 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
-                <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-600 font-medium">
-                  <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    <span>No credit card required</span>
+                <div className="flex items-center justify-center gap-4">
+                  <div className="group relative bg-white/60 backdrop-blur-sm p-3 rounded-full hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-110">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
                   </div>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
-                    <Clock className="w-4 h-4 text-blue-600" />
-                    <span>Start in 2 minutes</span>
+                  <div className="group relative bg-white/60 backdrop-blur-sm p-3 rounded-full hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-110">
+                    <Clock className="w-6 h-6 text-blue-600" />
                   </div>
-                  <span className="text-gray-400">•</span>
-                  <div className="flex items-center space-x-1.5 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full hover:bg-white transition-all">
-                    <Headphones className="w-4 h-4 text-purple-600" />
-                    <span>24/7 support</span>
+                  <div className="group relative bg-white/60 backdrop-blur-sm p-3 rounded-full hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-110">
+                    <Headphones className="w-6 h-6 text-purple-600" />
                   </div>
                 </div>
               </div>
