@@ -368,39 +368,39 @@ export default function Home() {
   const testimonials = [
     {
       quote: "The platform's structured approach helped me get approved on multiple remote work platforms within two weeks. The preparation and guidance made all the difference in my application success.",
-      author: "Sarah Mitchell",
+      author: "Annika Sørensen",
       role: "Data Annotation Specialist",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces"
     },
     {
       quote: "After months of unsuccessful applications, Remote-Works connected me with opportunities that matched my skills. The verification process gave employers confidence in my qualifications.",
-      author: "Michael Thompson",
+      author: "Takeshi Yamamoto",
       role: "AI Training Specialist",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&h=200&fit=crop&crop=faces"
     },
     {
       quote: "The professional onboarding process prepared me thoroughly for remote work. Within three weeks, I was earning a consistent income from legitimate platforms.",
-      author: "Jennifer Rodriguez",
+      author: "Lakshmi Patel",
       role: "Content Moderation Expert",
-      avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&h=200&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=faces"
     },
     {
       quote: "Remote-Works streamlined my path to verified remote opportunities. The transparency and support throughout the process exceeded my expectations.",
-      author: "David Chen",
+      author: "Dmitri Volkov",
       role: "Search Evaluation Analyst",
-      avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&h=200&fit=crop&crop=faces"
     },
     {
       quote: "Finding legitimate remote work was challenging until I discovered this platform. The structured verification and professional preparation made me a competitive candidate.",
-      author: "Rebecca Anderson",
+      author: "Amara Okafor",
       role: "Translation Services Provider",
-      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop&crop=faces"
     },
     {
       quote: "The platform's professional approach to remote work placement is unmatched. I went from unemployment to earning consistently within my first month.",
-      author: "James Patterson",
+      author: "Lars Bergström",
       role: "Data Labeling Specialist",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=faces"
+      avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&h=200&fit=crop&crop=faces"
     }
   ];
 
@@ -1284,7 +1284,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-r from-black via-gray-900 to-black opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <span className="relative z-10 flex items-center space-x-3">
                   <Building2 className="w-6 h-6 animate-bounce-subtle" />
-                  <span>Post Opportunities or Request Talent</span>
+                  <span>Request Service</span>
                   <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
               </button>
