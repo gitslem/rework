@@ -44,56 +44,112 @@ export default function Home() {
     setIsVisible(true);
   }, []);
 
-  // Ensure video plays continuously
+  // Ensure video plays continuously with improved reliability
   useEffect(() => {
     const video = videoRef.current;
-    if (video) {
-      // Ensure video plays when loaded
-      const playVideo = async () => {
-        try {
-          await video.play();
-        } catch (error) {
-          // Autoplay might be blocked, but user interaction will trigger it
-          console.log('Video autoplay prevented:', error);
-        }
-      };
+    if (!video) return;
 
-      // Attempt to play when video is ready
-      if (video.readyState >= 3) {
-        playVideo();
-      } else {
-        video.addEventListener('loadeddata', playVideo);
+    let playAttempts = 0;
+    const maxPlayAttempts = 5;
+
+    // Aggressive play function with retry logic
+    const playVideo = async () => {
+      if (playAttempts >= maxPlayAttempts) return;
+      playAttempts++;
+
+      try {
+        // Force unmute to ensure it's truly muted (required for autoplay)
+        video.muted = true;
+        video.volume = 0;
+
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          setVideoLoaded(true);
+          console.log('Video playing successfully');
+        }
+      } catch (error) {
+        console.log(`Video play attempt ${playAttempts} failed:`, error);
+
+        // Retry after a short delay
+        if (playAttempts < maxPlayAttempts) {
+          setTimeout(() => playVideo(), 500);
+        }
       }
+    };
 
-      // Ensure video restarts if loop fails
-      const handleEnded = () => {
-        video.currentTime = 0;
+    // Force load the video
+    video.load();
+
+    // Multiple event listeners to catch different ready states
+    const handleCanPlay = () => {
+      console.log('Video can play - attempting playback');
+      playVideo();
+    };
+
+    const handleLoadedData = () => {
+      console.log('Video loaded data - attempting playback');
+      playVideo();
+    };
+
+    const handleLoadedMetadata = () => {
+      console.log('Video metadata loaded');
+      // Try to play even at this early stage
+      if (video.readyState >= 2) {
         playVideo();
-      };
-      video.addEventListener('ended', handleEnded);
+      }
+    };
 
-      // Handle visibility change - resume video when tab becomes visible
-      const handleVisibilityChange = () => {
-        if (!document.hidden && video.paused) {
-          playVideo();
-        }
-      };
-      document.addEventListener('visibilitychange', handleVisibilityChange);
+    // Ensure video restarts if loop fails
+    const handleEnded = () => {
+      video.currentTime = 0;
+      playVideo();
+    };
 
-      // Periodic check to ensure video is playing
-      const playbackCheck = setInterval(() => {
-        if (video.paused && !video.ended && video.readyState >= 2) {
-          playVideo();
-        }
-      }, 3000); // Check every 3 seconds
+    // Prevent video from pausing
+    const handlePause = () => {
+      if (!video.ended) {
+        playVideo();
+      }
+    };
 
-      return () => {
-        video.removeEventListener('loadeddata', playVideo);
-        video.removeEventListener('ended', handleEnded);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        clearInterval(playbackCheck);
-      };
+    // Handle visibility change - resume video when tab becomes visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden && video.paused && video.readyState >= 2) {
+        playVideo();
+      }
+    };
+
+    // Attach all event listeners
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('ended', handleEnded);
+    video.addEventListener('pause', handlePause);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Immediate play attempt if video is already ready
+    if (video.readyState >= 2) {
+      playVideo();
     }
+
+    // Periodic check to ensure video is playing (backup mechanism)
+    const playbackCheck = setInterval(() => {
+      if (video.paused && !video.ended && video.readyState >= 2) {
+        playVideo();
+      }
+    }, 2000);
+
+    // Cleanup
+    return () => {
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('ended', handleEnded);
+      video.removeEventListener('pause', handlePause);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(playbackCheck);
+    };
   }, []);
 
   // Auto-play testimonials slider
@@ -591,28 +647,6 @@ export default function Home() {
               x5-playsinline="true"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
               style={{ objectPosition: 'center' }}
-              onLoadedData={() => setVideoLoaded(true)}
-              onError={() => setVideoLoaded(false)}
-              onPause={(e) => {
-                // Prevent video from pausing - keep it playing continuously
-                const video = e.currentTarget;
-                if (!video.ended) {
-                  video.play().catch(() => {});
-                }
-              }}
-              onSuspend={(e) => {
-                // Resume if suspended
-                const video = e.currentTarget;
-                if (video.paused && !video.ended) {
-                  video.play().catch(() => {});
-                }
-              }}
-              onStalled={(e) => {
-                // Resume if stalled
-                const video = e.currentTarget;
-                video.load();
-                video.play().catch(() => {});
-              }}
             >
               <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
               Your browser does not support the video tag.
