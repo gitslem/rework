@@ -205,10 +205,11 @@ export default function Home() {
       "Platforms Supported",
       "Avg. Monthly Income",
       "Success Rate",
-      "Support"
+      "Support",
+      "Project Types"
     ];
 
-    const statsTargets = [20, 4000, 95, 24]; // Target values for counting
+    const statsTargets = [20, 4000, 95, 24, 12]; // Target values for counting
     const currentLabel = statsLabels[currentStatIndex];
     const targetValue = statsTargets[currentStatIndex];
 
@@ -250,7 +251,7 @@ export default function Home() {
 
     // Auto-rotate to next stat after displaying
     const rotationTimeout = setTimeout(() => {
-      setCurrentStatIndex((prev) => (prev + 1) % 4);
+      setCurrentStatIndex((prev) => (prev + 1) % 5);
     }, 4000); // Display each stat for 4 seconds
 
     return () => {
@@ -263,7 +264,8 @@ export default function Home() {
     { number: "20+", label: "Platforms Supported", icon: <Globe className="w-5 h-5" /> },
     { number: "$4k+", label: "Avg. Monthly Income", icon: <DollarSign className="w-5 h-5" /> },
     { number: "95%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
-    { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> }
+    { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> },
+    { number: "12+", label: "Project Types", icon: <Layers className="w-5 h-5" /> }
   ];
 
   const projectTypes = [
@@ -897,10 +899,12 @@ export default function Home() {
                 <TrendingUp className="w-5 h-5 text-purple-600" />
                 <span className="text-gray-800 text-sm font-semibold">Our Impact</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-black mb-4">
-                Trusted by Remote Workers Worldwide
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent">
+                  Trusted by Remote Workers Worldwide
+                </span>
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Join thousands of successful remote workers who found their dream opportunities through our platform
               </p>
             </div>
@@ -928,6 +932,7 @@ export default function Home() {
                         {currentStatIndex === 1 && `$${(displayNumber / 1000).toFixed(1)}k+`}
                         {currentStatIndex === 2 && `${displayNumber}%`}
                         {currentStatIndex === 3 && `${displayNumber}/7`}
+                        {currentStatIndex === 4 && `${displayNumber}+`}
                       </div>
                     </div>
 
@@ -959,14 +964,14 @@ export default function Home() {
 
                 {/* Navigation Arrows */}
                 <button
-                  onClick={() => setCurrentStatIndex((prev) => (prev - 1 + 4) % 4)}
+                  onClick={() => setCurrentStatIndex((prev) => (prev - 1 + 5) % 5)}
                   className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-4 w-10 h-10 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 hover:bg-purple-50"
                   aria-label="Previous stat"
                 >
                   <ArrowRight className="w-5 h-5 text-purple-600 rotate-180" />
                 </button>
                 <button
-                  onClick={() => setCurrentStatIndex((prev) => (prev + 1) % 4)}
+                  onClick={() => setCurrentStatIndex((prev) => (prev + 1) % 5)}
                   className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-4 w-10 h-10 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 hover:bg-purple-50"
                   aria-label="Next stat"
                 >
