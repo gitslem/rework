@@ -22,7 +22,9 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState('');
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [missionVisible, setMissionVisible] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const missionRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Stats counting animation
   const [platformsCount, setPlatformsCount] = useState(0);
@@ -442,12 +444,33 @@ export default function Home() {
 
         {/* Hero Section - Clean Milkish Design with Professional Animations */}
         <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-white">
-          {/* Subtle Background Decoration */}
-          <div className="absolute inset-0 overflow-hidden opacity-40">
-            {/* Animated gradient orbs */}
-            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
-            <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}></div>
-            <div className="absolute -bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '10s' }}></div>
+          {/* Video Background */}
+          <div className="absolute inset-0 overflow-hidden">
+            <video
+              ref={videoRef}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+              style={{ objectPosition: 'center' }}
+              onLoadedData={() => setVideoLoaded(true)}
+              onError={() => setVideoLoaded(false)}
+            >
+              <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            {/* Fallback gradient background for when video is loading or fails */}
+            {!videoLoaded && (
+              <div className="absolute inset-0">
+                <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+                <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}></div>
+                <div className="absolute -bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '10s' }}></div>
+              </div>
+            )}
+            {/* Overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/70 to-white/85 backdrop-blur-[2px]"></div>
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10">
