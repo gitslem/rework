@@ -643,82 +643,39 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* What We Do - Clarity Section */}
-        <section id="mission" ref={missionRef} className="relative py-24 px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
-          {/* Subtle Background Decoration */}
-          <div className="absolute inset-0 overflow-hidden opacity-40 pointer-events-none">
-            {/* Animated gradient orbs - matching hero section subtlety */}
-            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDuration: '10s' }}></div>
-            <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}></div>
-            <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-green-200 to-teal-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '14s' }}></div>
-          </div>
-
-          <div className="max-w-6xl mx-auto relative z-10">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-blur-sm px-6 py-3 rounded-full border border-purple-200 mb-6 animate-fade-in">
-                <Compass className="w-5 h-5 text-purple-600" />
-                <span className="text-sm font-semibold text-gray-700">Our Mission</span>
-              </div>
-              <h2 className={`text-4xl md:text-5xl font-extrabold mb-6 transition-all duration-1000 ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                Join <span className="bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Rework</span>
-              </h2>
-            </div>
-
-            <div className="max-w-4xl mx-auto space-y-10">
-              {/* Main Content - Typewriter Style */}
-              <div className={`bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-xl border border-purple-100 transition-all duration-1000 ${missionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-                <div className="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
-                  <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '500ms' }}>
-                    Remote-Works ensures candidates are thoroughly verified, professionally prepared, and strategically onboarded before they ever apply.
-                  </p>
-
-                  <p className={`${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '2700ms' }}>
-                    Through a structured system of <span className="font-semibold text-green-600">Profile Verification</span>, <span className="font-semibold text-purple-600">Application Readiness</span>, and <span className="font-semibold text-amber-600">Employer-Aligned Onboarding</span>, we streamline access to vetted remote roles.
-                  </p>
-                </div>
-
-                {/* Workforce Readiness Banner */}
-                <div className={`mt-8 p-5 bg-gradient-to-r from-purple-500/10 via-amber-500/10 to-purple-500/10 rounded-2xl border-l-4 border-purple-600 ${missionVisible ? 'animate-typewriter-wrap' : 'opacity-0'}`} style={{ animationDelay: '4900ms' }}>
-                  <p className="text-lg font-bold text-gray-900 text-center">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-amber-600">Where professionals become ready, trusted, and hire-ready for the global workforce.</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Compact Journey Stages - Modern Inline Design */}
-              <div className={`flex flex-wrap items-center justify-center gap-3 transition-all duration-1000 delay-[4500ms] ${missionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                {/* Verified */}
-                <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-green-200 hover:border-green-400 transition-all shadow-md hover:shadow-lg">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
-                    <BadgeCheck className="w-5 h-5 text-white" />
+              {/* Journey Stages - Professional Design */}
+              <div className={`pt-12 ${isVisible ? 'animate-fade-in-up stagger-6' : 'opacity-0'}`}>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {/* Verified */}
+                  <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-full border-2 border-green-200 hover:border-green-400 transition-all shadow-md hover:shadow-xl hover:scale-105">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                      <BadgeCheck className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-green-700 text-sm md:text-base">Verified</span>
                   </div>
-                  <span className="font-bold text-green-700 text-sm md:text-base">Verified</span>
-                </div>
 
-                {/* Arrow - Hidden on mobile, shown on desktop */}
-                <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
+                  {/* Arrow */}
+                  <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
 
-                {/* Qualified */}
-                <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-purple-200 hover:border-purple-400 transition-all shadow-md hover:shadow-lg">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <Award className="w-5 h-5 text-white" />
+                  {/* Qualified */}
+                  <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-full border-2 border-purple-200 hover:border-purple-400 transition-all shadow-md hover:shadow-xl hover:scale-105">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <Award className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-purple-700 text-sm md:text-base">Qualified</span>
                   </div>
-                  <span className="font-bold text-purple-700 text-sm md:text-base">Qualified</span>
-                </div>
 
-                {/* Arrow - Hidden on mobile, shown on desktop */}
-                <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
+                  {/* Arrow */}
+                  <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
 
-                {/* Hired */}
-                <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border-2 border-amber-200 hover:border-amber-400 transition-all shadow-md hover:shadow-lg">
-                  <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center">
-                    <Rocket className="w-5 h-5 text-white" />
+                  {/* Hired */}
+                  <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-full border-2 border-amber-200 hover:border-amber-400 transition-all shadow-md hover:shadow-xl hover:scale-105">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center">
+                      <Rocket className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-amber-700 text-sm md:text-base">Hired</span>
                   </div>
-                  <span className="font-bold text-amber-700 text-sm md:text-base">Hired</span>
                 </div>
               </div>
             </div>
