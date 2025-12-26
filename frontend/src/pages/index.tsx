@@ -630,166 +630,184 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section - Clean Milkish Design with Professional Animations */}
-        <section className="relative pt-32 pb-40 px-6 lg:px-8 overflow-hidden bg-white">
-          {/* Video Background */}
-          <div className="absolute inset-0 overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              disablePictureInPicture
-              disableRemotePlayback
-              webkit-playsinline="true"
-              x5-playsinline="true"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-              style={{ objectPosition: 'center' }}
-            >
-              <source src="/Remote-Worksio.Intro-mp4.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            {/* Fallback gradient background for when video is loading or fails */}
-            {!videoLoaded && (
-              <div className="absolute inset-0">
-                <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
-                <div className="absolute top-40 right-20 w-96 h-96 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '8s' }}></div>
-                <div className="absolute -bottom-20 left-1/3 w-96 h-96 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '10s' }}></div>
-              </div>
-            )}
-            {/* Overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/70 to-white/85 backdrop-blur-[2px]"></div>
+        {/* Hero Section - Modern Split Design with Professional Styling */}
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-blue-400/10 to-cyan-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
 
-          <div className="max-w-7xl mx-auto relative z-10">
-            <div className="text-center space-y-10">
-              {/* Enhanced Badge with Typewriter Effect */}
-              <div className={`flex items-center justify-center mx-auto max-w-max bg-white/90 backdrop-blur-lg px-8 py-4 rounded-full border-2 border-purple-200 shadow-xl ${isVisible ? 'animate-fade-in' : 'opacity-0'} relative group hover:border-purple-400 transition-all duration-500`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-amber-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <div className="relative flex items-center space-x-3">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              {/* Left Content */}
+              <div className="space-y-8">
+                {/* Badge */}
+                <div className={`inline-flex items-center gap-3 bg-white/80 backdrop-blur-xl px-6 py-3 rounded-full border border-purple-200/50 shadow-lg ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                   <div className="relative">
-                    <Bot className="w-5 h-5 text-purple-600 animate-pulse relative z-10" />
-                    <div className="absolute inset-0 bg-purple-400 rounded-full blur-md opacity-30"></div>
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <div className="absolute inset-0 bg-purple-600 rounded-full blur-md opacity-30 animate-pulse"></div>
                   </div>
-                  <span className={`font-bold text-sm sm:text-base tracking-wide bg-gradient-to-r from-purple-600 via-amber-600 to-purple-600 bg-clip-text text-transparent ${isVisible ? 'animate-typewriter' : 'opacity-0'} whitespace-nowrap`} style={{
-                    textShadow: '0 0 20px rgba(147, 51, 234, 0.3), 0 0 30px rgba(245, 158, 11, 0.2)',
-                    filter: 'drop-shadow(0 0 10px rgba(147, 51, 234, 0.4))'
-                  }}>
-                    Personalized Support + AI Powered
+                  <span className="font-semibold text-sm bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">
+                    AI-Powered Platform
                   </span>
+                  <div className="h-5 w-px bg-purple-200"></div>
+                  <span className="text-sm text-gray-600 font-medium">Trusted Worldwide</span>
                 </div>
-              </div>
 
-              {/* Enhanced Main Headline with Professional Animations */}
-              <div className="space-y-4">
-                <h1 className={`text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-black leading-[1.1] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
-                  <span className="block">Access Verified</span>
-                  <span className="block mt-3 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent animate-gradient relative">
-                    Remote Work Opportunities
-                    <div className="absolute -inset-2 bg-gradient-to-r from-purple-600/10 via-amber-500/10 to-yellow-500/10 blur-2xl -z-10 animate-pulse"></div>
-                  </span>
-                  <span className="block mt-3 text-5xl sm:text-6xl lg:text-7xl">— The Right Way</span>
-                </h1>
-              </div>
-
-              {/* Enhanced Subheadline with Clean Background */}
-              <div className={`max-w-4xl mx-auto ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
-                <p className="text-xl sm:text-2xl lg:text-3xl text-gray-800 leading-relaxed font-medium">
-                  Your{' '}
-                  <span className="relative inline-block group">
-                    <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">
-                      trusted partner
+                {/* Main Headline */}
+                <div className="space-y-4">
+                  <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
+                    <span className="block text-slate-900">Your Gateway to</span>
+                    <span className="block mt-2 bg-gradient-to-r from-purple-600 via-violet-600 to-amber-600 bg-clip-text text-transparent relative">
+                      Verified Remote Work
+                      <svg className="absolute -bottom-2 left-0 w-full h-3" viewBox="0 0 100 10" preserveAspectRatio="none">
+                        <path d="M0,5 Q25,8 50,5 T100,5" stroke="url(#hero-underline)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6"/>
+                        <defs>
+                          <linearGradient id="hero-underline" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#9333ea" />
+                            <stop offset="50%" stopColor="#7c3aed" />
+                            <stop offset="100%" stopColor="#f59e0b" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                     </span>
-                    <svg className="absolute -bottom-1 left-0 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
-                      <path d="M0,3 Q50,6 100,3" stroke="url(#gradient-underline)" strokeWidth="3" fill="none" strokeLinecap="round"/>
-                      <defs>
-                        <linearGradient id="gradient-underline" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#9333ea" />
-                          <stop offset="100%" stopColor="#f59e0b" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </span>
-                  {' '}connecting verified professionals with legitimate remote work opportunities through partnerships with{' '}
-                  <span className="font-bold text-black relative">
-                    leading global organizations
+                  </h1>
+                </div>
+
+                {/* Subheadline */}
+                <p className={`text-xl sm:text-2xl text-gray-700 leading-relaxed font-medium max-w-2xl ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                  Connect with <span className="font-bold text-slate-900">legitimate opportunities</span> from leading global organizations through our{' '}
+                  <span className="relative inline-block">
+                    <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">verified platform</span>
+                    <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-amber-600"></div>
                   </span>
                 </p>
-              </div>
 
-              {/* Enhanced CTA Buttons with Professional Animations */}
-              <div className={`flex flex-col sm:flex-row justify-center gap-4 pt-8 ${isVisible ? 'animate-fade-in-scale stagger-4' : 'opacity-0'}`}>
-                <button
-                  onClick={() => router.push('/register?type=candidate')}
-                  className="group relative bg-gradient-to-r from-black via-gray-900 to-black text-white px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10 flex items-center justify-center space-x-3">
-                    <Rocket className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce-subtle" />
-                    <span>Get Started as a Professional</span>
-                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform duration-300" />
-                  </span>
-                </button>
-                <button
-                  onClick={() => router.push('/company')}
-                  className="group relative bg-white border-2 border-black text-black px-10 sm:px-14 py-5 sm:py-6 rounded-full font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden"
-                >
-                  <span className="relative z-10 flex items-center justify-center space-x-3">
-                    <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span>For Employers</span>
-                  </span>
-                </button>
-              </div>
+                {/* CTA Buttons */}
+                <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
+                  <button
+                    onClick={() => router.push('/register?type=candidate')}
+                    className="group relative bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      <Rocket className="w-6 h-6" />
+                      <span>Start Your Journey</span>
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </span>
+                  </button>
 
-              {/* Enhanced Trust Indicators */}
-              <div className={`pt-8 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="group relative bg-white/60 backdrop-blur-sm p-3 rounded-full hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-110">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  <button
+                    onClick={() => router.push('/company')}
+                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105"
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-3">
+                      <Building2 className="w-6 h-6 text-purple-600" />
+                      <span>For Employers</span>
+                    </span>
+                  </button>
+                </div>
+
+                {/* Trust Indicators & Journey Stages */}
+                <div className={`flex flex-wrap items-center gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
+                  {/* Journey Badges */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+                      <BadgeCheck className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-semibold text-green-700">Verified</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-1.5 bg-purple-50 px-4 py-2 rounded-full border border-purple-200">
+                      <Award className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm font-semibold text-purple-700">Qualified</span>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-1.5 bg-amber-50 px-4 py-2 rounded-full border border-amber-200">
+                      <Rocket className="w-4 h-4 text-amber-600" />
+                      <span className="text-sm font-semibold text-amber-700">Hired</span>
+                    </div>
                   </div>
-                  <div className="group relative bg-white/60 backdrop-blur-sm p-3 rounded-full hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-110">
-                    <Clock className="w-6 h-6 text-blue-600" />
+                </div>
+
+                {/* Quick Stats */}
+                <div className={`flex items-center gap-8 pt-4 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold text-slate-900">Free to Join</div>
+                      <div className="text-xs text-gray-600">No hidden fees</div>
+                    </div>
                   </div>
-                  <div className="group relative bg-white/60 backdrop-blur-sm p-3 rounded-full hover:bg-white hover:shadow-lg transition-all duration-300 hover:scale-110">
-                    <Headphones className="w-6 h-6 text-purple-600" />
+
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold text-slate-900">Quick Setup</div>
+                      <div className="text-xs text-gray-600">Start in minutes</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Headphones className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold text-slate-900">24/7 Support</div>
+                      <div className="text-xs text-gray-600">Always available</div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Journey Stages - Professional Design */}
-              <div className={`pt-12 ${isVisible ? 'animate-fade-in-up stagger-6' : 'opacity-0'}`}>
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  {/* Verified */}
-                  <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-full border-2 border-green-200 hover:border-green-400 transition-all shadow-md hover:shadow-xl hover:scale-105">
-                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
-                      <BadgeCheck className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="font-bold text-green-700 text-sm md:text-base">Verified</span>
+              {/* Right Image */}
+              <div className={`relative ${isVisible ? 'animate-fade-in-scale stagger-2' : 'opacity-0'}`}>
+                <div className="relative">
+                  {/* Main Image Container */}
+                  <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-white/20 backdrop-blur-sm">
+                    <img
+                      src="https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                      alt="Remote Work"
+                      className="w-full h-auto object-cover"
+                      style={{ aspectRatio: '4/3' }}
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-amber-600/20"></div>
                   </div>
 
-                  {/* Arrow */}
-                  <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
-
-                  {/* Qualified */}
-                  <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-full border-2 border-purple-200 hover:border-purple-400 transition-all shadow-md hover:shadow-xl hover:scale-105">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <Award className="w-5 h-5 text-white" />
+                  {/* Floating Stats Cards */}
+                  <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                        <Star className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-black text-slate-900">95%</div>
+                        <div className="text-sm text-gray-600 font-medium">Success Rate</div>
+                      </div>
                     </div>
-                    <span className="font-bold text-purple-700 text-sm md:text-base">Qualified</span>
                   </div>
 
-                  {/* Arrow */}
-                  <ArrowRight className="hidden md:block w-6 h-6 text-purple-400" strokeWidth={2.5} />
-
-                  {/* Hired */}
-                  <div className="group flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-3 rounded-full border-2 border-amber-200 hover:border-amber-400 transition-all shadow-md hover:shadow-xl hover:scale-105">
-                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center">
-                      <Rocket className="w-5 h-5 text-white" />
+                  <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-amber-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
+                        <Globe className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-black text-slate-900">20+</div>
+                        <div className="text-sm text-gray-600 font-medium">Platforms</div>
+                      </div>
                     </div>
-                    <span className="font-bold text-amber-700 text-sm md:text-base">Hired</span>
                   </div>
+
+                  {/* Decorative Elements */}
+                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl"></div>
+                  <div className="absolute -z-10 -bottom-10 -left-10 w-72 h-72 bg-gradient-to-br from-amber-400/30 to-yellow-400/30 rounded-full blur-3xl"></div>
                 </div>
               </div>
             </div>
