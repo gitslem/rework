@@ -331,39 +331,10 @@ export default function Company() {
               </span>
             </h1>
 
-            <div className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8 min-h-[7rem] flex items-center justify-center">
+            <div className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-12 min-h-[7rem] flex items-center justify-center">
               <div>
                 <span className="inline">{typewriterText}</span>
                 <span className={`inline-block w-0.5 h-6 bg-purple-600 ml-1 ${isTyping ? 'animate-blink' : 'opacity-0'}`}></span>
-              </div>
-            </div>
-
-            <div className="flex justify-center gap-4 mb-8">
-              <button
-                onClick={() => router.push('/agent-signup?type=company')}
-                className="group relative bg-black text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover-lift shadow-xl overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center">
-                  <Users className="mr-2 w-5 h-5" />
-                  Become a Partner
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </button>
-            </div>
-
-            <div className="flex items-center justify-center flex-wrap gap-4 text-sm">
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-gray-700 font-semibold">Free Platform</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-amber-200 shadow-sm">
-                <Clock className="w-4 h-4 text-amber-600" />
-                <span className="text-gray-700 font-semibold">24hr Connection</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full border-2 border-purple-200 shadow-sm">
-                <Award className="w-4 h-4 text-purple-600" />
-                <span className="text-gray-700 font-semibold">95% Success Rate</span>
               </div>
             </div>
           </div>
@@ -673,8 +644,8 @@ export default function Company() {
                             <div className="text-sm text-gray-300">Coverage Available</div>
                           </div>
                           <div className="border-l border-white/20 pl-4">
-                            <div className="text-3xl font-black text-purple-300">100K+</div>
-                            <div className="text-sm text-gray-300">Reviews Daily</div>
+                            <div className="text-3xl font-black text-purple-300">1.5M+</div>
+                            <div className="text-sm text-gray-300">Reviewed</div>
                           </div>
                         </div>
                       </div>
@@ -813,7 +784,7 @@ export default function Company() {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* CTA Section - Become a Partner */}
         <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute inset-0 opacity-10">
