@@ -757,22 +757,22 @@ export default function Home() {
                 <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
-                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
+                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-amber-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span className="relative z-10 flex items-center justify-center gap-3">
-                      <Rocket className="w-6 h-6" />
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <Rocket className="w-5 h-5" />
                       <span>Start Your Journey</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </span>
                   </button>
 
                   <button
                     onClick={() => router.push('/company')}
-                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105"
+                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105"
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-3">
-                      <Building2 className="w-6 h-6 text-purple-600" />
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <Building2 className="w-5 h-5 text-purple-600" />
                       <span>For Employers</span>
                     </span>
                   </button>

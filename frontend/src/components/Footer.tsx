@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Logo from './Logo';
-import { Mail, MapPin, Star, BookOpen, Twitter } from 'lucide-react';
+import { Mail, MapPin, Star, BookOpen, Twitter, Linkedin } from 'lucide-react';
 
 export default function Footer() {
   const router = useRouter();
@@ -177,6 +177,19 @@ export default function Footer() {
                     <Twitter className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-sm font-medium">Twitter/X</span>
+                </a>
+
+                {/* LinkedIn */}
+                <a
+                  href="https://www.linkedin.com/company/remo-teworks/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-amber-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Linkedin className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-sm font-medium">LinkedIn</span>
                 </a>
 
                 {/* Trustpilot */}
