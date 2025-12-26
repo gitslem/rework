@@ -703,23 +703,6 @@ export default function Company() {
                 </div>
               </div>
             </div>
-
-            {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-amber-600 rounded-3xl p-10 text-center text-white shadow-2xl">
-              <h3 className="text-3xl md:text-4xl font-extrabold mb-4">
-                Ready to Scale Your Operations?
-              </h3>
-              <p className="text-xl mb-8 max-w-2xl mx-auto text-purple-100">
-                Join companies using Remote-Works to access verified, workforce-ready professionals across 12+ project types
-              </p>
-              <button
-                onClick={() => router.push('/agent-signup?type=company')}
-                className="group relative bg-white text-purple-900 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl inline-flex items-center space-x-3"
-              >
-                <span>Partner with Us Today</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-              </button>
-            </div>
           </div>
         </section>
 
@@ -781,49 +764,6 @@ export default function Company() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* CTA Section - Become a Partner */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
-          </div>
-
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-              Ready to Access Workforce-Ready Professionals?
-            </h2>
-            <p className="text-xl text-gray-200 mb-8 leading-relaxed">
-              Join companies who partner with Remote-Works for verified, prepared, and aligned professionals. Let's discuss how our workforce readiness system accelerates your hiring outcomes.
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button
-                onClick={() => router.push('/agent-signup?type=company')}
-                className="group bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105"
-              >
-                <span className="flex items-center justify-center">
-                  Become a Partner
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-              </button>
-              <button
-                onClick={() => router.push('/about')}
-                className="group bg-transparent border-2 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-black transition-all"
-              >
-                Learn More About Us
-              </button>
-            </div>
-
-            <p className="text-sm text-gray-300 mt-8">
-              Have questions? Contact us at{' '}
-              <a href="mailto:support@remote-works.io" className="text-amber-400 hover:text-amber-300 font-semibold">
-                support@remote-works.io
-              </a>
-            </p>
           </div>
         </section>
 
