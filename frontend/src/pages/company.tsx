@@ -780,42 +780,42 @@ export default function Company() {
         </section>
 
         {/* CTA Section - Ready to Scale */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-purple-50/20 overflow-hidden">
           {/* Decorative elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-72 h-72 bg-amber-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-purple-600 to-amber-600 rounded-full blur-3xl opacity-20"></div>
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-400/10 to-amber-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
 
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-slate-900">
               Ready to Scale Your Operations?
             </h2>
-            <p className="text-xl md:text-2xl text-purple-100 mb-10 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-gray-700 mb-10 leading-relaxed max-w-3xl mx-auto">
               Join companies using Remote-Works to access verified, workforce-ready professionals across 12+ project types
             </p>
 
             <button
               onClick={() => router.push('/agent-signup?type=company')}
-              className="group relative bg-white text-purple-900 px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-2xl hover:scale-105 inline-flex items-center space-x-3"
+              className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-12 py-5 rounded-full font-bold text-lg transition-all shadow-2xl hover:shadow-purple-500/50 hover:scale-105 inline-flex items-center space-x-3"
             >
               <span>Partner with Us Today</span>
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </button>
 
-            <div className="mt-10 flex items-center justify-center gap-8 text-sm text-purple-200">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-amber-400" />
-                <span>Free to Join</span>
+            <div className="mt-10 flex items-center justify-center gap-8 text-sm text-gray-700">
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-purple-200 shadow-sm">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span className="font-semibold">Free to Join</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-400" />
-                <span>Verified Talent</span>
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-purple-200 shadow-sm">
+                <Shield className="w-5 h-5 text-purple-600" />
+                <span className="font-semibold">Verified Talent</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-amber-400" />
-                <span>24hr Connection</span>
+              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-amber-200 shadow-sm">
+                <Zap className="w-5 h-5 text-amber-600" />
+                <span className="font-semibold">24hr Connection</span>
               </div>
             </div>
           </div>
