@@ -591,6 +591,7 @@ export default function Home() {
     <>
       <Head>
         <title>Remote Work Opportunities with Personalized Support | Professional Career Platform</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <meta name="description" content="Access verified remote work opportunities worldwide with personalized application support. Expert career guidance, professional profile verification, and structured onboarding to help you succeed in remote AI training, data annotation, translation, and digital content roles." />
         <meta name="keywords" content="remote work opportunities, work from home jobs, personalized career support, remote AI training jobs, data annotation careers, translation jobs, content moderation roles, remote job platform, professional verification, career readiness, digital nomad jobs, flexible remote work, freelance opportunities, remote career guidance" />
 
@@ -705,12 +706,12 @@ export default function Home() {
         <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-purple-400/10 to-amber-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+            <div className="absolute top-20 left-10 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-10 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] lg:w-[800px] lg:h-[800px] bg-gradient-to-br from-purple-400/10 to-amber-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 relative z-10">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
               {/* Left Content */}
               <div className="space-y-8">
@@ -729,11 +730,11 @@ export default function Home() {
 
                 {/* Main Headline */}
                 <div className="space-y-4">
-                  <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
+                  <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
                     <span className="block text-slate-900">Your Gateway to</span>
                     <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent relative">
                       Verified Remote Work
-                      <svg className="absolute -bottom-2 left-0 w-full h-3" viewBox="0 0 100 10" preserveAspectRatio="none">
+                      <svg className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-3" viewBox="0 0 100 10" preserveAspectRatio="none">
                         <path d="M0,5 Q25,8 50,5 T100,5" stroke="url(#hero-underline)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6"/>
                         <defs>
                           <linearGradient id="hero-underline" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -748,9 +749,9 @@ export default function Home() {
                 </div>
 
                 {/* Subheadline with Typewriter Effect */}
-                <div className={`text-xl sm:text-2xl text-gray-700 leading-relaxed font-medium max-w-2xl min-h-[4rem] ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                <div className={`text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 leading-relaxed font-medium max-w-2xl min-h-[3rem] sm:min-h-[4rem] ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                   <span className="inline">{heroTypewriterText}</span>
-                  <span className={`inline-block w-0.5 h-6 bg-purple-600 ml-1 ${heroIsTyping ? 'animate-blink' : 'opacity-0'}`}></span>
+                  <span className={`inline-block w-0.5 h-5 sm:h-6 bg-purple-600 ml-1 ${heroIsTyping ? 'animate-blink' : 'opacity-0'}`}></span>
                 </div>
 
                 {/* CTA Buttons */}
@@ -779,63 +780,63 @@ export default function Home() {
                 </div>
 
                 {/* Trust Indicators & Journey Stages */}
-                <div className={`flex flex-wrap items-center gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
+                <div className={`flex flex-wrap items-center gap-3 sm:gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
                   {/* Journey Badges */}
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 bg-green-50 px-4 py-2 rounded-full border border-green-200">
-                      <BadgeCheck className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">Verified</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <div className="flex items-center gap-1 sm:gap-1.5 bg-green-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-green-200">
+                      <BadgeCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm font-semibold text-green-700 whitespace-nowrap">Verified</span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400" />
-                    <div className="flex items-center gap-1.5 bg-purple-50 px-4 py-2 rounded-full border border-purple-200">
-                      <Award className="w-4 h-4 text-purple-600" />
-                      <span className="text-sm font-semibold text-purple-700">Qualified</span>
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
+                    <div className="flex items-center gap-1 sm:gap-1.5 bg-purple-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-purple-200">
+                      <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm font-semibold text-purple-700 whitespace-nowrap">Qualified</span>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400" />
-                    <div className="flex items-center gap-1.5 bg-amber-50 px-4 py-2 rounded-full border border-amber-200">
-                      <Rocket className="w-4 h-4 text-amber-600" />
-                      <span className="text-sm font-semibold text-amber-700">Hired</span>
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
+                    <div className="flex items-center gap-1 sm:gap-1.5 bg-amber-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-amber-200">
+                      <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm font-semibold text-amber-700 whitespace-nowrap">Hired</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Quick Stats */}
-                <div className={`flex items-center gap-8 pt-4 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
+                <div className={`grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-6 pt-4 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
+                  <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                     </div>
-                    <div className="text-left">
-                      <div className="text-sm font-semibold text-slate-900">Free to Join</div>
-                      <div className="text-xs text-gray-600">No hidden fees</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-semibold text-slate-900">Quick Setup</div>
-                      <div className="text-xs text-gray-600">Start in minutes</div>
+                    <div className="text-center sm:text-left">
+                      <div className="text-xs sm:text-sm font-semibold text-slate-900 whitespace-nowrap">Free to Join</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 whitespace-nowrap">No hidden fees</div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                      <Headphones className="w-5 h-5 text-purple-600" />
+                  <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                     </div>
-                    <div className="text-left">
-                      <div className="text-sm font-semibold text-slate-900">24/7 Support</div>
-                      <div className="text-xs text-gray-600">Always available</div>
+                    <div className="text-center sm:text-left">
+                      <div className="text-xs sm:text-sm font-semibold text-slate-900 whitespace-nowrap">Quick Setup</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 whitespace-nowrap">Start in minutes</div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-2">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <Headphones className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+                    </div>
+                    <div className="text-center sm:text-left">
+                      <div className="text-xs sm:text-sm font-semibold text-slate-900 whitespace-nowrap">24/7 Support</div>
+                      <div className="text-[10px] sm:text-xs text-gray-600 whitespace-nowrap">Always available</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Right Image Slider */}
-              <div className={`relative ${isVisible ? 'animate-fade-in-scale stagger-2' : 'opacity-0'}`}>
-                <div className="relative">
+              <div className={`relative mt-8 lg:mt-0 ${isVisible ? 'animate-fade-in-scale stagger-2' : 'opacity-0'}`}>
+                <div className="relative mx-auto max-w-lg lg:max-w-none">
                   {/* Main Image Container with Slider */}
                   <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-white/20 backdrop-blur-sm">
                     {heroImages.map((image, index) => (
@@ -871,29 +872,29 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Floating Stats Cards */}
+                  {/* Floating Stats Cards - Hidden on mobile, visible on md+ */}
                   {/* Bottom Left - Success Rate */}
-                  <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
+                  <div className="hidden md:block absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
                         <Star className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">95%</div>
-                        <div className="text-sm text-gray-600 font-medium">Success Rate</div>
+                        <div className="text-sm text-gray-600 font-medium whitespace-nowrap">Success Rate</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Top Right - Platforms */}
-                  <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+                  <div className="hidden md:block absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
                         <Globe className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">40+</div>
-                        <div className="text-sm text-gray-600 font-medium">Platforms</div>
+                        <div className="text-sm text-gray-600 font-medium whitespace-nowrap">Platforms</div>
                       </div>
                     </div>
                   </div>
