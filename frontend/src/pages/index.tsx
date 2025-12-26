@@ -337,7 +337,7 @@ export default function Home() {
   ];
 
   const heroImages = [
-    "https://images.pexels.com/photos/1933900/pexels-photo-1933900.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/3727474/pexels-photo-3727474.jpeg?auto=compress&cs=tinysrgb&w=1200",
     "https://images.pexels.com/photos/9783346/pexels-photo-9783346.jpeg?auto=compress&cs=tinysrgb&w=1200",
     "https://images.pexels.com/photos/7773547/pexels-photo-7773547.jpeg?auto=compress&cs=tinysrgb&w=1200"
   ];
@@ -648,13 +648,13 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section - Modern Split Design with Black, Purple & Gold Theme */}
-        <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-black via-purple-950 to-black">
+        {/* Hero Section - Modern Design with Unique Indigo, Cyan & Rose Gold Theme */}
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-600/30 to-violet-600/30 rounded-full filter blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-500/30 to-yellow-500/30 rounded-full filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-purple-500/20 to-amber-500/20 rounded-full filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-fuchsia-600/30 to-purple-600/30 rounded-full filter blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-cyan-500/25 to-teal-500/25 rounded-full filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-rose-500/15 to-orange-500/15 rounded-full filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
 
           <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 relative z-10">
@@ -662,31 +662,31 @@ export default function Home() {
               {/* Left Content */}
               <div className="space-y-8">
                 {/* Badge */}
-                <div className={`inline-flex items-center gap-3 bg-purple-900/30 backdrop-blur-xl px-6 py-3 rounded-full border border-purple-500/50 shadow-lg shadow-purple-500/20 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <div className={`inline-flex items-center gap-3 bg-indigo-900/40 backdrop-blur-xl px-6 py-3 rounded-full border border-fuchsia-500/50 shadow-lg shadow-fuchsia-500/30 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                   <div className="relative">
-                    <Sparkles className="w-5 h-5 text-amber-400" />
-                    <div className="absolute inset-0 bg-amber-400 rounded-full blur-md opacity-30 animate-pulse"></div>
+                    <Sparkles className="w-5 h-5 text-cyan-400" />
+                    <div className="absolute inset-0 bg-cyan-400 rounded-full blur-md opacity-40 animate-pulse"></div>
                   </div>
-                  <span className="font-semibold text-sm bg-gradient-to-r from-purple-400 to-amber-400 bg-clip-text text-transparent">
+                  <span className="font-semibold text-sm bg-gradient-to-r from-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">
                     AI-Powered Platform
                   </span>
-                  <div className="h-5 w-px bg-purple-500/50"></div>
-                  <span className="text-sm text-amber-200 font-medium">Trusted Worldwide</span>
+                  <div className="h-5 w-px bg-fuchsia-500/50"></div>
+                  <span className="text-sm text-rose-200 font-medium">Trusted Worldwide</span>
                 </div>
 
                 {/* Main Headline */}
                 <div className="space-y-4">
                   <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
                     <span className="block text-white">Your Gateway to</span>
-                    <span className="block mt-2 bg-gradient-to-r from-purple-400 via-violet-400 to-amber-400 bg-clip-text text-transparent relative">
+                    <span className="block mt-2 bg-gradient-to-r from-fuchsia-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent relative">
                       Verified Remote Work
                       <svg className="absolute -bottom-2 left-0 w-full h-3" viewBox="0 0 100 10" preserveAspectRatio="none">
-                        <path d="M0,5 Q25,8 50,5 T100,5" stroke="url(#hero-underline)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6"/>
+                        <path d="M0,5 Q25,8 50,5 T100,5" stroke="url(#hero-underline)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7"/>
                         <defs>
                           <linearGradient id="hero-underline" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#c084fc" />
-                            <stop offset="50%" stopColor="#a78bfa" />
-                            <stop offset="100%" stopColor="#fbbf24" />
+                            <stop offset="0%" stopColor="#e879f9" />
+                            <stop offset="50%" stopColor="#c084fc" />
+                            <stop offset="100%" stopColor="#22d3ee" />
                           </linearGradient>
                         </defs>
                       </svg>
@@ -695,11 +695,11 @@ export default function Home() {
                 </div>
 
                 {/* Subheadline */}
-                <p className={`text-xl sm:text-2xl text-purple-100 leading-relaxed font-medium max-w-2xl ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                <p className={`text-xl sm:text-2xl text-slate-200 leading-relaxed font-medium max-w-2xl ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
                   Connect with <span className="font-bold text-white">legitimate opportunities</span> from leading global organizations through our{' '}
                   <span className="relative inline-block">
-                    <span className="font-bold bg-gradient-to-r from-purple-400 to-amber-400 bg-clip-text text-transparent">verified platform</span>
-                    <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-amber-400"></div>
+                    <span className="font-bold bg-gradient-to-r from-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">verified platform</span>
+                    <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-fuchsia-400 to-cyan-400"></div>
                   </span>
                 </p>
 
@@ -707,9 +707,9 @@ export default function Home() {
                 <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
-                    className="group relative bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden border border-purple-400/50"
+                    className="group relative bg-gradient-to-r from-fuchsia-600 via-purple-600 to-fuchsia-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-fuchsia-500/50 hover:scale-105 overflow-hidden border border-fuchsia-400/50"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-violet-500 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-500 via-cyan-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <span className="relative z-10 flex items-center justify-center gap-3">
                       <Rocket className="w-6 h-6" />
                       <span>Start Your Journey</span>
@@ -719,7 +719,7 @@ export default function Home() {
 
                   <button
                     onClick={() => router.push('/company')}
-                    className="group relative bg-amber-500/10 border-2 border-amber-500/50 text-amber-400 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:border-amber-400 hover:scale-105 hover:bg-amber-500/20"
+                    className="group relative bg-cyan-500/10 border-2 border-cyan-500/50 text-cyan-300 px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/30 hover:border-cyan-400 hover:scale-105 hover:bg-cyan-500/20"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-3">
                       <Building2 className="w-6 h-6" />
@@ -732,9 +732,9 @@ export default function Home() {
                 <div className={`flex flex-wrap items-center gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
                   {/* Journey Badges */}
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 bg-purple-500/20 px-4 py-2 rounded-full border border-purple-400/50">
-                      <BadgeCheck className="w-4 h-4 text-purple-300" />
-                      <span className="text-sm font-semibold text-purple-200">Verified</span>
+                    <div className="flex items-center gap-1.5 bg-fuchsia-500/20 px-4 py-2 rounded-full border border-fuchsia-400/50">
+                      <BadgeCheck className="w-4 h-4 text-fuchsia-300" />
+                      <span className="text-sm font-semibold text-fuchsia-200">Verified</span>
                     </div>
                     <ArrowRight className="w-4 h-4 text-purple-400/50" />
                     <div className="flex items-center gap-1.5 bg-purple-500/20 px-4 py-2 rounded-full border border-purple-400/50">
@@ -742,9 +742,9 @@ export default function Home() {
                       <span className="text-sm font-semibold text-purple-200">Qualified</span>
                     </div>
                     <ArrowRight className="w-4 h-4 text-purple-400/50" />
-                    <div className="flex items-center gap-1.5 bg-amber-500/20 px-4 py-2 rounded-full border border-amber-400/50">
-                      <Rocket className="w-4 h-4 text-amber-300" />
-                      <span className="text-sm font-semibold text-amber-200">Hired</span>
+                    <div className="flex items-center gap-1.5 bg-cyan-500/20 px-4 py-2 rounded-full border border-cyan-400/50">
+                      <Rocket className="w-4 h-4 text-cyan-300" />
+                      <span className="text-sm font-semibold text-cyan-200">Hired</span>
                     </div>
                   </div>
                 </div>
@@ -752,32 +752,32 @@ export default function Home() {
                 {/* Quick Stats */}
                 <div className={`flex items-center gap-8 pt-4 ${isVisible ? 'animate-fade-in stagger-5' : 'opacity-0'}`}>
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/30 flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-purple-300" />
+                    <div className="w-10 h-10 rounded-full bg-fuchsia-500/20 border border-fuchsia-400/30 flex items-center justify-center">
+                      <CheckCircle className="w-5 h-5 text-fuchsia-300" />
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-semibold text-white">Free to Join</div>
-                      <div className="text-xs text-purple-200">No hidden fees</div>
+                      <div className="text-xs text-slate-300">No hidden fees</div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-400/30 flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-amber-300" />
+                    <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-cyan-300" />
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-semibold text-white">Quick Setup</div>
-                      <div className="text-xs text-amber-200">Start in minutes</div>
+                      <div className="text-xs text-slate-300">Start in minutes</div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-400/30 flex items-center justify-center">
-                      <Headphones className="w-5 h-5 text-purple-300" />
+                    <div className="w-10 h-10 rounded-full bg-rose-500/20 border border-rose-400/30 flex items-center justify-center">
+                      <Headphones className="w-5 h-5 text-rose-300" />
                     </div>
                     <div className="text-left">
                       <div className="text-sm font-semibold text-white">24/7 Support</div>
-                      <div className="text-xs text-purple-200">Always available</div>
+                      <div className="text-xs text-slate-300">Always available</div>
                     </div>
                   </div>
                 </div>
@@ -823,20 +823,20 @@ export default function Home() {
 
                   {/* Floating Stats Cards */}
                   {/* Bottom Left - Success Rate */}
-                  <div className="absolute -bottom-6 -left-6 bg-black/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/50 p-4 animate-float" style={{ animationDuration: '6s' }}>
+                  <div className="absolute -bottom-6 -left-6 bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-fuchsia-500/50 p-4 animate-float" style={{ animationDuration: '6s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/50">
                         <Star className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">95%</div>
-                        <div className="text-sm text-purple-200 font-medium">Success Rate</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-fuchsia-400 to-purple-400 bg-clip-text text-transparent">95%</div>
+                        <div className="text-sm text-fuchsia-200 font-medium">Success Rate</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Top Right - Platforms */}
-                  <div className="absolute -top-6 -right-6 bg-black/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/50 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+                  <div className="absolute -top-6 -right-6 bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/50 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
                         <Globe className="w-6 h-6 text-white" />
@@ -848,35 +848,35 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Top Left - Personalized Support */}
-                  <div className="absolute top-1/4 -left-6 bg-black/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-amber-500/50 p-4 animate-float" style={{ animationDuration: '8s', animationDelay: '2s' }}>
+                  {/* Top Left - AI Personalized Support */}
+                  <div className="absolute top-1/4 -left-6 bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-500/50 p-4 animate-float" style={{ animationDuration: '8s', animationDelay: '2s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/50">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-500/50">
                         <Sparkles className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-lg font-black bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">AI</div>
-                        <div className="text-xs text-amber-200 font-medium">Personalized Support</div>
+                        <div className="text-lg font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">AI</div>
+                        <div className="text-xs text-cyan-200 font-medium">Personalized Support</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom Right - Project Types */}
-                  <div className="absolute bottom-1/4 -right-6 bg-black/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/50 p-4 animate-float" style={{ animationDuration: '7.5s', animationDelay: '0.5s' }}>
+                  <div className="absolute bottom-1/4 -right-6 bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-rose-500/50 p-4 animate-float" style={{ animationDuration: '7.5s', animationDelay: '0.5s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg shadow-rose-500/50">
                         <Layers className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-400 to-violet-400 bg-clip-text text-transparent">12+</div>
-                        <div className="text-sm text-purple-200 font-medium">Project Types</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent">12+</div>
+                        <div className="text-sm text-rose-200 font-medium">Project Types</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Decorative Elements */}
-                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-purple-500/40 to-violet-500/40 rounded-full blur-3xl animate-pulse"></div>
-                  <div className="absolute -z-10 -bottom-10 -left-10 w-72 h-72 bg-gradient-to-br from-amber-500/40 to-yellow-500/40 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-fuchsia-500/40 to-purple-500/40 rounded-full blur-3xl animate-pulse"></div>
+                  <div className="absolute -z-10 -bottom-10 -left-10 w-72 h-72 bg-gradient-to-br from-cyan-500/35 to-teal-500/35 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
                 </div>
               </div>
             </div>
