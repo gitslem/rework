@@ -46,26 +46,34 @@ export default function Home() {
   // Hero subheadline typewriter effect
   const [heroTypewriterText, setHeroTypewriterText] = useState('');
   const [heroIsTyping, setHeroIsTyping] = useState(true);
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Hero subheadline typewriter animation
+  // Hero subheadline typewriter animation - Alternating between two messages
   useEffect(() => {
-    const fullText = "Connect with legitimate opportunities from leading global organizations through our verified platform";
+    const texts = [
+      "Connect with legitimate opportunities from leading global organizations through our verified platform",
+      "Connect with verified & ready experts from different regions for your services"
+    ];
+
     let currentIndex = 0;
     let isDeleting = false;
     let typingSpeed = 50; // Speed of typing in ms
+    let textArrayIndex = 0;
 
     const type = () => {
-      if (!isDeleting && currentIndex <= fullText.length) {
+      const currentFullText = texts[textArrayIndex];
+
+      if (!isDeleting && currentIndex <= currentFullText.length) {
         // Typing forward
-        setHeroTypewriterText(fullText.substring(0, currentIndex));
+        setHeroTypewriterText(currentFullText.substring(0, currentIndex));
         currentIndex++;
         setHeroIsTyping(true);
 
-        if (currentIndex > fullText.length) {
+        if (currentIndex > currentFullText.length) {
           // Pause at the end before deleting
           setTimeout(() => {
             isDeleting = true;
@@ -77,17 +85,17 @@ export default function Home() {
         setTimeout(type, typingSpeed);
       } else if (isDeleting && currentIndex >= 0) {
         // Deleting backward
-        setHeroTypewriterText(fullText.substring(0, currentIndex));
+        setHeroTypewriterText(currentFullText.substring(0, currentIndex));
         currentIndex--;
         setHeroIsTyping(true);
 
         if (currentIndex < 0) {
-          // Pause before restarting
-          setTimeout(() => {
-            isDeleting = false;
-            currentIndex = 0;
-            setTimeout(type, typingSpeed);
-          }, 500); // Short pause before retyping
+          // Switch to next text
+          isDeleting = false;
+          currentIndex = 0;
+          textArrayIndex = (textArrayIndex + 1) % texts.length;
+          setCurrentTextIndex(textArrayIndex);
+          setTimeout(type, 500); // Short pause before typing next text
           return;
         }
 
@@ -781,20 +789,20 @@ export default function Home() {
 
                 {/* Trust Indicators & Journey Stages */}
                 <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
-                  {/* Journey Badges */}
+                  {/* Journey Badges - Animated Flow */}
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <div className="flex items-center gap-1 sm:gap-1.5 bg-green-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-green-200">
-                      <BadgeCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" />
+                    <div className="flex items-center gap-1 sm:gap-1.5 bg-green-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-green-200 animate-pulse-glow" style={{ animationDelay: '0s' }}>
+                      <BadgeCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0 animate-bounce-subtle" style={{ animationDelay: '0s' }} />
                       <span className="text-xs sm:text-sm font-semibold text-green-700 whitespace-nowrap">Verified</span>
                     </div>
-                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
-                    <div className="flex items-center gap-1 sm:gap-1.5 bg-purple-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-purple-200">
-                      <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0" />
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                    <div className="flex items-center gap-1 sm:gap-1.5 bg-purple-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-purple-200 animate-pulse-glow" style={{ animationDelay: '1s' }}>
+                      <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-600 flex-shrink-0 animate-bounce-subtle" style={{ animationDelay: '1s' }} />
                       <span className="text-xs sm:text-sm font-semibold text-purple-700 whitespace-nowrap">Qualified</span>
                     </div>
-                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
-                    <div className="flex items-center gap-1 sm:gap-1.5 bg-amber-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-amber-200">
-                      <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0" />
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0 animate-pulse" style={{ animationDelay: '1.5s' }} />
+                    <div className="flex items-center gap-1 sm:gap-1.5 bg-amber-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-amber-200 animate-pulse-glow" style={{ animationDelay: '2s' }}>
+                      <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 flex-shrink-0 animate-bounce-subtle" style={{ animationDelay: '2s' }} />
                       <span className="text-xs sm:text-sm font-semibold text-amber-700 whitespace-nowrap">Hired</span>
                     </div>
                   </div>
