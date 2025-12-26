@@ -813,8 +813,8 @@ export default function Home() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center sm:items-center gap-1 sm:gap-2">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                     </div>
                     <div className="text-center sm:text-left">
                       <div className="text-xs sm:text-sm font-semibold text-slate-900 whitespace-nowrap">Quick Setup</div>

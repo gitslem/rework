@@ -635,7 +635,7 @@ export default function About() {
               Ready to Access Remote Work Opportunities?
             </h2>
             <p className="text-xl md:text-2xl text-gray-700 mb-10 leading-relaxed max-w-3xl mx-auto">
-              Join Remote-Works to verify your profile, prepare for applications, and connect with legitimate remote work opportunities offered by third-party companies and platforms.
+              Join Remote-Works to verify your profile, prepare for applications, and connect with legitimate remote work opportunities offered by partners.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
