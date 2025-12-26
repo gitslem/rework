@@ -430,14 +430,6 @@ export default function Company() {
                   />
                 ))}
               </div>
-
-              {/* Auto-play indicator */}
-              <div className="text-center mt-6">
-                <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
-                  Auto-advancing every 4 seconds
-                </p>
-              </div>
             </div>
           </div>
         </section>
@@ -480,7 +472,7 @@ export default function Company() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full mb-6 shadow-lg">
-                <Sparkles className="w-5 h-5" />
+                <Target className="w-5 h-5" />
                 <span className="font-bold text-sm">Real-World Applications</span>
               </div>
               <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-6">
@@ -549,7 +541,17 @@ export default function Company() {
 
                   {/* Right: Visual Examples */}
                   <div className="p-10 lg:p-12 bg-gradient-to-br from-purple-900 to-black text-white flex flex-col justify-center">
-                    <h4 className="text-2xl font-bold mb-8 text-amber-400">Example Applications</h4>
+                    <h4 className="text-2xl font-bold mb-6 text-amber-400">Example Applications</h4>
+
+                    {/* Professional Illustration */}
+                    <div className="mb-8 rounded-2xl overflow-hidden border-2 border-amber-400/30 shadow-2xl">
+                      <img
+                        src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=800"
+                        alt="AI Data Annotation and Machine Learning"
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+
                     <div className="space-y-6">
                       <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
                         <div className="flex items-center space-x-3 mb-3">
@@ -605,7 +607,17 @@ export default function Company() {
                 <div className="grid lg:grid-cols-2 gap-0">
                   {/* Left: Visual Examples */}
                   <div className="p-10 lg:p-12 bg-gradient-to-br from-amber-900 to-purple-900 text-white flex flex-col justify-center order-2 lg:order-1">
-                    <h4 className="text-2xl font-bold mb-8 text-purple-300">Example Applications</h4>
+                    <h4 className="text-2xl font-bold mb-6 text-purple-300">Example Applications</h4>
+
+                    {/* Professional Illustration */}
+                    <div className="mb-8 rounded-2xl overflow-hidden border-2 border-purple-400/30 shadow-2xl">
+                      <img
+                        src="https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=800"
+                        alt="Content Moderation and Safety"
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+
                     <div className="space-y-6">
                       <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
                         <div className="flex items-center space-x-3 mb-3">
@@ -763,6 +775,48 @@ export default function Company() {
                   <span className="text-gray-800 font-medium">{feature}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section - Ready to Scale */}
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 left-10 w-72 h-72 bg-amber-500 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-purple-600 to-amber-600 rounded-full blur-3xl opacity-20"></div>
+          </div>
+
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">
+              Ready to Scale Your Operations?
+            </h2>
+            <p className="text-xl md:text-2xl text-purple-100 mb-10 leading-relaxed max-w-3xl mx-auto">
+              Join companies using Remote-Works to access verified, workforce-ready professionals across 12+ project types
+            </p>
+
+            <button
+              onClick={() => router.push('/agent-signup?type=company')}
+              className="group relative bg-white text-purple-900 px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-2xl hover:scale-105 inline-flex items-center space-x-3"
+            >
+              <span>Partner with Us Today</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+            </button>
+
+            <div className="mt-10 flex items-center justify-center gap-8 text-sm text-purple-200">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-amber-400" />
+                <span>Free to Join</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-amber-400" />
+                <span>Verified Talent</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-400" />
+                <span>24hr Connection</span>
+              </div>
             </div>
           </div>
         </section>
