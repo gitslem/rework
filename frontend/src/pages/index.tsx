@@ -758,29 +758,29 @@ export default function Home() {
                 <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
-                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
+                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden inline-flex items-center justify-center w-auto"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-amber-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <Rocket className="w-5 h-5" />
-                      <span>Start Your Journey</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <Rocket className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                      <span className="whitespace-nowrap">Start Your Journey</span>
+                      <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
                     </span>
                   </button>
 
                   <button
                     onClick={() => router.push('/company')}
-                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105"
+                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105 inline-flex items-center justify-center w-auto"
                   >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <Building2 className="w-5 h-5 text-purple-600" />
-                      <span>For Employers</span>
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
+                      <span className="whitespace-nowrap">For Employers</span>
                     </span>
                   </button>
                 </div>
 
                 {/* Trust Indicators & Journey Stages */}
-                <div className={`flex flex-wrap items-center gap-3 sm:gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
+                <div className={`flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-6 pt-6 ${isVisible ? 'animate-fade-in stagger-4' : 'opacity-0'}`}>
                   {/* Journey Badges */}
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <div className="flex items-center gap-1 sm:gap-1.5 bg-green-50 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-green-200">
@@ -872,55 +872,55 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Floating Stats Cards - Hidden on mobile, visible on md+ */}
+                  {/* Floating Stats Cards - Smaller on all devices */}
                   {/* Bottom Left - Success Rate */}
-                  <div className="hidden md:block absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                        <Star className="w-6 h-6 text-white" />
+                  <div className="absolute -bottom-3 sm:-bottom-4 md:-bottom-6 -left-3 sm:-left-4 md:-left-6 bg-white rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-purple-100 p-2 sm:p-3 md:p-4 animate-float" style={{ animationDuration: '6s' }}>
+                    <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-md md:shadow-lg shadow-purple-500/30">
+                        <Star className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">95%</div>
-                        <div className="text-sm text-gray-600 font-medium whitespace-nowrap">Success Rate</div>
+                        <div className="text-base sm:text-xl md:text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">95%</div>
+                        <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 font-medium whitespace-nowrap">Success Rate</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Top Right - Platforms */}
-                  <div className="hidden md:block absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                        <Globe className="w-6 h-6 text-white" />
+                  <div className="absolute -top-3 sm:-top-4 md:-top-6 -right-3 sm:-right-4 md:-right-6 bg-white rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-purple-100 p-2 sm:p-3 md:p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+                    <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-md md:shadow-lg shadow-purple-500/30">
+                        <Globe className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">40+</div>
-                        <div className="text-sm text-gray-600 font-medium whitespace-nowrap">Platforms</div>
+                        <div className="text-base sm:text-xl md:text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">40+</div>
+                        <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 font-medium whitespace-nowrap">Platforms</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Top Left - AI Personalized Support */}
-                  <div className="absolute top-1/4 -left-6 bg-white rounded-2xl shadow-xl border border-amber-100 p-4 animate-float" style={{ animationDuration: '8s', animationDelay: '2s' }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                        <Sparkles className="w-6 h-6 text-white" />
+                  <div className="absolute top-1/4 -left-3 sm:-left-4 md:-left-6 bg-white rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-amber-100 p-2 sm:p-3 md:p-4 animate-float" style={{ animationDuration: '8s', animationDelay: '2s' }}>
+                    <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-md md:shadow-lg shadow-amber-500/30">
+                        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-lg font-black bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">AI</div>
-                        <div className="text-xs text-gray-600 font-medium">Personalized Support</div>
+                        <div className="text-sm sm:text-base md:text-lg font-black bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">AI</div>
+                        <div className="text-[9px] sm:text-[10px] md:text-xs text-gray-600 font-medium whitespace-nowrap">Personalized</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Bottom Right - Project Types */}
-                  <div className="absolute bottom-1/4 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7.5s', animationDelay: '0.5s' }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                        <Layers className="w-6 h-6 text-white" />
+                  <div className="absolute bottom-1/4 -right-3 sm:-right-4 md:-right-6 bg-white rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg md:shadow-xl border border-purple-100 p-2 sm:p-3 md:p-4 animate-float" style={{ animationDuration: '7.5s', animationDelay: '0.5s' }}>
+                    <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-md md:shadow-lg shadow-purple-500/30">
+                        <Layers className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">12+</div>
-                        <div className="text-sm text-gray-600 font-medium">Project Types</div>
+                        <div className="text-base sm:text-xl md:text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">12+</div>
+                        <div className="text-[10px] sm:text-xs md:text-sm text-gray-600 font-medium whitespace-nowrap">Project Types</div>
                       </div>
                     </div>
                   </div>
