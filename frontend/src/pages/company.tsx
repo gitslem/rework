@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { ArrowRight, CheckCircle, Users, TrendingUp, Shield, Zap, Globe, DollarSign, Award, Target, Briefcase, Clock, Building2, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle, Users, TrendingUp, Shield, Zap, Globe, DollarSign, Award, Target, Briefcase, Clock, Building2, Sparkles, Database, MessageSquare, Languages, Search, Tag, Mic, Eye, Video, FileText, FolderTree, BookOpen, Volume2 } from 'lucide-react';
 import Logo from '@/components/Logo';
 import Footer from '@/components/Footer';
 
@@ -81,51 +81,63 @@ export default function Company() {
   const projectTypes = [
     {
       name: "AI Data Annotation",
-      description: "High-quality labeled datasets for training machine learning models with precision and accuracy"
+      description: "High-quality labeled datasets for training machine learning models with precision and accuracy",
+      icon: <Database className="w-10 h-10" />
     },
     {
       name: "Content Moderation",
-      description: "Scalable content review ensuring platform safety and community guidelines compliance"
+      description: "Scalable content review ensuring platform safety and community guidelines compliance",
+      icon: <MessageSquare className="w-10 h-10" />
     },
     {
       name: "Translation & Localization",
-      description: "Professional multilingual content adaptation for global markets and diverse audiences"
+      description: "Professional multilingual content adaptation for global markets and diverse audiences",
+      icon: <Languages className="w-10 h-10" />
     },
     {
       name: "Search Quality Evaluation",
-      description: "Expert assessment of search engine performance and result relevance optimization"
+      description: "Expert assessment of search engine performance and result relevance optimization",
+      icon: <Search className="w-10 h-10" />
     },
     {
       name: "Data Labeling",
-      description: "Accurate classification and tagging of large-scale datasets for AI applications"
+      description: "Accurate classification and tagging of large-scale datasets for AI applications",
+      icon: <Tag className="w-10 h-10" />
     },
     {
       name: "Audio Transcription",
-      description: "Precise conversion of audio and video content into structured text format"
+      description: "Precise conversion of audio and video content into structured text format",
+      icon: <Mic className="w-10 h-10" />
     },
     {
       name: "Image Recognition",
-      description: "Advanced object detection and visual classification for computer vision projects"
+      description: "Advanced object detection and visual classification for computer vision projects",
+      icon: <Eye className="w-10 h-10" />
     },
     {
       name: "Video Content Evaluation",
-      description: "Comprehensive quality assessment and content accuracy verification for media"
+      description: "Comprehensive quality assessment and content accuracy verification for media",
+      icon: <Video className="w-10 h-10" />
     },
     {
       name: "Technical Translation",
-      description: "Specialized translation for technical documentation, manuals, and software interfaces"
+      description: "Specialized translation for technical documentation, manuals, and software interfaces",
+      icon: <FileText className="w-10 h-10" />
     },
     {
       name: "Text Categorization",
-      description: "Intelligent document classification and semantic content organization systems"
+      description: "Intelligent document classification and semantic content organization systems",
+      icon: <FolderTree className="w-10 h-10" />
     },
     {
       name: "Linguistic Annotation",
-      description: "Advanced language analysis including syntax, semantics, and discourse tagging"
+      description: "Advanced language analysis including syntax, semantics, and discourse tagging",
+      icon: <BookOpen className="w-10 h-10" />
     },
     {
       name: "Speech Data Collection",
-      description: "Diverse voice recording and audio dataset creation for speech recognition systems"
+      description: "Diverse voice recording and audio dataset creation for speech recognition systems",
+      icon: <Volume2 className="w-10 h-10" />
     }
   ];
 
@@ -374,26 +386,26 @@ export default function Company() {
 
             {/* Carousel Container */}
             <div className="relative">
-              {/* Main Carousel Card */}
-              <div className="relative bg-gradient-to-br from-purple-50 via-white to-amber-50 rounded-3xl p-12 md:p-16 shadow-2xl border-2 border-purple-200 min-h-[350px] flex flex-col justify-center">
+              {/* Main Carousel Card - Fixed height to prevent content shift */}
+              <div className="relative bg-gradient-to-br from-purple-50 via-white to-amber-50 rounded-3xl p-8 sm:p-12 md:p-16 shadow-2xl border-2 border-purple-200 h-[400px] sm:h-[420px] md:h-[450px] flex flex-col justify-center">
                 {/* Project Number Badge */}
-                <div className="absolute top-6 right-6">
-                  <div className="bg-gradient-to-r from-purple-600 to-amber-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                <div className="absolute top-4 sm:top-6 right-4 sm:right-6">
+                  <div className="bg-gradient-to-r from-purple-600 to-amber-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg">
                     {currentProjectSlide + 1} / {projectTypes.length}
                   </div>
                 </div>
 
                 {/* Project Content */}
-                <div className="text-center space-y-6">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl text-white mb-4 shadow-lg mx-auto">
-                    <span className="text-3xl font-bold">{currentProjectSlide + 1}</span>
+                <div className="text-center space-y-4 sm:space-y-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-purple-600 to-amber-500 rounded-2xl text-white mb-2 sm:mb-4 shadow-lg mx-auto">
+                    {projectTypes[currentProjectSlide].icon}
                   </div>
 
-                  <h3 className="text-3xl md:text-4xl font-extrabold text-black mb-4">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-black mb-2 sm:mb-4 px-4">
                     {projectTypes[currentProjectSlide].name}
                   </h3>
 
-                  <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                  <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto px-4">
                     {projectTypes[currentProjectSlide].description}
                   </p>
                 </div>
