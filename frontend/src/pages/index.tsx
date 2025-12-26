@@ -43,8 +43,61 @@ export default function Home() {
   // Hero image slider
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
 
+  // Hero subheadline typewriter effect
+  const [heroTypewriterText, setHeroTypewriterText] = useState('');
+  const [heroIsTyping, setHeroIsTyping] = useState(true);
+
   useEffect(() => {
     setIsVisible(true);
+  }, []);
+
+  // Hero subheadline typewriter animation
+  useEffect(() => {
+    const fullText = "Connect with legitimate opportunities from leading global organizations through our verified platform";
+    let currentIndex = 0;
+    let isDeleting = false;
+    let typingSpeed = 50; // Speed of typing in ms
+
+    const type = () => {
+      if (!isDeleting && currentIndex <= fullText.length) {
+        // Typing forward
+        setHeroTypewriterText(fullText.substring(0, currentIndex));
+        currentIndex++;
+        setHeroIsTyping(true);
+
+        if (currentIndex > fullText.length) {
+          // Pause at the end before deleting
+          setTimeout(() => {
+            isDeleting = true;
+            setTimeout(type, typingSpeed);
+          }, 2000); // Pause for 2 seconds
+          return;
+        }
+
+        setTimeout(type, typingSpeed);
+      } else if (isDeleting && currentIndex >= 0) {
+        // Deleting backward
+        setHeroTypewriterText(fullText.substring(0, currentIndex));
+        currentIndex--;
+        setHeroIsTyping(true);
+
+        if (currentIndex < 0) {
+          // Pause before restarting
+          setTimeout(() => {
+            isDeleting = false;
+            currentIndex = 0;
+            setTimeout(type, typingSpeed);
+          }, 500); // Short pause before retyping
+          return;
+        }
+
+        setTimeout(type, typingSpeed / 2); // Delete faster than typing
+      }
+    };
+
+    const timeoutId = setTimeout(type, 1000); // Start after 1 second
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // Ensure video plays continuously with improved reliability
@@ -652,7 +705,7 @@ export default function Home() {
         <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-violet-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
             <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-purple-400/10 to-amber-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
@@ -678,15 +731,15 @@ export default function Home() {
                 <div className="space-y-4">
                   <h1 className={`text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight ${isVisible ? 'animate-fade-in-up stagger-1' : 'opacity-0'}`}>
                     <span className="block text-slate-900">Your Gateway to</span>
-                    <span className="block mt-2 bg-gradient-to-r from-purple-600 via-violet-600 to-amber-600 bg-clip-text text-transparent relative">
+                    <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent relative">
                       Verified Remote Work
                       <svg className="absolute -bottom-2 left-0 w-full h-3" viewBox="0 0 100 10" preserveAspectRatio="none">
                         <path d="M0,5 Q25,8 50,5 T100,5" stroke="url(#hero-underline)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6"/>
                         <defs>
                           <linearGradient id="hero-underline" x1="0%" y1="0%" x2="100%" y2="0%">
                             <stop offset="0%" stopColor="#9333ea" />
-                            <stop offset="50%" stopColor="#7c3aed" />
-                            <stop offset="100%" stopColor="#f59e0b" />
+                            <stop offset="50%" stopColor="#f59e0b" />
+                            <stop offset="100%" stopColor="#eab308" />
                           </linearGradient>
                         </defs>
                       </svg>
@@ -694,22 +747,19 @@ export default function Home() {
                   </h1>
                 </div>
 
-                {/* Subheadline */}
-                <p className={`text-xl sm:text-2xl text-gray-700 leading-relaxed font-medium max-w-2xl ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
-                  Connect with <span className="font-bold text-slate-900">legitimate opportunities</span> from leading global organizations through our{' '}
-                  <span className="relative inline-block">
-                    <span className="font-bold bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">verified platform</span>
-                    <div className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-600 to-amber-600"></div>
-                  </span>
-                </p>
+                {/* Subheadline with Typewriter Effect */}
+                <div className={`text-xl sm:text-2xl text-gray-700 leading-relaxed font-medium max-w-2xl min-h-[4rem] ${isVisible ? 'animate-fade-in-up stagger-2' : 'opacity-0'}`}>
+                  <span className="inline">{heroTypewriterText}</span>
+                  <span className={`inline-block w-0.5 h-6 bg-purple-600 ml-1 ${heroIsTyping ? 'animate-blink' : 'opacity-0'}`}></span>
+                </div>
 
                 {/* CTA Buttons */}
                 <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
-                    className="group relative bg-gradient-to-r from-purple-600 via-violet-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
+                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-violet-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-amber-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <span className="relative z-10 flex items-center justify-center gap-3">
                       <Rocket className="w-6 h-6" />
                       <span>Start Your Journey</span>
@@ -825,11 +875,11 @@ export default function Home() {
                   {/* Bottom Left - Success Rate */}
                   <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
                         <Star className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">95%</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">95%</div>
                         <div className="text-sm text-gray-600 font-medium">Success Rate</div>
                       </div>
                     </div>
@@ -838,11 +888,11 @@ export default function Home() {
                   {/* Top Right - Platforms */}
                   <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
                         <Globe className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">40+</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">40+</div>
                         <div className="text-sm text-gray-600 font-medium">Platforms</div>
                       </div>
                     </div>
@@ -864,18 +914,18 @@ export default function Home() {
                   {/* Bottom Right - Project Types */}
                   <div className="absolute bottom-1/4 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7.5s', animationDelay: '0.5s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
                         <Layers className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">12+</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-amber-600 bg-clip-text text-transparent">12+</div>
                         <div className="text-sm text-gray-600 font-medium">Project Types</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Decorative Elements */}
-                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-purple-400/20 to-violet-400/20 rounded-full blur-3xl animate-pulse"></div>
+                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full blur-3xl animate-pulse"></div>
                   <div className="absolute -z-10 -bottom-10 -left-10 w-72 h-72 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
                 </div>
               </div>
@@ -947,166 +997,6 @@ export default function Home() {
               </button>
             </div>
           </div>
-        </section>
-
-        {/* Stats Section with Animated Remote Work Icons */}
-        <section className="relative py-24 px-6 lg:px-8 bg-white overflow-hidden">
-          {/* Animated Background - Remote Work Icons */}
-          <div className="absolute inset-0 overflow-hidden opacity-10" style={{ pointerEvents: 'none' }}>
-            {/* Floating Icons Row 1 */}
-            <div className="absolute top-10 left-10 animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }}>
-              <Laptop className="w-16 h-16 text-gray-400" />
-            </div>
-            <div className="absolute top-20 right-20 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
-              <Coffee className="w-14 h-14 text-gray-400" />
-            </div>
-            <div className="absolute top-32 left-1/4 animate-float" style={{ animationDelay: '2s', animationDuration: '12s' }}>
-              <Wifi className="w-12 h-12 text-gray-400" />
-            </div>
-
-            {/* Floating Icons Row 2 */}
-            <div className="absolute top-48 right-1/3 animate-float" style={{ animationDelay: '0.5s', animationDuration: '9s' }}>
-              <Monitor className="w-18 h-18 text-gray-400" />
-            </div>
-            <div className="absolute top-56 left-16 animate-float" style={{ animationDelay: '1.5s', animationDuration: '11s' }}>
-              <Headphones className="w-14 h-14 text-gray-400" />
-            </div>
-            <div className="absolute top-64 right-1/4 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
-              <Globe className="w-16 h-16 text-gray-400" />
-            </div>
-
-            {/* Floating Icons Row 3 - Middle */}
-            <div className="absolute top-1/2 left-12 animate-float" style={{ animationDelay: '1s', animationDuration: '10s' }}>
-              <Code className="w-14 h-14 text-gray-400" />
-            </div>
-            <div className="absolute top-1/2 right-16 animate-float" style={{ animationDelay: '2s', animationDuration: '14s' }}>
-              <Lightbulb className="w-12 h-12 text-gray-400" />
-            </div>
-            <div className="absolute top-1/3 left-1/2 animate-float" style={{ animationDelay: '3s', animationDuration: '11s' }}>
-              <HomeIcon className="w-20 h-20 text-gray-400" />
-            </div>
-
-            {/* Floating Icons Row 4 - Bottom */}
-            <div className="absolute bottom-20 left-1/4 animate-float" style={{ animationDelay: '0.5s', animationDuration: '12s' }}>
-              <Database className="w-14 h-14 text-gray-400" />
-            </div>
-            <div className="absolute bottom-32 right-1/3 animate-float" style={{ animationDelay: '1.5s', animationDuration: '9s' }}>
-              <Server className="w-16 h-16 text-gray-400" />
-            </div>
-            <div className="absolute bottom-16 left-20 animate-float" style={{ animationDelay: '2.5s', animationDuration: '13s' }}>
-              <Smartphone className="w-12 h-12 text-gray-400" />
-            </div>
-            <div className="absolute bottom-24 right-20 animate-float" style={{ animationDelay: '3.5s', animationDuration: '10s' }}>
-              <Rocket className="w-18 h-18 text-gray-400" />
-            </div>
-
-            {/* Additional Smaller Icons for Depth */}
-            <div className="absolute top-1/4 right-1/2 animate-float" style={{ animationDelay: '4s', animationDuration: '15s' }}>
-              <Zap className="w-10 h-10 text-gray-400" />
-            </div>
-            <div className="absolute bottom-1/3 left-1/3 animate-float" style={{ animationDelay: '0.8s', animationDuration: '8s' }}>
-              <Star className="w-10 h-10 text-gray-400" />
-            </div>
-            <div className="absolute top-3/4 right-1/4 animate-float" style={{ animationDelay: '1.8s', animationDuration: '11s' }}>
-              <Target className="w-10 h-10 text-gray-400" />
-            </div>
-          </div>
-
-          {/* Stats Content */}
-          <div ref={statsRef} className="max-w-6xl mx-auto relative z-10">
-            {/* Section Header */}
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center space-x-2 bg-purple-50 backdrop-filter backdrop-blur-lg px-6 py-3 rounded-full border border-purple-200 mb-6">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
-                <span className="text-gray-800 text-sm font-semibold">Our Impact</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent">
-                  Trusted by Remote Workers Worldwide
-                </span>
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Join thousands of successful remote workers who found their dream opportunities through our platform
-              </p>
-            </div>
-
-            {/* Interactive Stats Slider with Typewriter Effect */}
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                {/* Main Stat Display - Compact Version */}
-                <div className="bg-gradient-to-br from-purple-50 via-white to-amber-50 backdrop-blur-xl border-2 border-purple-200 rounded-2xl p-8 md:p-10 shadow-xl transition-all duration-700 hover:shadow-2xl">
-                  <div className="text-center space-y-4">
-                    {/* Icon with Animated Glow */}
-                    <div className="relative inline-flex items-center justify-center">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-amber-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
-                      <div className="relative w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-100 to-amber-100 border-2 border-white rounded-2xl flex items-center justify-center shadow-lg transform transition-all duration-500 hover:scale-110 hover:rotate-6">
-                        <div className="text-purple-600 scale-125">
-                          {stats[currentStatIndex].icon}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Animated Number with Counting */}
-                    <div className="relative">
-                      <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 bg-clip-text text-transparent">
-                        {currentStatIndex === 0 && `${displayNumber}+`}
-                        {currentStatIndex === 1 && `$${(displayNumber / 1000).toFixed(1)}k+`}
-                        {currentStatIndex === 2 && `${displayNumber}%`}
-                        {currentStatIndex === 3 && `${displayNumber}/7`}
-                        {currentStatIndex === 4 && `${displayNumber}+`}
-                      </div>
-                    </div>
-
-                    {/* Typewriter Label */}
-                    <div className="relative h-10 flex items-center justify-center">
-                      <div className="text-lg md:text-xl font-bold text-gray-800 tracking-wide">
-                        <span className="inline-block">{typewriterText}</span>
-                        <span className={`inline-block w-0.5 h-6 bg-purple-600 ml-1 ${isTyping ? 'animate-blink' : 'opacity-0'}`}></span>
-                      </div>
-                    </div>
-
-                    {/* Progress Indicators */}
-                    <div className="flex items-center justify-center gap-2 pt-2">
-                      {stats.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentStatIndex(index)}
-                          className={`transition-all duration-500 rounded-full ${
-                            index === currentStatIndex
-                              ? 'w-8 h-2 bg-gradient-to-r from-purple-600 to-amber-500'
-                              : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
-                          }`}
-                          aria-label={`View stat ${index + 1}`}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Navigation Arrows */}
-                <button
-                  onClick={() => setCurrentStatIndex((prev) => (prev - 1 + 5) % 5)}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 md:-translate-x-4 w-10 h-10 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 hover:bg-purple-50"
-                  aria-label="Previous stat"
-                >
-                  <ArrowRight className="w-5 h-5 text-purple-600 rotate-180" />
-                </button>
-                <button
-                  onClick={() => setCurrentStatIndex((prev) => (prev + 1) % 5)}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 md:translate-x-4 w-10 h-10 bg-white border-2 border-purple-200 rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 hover:bg-purple-50"
-                  aria-label="Next stat"
-                >
-                  <ArrowRight className="w-5 h-5 text-purple-600" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Decorative Grid Pattern Overlay */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
-            backgroundImage: 'linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }}></div>
         </section>
 
         {/* How It Works Section */}
