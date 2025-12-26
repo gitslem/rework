@@ -703,23 +703,6 @@ export default function Company() {
                 </div>
               </div>
             </div>
-
-            {/* CTA Banner */}
-            <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-amber-600 rounded-3xl p-10 text-center text-white shadow-2xl">
-              <h3 className="text-3xl md:text-4xl font-extrabold mb-4">
-                Ready to Scale Your Operations?
-              </h3>
-              <p className="text-xl mb-8 max-w-2xl mx-auto text-purple-100">
-                Join companies using Remote-Works to access verified, workforce-ready professionals across 12+ project types
-              </p>
-              <button
-                onClick={() => router.push('/agent-signup?type=company')}
-                className="group relative bg-white text-purple-900 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl inline-flex items-center space-x-3"
-              >
-                <span>Partner with Us Today</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-              </button>
-            </div>
           </div>
         </section>
 
