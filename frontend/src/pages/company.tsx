@@ -816,17 +816,17 @@ export default function Company() {
               <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </button>
 
-            <div className="mt-10 flex items-center justify-center gap-8 text-sm text-gray-700">
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-purple-200 shadow-sm">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+            <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 text-xs sm:text-sm text-gray-700 px-4">
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-4 py-2 rounded-full border border-purple-200 shadow-sm whitespace-nowrap">
+                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
                 <span className="font-semibold">Free to Join</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-purple-200 shadow-sm">
-                <Shield className="w-5 h-5 text-purple-600" />
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-4 py-2 rounded-full border border-purple-200 shadow-sm whitespace-nowrap">
+                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
                 <span className="font-semibold">Verified Talent</span>
               </div>
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-amber-200 shadow-sm">
-                <Zap className="w-5 h-5 text-amber-600" />
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-white px-3 sm:px-4 py-2 rounded-full border border-amber-200 shadow-sm whitespace-nowrap">
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 flex-shrink-0" />
                 <span className="font-semibold">24hr Connection</span>
               </div>
             </div>
