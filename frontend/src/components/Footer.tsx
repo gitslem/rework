@@ -152,18 +152,16 @@ export default function Footer() {
               <h4 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">
                 Online
               </h4>
-              <div className="space-y-3">
+              <div className="space-y-3 text-sm">
                 {/* Blog */}
                 <a
                   href="https://ai.remote-works.io/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                  className="flex items-start space-x-2 hover:text-white transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-amber-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <BookOpen className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-sm font-medium">Blog</span>
+                  <BookOpen className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <span>Blog</span>
                 </a>
 
                 {/* Twitter/X */}
@@ -171,12 +169,10 @@ export default function Footer() {
                   href="https://x.com/remote_worksio"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                  className="flex items-start space-x-2 hover:text-white transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Twitter className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-sm font-medium">Twitter/X</span>
+                  <Twitter className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <span>Twitter/X</span>
                 </a>
 
                 {/* LinkedIn */}
@@ -184,12 +180,10 @@ export default function Footer() {
                   href="https://www.linkedin.com/company/remo-teworks/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                  className="flex items-start space-x-2 hover:text-white transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-amber-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Linkedin className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-sm font-medium">LinkedIn</span>
+                  <Linkedin className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0" />
+                  <span>LinkedIn</span>
                 </a>
 
                 {/* Trustpilot */}
@@ -197,12 +191,10 @@ export default function Footer() {
                   href="https://ca.trustpilot.com/review/remote-works.io"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-3 text-gray-400 hover:text-white transition-colors group"
+                  className="flex items-start space-x-2 hover:text-white transition-colors"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Star className="w-5 h-5 text-white fill-current" />
-                  </div>
-                  <span className="text-sm font-medium">Trustpilot</span>
+                  <Star className="w-4 h-4 text-gray-600 mt-0.5 flex-shrink-0 fill-current" />
+                  <span>Trustpilot</span>
                 </a>
               </div>
             </div>
