@@ -784,49 +784,6 @@ export default function Company() {
           </div>
         </section>
 
-        {/* CTA Section - Become a Partner */}
-        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
-          {/* Decorative elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
-          </div>
-
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
-              Ready to Access Workforce-Ready Professionals?
-            </h2>
-            <p className="text-xl text-gray-200 mb-8 leading-relaxed">
-              Join companies who partner with Remote-Works for verified, prepared, and aligned professionals. Let's discuss how our workforce readiness system accelerates your hiring outcomes.
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button
-                onClick={() => router.push('/agent-signup?type=company')}
-                className="group bg-white text-black px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:scale-105"
-              >
-                <span className="flex items-center justify-center">
-                  Become a Partner
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-              </button>
-              <button
-                onClick={() => router.push('/about')}
-                className="group bg-transparent border-2 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-black transition-all"
-              >
-                Learn More About Us
-              </button>
-            </div>
-
-            <p className="text-sm text-gray-300 mt-8">
-              Have questions? Contact us at{' '}
-              <a href="mailto:support@remote-works.io" className="text-amber-400 hover:text-amber-300 font-semibold">
-                support@remote-works.io
-              </a>
-            </p>
-          </div>
-        </section>
-
         <Footer />
       </div>
     </>
