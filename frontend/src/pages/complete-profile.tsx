@@ -23,7 +23,7 @@ export default function CompleteProfile() {
     country: '',
     city: '',
     bio: '',
-    contactMethodType: 'telegram' as 'telegram' | 'whatsapp',
+    contactMethodType: 'whatsapp' as 'telegram' | 'whatsapp',
     contactMethodValue: '',
   });
 
@@ -131,7 +131,7 @@ export default function CompleteProfile() {
 
     // Validate contact method
     if (!formData.contactMethodValue.trim()) {
-      setError('Please provide your Telegram or WhatsApp contact for verification');
+      setError('Please provide your WhatsApp or Telegram contact');
       return;
     }
 
@@ -339,7 +339,7 @@ export default function CompleteProfile() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="John"
                     required
                   />
@@ -353,7 +353,7 @@ export default function CompleteProfile() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Doe"
                     required
                   />
@@ -371,7 +371,7 @@ export default function CompleteProfile() {
                     name="country"
                     value={formData.country}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     required
                   >
                     <option value="">Select Country</option>
@@ -405,23 +405,20 @@ export default function CompleteProfile() {
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="New York"
                     required
                   />
                 </div>
               </div>
 
-              {/* Contact Method for Verification */}
+              {/* Contact Platform */}
               <div className="border-t border-gray-200 pt-6">
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                     <MessageCircle className="w-5 h-5 mr-2" />
-                    Contact Method for Verification
+                    Contact Platform
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    <span className="text-red-500 font-semibold">* Required:</span> Our support team will contact you via your chosen method for verification
-                  </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -433,11 +430,11 @@ export default function CompleteProfile() {
                       name="contactMethodType"
                       value={formData.contactMethodType}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
                       required
                     >
-                      <option value="telegram">Telegram</option>
                       <option value="whatsapp">WhatsApp</option>
+                      <option value="telegram">Telegram</option>
                     </select>
                   </div>
 
@@ -450,16 +447,12 @@ export default function CompleteProfile() {
                       name="contactMethodValue"
                       value={formData.contactMethodValue}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder={formData.contactMethodType === 'telegram' ? '@username or +1234567890' : '+1234567890'}
                       required
                     />
                   </div>
                 </div>
-
-                <p className="text-xs text-gray-500 mt-2">
-                  <strong>Note:</strong> Support will reach out to verify your identity. Make sure you provide accurate contact information.
-                </p>
               </div>
 
               {/* Bio */}
@@ -473,7 +466,7 @@ export default function CompleteProfile() {
                   value={formData.bio}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                   placeholder="Tell us a bit about yourself and what you're looking for..."
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -575,12 +568,6 @@ export default function CompleteProfile() {
               </div>
             </form>
 
-            {/* Footer Note */}
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <p className="text-sm text-gray-500">
-                Your profile information will be visible to verified agents
-              </p>
-            </div>
           </div>
         </div>
       </div>

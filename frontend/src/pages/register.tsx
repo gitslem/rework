@@ -231,7 +231,7 @@ export default function Register() {
           <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border border-accent-gray-200">
             {/* Logo */}
             <div className="flex justify-center mb-8">
-              <Logo size="lg" showText={true} onClick={() => router.push('/')} />
+              <Logo size="lg" showText={false} onClick={() => router.push('/')} />
             </div>
 
             <div className="text-center mb-8">
