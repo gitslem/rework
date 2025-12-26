@@ -755,22 +755,22 @@ export default function Home() {
                 </div>
 
                 {/* CTA Buttons */}
-                <div className={`flex flex-col sm:flex-row gap-4 pt-4 ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
+                <div className={`flex flex-col sm:flex-row gap-4 pt-4 items-center sm:items-start ${isVisible ? 'animate-fade-in-scale stagger-3' : 'opacity-0'}`}>
                   <button
                     onClick={() => router.push('/register?type=candidate')}
-                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden inline-flex items-center justify-center w-auto"
+                    className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden w-fit"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-amber-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <span className="relative z-10 flex items-center gap-1.5">
                       <Rocket className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                       <span className="whitespace-nowrap">Start Your Journey</span>
-                      <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
+                      <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300 flex-shrink-0" />
                     </span>
                   </button>
 
                   <button
                     onClick={() => router.push('/company')}
-                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-5 sm:px-6 py-3.5 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105 inline-flex items-center justify-center w-auto"
+                    className="group relative bg-white border-2 border-slate-200 text-slate-900 px-4 sm:px-6 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 hover:shadow-xl hover:border-purple-300 hover:scale-105 w-fit"
                   >
                     <span className="relative z-10 flex items-center gap-1.5">
                       <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
