@@ -409,22 +409,6 @@ export default function Company() {
                     {projectTypes[currentProjectSlide].description}
                   </p>
                 </div>
-
-                {/* Navigation Arrows */}
-                <button
-                  onClick={() => setCurrentProjectSlide((prev) => (prev === 0 ? projectTypes.length - 1 : prev - 1))}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-purple-200 hover:border-purple-500 flex items-center justify-center transition-all hover:scale-110 group"
-                  aria-label="Previous project"
-                >
-                  <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-purple-600 rotate-180" />
-                </button>
-                <button
-                  onClick={() => setCurrentProjectSlide((prev) => (prev === projectTypes.length - 1 ? 0 : prev + 1))}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-xl border-2 border-purple-200 hover:border-purple-500 flex items-center justify-center transition-all hover:scale-110 group"
-                  aria-label="Next project"
-                >
-                  <ArrowRight className="w-6 h-6 text-gray-600 group-hover:text-purple-600" />
-                </button>
               </div>
 
               {/* Dot Indicators */}
