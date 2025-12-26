@@ -85,8 +85,8 @@ export default function About() {
     {
       icon: <Globe className="w-12 h-12" />,
       title: "Global Network",
-      count: "20+ Partners",
-      description: "Direct access to vetted opportunities through our partnerships with leading organizations in AI, language services, and digital content.",
+      count: "40+ Platforms",
+      description: "Direct access to vetted opportunities through our network of 40+ leading platforms in AI, language services, and digital content.",
       color: "from-pink-600 to-purple-600"
     }
   ];
@@ -147,7 +147,7 @@ export default function About() {
     { year: "2023", event: "First 100 Professionals Verified", description: "By September 2023, reached 100 verified professionals across 15 countries. Implemented proprietary verification system requiring proof of 10+ successful approvals." },
     { year: "2024", event: "10,000 Successful Approvals", description: "Hit major milestone of 10,000 candidates successfully approved. Achieved 95% success rate through rigorous professional training and quality control." },
     { year: "2024", event: "Platform Partnerships", description: "Established direct communication channels with compliance teams at major AI training platforms to better understand their evolving requirements." },
-    { year: "2025", event: "400+ Project Types, 27K+ Approvals", description: "Network expanded to 400+ verified project opportunities across 35 countries. Facilitated 27,000+ successful platform approvals, with professionals now earning $4K+ monthly on average." }
+    { year: "2025", event: "12 Projects, 27K+ Professionals", description: "Network expanded to 12 verified project types across 40+ platforms in 35 countries. Facilitated 27,000+ professional placements, with members now earning $4K+ monthly on average." }
   ];
 
   // Auto-play testimonials slider
@@ -209,7 +209,7 @@ export default function About() {
                 "name": "Remote-Works",
                 "url": "https://remote-works.io",
                 "foundingDate": "2023",
-                "description": "Professional remote work platform with partnerships across 20+ global organizations",
+                "description": "Professional remote work platform with partnerships across 40+ global platforms",
                 "numberOfEmployees": {
                   "@type": "QuantitativeValue",
                   "value": "400+"
@@ -334,8 +334,8 @@ export default function About() {
                       <div className="text-gray-300">Founded</div>
                     </div>
                     <div>
-                      <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">20+</div>
-                      <div className="text-gray-300">Partner Platforms</div>
+                      <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">40+</div>
+                      <div className="text-gray-300">Platforms</div>
                     </div>
                     <div>
                       <div className="text-5xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Global</div>
@@ -570,9 +570,9 @@ export default function About() {
                   <DollarSign className="w-10 h-10 text-white" />
                 </div>
                 <div className="text-4xl font-bold text-purple-600 mb-2">03</div>
-                <h3 className="text-xl font-bold text-black mb-3">Partner Connections</h3>
+                <h3 className="text-xl font-bold text-black mb-3">Platform Connections</h3>
                 <p className="text-gray-600 leading-relaxed text-sm">
-                  Gain access to curated opportunities from our network of 20+ trusted global partners.
+                  Gain access to curated opportunities from our network of 40+ trusted global platforms.
                 </p>
               </div>
 
@@ -622,45 +622,44 @@ export default function About() {
         </section>
 
         {/* CTA Section */}
-        <section className="relative py-20 bg-gradient-to-br from-purple-900 via-purple-800 to-black text-white overflow-hidden">
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-purple-50/20 overflow-hidden">
           {/* Decorative elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-64 h-64 bg-amber-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-400/20 to-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-yellow-400/20 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-400/10 to-amber-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
           </div>
 
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-slate-900">
               Ready to Access Remote Work Opportunities?
             </h2>
-            <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-700 mb-10 leading-relaxed max-w-3xl mx-auto">
               Join Remote-Works to verify your profile, prepare for applications, and connect with legitimate remote work opportunities offered by third-party companies and platforms.
             </p>
+
             <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-3xl mx-auto">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Verified</div>
-                <div className="text-gray-300 text-sm">Profile verification process</div>
+              <div className="bg-white rounded-xl p-6 border-2 border-purple-200 shadow-lg">
+                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-amber-500 bg-clip-text text-transparent">Verified</div>
+                <div className="text-gray-600 text-sm font-medium">Profile verification process</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Transparent</div>
-                <div className="text-gray-300 text-sm">No false promises or guarantees</div>
+              <div className="bg-white rounded-xl p-6 border-2 border-amber-200 shadow-lg">
+                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">Transparent</div>
+                <div className="text-gray-600 text-sm font-medium">No false promises or guarantees</div>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">Support</div>
-                <div className="text-gray-300 text-sm">Career enablement services</div>
+              <div className="bg-white rounded-xl p-6 border-2 border-purple-200 shadow-lg">
+                <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Support</div>
+                <div className="text-gray-600 text-sm font-medium">Career enablement services</div>
               </div>
             </div>
-            <div className="flex justify-center">
-              <button
-                onClick={() => router.push('/register?type=candidate')}
-                className="group bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-all shadow-2xl"
-              >
-                <span className="flex items-center justify-center">
-                  Get Started as a Professional
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                </span>
-              </button>
-            </div>
+
+            <button
+              onClick={() => router.push('/register?type=candidate')}
+              className="group relative bg-gradient-to-r from-purple-600 via-amber-500 to-purple-600 text-white px-12 py-5 rounded-full font-bold text-lg transition-all shadow-2xl hover:shadow-purple-500/50 hover:scale-105 inline-flex items-center space-x-3"
+            >
+              <span>Get Started as a Professional</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+            </button>
           </div>
         </section>
 
