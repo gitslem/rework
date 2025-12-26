@@ -11,6 +11,10 @@ export default function Company() {
   const [hasAnimated, setHasAnimated] = useState(false);
   const [currentProjectSlide, setCurrentProjectSlide] = useState(0);
 
+  // Typewriter effect states
+  const [typewriterText, setTypewriterText] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
+
   const benefits = [
     {
       icon: <Users className="w-8 h-8" />,
@@ -187,6 +191,55 @@ export default function Company() {
     return () => clearInterval(interval);
   }, []);
 
+  // Typewriter effect for hero description
+  useEffect(() => {
+    const fullText = "Remote-Works connects you with professionals who have completed our three-stage workforce readiness system—Profile Verification, Application Readiness, and Employer-Aligned Onboarding. Access verified, prepared, and aligned talent across 12+ project types with a 95% success rate.";
+    let currentIndex = 0;
+    let isDeleting = false;
+    let typingSpeed = 30; // Speed of typing in ms
+
+    const type = () => {
+      if (!isDeleting && currentIndex <= fullText.length) {
+        // Typing forward
+        setTypewriterText(fullText.substring(0, currentIndex));
+        currentIndex++;
+        setIsTyping(true);
+
+        if (currentIndex > fullText.length) {
+          // Pause at the end before deleting
+          setTimeout(() => {
+            isDeleting = true;
+            setTimeout(type, typingSpeed);
+          }, 3000); // Pause for 3 seconds
+          return;
+        }
+
+        setTimeout(type, typingSpeed);
+      } else if (isDeleting && currentIndex >= 0) {
+        // Deleting backward
+        setTypewriterText(fullText.substring(0, currentIndex));
+        currentIndex--;
+        setIsTyping(true);
+
+        if (currentIndex < 0) {
+          // Pause before restarting
+          setTimeout(() => {
+            isDeleting = false;
+            currentIndex = 0;
+            setTimeout(type, typingSpeed);
+          }, 500); // Short pause before retyping
+          return;
+        }
+
+        setTimeout(type, typingSpeed / 2); // Delete faster than typing
+      }
+    };
+
+    const timeoutId = setTimeout(type, 1000); // Start after 1 second
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
     <>
       <Head>
@@ -278,9 +331,12 @@ export default function Company() {
               </span>
             </h1>
 
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8">
-              Remote-Works connects you with professionals who have completed our three-stage workforce readiness system—Profile Verification, Application Readiness, and Employer-Aligned Onboarding. Access verified, prepared, and aligned talent across 12+ project types with a 95% success rate.
-            </p>
+            <div className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed mb-8 min-h-[7rem] flex items-center justify-center">
+              <div>
+                <span className="inline">{typewriterText}</span>
+                <span className={`inline-block w-0.5 h-6 bg-purple-600 ml-1 ${isTyping ? 'animate-blink' : 'opacity-0'}`}></span>
+              </div>
+            </div>
 
             <div className="flex justify-center gap-4 mb-8">
               <button
@@ -444,6 +500,254 @@ export default function Company() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Project Type Demonstrations - Detailed Examples */}
+        <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-50 via-white to-purple-50/20">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-amber-500 text-white px-6 py-3 rounded-full mb-6 shadow-lg">
+                <Sparkles className="w-5 h-5" />
+                <span className="font-bold text-sm">Real-World Applications</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-extrabold text-black mb-6">
+                See What's Possible with
+                <span className="block mt-2 bg-gradient-to-r from-purple-600 via-amber-500 to-yellow-500 bg-clip-text text-transparent">
+                  Verified Talent
+                </span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Explore detailed examples of how companies leverage our workforce-ready professionals across different project types
+              </p>
+            </div>
+
+            {/* AI Data Annotation Demonstration */}
+            <div className="mb-20">
+              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-purple-100">
+                <div className="grid lg:grid-cols-2 gap-0">
+                  {/* Left: Description */}
+                  <div className="p-10 lg:p-12 flex flex-col justify-center bg-gradient-to-br from-purple-50 to-white">
+                    <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-4 py-2 rounded-full mb-6 w-fit">
+                      <Target className="w-4 h-4" />
+                      <span className="font-bold text-sm">PROJECT TYPE 1</span>
+                    </div>
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-black mb-6">
+                      AI Data Annotation & Training
+                    </h3>
+                    <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+                      Power your AI and machine learning models with high-quality annotated data. Our verified professionals deliver precise labeling, tagging, and categorization across text, image, audio, and video datasets.
+                    </p>
+
+                    <div className="space-y-6 mb-8">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-600 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-black text-lg mb-1">Image & Video Labeling</h4>
+                          <p className="text-gray-600">Object detection, facial recognition, autonomous vehicle training datasets with 99%+ accuracy</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-600 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-black text-lg mb-1">Text Annotation & NLP</h4>
+                          <p className="text-gray-600">Sentiment analysis, entity recognition, intent classification for chatbots and language models</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-600 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-black text-lg mb-1">Audio Transcription & Labeling</h4>
+                          <p className="text-gray-600">Speech-to-text, speaker diarization, acoustic event detection for voice assistants</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-4 text-sm text-gray-600 bg-amber-50 p-4 rounded-xl border border-amber-200">
+                      <Award className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                      <span><span className="font-bold text-black">Used by:</span> AI companies, autonomous vehicle developers, NLP researchers, voice tech startups</span>
+                    </div>
+                  </div>
+
+                  {/* Right: Visual Examples */}
+                  <div className="p-10 lg:p-12 bg-gradient-to-br from-purple-900 to-black text-white flex flex-col justify-center">
+                    <h4 className="text-2xl font-bold mb-8 text-amber-400">Example Applications</h4>
+                    <div className="space-y-6">
+                      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center text-black font-bold">
+                            01
+                          </div>
+                          <h5 className="font-bold text-lg">Autonomous Vehicles</h5>
+                        </div>
+                        <p className="text-gray-300 text-sm">Annotating road scenes, pedestrians, traffic signs, and lane markings to train self-driving AI systems</p>
+                      </div>
+
+                      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center text-black font-bold">
+                            02
+                          </div>
+                          <h5 className="font-bold text-lg">Healthcare AI</h5>
+                        </div>
+                        <p className="text-gray-300 text-sm">Medical image analysis, X-ray labeling, symptom classification for diagnostic AI assistants</p>
+                      </div>
+
+                      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center text-black font-bold">
+                            03
+                          </div>
+                          <h5 className="font-bold text-lg">E-commerce AI</h5>
+                        </div>
+                        <p className="text-gray-300 text-sm">Product categorization, visual search optimization, recommendation engine training datasets</p>
+                      </div>
+
+                      <div className="bg-gradient-to-r from-amber-400/20 to-purple-400/20 p-4 rounded-xl border border-amber-400/30 mt-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-3xl font-black text-amber-400">95%</div>
+                            <div className="text-sm text-gray-300">Average Accuracy Rate</div>
+                          </div>
+                          <div className="border-l border-white/20 pl-4">
+                            <div className="text-3xl font-black text-amber-400">2.5M+</div>
+                            <div className="text-sm text-gray-300">Data Points Annotated</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Content Moderation Demonstration */}
+            <div className="mb-12">
+              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border-2 border-purple-100">
+                <div className="grid lg:grid-cols-2 gap-0">
+                  {/* Left: Visual Examples */}
+                  <div className="p-10 lg:p-12 bg-gradient-to-br from-amber-900 to-purple-900 text-white flex flex-col justify-center order-2 lg:order-1">
+                    <h4 className="text-2xl font-bold mb-8 text-purple-300">Example Applications</h4>
+                    <div className="space-y-6">
+                      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                            01
+                          </div>
+                          <h5 className="font-bold text-lg">Social Media Platforms</h5>
+                        </div>
+                        <p className="text-gray-300 text-sm">Review user-generated content, enforce community guidelines, flag harmful content across posts, comments, and media</p>
+                      </div>
+
+                      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                            02
+                          </div>
+                          <h5 className="font-bold text-lg">E-commerce Marketplaces</h5>
+                        </div>
+                        <p className="text-gray-300 text-sm">Verify product listings, detect counterfeit items, ensure seller compliance, maintain marketplace quality</p>
+                      </div>
+
+                      <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:bg-white/20 transition-all">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">
+                            03
+                          </div>
+                          <h5 className="font-bold text-lg">Online Gaming Communities</h5>
+                        </div>
+                        <p className="text-gray-300 text-sm">Monitor player interactions, review reported content, enforce conduct policies, maintain safe gaming environments</p>
+                      </div>
+
+                      <div className="bg-gradient-to-r from-purple-400/20 to-amber-400/20 p-4 rounded-xl border border-purple-400/30 mt-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-3xl font-black text-purple-300">24/7</div>
+                            <div className="text-sm text-gray-300">Coverage Available</div>
+                          </div>
+                          <div className="border-l border-white/20 pl-4">
+                            <div className="text-3xl font-black text-purple-300">100K+</div>
+                            <div className="text-sm text-gray-300">Reviews Daily</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Description */}
+                  <div className="p-10 lg:p-12 flex flex-col justify-center bg-gradient-to-br from-amber-50 to-white order-1 lg:order-2">
+                    <div className="inline-flex items-center space-x-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full mb-6 w-fit">
+                      <Shield className="w-4 h-4" />
+                      <span className="font-bold text-sm">PROJECT TYPE 2</span>
+                    </div>
+                    <h3 className="text-3xl md:text-4xl font-extrabold text-black mb-6">
+                      Content Moderation & Safety
+                    </h3>
+                    <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+                      Protect your platform and users with scalable content moderation. Our trained professionals review and moderate content across multiple languages and platforms, ensuring compliance and safety.
+                    </p>
+
+                    <div className="space-y-6 mb-8">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-amber-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-black text-lg mb-1">Multilingual Content Review</h4>
+                          <p className="text-gray-600">Moderate content in 40+ languages with culturally-aware professionals who understand context</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-amber-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-black text-lg mb-1">Policy Enforcement</h4>
+                          <p className="text-gray-600">Consistent application of your community guidelines with trained moderators who follow your protocols</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-amber-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-black text-lg mb-1">Rapid Response Times</h4>
+                          <p className="text-gray-600">Real-time moderation with SLA-backed response times for flagged content and user reports</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-4 text-sm text-gray-600 bg-purple-50 p-4 rounded-xl border border-purple-200">
+                      <Users className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                      <span><span className="font-bold text-black">Used by:</span> Social platforms, marketplaces, gaming companies, community forums</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Banner */}
+            <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-amber-600 rounded-3xl p-10 text-center text-white shadow-2xl">
+              <h3 className="text-3xl md:text-4xl font-extrabold mb-4">
+                Ready to Scale Your Operations?
+              </h3>
+              <p className="text-xl mb-8 max-w-2xl mx-auto text-purple-100">
+                Join companies using Remote-Works to access verified, workforce-ready professionals across 12+ project types
+              </p>
+              <button
+                onClick={() => router.push('/agent-signup?type=company')}
+                className="group relative bg-white text-purple-900 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition-all shadow-xl inline-flex items-center space-x-3"
+              >
+                <span>Partner with Us Today</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
+              </button>
             </div>
           </div>
         </section>
