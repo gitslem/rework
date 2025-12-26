@@ -147,7 +147,7 @@ export default function About() {
     { year: "2023", event: "First 100 Professionals Verified", description: "By September 2023, reached 100 verified professionals across 15 countries. Implemented proprietary verification system requiring proof of 10+ successful approvals." },
     { year: "2024", event: "10,000 Successful Approvals", description: "Hit major milestone of 10,000 candidates successfully approved. Achieved 95% success rate through rigorous professional training and quality control." },
     { year: "2024", event: "Platform Partnerships", description: "Established direct communication channels with compliance teams at major AI training platforms to better understand their evolving requirements." },
-    { year: "2025", event: "12 Projects, 27K+ Professionals", description: "Network expanded to 12 verified project types across 40+ platforms in 35 countries. Facilitated 27,000+ professional placements, with members now earning $4K+ monthly on average." }
+    { year: "2025", event: "12 Projects, 27K+ Professionals", description: "Network expanded to 12 verified project types across 40+ platforms in 35 countries. Facilitated 27,000+ professional placements, with members achieving sustainable remote career growth and competitive compensation." }
   ];
 
   // Auto-play testimonials slider
