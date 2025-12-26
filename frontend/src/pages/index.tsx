@@ -40,6 +40,9 @@ export default function Home() {
   const [isTyping, setIsTyping] = useState(false);
   const [displayNumber, setDisplayNumber] = useState(0);
 
+  // Hero image slider
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
+
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -157,6 +160,15 @@ export default function Home() {
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev === 5 ? 0 : prev + 1)); // 6 testimonials (0-5)
     }, 5000); // Change testimonial every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-play hero image slider
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroImage((prev) => (prev === 4 ? 0 : prev + 1)); // 5 images (0-4)
+    }, 4000); // Change image every 4 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -322,6 +334,14 @@ export default function Home() {
     { number: "95%", label: "Success Rate", icon: <Star className="w-5 h-5" /> },
     { number: "24/7", label: "Support", icon: <Headphones className="w-5 h-5" /> },
     { number: "12+", label: "Project Types", icon: <Layers className="w-5 h-5" /> }
+  ];
+
+  const heroImages = [
+    "https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/3727474/pexels-photo-3727474.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/1933900/pexels-photo-1933900.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/9783346/pexels-photo-9783346.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/7773547/pexels-photo-7773547.jpeg?auto=compress&cs=tinysrgb&w=1200"
   ];
 
   const projectTypes = [
@@ -765,49 +785,351 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right Image */}
+              {/* Right Image Slider */}
               <div className={`relative ${isVisible ? 'animate-fade-in-scale stagger-2' : 'opacity-0'}`}>
                 <div className="relative">
-                  {/* Main Image Container */}
+                  {/* Main Image Container with Slider */}
                   <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-white/20 backdrop-blur-sm">
-                    <img
-                      src="https://images.pexels.com/photos/2047905/pexels-photo-2047905.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                      alt="Remote Work"
-                      className="w-full h-auto object-cover"
-                      style={{ aspectRatio: '4/3' }}
-                    />
+                    {heroImages.map((image, index) => (
+                      <div
+                        key={index}
+                        className={`transition-opacity duration-1000 ${index === currentHeroImage ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
+                      >
+                        <img
+                          src={image}
+                          alt={`Remote Work ${index + 1}`}
+                          className="w-full h-auto object-cover"
+                          style={{ aspectRatio: '4/3' }}
+                        />
+                      </div>
+                    ))}
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-amber-600/20"></div>
+
+                    {/* Slider Dots */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                      {heroImages.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentHeroImage(index)}
+                          className={`transition-all duration-300 rounded-full ${
+                            index === currentHeroImage
+                              ? 'w-8 h-2 bg-gradient-to-r from-purple-600 to-amber-600'
+                              : 'w-2 h-2 bg-white/60 hover:bg-white/90'
+                          }`}
+                          aria-label={`View image ${index + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
 
                   {/* Floating Stats Cards */}
-                  <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
+                  {/* Bottom Left - Success Rate */}
+                  <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-xl border border-green-100 p-4 animate-float" style={{ animationDuration: '6s' }}>
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                         <Star className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black text-slate-900">95%</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">95%</div>
                         <div className="text-sm text-gray-600 font-medium">Success Rate</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-amber-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
+                  {/* Top Right - Platforms */}
+                  <div className="absolute -top-6 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7s', animationDelay: '1s' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-violet-600 flex items-center justify-center">
                         <Globe className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-black text-slate-900">20+</div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-violet-600 bg-clip-text text-transparent">40+</div>
                         <div className="text-sm text-gray-600 font-medium">Platforms</div>
                       </div>
                     </div>
                   </div>
 
+                  {/* Top Left - Personalized Support */}
+                  <div className="absolute top-1/4 -left-6 bg-white rounded-2xl shadow-xl border border-amber-100 p-4 animate-float" style={{ animationDuration: '8s', animationDelay: '2s' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-black bg-gradient-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">AI</div>
+                        <div className="text-xs text-gray-600 font-medium">Personalized Support</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Right - Project Types */}
+                  <div className="absolute bottom-1/4 -right-6 bg-white rounded-2xl shadow-xl border border-purple-100 p-4 animate-float" style={{ animationDuration: '7.5s', animationDelay: '0.5s' }}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <Layers className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">12+</div>
+                        <div className="text-sm text-gray-600 font-medium">Project Types</div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Decorative Elements */}
-                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl"></div>
-                  <div className="absolute -z-10 -bottom-10 -left-10 w-72 h-72 bg-gradient-to-br from-amber-400/30 to-yellow-400/30 rounded-full blur-3xl"></div>
+                  <div className="absolute -z-10 -top-10 -right-10 w-72 h-72 bg-gradient-to-br from-purple-400/30 to-pink-400/30 rounded-full blur-3xl animate-pulse"></div>
+                  <div className="absolute -z-10 -bottom-10 -left-10 w-72 h-72 bg-gradient-to-br from-amber-400/30 to-yellow-400/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* AI Platform Visualizer Section */}
+        <section className="relative py-24 px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+          {/* Animated Background Grid */}
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'linear-gradient(rgba(168, 85, 247, 0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(168, 85, 247, 0.4) 1px, transparent 1px)',
+              backgroundSize: '50px 50px',
+              animation: 'pulse 4s ease-in-out infinite'
+            }}></div>
+          </div>
+
+          {/* Floating Gradient Orbs */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-purple-500/30 to-violet-500/30 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-amber-500/30 to-yellow-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-fuchsia-500/20 to-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="text-center mb-16 space-y-4">
+              <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-xl px-6 py-3 rounded-full border border-purple-400/30 shadow-lg">
+                <Bot className="w-5 h-5 text-purple-400" />
+                <span className="font-semibold text-sm bg-gradient-to-r from-purple-400 to-amber-400 bg-clip-text text-transparent">
+                  Powered by Advanced AI
+                </span>
+              </div>
+
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                Experience the Future of
+                <span className="block mt-2 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-amber-400 bg-clip-text text-transparent">
+                  AI-Driven Remote Work
+                </span>
+              </h2>
+
+              <p className="text-xl text-purple-200 max-w-3xl mx-auto leading-relaxed">
+                Our intelligent platform leverages cutting-edge AI to match you with perfect opportunities,
+                optimize your applications, and accelerate your remote career growth.
+              </p>
+            </div>
+
+            {/* AI Visualization Grid */}
+            <div className="grid lg:grid-cols-3 gap-8 mb-12">
+              {/* Card 1 - AI Matching */}
+              <div className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+
+                <div className="relative z-10 space-y-4">
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
+                    <Network className="w-8 h-8 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-white">Smart Matching</h3>
+
+                  <p className="text-purple-200 leading-relaxed">
+                    AI analyzes your skills, preferences, and experience to connect you with opportunities that perfectly align with your career goals.
+                  </p>
+
+                  {/* Animated Connection Lines */}
+                  <div className="flex items-center gap-2 pt-4">
+                    <div className="flex -space-x-2">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-fuchsia-500 border-2 border-slate-900 flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{ animationDelay: `${i * 0.2}s` }}>
+                          {i}
+                        </div>
+                      ))}
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-purple-400 animate-pulse" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 border-2 border-slate-900 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2 - AI Optimization */}
+              <div className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-amber-400/50 transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+
+                <div className="relative z-10 space-y-4">
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center shadow-lg shadow-amber-500/50">
+                    <Zap className="w-8 h-8 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-white">Profile Optimization</h3>
+
+                  <p className="text-purple-200 leading-relaxed">
+                    Machine learning algorithms continuously enhance your profile, ensuring you stand out to employers and maximize approval rates.
+                  </p>
+
+                  {/* Progress Bars */}
+                  <div className="space-y-3 pt-4">
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs text-purple-300">
+                        <span>Profile Strength</span>
+                        <span>98%</span>
+                      </div>
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-purple-500 to-fuchsia-500 rounded-full animate-pulse" style={{ width: '98%' }}></div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs text-purple-300">
+                        <span>Match Score</span>
+                        <span>95%</span>
+                      </div>
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full animate-pulse" style={{ width: '95%', animationDelay: '0.5s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 3 - AI Insights */}
+              <div className="group relative bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-fuchsia-400/50 transition-all duration-500 hover:shadow-2xl hover:shadow-fuchsia-500/20 hover:-translate-y-2">
+                <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+
+                <div className="relative z-10 space-y-4">
+                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center shadow-lg shadow-fuchsia-500/50">
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-white">Real-Time Insights</h3>
+
+                  <p className="text-purple-200 leading-relaxed">
+                    Get instant AI-powered recommendations, market trends, and personalized career advice to stay ahead in the remote work landscape.
+                  </p>
+
+                  {/* Live Stats */}
+                  <div className="grid grid-cols-2 gap-3 pt-4">
+                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                      <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">4.8k</div>
+                      <div className="text-xs text-purple-300">Active Jobs</div>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                      <div className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">$4.2k</div>
+                      <div className="text-xs text-purple-300">Avg. Income</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Central AI Visualization */}
+            <div className="relative bg-white/5 backdrop-blur-xl rounded-3xl p-12 border border-white/10 shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-fuchsia-500/5 to-amber-500/5 rounded-3xl"></div>
+
+              <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+                {/* Left - Neural Network Visualization */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-amber-500/20 rounded-2xl blur-2xl"></div>
+
+                  <div className="relative bg-slate-900/50 rounded-2xl p-8 border border-purple-400/30">
+                    {/* Simulated Neural Network */}
+                    <div className="space-y-6">
+                      {/* Layer 1 */}
+                      <div className="flex justify-around">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div key={i} className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-violet-600 border-4 border-purple-400/50 shadow-lg shadow-purple-500/50 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }}></div>
+                        ))}
+                      </div>
+
+                      {/* Connecting Lines Simulation */}
+                      <div className="relative h-12">
+                        <svg className="w-full h-full" viewBox="0 0 300 50">
+                          <line x1="37.5" y1="0" x2="75" y2="50" stroke="url(#gradient1)" strokeWidth="2" className="animate-pulse" />
+                          <line x1="112.5" y1="0" x2="150" y2="50" stroke="url(#gradient1)" strokeWidth="2" className="animate-pulse" style={{ animationDelay: '0.5s' }} />
+                          <line x1="187.5" y1="0" x2="225" y2="50" stroke="url(#gradient1)" strokeWidth="2" className="animate-pulse" style={{ animationDelay: '1s' }} />
+                          <defs>
+                            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#a855f7" />
+                              <stop offset="100%" stopColor="#f59e0b" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+
+                      {/* Layer 2 */}
+                      <div className="flex justify-around">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="w-14 h-14 rounded-full bg-gradient-to-br from-fuchsia-500 to-pink-600 border-4 border-fuchsia-400/50 shadow-lg shadow-fuchsia-500/50 animate-pulse" style={{ animationDelay: `${i * 0.3}s` }}></div>
+                        ))}
+                      </div>
+
+                      {/* Connecting Lines Simulation */}
+                      <div className="relative h-12">
+                        <svg className="w-full h-full" viewBox="0 0 300 50">
+                          <line x1="75" y1="0" x2="150" y2="50" stroke="url(#gradient2)" strokeWidth="2" className="animate-pulse" />
+                          <line x1="225" y1="0" x2="150" y2="50" stroke="url(#gradient2)" strokeWidth="2" className="animate-pulse" style={{ animationDelay: '0.7s' }} />
+                          <defs>
+                            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" stopColor="#d946ef" />
+                              <stop offset="100%" stopColor="#f59e0b" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+
+                      {/* Output Layer */}
+                      <div className="flex justify-center">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 border-4 border-amber-400/50 shadow-2xl shadow-amber-500/50 flex items-center justify-center animate-pulse">
+                          <Sparkles className="w-10 h-10 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right - Features List */}
+                <div className="space-y-6">
+                  <h3 className="text-3xl font-bold text-white mb-8">
+                    AI-Powered Features
+                  </h3>
+
+                  <div className="space-y-4">
+                    {[
+                      { icon: <Target className="w-6 h-6" />, title: "Intelligent Job Matching", desc: "AI finds your perfect opportunities" },
+                      { icon: <Workflow className="w-6 h-6" />, title: "Automated Application", desc: "Streamline your application process" },
+                      { icon: <MessageSquare className="w-6 h-6" />, title: "24/7 AI Assistant", desc: "Get instant answers to your questions" },
+                      { icon: <TrendingUp className="w-6 h-6" />, title: "Career Growth Tracking", desc: "Monitor your progress in real-time" }
+                    ].map((feature, index) => (
+                      <div key={index} className="flex items-start gap-4 group cursor-pointer">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500/20 to-amber-500/20 border border-purple-400/30 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-lg group-hover:shadow-purple-500/50">
+                          {feature.icon}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-white group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-amber-400 group-hover:bg-clip-text group-hover:text-transparent transition-all">
+                            {feature.title}
+                          </h4>
+                          <p className="text-purple-200 text-sm">{feature.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA Button */}
+                  <button
+                    onClick={() => router.push('/register')}
+                    className="group mt-8 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-amber-600 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-105 flex items-center gap-3"
+                  >
+                    <Rocket className="w-6 h-6" />
+                    <span>Experience AI-Powered Matching</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                  </button>
                 </div>
               </div>
             </div>
