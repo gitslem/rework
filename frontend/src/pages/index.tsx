@@ -401,7 +401,7 @@ export default function Home() {
     "https://images.pexels.com/photos/6347976/pexels-photo-6347976.jpeg?auto=compress&cs=tinysrgb&w=1200",
     "https://images.pexels.com/photos/695730/pexels-photo-695730.jpeg?auto=compress&cs=tinysrgb&w=1200",
     "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/17485633/pexels-photo-17485633.jpeg?auto=compress&cs=tinysrgb&w=1200",
     "https://images.pexels.com/photos/7562468/pexels-photo-7562468.jpeg?auto=compress&cs=tinysrgb&w=1200"
   ];
 
