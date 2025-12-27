@@ -232,6 +232,10 @@ export default function AdminCandidates() {
             end.setHours(23, 59, 59, 999);
             if (userCreatedAt > end) continue;
           }
+
+          // Exclude uncategorized candidates from date range filter
+          const categories = (userData as any).categories || [];
+          if (categories.length === 0) continue;
         } else if (filter === 'uncategorized') {
           // Filter for candidates without any categories assigned
           const categories = (userData as any).categories || [];
