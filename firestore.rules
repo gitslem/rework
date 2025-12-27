@@ -368,5 +368,22 @@ service cloud.firestore {
       // Only admins can delete testimonials
       allow delete: if isAdmin();
     }
+
+    // Agent weekly updates collection (for admin/agent updates page)
+    match /agent_weekly_updates/{updateId} {
+      // Allow read if user is admin or an approved agent
+      allow read: if isAuthenticated() && (isAdmin() || isAgent());
+
+      // Allow create if user is admin or an approved agent
+      // Note: Head of agent permissions are checked in app logic
+      allow create: if isAuthenticated() && (isAdmin() || isAgent());
+
+      // Allow update if user is admin or the creator
+      allow update: if isAuthenticated() &&
+        (isAdmin() || resource.data.createdBy == request.auth.uid);
+
+      // Allow delete only for admin
+      allow delete: if isAdmin();
+    }
   }
 }
