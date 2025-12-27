@@ -385,5 +385,21 @@ service cloud.firestore {
       // Allow delete only for admin
       allow delete: if isAdmin();
     }
+
+    // Agent requests collection (for agent inbox/requests)
+    match /agent_requests/{requestId} {
+      // Allow read if user is admin or the agent who created the request
+      allow read: if isAuthenticated() &&
+        (isAdmin() || resource.data.agentId == request.auth.uid);
+
+      // Allow create if user is an approved agent
+      allow create: if isAuthenticated() && isAgent();
+
+      // Allow update only for admin (to respond to requests)
+      allow update: if isAdmin();
+
+      // Allow delete only for admin
+      allow delete: if isAdmin();
+    }
   }
 }

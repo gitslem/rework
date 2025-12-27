@@ -12,10 +12,11 @@ import {
   setDoc,
   orderBy,
   Timestamp,
-  onSnapshot
+  onSnapshot,
+  where
 } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
-import { X, Plus, Edit2, Trash2, Save, Users, ExternalLink } from 'lucide-react';
+import { X, Plus, Edit2, Trash2, Users, ExternalLink, Send, MapPin, Filter, ChevronRight, Inbox, MessageSquare } from 'lucide-react';
 
 interface WeeklyUpdate {
   id: string;
@@ -31,6 +32,19 @@ interface WeeklyUpdate {
   updatedAt: any;
 }
 
+interface AgentRequest {
+  id: string;
+  agentId: string;
+  agentEmail: string;
+  requestType: 'approval' | 'new_project' | 'suggestion';
+  subject: string;
+  message: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: any;
+  respondedAt?: any;
+  responseMessage?: string;
+}
+
 interface PageSettings {
   headOfAgentEmails: string[];
 }
@@ -44,11 +58,22 @@ export default function AgentUpdates() {
   const [loading, setLoading] = useState(true);
 
   const [updates, setUpdates] = useState<WeeklyUpdate[]>([]);
+  const [agentRequests, setAgentRequests] = useState<AgentRequest[]>([]);
   const [pageSettings, setPageSettings] = useState<PageSettings>({ headOfAgentEmails: [] });
+
+  // View state
+  const [currentView, setCurrentView] = useState<'platforms' | 'projects' | 'inbox'>('platforms');
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string>('all');
+
+  // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showRequestDetailModal, setShowRequestDetailModal] = useState(false);
   const [selectedUpdate, setSelectedUpdate] = useState<WeeklyUpdate | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<AgentRequest | null>(null);
   const [newHeadEmail, setNewHeadEmail] = useState('');
 
   const [formData, setFormData] = useState({
@@ -59,6 +84,14 @@ export default function AgentUpdates() {
     notes: '',
     weekOf: getCurrentWeek()
   });
+
+  const [requestFormData, setRequestFormData] = useState({
+    requestType: 'suggestion' as 'approval' | 'new_project' | 'suggestion',
+    subject: '',
+    message: ''
+  });
+
+  const [responseMessage, setResponseMessage] = useState('');
 
   function getCurrentWeek() {
     const now = new Date();
@@ -95,12 +128,14 @@ export default function AgentUpdates() {
               setHasAccess(true);
               setCanEdit(true);
               await fetchUpdates();
+              await fetchAgentRequests();
               await fetchPageSettings();
             }
             // Approved agents have read access
             else if (userData.role === 'agent' && profileData?.isAgentApproved) {
               setHasAccess(true);
               await fetchUpdates();
+              await fetchAgentRequests();
               await fetchPageSettings();
 
               // Check if agent is head of agent
@@ -139,6 +174,24 @@ export default function AgentUpdates() {
     return unsubscribe;
   };
 
+  const fetchAgentRequests = async () => {
+    const db = getFirebaseFirestore();
+    const q = query(
+      collection(db, 'agent_requests'),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const requestsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as AgentRequest[];
+      setAgentRequests(requestsData);
+    });
+
+    return unsubscribe;
+  };
+
   const fetchPageSettings = async () => {
     const db = getFirebaseFirestore();
     const settingsDoc = await getDoc(doc(db, 'settings', 'agent-updates'));
@@ -153,46 +206,13 @@ export default function AgentUpdates() {
       return;
     }
 
-    // Validate required fields
-    if (!formData.projectName.trim()) {
-      alert('Project Name is required');
-      return;
-    }
-    if (!formData.platform.trim()) {
-      alert('Platform is required');
-      return;
-    }
-    if (!formData.location.trim()) {
-      alert('Location is required');
-      return;
-    }
-    if (!formData.weekOf) {
-      alert('Week date is required');
+    if (!formData.projectName.trim() || !formData.platform.trim() || !formData.location.trim()) {
+      alert('Please fill in all required fields');
       return;
     }
 
     const db = getFirebaseFirestore();
     try {
-      console.log('=== SAVE DEBUG INFO ===');
-      console.log('User object:', user);
-      console.log('User role:', user.role);
-      console.log('Is Admin:', isAdmin);
-      console.log('Can Edit:', canEdit);
-      console.log('User UID:', user.uid);
-      console.log('User Email:', user.email);
-      console.log('Attempting to add update:', formData);
-
-      // Verify user document exists in Firestore
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      console.log('User doc exists:', userDoc.exists());
-      if (userDoc.exists()) {
-        console.log('User doc data:', userDoc.data());
-      } else {
-        console.error('USER DOCUMENT DOES NOT EXIST IN FIRESTORE!');
-        alert('Error: Your user profile is not properly set up. Please contact support.');
-        return;
-      }
-
       await addDoc(collection(db, 'agent_weekly_updates'), {
         projectName: formData.projectName.trim(),
         platform: formData.platform.trim(),
@@ -206,56 +226,20 @@ export default function AgentUpdates() {
         updatedAt: Timestamp.now()
       });
 
-      console.log('Update added successfully');
       setShowAddModal(false);
       resetForm();
       alert('Update added successfully!');
     } catch (error: any) {
-      console.error('=== ERROR DETAILS ===');
       console.error('Error adding update:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-      console.error('Full error:', JSON.stringify(error, null, 2));
-
-      // Provide specific error messages
-      if (error.code === 'permission-denied') {
-        alert(`Permission denied.\n\nYour role: ${user.role}\nIs Admin: ${isAdmin}\nCan Edit: ${canEdit}\n\nPlease ensure:\n1. Your role is set to 'admin' or 'agent'\n2. If agent, you are approved\n3. Check browser console for details`);
-      } else if (error.code === 'unauthenticated') {
-        alert('You must be signed in to add updates.');
-      } else {
-        alert(`Failed to add update: ${error.message || 'Unknown error'}`);
-      }
+      alert(`Failed to add update: ${error.message || 'Unknown error'}`);
     }
   };
 
   const handleEditUpdate = async () => {
-    if (!canEdit || !selectedUpdate) {
-      alert('You do not have permission to edit updates');
-      return;
-    }
-
-    // Validate required fields
-    if (!formData.projectName.trim()) {
-      alert('Project Name is required');
-      return;
-    }
-    if (!formData.platform.trim()) {
-      alert('Platform is required');
-      return;
-    }
-    if (!formData.location.trim()) {
-      alert('Location is required');
-      return;
-    }
-    if (!formData.weekOf) {
-      alert('Week date is required');
-      return;
-    }
+    if (!canEdit || !selectedUpdate) return;
 
     const db = getFirebaseFirestore();
     try {
-      console.log('Attempting to update:', formData);
-
       await updateDoc(doc(db, 'agent_weekly_updates', selectedUpdate.id), {
         projectName: formData.projectName.trim(),
         platform: formData.platform.trim(),
@@ -266,52 +250,75 @@ export default function AgentUpdates() {
         updatedAt: Timestamp.now()
       });
 
-      console.log('Update edited successfully');
       setShowEditModal(false);
       setSelectedUpdate(null);
       resetForm();
       alert('Update saved successfully!');
     } catch (error: any) {
       console.error('Error updating:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-
-      if (error.code === 'permission-denied') {
-        alert('Permission denied. You may not have permission to edit this update.');
-      } else if (error.code === 'not-found') {
-        alert('Update not found. It may have been deleted.');
-      } else {
-        alert(`Failed to update: ${error.message || 'Unknown error'}`);
-      }
+      alert(`Failed to update: ${error.message}`);
     }
   };
 
   const handleDeleteUpdate = async (updateId: string) => {
-    if (!isAdmin) {
-      alert('Only admins can delete updates');
-      return;
-    }
-
-    if (!confirm('Are you sure you want to delete this update? This action cannot be undone.')) return;
+    if (!isAdmin) return;
+    if (!confirm('Are you sure you want to delete this update?')) return;
 
     const db = getFirebaseFirestore();
     try {
-      console.log('Attempting to delete update:', updateId);
       await deleteDoc(doc(db, 'agent_weekly_updates', updateId));
-      console.log('Update deleted successfully');
       alert('Update deleted successfully');
     } catch (error: any) {
       console.error('Error deleting:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
+      alert(`Failed to delete: ${error.message}`);
+    }
+  };
 
-      if (error.code === 'permission-denied') {
-        alert('Permission denied. Only admins can delete updates.');
-      } else if (error.code === 'not-found') {
-        alert('Update not found. It may have already been deleted.');
-      } else {
-        alert(`Failed to delete: ${error.message || 'Unknown error'}`);
-      }
+  const handleSubmitRequest = async () => {
+    if (!user || !requestFormData.subject.trim() || !requestFormData.message.trim()) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const db = getFirebaseFirestore();
+    try {
+      await addDoc(collection(db, 'agent_requests'), {
+        agentId: user.uid,
+        agentEmail: user.email,
+        requestType: requestFormData.requestType,
+        subject: requestFormData.subject.trim(),
+        message: requestFormData.message.trim(),
+        status: 'pending',
+        createdAt: Timestamp.now()
+      });
+
+      setShowRequestModal(false);
+      setRequestFormData({ requestType: 'suggestion', subject: '', message: '' });
+      alert('Request submitted successfully!');
+    } catch (error: any) {
+      console.error('Error submitting request:', error);
+      alert(`Failed to submit request: ${error.message}`);
+    }
+  };
+
+  const handleRespondToRequest = async (requestId: string, newStatus: 'approved' | 'rejected') => {
+    if (!isAdmin) return;
+
+    const db = getFirebaseFirestore();
+    try {
+      await updateDoc(doc(db, 'agent_requests', requestId), {
+        status: newStatus,
+        respondedAt: Timestamp.now(),
+        responseMessage: responseMessage.trim()
+      });
+
+      setShowRequestDetailModal(false);
+      setSelectedRequest(null);
+      setResponseMessage('');
+      alert(`Request ${newStatus} successfully!`);
+    } catch (error: any) {
+      console.error('Error responding to request:', error);
+      alert(`Failed to respond: ${error.message}`);
     }
   };
 
@@ -321,25 +328,15 @@ export default function AgentUpdates() {
     const db = getFirebaseFirestore();
     try {
       const updatedEmails = [...pageSettings.headOfAgentEmails, newHeadEmail.trim()];
-
-      // Use setDoc with merge to create or update the document
       await setDoc(doc(db, 'settings', 'agent-updates'), {
         headOfAgentEmails: updatedEmails
       }, { merge: true });
 
       setPageSettings({ headOfAgentEmails: updatedEmails });
       setNewHeadEmail('');
-      console.log('Head of agent added successfully');
     } catch (error: any) {
       console.error('Error adding head of agent:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-
-      if (error.code === 'permission-denied') {
-        alert('Permission denied. Only admins can manage editors.');
-      } else {
-        alert(`Failed to add head of agent: ${error.message || 'Unknown error'}`);
-      }
+      alert(`Failed to add editor: ${error.message}`);
     }
   };
 
@@ -349,23 +346,14 @@ export default function AgentUpdates() {
     const db = getFirebaseFirestore();
     try {
       const updatedEmails = pageSettings.headOfAgentEmails.filter(e => e !== email);
-
       await setDoc(doc(db, 'settings', 'agent-updates'), {
         headOfAgentEmails: updatedEmails
       }, { merge: true });
 
       setPageSettings({ headOfAgentEmails: updatedEmails });
-      console.log('Head of agent removed successfully');
     } catch (error: any) {
       console.error('Error removing head of agent:', error);
-      console.error('Error code:', error.code);
-      console.error('Error message:', error.message);
-
-      if (error.code === 'permission-denied') {
-        alert('Permission denied. Only admins can manage editors.');
-      } else {
-        alert(`Failed to remove head of agent: ${error.message || 'Unknown error'}`);
-      }
+      alert(`Failed to remove editor: ${error.message}`);
     }
   };
 
@@ -391,6 +379,54 @@ export default function AgentUpdates() {
       notes: '',
       weekOf: getCurrentWeek()
     });
+  };
+
+  // Get unique platforms with project counts
+  const getPlatformStats = () => {
+    const platformMap = new Map<string, { count: number; latestWeek: string }>();
+
+    updates.forEach(update => {
+      const existing = platformMap.get(update.platform);
+      if (existing) {
+        existing.count++;
+        if (update.weekOf > existing.latestWeek) {
+          existing.latestWeek = update.weekOf;
+        }
+      } else {
+        platformMap.set(update.platform, { count: 1, latestWeek: update.weekOf });
+      }
+    });
+
+    return Array.from(platformMap.entries()).map(([platform, stats]) => ({
+      platform,
+      ...stats
+    }));
+  };
+
+  // Get unique locations
+  const getUniqueLocations = () => {
+    const locations = new Set(updates.map(u => u.location));
+    return ['all', ...Array.from(locations)];
+  };
+
+  // Filter projects
+  const getFilteredProjects = () => {
+    let filtered = updates;
+
+    if (selectedPlatform) {
+      filtered = filtered.filter(u => u.platform === selectedPlatform);
+    }
+
+    if (selectedLocation !== 'all') {
+      filtered = filtered.filter(u => u.location === selectedLocation);
+    }
+
+    return filtered;
+  };
+
+  // Get pending requests count
+  const getPendingRequestsCount = () => {
+    return agentRequests.filter(r => r.status === 'pending').length;
   };
 
   if (loading) {
@@ -441,15 +477,15 @@ export default function AgentUpdates() {
           <p className="text-sm text-gray-500">
             Your current role: <span className="font-semibold">{user.role}</span>
           </p>
-          {user.role === 'agent' && !profile?.isAgentApproved && (
-            <p className="text-sm text-orange-600 mt-2">
-              Your agent profile is pending approval.
-            </p>
-          )}
         </div>
       </div>
     );
   }
+
+  const platformStats = getPlatformStats();
+  const filteredProjects = getFilteredProjects();
+  const locations = getUniqueLocations();
+  const pendingRequestsCount = getPendingRequestsCount();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -472,24 +508,6 @@ export default function AgentUpdates() {
                   </span>
                 )}
               </div>
-
-              {/* Debug Info Panel - Shows permission details */}
-              {isAdmin && (
-                <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
-                  <h3 className="text-sm font-bold text-blue-900 mb-2">🔍 Debug Info (Admin Only)</h3>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div><span className="font-semibold">UID:</span> {user.uid}</div>
-                    <div><span className="font-semibold">Email:</span> {user.email}</div>
-                    <div><span className="font-semibold">Role:</span> <span className="font-bold text-blue-700">{user.role}</span></div>
-                    <div><span className="font-semibold">Is Admin:</span> <span className={isAdmin ? 'text-green-600 font-bold' : 'text-red-600'}>{isAdmin ? 'YES' : 'NO'}</span></div>
-                    <div><span className="font-semibold">Can Edit:</span> <span className={canEdit ? 'text-green-600 font-bold' : 'text-red-600'}>{canEdit ? 'YES' : 'NO'}</span></div>
-                    <div><span className="font-semibold">Has Access:</span> <span className={hasAccess ? 'text-green-600 font-bold' : 'text-red-600'}>{hasAccess ? 'YES' : 'NO'}</span></div>
-                  </div>
-                  <p className="text-xs text-blue-700 mt-2">
-                    ℹ️ If you get permission errors, check that your user document in Firestore has role='admin'
-                  </p>
-                </div>
-              )}
             </div>
 
             <div className="flex space-x-3">
@@ -511,232 +529,357 @@ export default function AgentUpdates() {
                   className="flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all"
                 >
                   <Plus className="w-5 h-5" />
-                  <span>Add Update</span>
+                  <span>Add Project</span>
                 </button>
               )}
             </div>
           </div>
         </div>
 
-        {/* Updates Table */}
-        <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b-2 border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Week Of
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Project Name
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Platform
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Link
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Notes
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Added By
-                  </th>
-                  {canEdit && (
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {updates.length === 0 ? (
-                  <tr>
-                    <td colSpan={canEdit ? 8 : 7} className="px-6 py-12 text-center">
-                      <div className="text-gray-400">
-                        <p className="text-lg font-medium mb-2">No updates yet</p>
-                        <p className="text-sm">
-                          {canEdit ? 'Click "Add Update" to create the first entry' : 'Check back later for updates'}
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  updates.map((update) => (
-                    <tr key={update.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
-                          {new Date(update.weekOf).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm font-semibold text-black">
-                          {update.projectName}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full font-medium">
-                          {update.platform}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-sm text-gray-700">{update.location}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {update.link ? (
-                          <a
-                            href={update.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                          >
-                            <span>View</span>
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        ) : (
-                          <span className="text-sm text-gray-400">-</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 max-w-xs">
-                        <p className="text-sm text-gray-600 truncate" title={update.notes}>
-                          {update.notes || '-'}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-xs text-gray-500">
-                          {update.createdByEmail}
-                        </span>
-                      </td>
+        {/* Navigation Tabs */}
+        <div className="flex space-x-2 mb-6">
+          <button
+            onClick={() => {
+              setCurrentView('platforms');
+              setSelectedPlatform(null);
+            }}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              currentView === 'platforms'
+                ? 'bg-black text-white'
+                : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-400'
+            }`}
+          >
+            Platforms ({platformStats.length})
+          </button>
+          <button
+            onClick={() => setCurrentView('inbox')}
+            className={`px-6 py-3 rounded-lg font-semibold transition-all relative ${
+              currentView === 'inbox'
+                ? 'bg-black text-white'
+                : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-400'
+            }`}
+          >
+            <div className="flex items-center space-x-2">
+              <Inbox className="w-5 h-5" />
+              <span>Inbox</span>
+              {pendingRequestsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                  {pendingRequestsCount}
+                </span>
+              )}
+            </div>
+          </button>
+          {!isAdmin && (
+            <button
+              onClick={() => setShowRequestModal(true)}
+              className="ml-auto flex items-center space-x-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all"
+            >
+              <Send className="w-5 h-5" />
+              <span>Submit Request</span>
+            </button>
+          )}
+        </div>
+
+        {/* Platforms View */}
+        {currentView === 'platforms' && !selectedPlatform && (
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Platforms</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {platformStats.map(({ platform, count, latestWeek }) => (
+                <div
+                  key={platform}
+                  onClick={() => {
+                    setSelectedPlatform(platform);
+                    setCurrentView('projects');
+                  }}
+                  className="bg-white rounded-xl border-2 border-gray-200 p-6 hover:border-black hover:shadow-lg transition-all cursor-pointer group"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-bold group-hover:text-black">{platform}</h3>
+                    <ChevronRight className="w-6 h-6 text-gray-400 group-hover:text-black transition-colors" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Total Projects</span>
+                      <span className="font-semibold text-black">{count}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Latest Update</span>
+                      <span className="font-medium text-gray-700">
+                        {new Date(latestWeek).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Projects View */}
+        {currentView === 'projects' && selectedPlatform && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => {
+                    setSelectedPlatform(null);
+                    setCurrentView('platforms');
+                    setSelectedLocation('all');
+                  }}
+                  className="text-gray-600 hover:text-black transition-colors"
+                >
+                  ← Back to Platforms
+                </button>
+                <h2 className="text-2xl font-bold">{selectedPlatform} Projects</h2>
+              </div>
+
+              {/* Location Filter */}
+              <div className="flex items-center space-x-2">
+                <Filter className="w-5 h-5 text-gray-600" />
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
+                >
+                  {locations.map(loc => (
+                    <option key={loc} value={loc}>
+                      {loc === 'all' ? 'All Locations' : loc}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Projects Table */}
+            <div className="bg-white rounded-2xl shadow-sm border-2 border-gray-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b-2 border-gray-200">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Week Of</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Project Name</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Location</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Link</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Notes</th>
                       {canEdit && (
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <button
-                              onClick={() => openEditModal(update)}
-                              className="p-2 text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-all"
-                              title="Edit"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            {isAdmin && (
-                              <button
-                                onClick={() => handleDeleteUpdate(update.id)}
-                                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                title="Delete"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                        </td>
+                        <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
                       )}
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredProjects.length === 0 ? (
+                      <tr>
+                        <td colSpan={canEdit ? 6 : 5} className="px-6 py-12 text-center text-gray-400">
+                          No projects found
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredProjects.map((update) => (
+                        <tr key={update.id} className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-medium text-gray-900">
+                              {new Date(update.weekOf).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-sm font-semibold text-black">{update.projectName}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-1">
+                              <MapPin className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm text-gray-700">{update.location}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {update.link ? (
+                              <a
+                                href={update.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                              >
+                                <span>View</span>
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            ) : (
+                              <span className="text-sm text-gray-400">-</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 max-w-xs">
+                            <p className="text-sm text-gray-600 truncate" title={update.notes}>
+                              {update.notes || '-'}
+                            </p>
+                          </td>
+                          {canEdit && (
+                            <td className="px-6 py-4 text-right">
+                              <div className="flex justify-end space-x-2">
+                                <button
+                                  onClick={() => openEditModal(update)}
+                                  className="p-2 text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg transition-all"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                {isAdmin && (
+                                  <button
+                                    onClick={() => handleDeleteUpdate(update.id)}
+                                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Inbox View */}
+        {currentView === 'inbox' && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Agent Requests & Suggestions</h2>
+
+            <div className="space-y-4">
+              {agentRequests.length === 0 ? (
+                <div className="bg-white rounded-xl border-2 border-gray-200 p-12 text-center">
+                  <Inbox className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">No requests yet</p>
+                </div>
+              ) : (
+                agentRequests.map((request) => (
+                  <div
+                    key={request.id}
+                    onClick={() => {
+                      setSelectedRequest(request);
+                      setShowRequestDetailModal(true);
+                    }}
+                    className={`bg-white rounded-xl border-2 p-6 cursor-pointer hover:shadow-lg transition-all ${
+                      request.status === 'pending'
+                        ? 'border-yellow-300 bg-yellow-50'
+                        : request.status === 'approved'
+                        ? 'border-green-300 bg-green-50'
+                        : 'border-red-300 bg-red-50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center space-x-3">
+                        <MessageSquare className="w-5 h-5 text-gray-600" />
+                        <h3 className="text-lg font-bold">{request.subject}</h3>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        request.status === 'pending'
+                          ? 'bg-yellow-200 text-yellow-800'
+                          : request.status === 'approved'
+                          ? 'bg-green-200 text-green-800'
+                          : 'bg-red-200 text-red-800'
+                      }`}>
+                        {request.status.toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-2">
+                      <span>From: {request.agentEmail}</span>
+                      <span>•</span>
+                      <span>Type: {request.requestType.replace('_', ' ')}</span>
+                      <span>•</span>
+                      <span>{new Date(request.createdAt?.toDate()).toLocaleDateString()}</span>
+                    </div>
+                    <p className="text-sm text-gray-700 line-clamp-2">{request.message}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Add Update Modal */}
+      {/* Add Project Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl">
             <div className="flex justify-between items-center border-b-2 border-gray-200 px-8 py-6">
-              <h2 className="text-2xl font-bold">Add Weekly Update</h2>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <h2 className="text-2xl font-bold">Add New Project</h2>
+              <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="p-8 space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Week Of
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Week Of</label>
                 <input
                   type="date"
                   value={formData.weekOf}
                   onChange={(e) => setFormData({ ...formData, weekOf: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Name *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Project Name *</label>
                 <input
                   type="text"
                   value={formData.projectName}
                   onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
                   placeholder="E.g., Website Redesign for Tech Startup"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
-                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Platform *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Platform *</label>
                 <input
                   type="text"
                   value={formData.platform}
                   onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
                   placeholder="E.g., Upwork, Fiverr, Direct Client"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
-                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Location *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                   placeholder="E.g., San Francisco, CA or Remote"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
-                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Link
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Project Link</label>
                 <input
                   type="url"
                   value={formData.link}
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
                   placeholder="https://..."
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Notes
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Additional details, status updates, or important information..."
+                  placeholder="Additional details..."
                   rows={4}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none resize-none"
                 />
               </div>
             </div>
@@ -744,10 +887,9 @@ export default function AgentUpdates() {
             <div className="flex space-x-4 border-t-2 border-gray-200 px-8 py-6">
               <button
                 onClick={handleAddUpdate}
-                disabled={!formData.projectName || !formData.platform || !formData.location}
-                className="flex-1 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex-1 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all"
               >
-                Add Update
+                Add Project
               </button>
               <button
                 onClick={() => setShowAddModal(false)}
@@ -760,93 +902,75 @@ export default function AgentUpdates() {
         </div>
       )}
 
-      {/* Edit Update Modal */}
+      {/* Edit Project Modal */}
       {showEditModal && selectedUpdate && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl">
             <div className="flex justify-between items-center border-b-2 border-gray-200 px-8 py-6">
-              <h2 className="text-2xl font-bold">Edit Update</h2>
-              <button
-                onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <h2 className="text-2xl font-bold">Edit Project</h2>
+              <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="p-8 space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Week Of
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Week Of</label>
                 <input
                   type="date"
                   value={formData.weekOf}
                   onChange={(e) => setFormData({ ...formData, weekOf: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Name *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Project Name *</label>
                 <input
                   type="text"
                   value={formData.projectName}
                   onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
-                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Platform *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Platform *</label>
                 <input
                   type="text"
                   value={formData.platform}
                   onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
-                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Location *
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
-                  required
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Link
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Project Link</label>
                 <input
                   type="url"
                   value={formData.link}
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Notes
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={4}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors resize-none"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none resize-none"
                 />
               </div>
             </div>
@@ -854,8 +978,7 @@ export default function AgentUpdates() {
             <div className="flex space-x-4 border-t-2 border-gray-200 px-8 py-6">
               <button
                 onClick={handleEditUpdate}
-                disabled={!formData.projectName || !formData.platform || !formData.location}
-                className="flex-1 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="flex-1 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all"
               >
                 Save Changes
               </button>
@@ -870,7 +993,174 @@ export default function AgentUpdates() {
         </div>
       )}
 
-      {/* Manage Editors Modal (Admin Only) */}
+      {/* Submit Request Modal */}
+      {showRequestModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl">
+            <div className="flex justify-between items-center border-b-2 border-gray-200 px-8 py-6">
+              <h2 className="text-2xl font-bold">Submit Request</h2>
+              <button onClick={() => setShowRequestModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Request Type</label>
+                <select
+                  value={requestFormData.requestType}
+                  onChange={(e) => setRequestFormData({ ...requestFormData, requestType: e.target.value as any })}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
+                >
+                  <option value="suggestion">Suggestion</option>
+                  <option value="new_project">New Project Idea</option>
+                  <option value="approval">Request Approval</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Subject *</label>
+                <input
+                  type="text"
+                  value={requestFormData.subject}
+                  onChange={(e) => setRequestFormData({ ...requestFormData, subject: e.target.value })}
+                  placeholder="Brief summary of your request"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Message *</label>
+                <textarea
+                  value={requestFormData.message}
+                  onChange={(e) => setRequestFormData({ ...requestFormData, message: e.target.value })}
+                  placeholder="Provide details about your request..."
+                  rows={6}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex space-x-4 border-t-2 border-gray-200 px-8 py-6">
+              <button
+                onClick={handleSubmitRequest}
+                className="flex-1 bg-blue-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-600 transition-all"
+              >
+                Submit Request
+              </button>
+              <button
+                onClick={() => setShowRequestModal(false)}
+                className="flex-1 bg-white text-black px-6 py-3 rounded-full font-semibold border-2 border-gray-300 hover:border-black transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Request Detail Modal */}
+      {showRequestDetailModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl">
+            <div className="flex justify-between items-center border-b-2 border-gray-200 px-8 py-6">
+              <h2 className="text-2xl font-bold">Request Details</h2>
+              <button onClick={() => setShowRequestDetailModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  selectedRequest.status === 'pending'
+                    ? 'bg-yellow-200 text-yellow-800'
+                    : selectedRequest.status === 'approved'
+                    ? 'bg-green-200 text-green-800'
+                    : 'bg-red-200 text-red-800'
+                }`}>
+                  {selectedRequest.status.toUpperCase()}
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">From</label>
+                <p className="text-gray-900">{selectedRequest.agentEmail}</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Type</label>
+                <p className="text-gray-900">{selectedRequest.requestType.replace('_', ' ')}</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Subject</label>
+                <p className="text-gray-900 font-semibold">{selectedRequest.subject}</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Message</label>
+                <p className="text-gray-700 whitespace-pre-wrap">{selectedRequest.message}</p>
+              </div>
+
+              {selectedRequest.responseMessage && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Response</label>
+                  <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">{selectedRequest.responseMessage}</p>
+                </div>
+              )}
+
+              {isAdmin && selectedRequest.status === 'pending' && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Your Response (Optional)</label>
+                  <textarea
+                    value={responseMessage}
+                    onChange={(e) => setResponseMessage(e.target.value)}
+                    placeholder="Add a message to the agent..."
+                    rows={4}
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none resize-none"
+                  />
+                </div>
+              )}
+            </div>
+
+            {isAdmin && selectedRequest.status === 'pending' ? (
+              <div className="flex space-x-4 border-t-2 border-gray-200 px-8 py-6">
+                <button
+                  onClick={() => handleRespondToRequest(selectedRequest.id, 'approved')}
+                  className="flex-1 bg-green-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600 transition-all"
+                >
+                  Approve
+                </button>
+                <button
+                  onClick={() => handleRespondToRequest(selectedRequest.id, 'rejected')}
+                  className="flex-1 bg-red-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-600 transition-all"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={() => setShowRequestDetailModal(false)}
+                  className="flex-1 bg-white text-black px-6 py-3 rounded-full font-semibold border-2 border-gray-300 hover:border-black transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <div className="border-t-2 border-gray-200 px-8 py-6">
+                <button
+                  onClick={() => setShowRequestDetailModal(false)}
+                  className="w-full bg-white text-black px-6 py-3 rounded-full font-semibold border-2 border-gray-300 hover:border-black transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Manage Editors Modal */}
       {showSettingsModal && isAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl">
@@ -879,26 +1169,21 @@ export default function AgentUpdates() {
                 <h2 className="text-2xl font-bold">Manage Editors</h2>
                 <p className="text-sm text-gray-600 mt-1">Assign agents who can update this page</p>
               </div>
-              <button
-                onClick={() => setShowSettingsModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
+              <button onClick={() => setShowSettingsModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             <div className="p-8">
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Add Head of Agent Email
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Add Editor Email</label>
                 <div className="flex space-x-3">
                   <input
                     type="email"
                     value={newHeadEmail}
                     onChange={(e) => setNewHeadEmail(e.target.value)}
                     placeholder="agent@example.com"
-                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none"
                   />
                   <button
                     onClick={handleAddHeadOfAgent}
