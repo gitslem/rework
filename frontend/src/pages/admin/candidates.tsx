@@ -52,13 +52,17 @@ export default function AdminCandidates() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [candidates, setCandidates] = useState<CandidateWithProfile[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'new_users' | 'uncategorized'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'date_range' | 'uncategorized'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<CandidateWithProfile | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [availableAgents, setAvailableAgents] = useState<Agent[]>([]);
+
+  // Date range filtering
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [selectedAgentId, setSelectedAgentId] = useState<string>('');
 
   // Category management
@@ -213,12 +217,21 @@ export default function AdminCandidates() {
           if (isRejected || userData.isCandidateApproved) continue;
         } else if (filter === 'approved') {
           if (isRejected || !userData.isCandidateApproved) continue;
-        } else if (filter === 'new_users') {
-          // Filter for users who joined in the last 7 days
-          const sevenDaysAgo = new Date();
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        } else if (filter === 'date_range') {
+          // Filter for users who joined within custom date range
           const userCreatedAt = userData.createdAt?.toDate?.() || new Date(0);
-          if (userCreatedAt < sevenDaysAgo) continue;
+
+          if (startDate) {
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+            if (userCreatedAt < start) continue;
+          }
+
+          if (endDate) {
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            if (userCreatedAt > end) continue;
+          }
         } else if (filter === 'uncategorized') {
           // Filter for candidates without any categories assigned
           const categories = (userData as any).categories || [];
@@ -677,7 +690,7 @@ export default function AdminCandidates() {
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
                   { value: 'rejected', label: 'Rejected' },
-                  { value: 'new_users', label: 'New Users (7 days)' }
+                  { value: 'date_range', label: 'Date Range' }
                 ].map(tab => (
                   <button
                     key={tab.value}
@@ -692,6 +705,116 @@ export default function AdminCandidates() {
                   </button>
                 ))}
               </div>
+
+              {/* Date Range Inputs */}
+              {filter === 'date_range' && (
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  {/* Quick Presets */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Quick Presets</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { label: 'Last 7 Days', days: 7 },
+                        { label: 'Last 30 Days', days: 30 },
+                        { label: 'Last 90 Days', days: 90 },
+                        { label: 'This Month', days: -1 },
+                        { label: 'Last Month', days: -2 },
+                        { label: 'This Year', days: -3 }
+                      ].map((preset) => (
+                        <button
+                          key={preset.label}
+                          onClick={() => {
+                            const today = new Date();
+                            const todayStr = today.toISOString().split('T')[0];
+
+                            if (preset.days > 0) {
+                              // Last X days
+                              const start = new Date();
+                              start.setDate(start.getDate() - preset.days);
+                              setStartDate(start.toISOString().split('T')[0]);
+                              setEndDate(todayStr);
+                            } else if (preset.days === -1) {
+                              // This month
+                              const start = new Date(today.getFullYear(), today.getMonth(), 1);
+                              setStartDate(start.toISOString().split('T')[0]);
+                              setEndDate(todayStr);
+                            } else if (preset.days === -2) {
+                              // Last month
+                              const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                              const end = new Date(today.getFullYear(), today.getMonth(), 0);
+                              setStartDate(start.toISOString().split('T')[0]);
+                              setEndDate(end.toISOString().split('T')[0]);
+                            } else if (preset.days === -3) {
+                              // This year
+                              const start = new Date(today.getFullYear(), 0, 1);
+                              setStartDate(start.toISOString().split('T')[0]);
+                              setEndDate(todayStr);
+                            }
+                          }}
+                          className="px-3 py-1 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-all"
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Custom Date Inputs */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Calendar className="inline w-4 h-4 mr-1" />
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <Calendar className="inline w-4 h-4 mr-1" />
+                        End Date
+                      </label>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Apply and Clear Buttons */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => fetchCandidates()}
+                      className="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-all"
+                    >
+                      Apply Filter
+                    </button>
+                    <button
+                      onClick={() => {
+                        setStartDate('');
+                        setEndDate('');
+                        fetchCandidates();
+                      }}
+                      className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-all"
+                    >
+                      Clear Dates
+                    </button>
+                  </div>
+
+                  {/* Display current filter info */}
+                  {(startDate || endDate) && (
+                    <div className="mt-3 text-sm text-gray-600 bg-blue-50 border border-blue-200 rounded px-3 py-2">
+                      <strong>Filtering:</strong> {startDate ? `From ${new Date(startDate).toLocaleDateString()}` : 'Any start date'} {endDate ? `to ${new Date(endDate).toLocaleDateString()}` : 'to now'}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Search and Filters Row */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
