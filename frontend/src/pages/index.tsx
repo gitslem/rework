@@ -228,7 +228,7 @@ export default function Home() {
   // Auto-play hero image slider
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentHeroImage((prev) => (prev === 2 ? 0 : prev + 1)); // 3 images (0-2)
+      setCurrentHeroImage((prev) => (prev === 4 ? 0 : prev + 1)); // 5 images (0-4)
     }, 4000); // Change image every 4 seconds
 
     return () => clearInterval(interval);
@@ -398,9 +398,11 @@ export default function Home() {
   ];
 
   const heroImages = [
-    "https://images.pexels.com/photos/3727474/pexels-photo-3727474.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/9783346/pexels-photo-9783346.jpeg?auto=compress&cs=tinysrgb&w=1200",
-    "https://images.pexels.com/photos/7773547/pexels-photo-7773547.jpeg?auto=compress&cs=tinysrgb&w=1200"
+    "https://images.pexels.com/photos/6347976/pexels-photo-6347976.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/695730/pexels-photo-695730.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/17485705/pexels-photo-17485705.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/7172864/pexels-photo-7172864.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    "https://images.pexels.com/photos/7562468/pexels-photo-7562468.jpeg?auto=compress&cs=tinysrgb&w=1200"
   ];
 
   const projectTypes = [
