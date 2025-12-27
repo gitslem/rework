@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFirebaseAuth } from '@/lib/firebase/auth';
-import { getFirebaseFirestore } from '@/lib/firebase/config';
+import { getFirebaseAuth, getFirebaseFirestore } from '@/lib/firebase/config';
 import {
   collection,
   query,
