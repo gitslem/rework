@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Admin Role - Diagnostic Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .error {
+            background: #fee;
+            color: #c00;
+            border: 2px solid #fcc;
+        }
+        .success {
+            background: #efe;
+            color: #0a0;
+            border: 2px solid #cfc;
+        }
+        .warning {
+            background: #ffc;
+            color: #880;
+            border: 2px solid #ffa;
+        }
+        .info {
+            background: #eef;
+            color: #008;
+            border: 2px solid #ccf;
+        }
+        button {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #333;
+        }
+        .code {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .fix-button {
+            background: #0a0;
+        }
+        .fix-button:hover {
+            background: #080;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Admin Role Diagnostic Tool</h1>
+        <p>This tool will check your user document in Firestore and verify your admin role.</p>
+
+        <button onclick="checkRole()">Check My Role</button>
+        <button onclick="fixRole()" class="fix-button">Fix My Role to Admin</button>
+
+        <div id="output"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+        // Get Firebase config from your main app
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPl4e_uXjOiAMKVXlqw5kqKZBHjCPNsLc",
+            authDomain: "remote-worksio.firebaseapp.com",
+            projectId: "remote-worksio",
+            storageBucket: "remote-worksio.firebasestorage.app",
+            messagingSenderId: "721894991158",
+            appId: "1:721894991158:web:afad34de44ed36e7ec90ba",
+            measurementId: "G-XNYHK6Y44Y"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('output').innerHTML = `
+                    <div class="status info">
+                        ✓ Signed in as: <strong>${user.email}</strong><br>
+                        UID: <code>${user.uid}</code>
+                    </div>
+                `;
+            } else {
+                document.getElementById('output').innerHTML = `
+                    <div class="status error">
+                        ✗ Not signed in. Please sign in to your app first, then come back to this page.
+                    </div>
+                `;
+            }
+        });
+
+        window.checkRole = async function() {
+            const output = document.getElementById('output');
+
+            if (!currentUser) {
+                output.innerHTML = '<div class="status error">✗ Please sign in first!</div>';
+                return;
+            }
+
+            output.innerHTML = '<div class="status info">Checking Firestore...</div>';
+
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userDocRef);
+
+                if (!userDoc.exists()) {
+                    output.innerHTML = `
+                        <div class="status error">
+                            ✗ <strong>User document does not exist!</strong><br>
+                            Your user document is missing from Firestore.<br>
+                            Document path: <code>users/${currentUser.uid}</code>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const userData = userDoc.data();
+                const role = userData.role;
+
+                console.log('Full user data:', userData);
+
+                let html = `
+                    <div class="status ${role === 'admin' ? 'success' : 'warning'}">
+                        ${role === 'admin' ? '✓' : '⚠'} User document found
+                    </div>
+
+                    <div class="code">
+                        <h3>User Document Data:</h3>
+                        <pre>${JSON.stringify(userData, null, 2)}</pre>
+                    </div>
+
+                    <h3>Role Analysis:</h3>
+                `;
+
+                if (role === 'admin') {
+                    html += `
+                        <div class="status success">
+                            ✓ <strong>Role is correct!</strong><br>
+                            Your role is set to exactly "admin" (lowercase).<br>
+                            <br>
+                            If you're still getting permission errors, the issue is likely:<br>
+                            1. Firestore rules not deployed<br>
+                            2. Browser cache (try incognito mode)<br>
+                            3. Need to sign out and sign back in
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="status error">
+                            ✗ <strong>Role is WRONG!</strong><br>
+                            Current role: <code>"${role}"</code> (${typeof role})<br>
+                            Expected: <code>"admin"</code> (lowercase)<br>
+                            <br>
+                            <strong>This is why you're getting permission denied!</strong><br>
+                            Click the "Fix My Role to Admin" button to fix it.
+                        </div>
+                    `;
+                }
+
+                // Check for common issues
+                if (role && role !== 'admin') {
+                    const issues = [];
+                    if (role === 'Admin') issues.push('Capital A instead of lowercase');
+                    if (role === 'ADMIN') issues.push('All caps instead of lowercase');
+                    if (role.trim() !== role) issues.push('Extra spaces');
+                    if (typeof role !== 'string') issues.push('Wrong data type');
+
+                    if (issues.length > 0) {
+                        html += `
+                            <div class="status warning">
+                                <strong>Detected Issues:</strong><br>
+                                ${issues.map(i => `• ${i}`).join('<br>')}
+                            </div>
+                        `;
+                    }
+                }
+
+                output.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error checking role:', error);
+                output.innerHTML = `
+                    <div class="status error">
+                        ✗ <strong>Error checking Firestore:</strong><br>
+                        ${error.message}<br>
+                        <br>
+                        Code: ${error.code}<br>
+                        <br>
+                        Check browser console for details.
+                    </div>
+                `;
+            }
+        };
+
+        window.fixRole = async function() {
+            const output = document.getElementById('output');
+
+            if (!currentUser) {
+                output.innerHTML = '<div class="status error">✗ Please sign in first!</div>';
+                return;
+            }
+
+            if (!confirm('This will set your role to "admin" in Firestore. Continue?')) {
+                return;
+            }
+
+            output.innerHTML = '<div class="status info">Updating Firestore...</div>';
+
+            try {
+                const userDocRef = doc(db, 'users', currentUser.uid);
+
+                await updateDoc(userDocRef, {
+                    role: 'admin'
+                });
+
+                output.innerHTML = `
+                    <div class="status success">
+                        ✓ <strong>Role updated successfully!</strong><br>
+                        Your role is now set to "admin".<br>
+                        <br>
+                        <strong>Next steps:</strong><br>
+                        1. Sign out of your app<br>
+                        2. Clear browser cache or use incognito mode<br>
+                        3. Sign back in<br>
+                        4. Go to /admin/agent-updates<br>
+                        5. Try to save an update<br>
+                        <br>
+                        Click "Check My Role" to verify the change.
+                    </div>
+                `;
+
+                console.log('Role updated to admin');
+
+            } catch (error) {
+                console.error('Error fixing role:', error);
+                output.innerHTML = `
+                    <div class="status error">
+                        ✗ <strong>Error updating role:</strong><br>
+                        ${error.message}<br>
+                        <br>
+                        Code: ${error.code}<br>
+                        <br>
+                        You may not have permission to update your own user document.<br>
+                        You'll need to fix this manually in the Firebase Console.
+                    </div>
+
+                    <div class="status info">
+                        <strong>Manual Fix Instructions:</strong><br>
+                        1. Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a><br>
+                        2. Select your project: remote-worksio<br>
+                        3. Go to Firestore Database<br>
+                        4. Find the "users" collection<br>
+                        5. Find your document: ${currentUser.uid}<br>
+                        6. Edit the "role" field to exactly: <code>admin</code> (lowercase)<br>
+                        7. Save changes
+                    </div>
+                `;
+            }
+        };
+    </script>
+</body>
+</html>
