@@ -9,6 +9,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  setDoc,
   orderBy,
   Timestamp,
   onSnapshot
@@ -147,56 +148,150 @@ export default function AgentUpdates() {
   };
 
   const handleAddUpdate = async () => {
-    if (!canEdit || !user) return;
+    if (!canEdit || !user) {
+      alert('You do not have permission to add updates');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.projectName.trim()) {
+      alert('Project Name is required');
+      return;
+    }
+    if (!formData.platform.trim()) {
+      alert('Platform is required');
+      return;
+    }
+    if (!formData.location.trim()) {
+      alert('Location is required');
+      return;
+    }
+    if (!formData.weekOf) {
+      alert('Week date is required');
+      return;
+    }
 
     const db = getFirebaseFirestore();
     try {
+      console.log('Attempting to add update:', formData);
+
       await addDoc(collection(db, 'agent_weekly_updates'), {
-        ...formData,
+        projectName: formData.projectName.trim(),
+        platform: formData.platform.trim(),
+        link: formData.link.trim(),
+        location: formData.location.trim(),
+        notes: formData.notes.trim(),
+        weekOf: formData.weekOf,
         createdBy: user.uid,
         createdByEmail: user.email,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now()
       });
 
+      console.log('Update added successfully');
       setShowAddModal(false);
       resetForm();
-    } catch (error) {
+      alert('Update added successfully!');
+    } catch (error: any) {
       console.error('Error adding update:', error);
-      alert('Failed to add update');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      // Provide specific error messages
+      if (error.code === 'permission-denied') {
+        alert('Permission denied. You may not have the required role or approval status.');
+      } else if (error.code === 'unauthenticated') {
+        alert('You must be signed in to add updates.');
+      } else {
+        alert(`Failed to add update: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
   const handleEditUpdate = async () => {
-    if (!canEdit || !selectedUpdate) return;
+    if (!canEdit || !selectedUpdate) {
+      alert('You do not have permission to edit updates');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.projectName.trim()) {
+      alert('Project Name is required');
+      return;
+    }
+    if (!formData.platform.trim()) {
+      alert('Platform is required');
+      return;
+    }
+    if (!formData.location.trim()) {
+      alert('Location is required');
+      return;
+    }
+    if (!formData.weekOf) {
+      alert('Week date is required');
+      return;
+    }
 
     const db = getFirebaseFirestore();
     try {
+      console.log('Attempting to update:', formData);
+
       await updateDoc(doc(db, 'agent_weekly_updates', selectedUpdate.id), {
-        ...formData,
+        projectName: formData.projectName.trim(),
+        platform: formData.platform.trim(),
+        link: formData.link.trim(),
+        location: formData.location.trim(),
+        notes: formData.notes.trim(),
+        weekOf: formData.weekOf,
         updatedAt: Timestamp.now()
       });
 
+      console.log('Update edited successfully');
       setShowEditModal(false);
       setSelectedUpdate(null);
       resetForm();
-    } catch (error) {
+      alert('Update saved successfully!');
+    } catch (error: any) {
       console.error('Error updating:', error);
-      alert('Failed to update');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      if (error.code === 'permission-denied') {
+        alert('Permission denied. You may not have permission to edit this update.');
+      } else if (error.code === 'not-found') {
+        alert('Update not found. It may have been deleted.');
+      } else {
+        alert(`Failed to update: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
   const handleDeleteUpdate = async (updateId: string) => {
-    if (!isAdmin) return;
+    if (!isAdmin) {
+      alert('Only admins can delete updates');
+      return;
+    }
 
-    if (!confirm('Are you sure you want to delete this update?')) return;
+    if (!confirm('Are you sure you want to delete this update? This action cannot be undone.')) return;
 
     const db = getFirebaseFirestore();
     try {
+      console.log('Attempting to delete update:', updateId);
       await deleteDoc(doc(db, 'agent_weekly_updates', updateId));
-    } catch (error) {
+      console.log('Update deleted successfully');
+      alert('Update deleted successfully');
+    } catch (error: any) {
       console.error('Error deleting:', error);
-      alert('Failed to delete');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      if (error.code === 'permission-denied') {
+        alert('Permission denied. Only admins can delete updates.');
+      } else if (error.code === 'not-found') {
+        alert('Update not found. It may have already been deleted.');
+      } else {
+        alert(`Failed to delete: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
@@ -206,23 +301,24 @@ export default function AgentUpdates() {
     const db = getFirebaseFirestore();
     try {
       const updatedEmails = [...pageSettings.headOfAgentEmails, newHeadEmail.trim()];
-      await updateDoc(doc(db, 'settings', 'agent-updates'), {
+
+      // Use setDoc with merge to create or update the document
+      await setDoc(doc(db, 'settings', 'agent-updates'), {
         headOfAgentEmails: updatedEmails
-      });
+      }, { merge: true });
 
       setPageSettings({ headOfAgentEmails: updatedEmails });
       setNewHeadEmail('');
-    } catch (error) {
-      // Settings doc might not exist yet, create it
-      try {
-        await addDoc(collection(db, 'settings'), {
-          headOfAgentEmails: [newHeadEmail.trim()]
-        });
-        setPageSettings({ headOfAgentEmails: [newHeadEmail.trim()] });
-        setNewHeadEmail('');
-      } catch (createError) {
-        console.error('Error adding head of agent:', createError);
-        alert('Failed to add head of agent');
+      console.log('Head of agent added successfully');
+    } catch (error: any) {
+      console.error('Error adding head of agent:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      if (error.code === 'permission-denied') {
+        alert('Permission denied. Only admins can manage editors.');
+      } else {
+        alert(`Failed to add head of agent: ${error.message || 'Unknown error'}`);
       }
     }
   };
@@ -233,14 +329,23 @@ export default function AgentUpdates() {
     const db = getFirebaseFirestore();
     try {
       const updatedEmails = pageSettings.headOfAgentEmails.filter(e => e !== email);
-      await updateDoc(doc(db, 'settings', 'agent-updates'), {
+
+      await setDoc(doc(db, 'settings', 'agent-updates'), {
         headOfAgentEmails: updatedEmails
-      });
+      }, { merge: true });
 
       setPageSettings({ headOfAgentEmails: updatedEmails });
-    } catch (error) {
+      console.log('Head of agent removed successfully');
+    } catch (error: any) {
       console.error('Error removing head of agent:', error);
-      alert('Failed to remove head of agent');
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      if (error.code === 'permission-denied') {
+        alert('Permission denied. Only admins can manage editors.');
+      } else {
+        alert(`Failed to remove head of agent: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
