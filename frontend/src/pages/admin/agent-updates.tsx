@@ -173,7 +173,25 @@ export default function AgentUpdates() {
 
     const db = getFirebaseFirestore();
     try {
+      console.log('=== SAVE DEBUG INFO ===');
+      console.log('User object:', user);
+      console.log('User role:', user.role);
+      console.log('Is Admin:', isAdmin);
+      console.log('Can Edit:', canEdit);
+      console.log('User UID:', user.uid);
+      console.log('User Email:', user.email);
       console.log('Attempting to add update:', formData);
+
+      // Verify user document exists in Firestore
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      console.log('User doc exists:', userDoc.exists());
+      if (userDoc.exists()) {
+        console.log('User doc data:', userDoc.data());
+      } else {
+        console.error('USER DOCUMENT DOES NOT EXIST IN FIRESTORE!');
+        alert('Error: Your user profile is not properly set up. Please contact support.');
+        return;
+      }
 
       await addDoc(collection(db, 'agent_weekly_updates'), {
         projectName: formData.projectName.trim(),
@@ -193,13 +211,15 @@ export default function AgentUpdates() {
       resetForm();
       alert('Update added successfully!');
     } catch (error: any) {
+      console.error('=== ERROR DETAILS ===');
       console.error('Error adding update:', error);
       console.error('Error code:', error.code);
       console.error('Error message:', error.message);
+      console.error('Full error:', JSON.stringify(error, null, 2));
 
       // Provide specific error messages
       if (error.code === 'permission-denied') {
-        alert('Permission denied. You may not have the required role or approval status.');
+        alert(`Permission denied.\n\nYour role: ${user.role}\nIs Admin: ${isAdmin}\nCan Edit: ${canEdit}\n\nPlease ensure:\n1. Your role is set to 'admin' or 'agent'\n2. If agent, you are approved\n3. Check browser console for details`);
       } else if (error.code === 'unauthenticated') {
         alert('You must be signed in to add updates.');
       } else {
@@ -452,6 +472,24 @@ export default function AgentUpdates() {
                   </span>
                 )}
               </div>
+
+              {/* Debug Info Panel - Shows permission details */}
+              {isAdmin && (
+                <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                  <h3 className="text-sm font-bold text-blue-900 mb-2">🔍 Debug Info (Admin Only)</h3>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div><span className="font-semibold">UID:</span> {user.uid}</div>
+                    <div><span className="font-semibold">Email:</span> {user.email}</div>
+                    <div><span className="font-semibold">Role:</span> <span className="font-bold text-blue-700">{user.role}</span></div>
+                    <div><span className="font-semibold">Is Admin:</span> <span className={isAdmin ? 'text-green-600 font-bold' : 'text-red-600'}>{isAdmin ? 'YES' : 'NO'}</span></div>
+                    <div><span className="font-semibold">Can Edit:</span> <span className={canEdit ? 'text-green-600 font-bold' : 'text-red-600'}>{canEdit ? 'YES' : 'NO'}</span></div>
+                    <div><span className="font-semibold">Has Access:</span> <span className={hasAccess ? 'text-green-600 font-bold' : 'text-red-600'}>{hasAccess ? 'YES' : 'NO'}</span></div>
+                  </div>
+                  <p className="text-xs text-blue-700 mt-2">
+                    ℹ️ If you get permission errors, check that your user document in Firestore has role='admin'
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="flex space-x-3">
