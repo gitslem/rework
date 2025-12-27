@@ -52,7 +52,7 @@ export default function AdminCandidates() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [candidates, setCandidates] = useState<CandidateWithProfile[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'date_range' | 'uncategorized'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'date_range' | 'uncategorized' | 'incomplete_profile'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
@@ -232,6 +232,10 @@ export default function AdminCandidates() {
             end.setHours(23, 59, 59, 999);
             if (userCreatedAt > end) continue;
           }
+
+          // Exclude uncategorized candidates from date range filter
+          const categories = (userData as any).categories || [];
+          if (categories.length === 0) continue;
         } else if (filter === 'uncategorized') {
           // Filter for candidates without any categories assigned
           const categories = (userData as any).categories || [];
@@ -245,6 +249,14 @@ export default function AdminCandidates() {
         // Try to get profile data if exists
         const profileDoc = await getDoc(doc(db, 'profiles', userData.uid));
         const profileData = profileDoc.exists() ? profileDoc.data() : {};
+
+        // Check for incomplete profile filter (after fetching profile data)
+        if (filter === 'incomplete_profile') {
+          const hasLocation = profileData.city && profileData.city.trim() !== '';
+          const hasCountry = profileData.country && profileData.country.trim() !== '';
+          // Only show candidates with missing location OR country
+          if (hasLocation && hasCountry) continue;
+        }
 
         candidateList.push({
           ...userData,
@@ -687,6 +699,7 @@ export default function AdminCandidates() {
                 {[
                   { value: 'all', label: 'All' },
                   { value: 'uncategorized', label: 'Uncategorized' },
+                  { value: 'incomplete_profile', label: 'Incomplete Profile' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
                   { value: 'rejected', label: 'Rejected' },
