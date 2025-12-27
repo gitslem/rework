@@ -52,7 +52,7 @@ export default function AdminCandidates() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [candidates, setCandidates] = useState<CandidateWithProfile[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'date_range' | 'uncategorized'>('pending');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'date_range' | 'uncategorized' | 'incomplete_profile'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
@@ -249,6 +249,14 @@ export default function AdminCandidates() {
         // Try to get profile data if exists
         const profileDoc = await getDoc(doc(db, 'profiles', userData.uid));
         const profileData = profileDoc.exists() ? profileDoc.data() : {};
+
+        // Check for incomplete profile filter (after fetching profile data)
+        if (filter === 'incomplete_profile') {
+          const hasLocation = profileData.city && profileData.city.trim() !== '';
+          const hasCountry = profileData.country && profileData.country.trim() !== '';
+          // Only show candidates with missing location OR country
+          if (hasLocation && hasCountry) continue;
+        }
 
         candidateList.push({
           ...userData,
@@ -691,6 +699,7 @@ export default function AdminCandidates() {
                 {[
                   { value: 'all', label: 'All' },
                   { value: 'uncategorized', label: 'Uncategorized' },
+                  { value: 'incomplete_profile', label: 'Incomplete Profile' },
                   { value: 'pending', label: 'Pending' },
                   { value: 'approved', label: 'Approved' },
                   { value: 'rejected', label: 'Rejected' },
